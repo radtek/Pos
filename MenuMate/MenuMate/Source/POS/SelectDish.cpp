@@ -121,7 +121,7 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "MessageManager.h"
 #include "ManagerEJournal.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "ManagerHappyHour.h"
 #include "ManagerDelayedPayment.h"
 #include "MallExportManager.h"
@@ -134,6 +134,8 @@
 #include "FiscalPrinterAdapter.h"
 #include "SCDPatronUtility.h"
 #include "SaveLogs.h"
+#include "DBOnlineOrdeing.h"
+#include "OnlineOrderDocketPrinter.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -621,7 +623,11 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     InitializeChit();
     isWalkInUser = true;
     isRoomNoUiCalled = false;
-    IsChitPromptFormActive=true;   
+    IsChitPromptFormActive=true;
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TOnlineOrderDocketPrinter::Instance()->TriggerTransactionSync();
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1105,6 +1111,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 							frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 							frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 							frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                             DBTransaction.StartTransaction();
 
@@ -3667,6 +3674,15 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
     		    Order->Terminal = TDeviceRealTerminal::Instance().ID.Name;
 				Order->OrderedLocation = TDeviceRealTerminal::Instance().ID.Location;
 				Member = SeatOrders[iSeat]->Orders->AppliedMembership;
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey)
+                {
+                    Order->Email = Membership.Member.EMail;
+                    Order->Loyalty_Key = Membership.Member.ContactKey;
+                }
+                else
+                    Order->Email = "";
+
                 Order->Loyalty_Key = SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey;
                 if(TGlobalSettings::Instance().TransferTableOnPrintPrelim && PrintPrelim && Order->ItemType &&
                             TGlobalSettings::Instance().IsBillSplittedByMenuType && BeveragesInvoiceNumber != "")
@@ -3987,6 +4003,19 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                     }
 				}
                 int updatePatronCount = GetUpdatedPatronCount(DBTransaction,TableNo,SeatCounter);
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey
+                        && PaymentTransaction.Membership.Member.MemberVouchers.size())
+                {
+                    ManagerDiscount->ClearLoyaltyMemberDiscounts(OrdersList.get());
+                }
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey && SelectedTable)
+                {
+                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, SelectedTable, PaymentTransaction.Membership.Member.ContactKey,
+                                                    PaymentTransaction.Membership.Member.EMail);
+                }
+
 				TDBOrder::ProcessOrders(DBTransaction, OrdersList.get()); // Put Orders in DB where required.
                 if(TableNo > 0)
                 {
@@ -4487,6 +4516,8 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 
         DBTransaction.StartTransaction();
+        // Tables table column tablock  is updated False
+	   	TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 
         std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
         int patronCount = GetCount(selectedTablePatrons);
@@ -4502,8 +4533,8 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
             TGlobalSettings::Instance().EnableCustomerJourney)
     {
     	SeatOrders[0]->isChangeTablePressed = true;
-     }
-	showTablePicker();
+    }
+	 showTablePicker();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::UpdateTableButton()
@@ -7125,8 +7156,9 @@ TItemMinor * TfrmSelectDish::GetSelectedSetMenuMaster()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnToggleMenusMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-	tbtnToggleMenus->Tag = 0;
-	btnTimer->Enabled = true;
+    tbtnToggleMenus->Tag = 0;
+    btnTimer->Enabled = true;
+
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
@@ -7182,12 +7214,14 @@ void TfrmSelectDish::SelectNewMenus()
 {
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
+    TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckMenuEditor);
+
         bool AskForLogin = false;
-	if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))
+	if ((!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))&&(Result == lsAccepted))
 	{
 		MessageBox("There are no menus to change to. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
 	}
-	else if (DeleteAllUnsentAndProceed(DBTransaction))
+	else if ((DeleteAllUnsentAndProceed(DBTransaction))&&(Result == lsAccepted))
 	{
 		std::auto_ptr<TfrmSelectActiveMenus>frmSelectActiveMenus(TfrmSelectActiveMenus::Create(this, TDeviceRealTerminal::Instance().Menus, DBTransaction));
 		if (frmSelectActiveMenus->ShowModal() == mrOk)
@@ -7195,27 +7229,25 @@ void TfrmSelectDish::SelectNewMenus()
 			bool Broadcast = false;
 			if (MessageBox("Do you wish all terminals to use this menu configuration?", "Update all terminals", MB_YESNO + MB_ICONQUESTION) == IDYES)
 			{
-				TMMContactInfo TempUserInfo;
-				std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
-				TLoginSuccess Result = Staff->Login(this, DBTransaction, TempUserInfo, CheckDisable);
+				TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckDisable);
 				if (Result == lsAccepted)
 				{
 					Broadcast = true;
                     Refresh();
+
+                    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                        SyncSiteMenus();
+
 				}
-				else if (Result == lsDenied)
+				else
 				{
-					MessageBox("You do not have access to change Menus system wide.", "Error", MB_OK + MB_ICONERROR);
-				}
-				else if (Result == lsPINIncorrect)
-				{
-					MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+                    ShowErrorMessage("You do not have access to change Menus system wide.", Result);
 				}
 			}
-                        else
-                         {
-                           AskForLogin = true;
-                         }
+            else
+             {
+               AskForLogin = true;
+             }
 			std::auto_ptr<TNetMessageMenuChanged>dbRequest(new TNetMessageMenuChanged);
 			for (int i = 0; i < frmSelectActiveMenus->pnlMenus->ControlCount; i++)
 			{
@@ -7229,10 +7261,14 @@ void TfrmSelectDish::SelectNewMenus()
 			TDeviceRealTerminal::Instance().Menus->SwapInNewMenus();
 			TDeviceRealTerminal::Instance().Menus->SetMenuList(DBTransaction, TDeviceRealTerminal::Instance().ID.DeviceKey);
 		}
-                else
-                {
-                   AskForLogin = true;
-                }
+        else
+        {
+           AskForLogin = true;
+        }
+	}
+    else
+	{
+        ShowErrorMessage("You do not have access to make Menu available or unavailable.", Result);
 	}
 	DBTransaction.Commit();
     if (AskForLogin)
@@ -7985,11 +8021,15 @@ void __fastcall TfrmSelectDish::tgridOrderItemMouseClick(TObject *Sender, TMouse
 	{
 		TItem *Item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(GridButton->Tag);
         bool isSameMenuTypeItemExist = true;
-
+//        bool onlineOrderCompatible = true;
+//        if(SelectedTable != 0)
+//        {
+//           onlineOrderCompatible = CheckOrderCompatability();
+//        }
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType && Item)
             isSameMenuTypeItemExist = CheckItemCanBeAddedToSeat(Item);
 
-		if (Item && isSameMenuTypeItemExist)
+		if (Item && isSameMenuTypeItemExist )    //&& onlineOrderCompatible
 		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			DBTransaction.StartTransaction();
@@ -8135,7 +8175,7 @@ void __fastcall TfrmSelectDish::tbtnFunctionsMouseClick(TObject *Sender)
 			}break;
             case 15:
             {
-                DoCloundSync();
+                SyncWithCloud();//DoCloundSync();
 			}break;
             case 16:
             {
@@ -8437,6 +8477,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
+    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 	bool Proceed = false;
     if(dc_item_show && TGlobalSettings::Instance().IsDrinkCommandEnabled)
     {
@@ -8503,6 +8544,7 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
         AutoLogOut();
         if(frmPOSMain->ShowTablePicker && TGlobalSettings::Instance().EnableTableDisplayMode)
         {
+
            showTablePicker();
         }
         if(!isExitPressed)
@@ -8521,6 +8563,9 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 {
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SelectedTable && ShowMemberValidationMessage(SelectedTable))
+        return;
+
   //mm-5145
      if(TGlobalSettings::Instance().MandatoryMembershipCard )
      {
@@ -8804,8 +8849,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                     if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
                             && (!OrderContainer.Location["BillOff"]))
                     {   //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
                      }
 					ResetPOS();
 
@@ -8826,8 +8871,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
                 if( (OrderContainer.Location["BillOff"] ) && (OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp ))
                 {
                         //close clipp tab
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
                 }
 
                 else if (OrderContainer.Location["BillOff"])
@@ -8848,6 +8893,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 					frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 					frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                    frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                     DBTransaction.StartTransaction();
 
@@ -8963,6 +9009,7 @@ void __fastcall TfrmSelectDish::tgridSeatsMouseClick(TObject *Sender, TMouseButt
          GridButton->Latched = true;
 
         int CurrentSeat = tgridSeats->Col(GridButton) + 1; // Zero Indexed.
+
         if (CurrentSeat == SelectedSeat)
         {
             std::auto_ptr<TfrmTouchKeyboard>frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
@@ -9023,21 +9070,30 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 			MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 			return;
 		}
-		showTablePicker();
+        showTablePicker();
 	}
 	else
 	{
         bool OrderConfimOk = true;
 		if (!OrdersPending())
 		{
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+			DBTransaction.StartTransaction();
+
+            //Set the table status as availabale.
+            TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+            DBTransaction.Commit();
+
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&
+                        SelectedTable && ShowMemberValidationMessage(SelectedTable))
+                return;
 
             TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
 			frmBillGroup->CurrentTable = SelectedTable;
 			frmBillGroup->CurrentDisplayMode = eTables;
+            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTable);
 
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction.StartTransaction();
-
+            DBTransaction.StartTransaction();
             //Get the patrons for the current selected table, verify if it is already keyed in
             std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, frmBillGroup->CurrentTable);
             int patronCount = GetCount(selectedTablePatrons);
@@ -9048,18 +9104,16 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             }
 
             DBTransaction.Commit();
-
 			frmBillGroup->ShowModal();
 			setPatronCount( frmBillGroup->PatronCount );
-
-			SelectedTable = 0;
+            SelectedTable = 0;
 			SelectedTabContainerName = "";
 			SelectedSeat = 0;
 
             //MM-1647: Clear Chit..
             ChitNumber.Clear();
 
-			DBTransaction.StartTransaction();
+		   	DBTransaction.StartTransaction();
 
 			TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
 
@@ -9099,7 +9153,11 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
 		}
 		else
-		{
+		{    
+            if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey &&
+                    SelectedTable && ShowMemberValidationMessage(SelectedTable))
+                return;
+
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
@@ -9165,6 +9223,9 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				}
                 else
                 {
+                    //Set the table status as availabale.
+                    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+
                    if(TGlobalSettings::Instance().IsThorlinkSelected)
                     {
                        RemoveMembership(DBTransaction);
@@ -9211,6 +9272,10 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 delete frmConfirmOrder;
                 frmConfirmOrder = NULL;
 			}
+            else
+            {
+                TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
+            }
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
             int TabKey = TDBTab::GetOrCreateTab(DBTransaction,TDBTables::GetTabKey(DBTransaction,SeatKey));
@@ -9306,12 +9371,12 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         logList->Add("Payment not completed for tbtnSelectTable(().");
                         TSaveLogs::RecordFiscalLogs(logList);
                     }
-                    if(type == TabClipp)
-                    {
-                        //send clipp tab details
-                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-                        sendClippTabKey->SendTabDetails(TabKey);
-                    }
+//                    if(type == TabClipp)
+//                    {
+//                        //send clipp tab details
+//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
+//                        sendClippTabKey->SendTabDetails(TabKey);
+//                    }
                     delete logList;
                     logList = NULL;
 
@@ -9327,6 +9392,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 						frmBillGroup->CurrentTabType = OrderContainer.Location["TMMTabType"];
 						frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 						frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
+                        frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 
                         DBTransaction.StartTransaction();
 
@@ -10202,6 +10268,16 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
                                 if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
 //	                            if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
 	                            {
+
+
+//                                    bool hasOnlineOrders = TDBTables::HasOnlineOrders(floorPlanReturnParams.TabContainerNumber);
+//                                    if(hasOnlineOrders)
+//                                    {
+//                                      MessageBox("An online Order is saved on the Table.\rPlease Select some other Table.","Info",MB_OK+MB_ICONINFORMATION);
+//                                      Retval = mrAbort;
+//                                      break;
+//                                    }
+
 	                                OrderContainer.Location["TabKey"       ] = 0;
 	                                OrderContainer.Location["SelectedTable"] = floorPlanReturnParams.TabContainerNumber;
 	                                OrderContainer.Location["ContainerName"] = floorPlanReturnParams.TabContainerName;
@@ -10473,6 +10549,23 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                 {
                   SelectionForm->ShowModal();
                   isItemSelected =  SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel";
+                    
+                    if(isItemSelected && TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && TDBTab::HasOnlineOrders(SelectedItem.Properties["TabKey"]))
+                    {
+                        UnicodeString memberEmail = TDBTab::GetMemberEmail(SelectedItem.Properties["TabKey"]);
+                        if(memberEmail.Compare(Membership.Member.EMail))
+                        {
+                            MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+                            return mrAbort;
+                        }
+                    }
+                    else if(isItemSelected && TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+                    {
+                        TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, SelectedItem.Properties["TabKey"], Membership.Member.ContactKey,
+                                                        Membership.Member.EMail);
+
+                    }
+
                   if(isItemSelected)
                    {
                      if(CheckIfSubsidizedDiscountValid(SelectedItem.Properties["TabKey"]))
@@ -10658,6 +10751,11 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 	TModalResult Retval = mrOk;
 	try
 	{
+        int selectedTable = static_cast<int>(OrderContainer.Location["SelectedTable"]);
+
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && selectedTable && ShowMemberValidationMessage(selectedTable))
+                return mrAbort;
+
 
 		if(TGlobalSettings::Instance().CaptureCustomerName)
 		{
@@ -10711,6 +10809,12 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			if (SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
+
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+                {
+                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
+                                                    Membership.Member.EMail);
+                }
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
                             TGlobalSettings::Instance().EnableCustomerJourney )
@@ -11146,13 +11250,9 @@ void TfrmSelectDish::showTablePicker()
     try
     {
         if( tpConnectorUp )
-        {
             showNewTablePicker( tpConnector );
-        }
         else
-        {
             showOldTablePicker();
-        }
 
         //MM-1647: Ask for chit if it is enabled for every order.
         NagUserToSelectChit();
@@ -11191,15 +11291,27 @@ void TfrmSelectDish::showOldTablePicker()
     {
         bool tableSelected = false;
         TFloorPlanReturnParams floorPlanReturnParams;
+
         // Runs new web app of floorPlan
         std::auto_ptr<TEnableFloorPlan>floorPlan(new TEnableFloorPlan());
         if(floorPlan->Run( ( TForm* )this, true, floorPlanReturnParams ))
-//        if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, true, floorPlanReturnParams ) )
         {
             tableSelected            = true;
             SelectedTable            = floorPlanReturnParams.TabContainerNumber;
             SelectedTabContainerName = floorPlanReturnParams.TabContainerName;
-            SelectedParty = floorPlanReturnParams.PartyName;
+            SelectedParty            = floorPlanReturnParams.PartyName;
+
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            int TableKey = TDBTables::GetOrCreateTable(DBTransaction, SelectedTable);
+
+             if(TDBTables::IsTableLocked(DBTransaction,SelectedTable))
+             {
+                MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
+                showOldTablePicker();
+             }
+             TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, true);
+             DBTransaction.Commit();
 
             refreshSelectedSeat();
             RefreshSeats();
@@ -11208,7 +11320,12 @@ void TfrmSelectDish::showOldTablePicker()
                 TCustNameAndOrderType::Instance()->LoadFromOrdersDatabase( SelectedTable );
             }
         }
+        else
+        {
+            SelectedTable = 0;
+        }
         floorPlan.reset();
+ //   }
     }
     catch(Exception & E)
     {
@@ -12491,6 +12608,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
+
 	bool Proceed = GetOrderContainerForTab(DBTransaction, OrderContainer) == mrOk;
 	DBTransaction.Commit();
 
@@ -12600,6 +12718,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 				frmBillGroup->CurrentSelectedTab = OrderContainer.Location["TabKey"];
 				frmBillGroup->CurrentTable = OrderContainer.Location["SelectedTable"];
 				frmBillGroup->CurrentRoom = OrderContainer.Location["RoomNumber"];
+                frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(frmBillGroup->CurrentTable);
 				DBTransaction.StartTransaction();
 				std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, frmBillGroup->CurrentTable);
 				int patronCount = GetCount(selectedTablePatrons);
@@ -15128,10 +15247,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		bool ApplyToAllSeats = false;
 		if (SelectedTable != 0 && !LoyaltyPending())
 		{
-			if (MessageBox("Do you wish to apply this membership to all seats?", "Query", MB_YESNO + MB_ICONQUESTION) == IDYES)
-			{
-				ApplyToAllSeats = true;
-			}
+            ApplyToAllSeats = true;
 		}
         if(TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
@@ -15268,15 +15384,20 @@ void TfrmSelectDish::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,
 {
  	TDeviceRealTerminal &drt = TDeviceRealTerminal::Instance();
 	TMMContactInfo info;
+
     bool memberExist = drt.ManagerMembership->LoyaltyMemberSelected(DBTransaction,info,Barcode,true);
     if(memberExist)
      {
-     if (info.Valid())
-     {
-        TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-        ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
-		ApplyMembership(DBTransaction, info);
-     }
+         if(info.Valid())
+         {
+            TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+            ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,info);
+
+            TMMProcessingState State(Screen->ActiveForm, "Applying Membership...", "Applying Membership");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            ApplyMembership(DBTransaction, info);
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+         }
      }
 
 }
@@ -15436,17 +15557,70 @@ void TfrmSelectDish::SendPointValueToRunRate( TPaymentTransaction &inTransaction
 	}
 }
 //-----------------------------------------------------------------------------------------------------
-void TfrmSelectDish::DoCloundSync()
+void TfrmSelectDish::SyncWithCloud()
 {
-  if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-     {
-        TManagerCloudSync ManagerCloudSync;
-        ManagerCloudSync.SyncCompanyDetails();
-        ManageDiscounts();
-        TotalCosts();
-        RedrawSeatOrders();
-        HighlightSelectedItem();
-     }
+    try
+    {
+         if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+         {
+            std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+            TVerticalSelection Item;
+            Item.Title = "Cancel";
+            Item.Properties["Color"] = "0x000098F5";
+            Item.Properties["FontColor"] = IntToStr(clWhite);;
+            Item.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item);
+
+            TVerticalSelection Item1;
+            Item1.Title = "Sync Member Info";
+            Item1.Properties["Action"] = IntToStr(1);
+            Item1.Properties["Color"] = IntToStr(clNavy);
+            Item1.CloseSelection = true;
+            SelectionForm1->Items.push_back(Item1);
+
+            if(TGlobalSettings::Instance().EnableOnlineOrdering)
+            {
+                TVerticalSelection Item2;
+                Item2.Title = "Sync Menu";
+                Item2.Properties["Action"] = IntToStr(2);
+                Item2.Properties["Color"] = IntToStr(clNavy);
+                Item2.CloseSelection = true;
+                SelectionForm1->Items.push_back(Item2);
+
+                TVerticalSelection Item3;
+                Item3.Title = "Sync Tax Setting";
+                Item3.Properties["Action"] = IntToStr(3);
+                Item3.Properties["Color"] = IntToStr(clNavy);
+                Item3.CloseSelection = true;
+                SelectionForm1->Items.push_back(Item3);
+            }
+
+            SelectionForm1->ShowModal();
+            TVerticalSelection SelectedItem1;
+            if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+            {
+                int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+                switch(Action)
+                {
+                case 1 :
+                    DoCloundSync();
+                    break;
+                case 2 :
+                    SyncSiteMenus();
+                    break;
+                case 3:
+                    SyncTaxSetting();
+                    break;
+                }
+            }
+         }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }
 //----------------------------------------------------------------------------------------------------------------------
 void TfrmSelectDish::CheckGiftCardBalance()
@@ -16395,4 +16569,147 @@ void TfrmSelectDish::GetNextAvailableSeatAndLoadOrders(bool isCalledFromGuestSea
     }
 }
 //--------------------------------------------------------------------------------
+void TfrmSelectDish::DoCloundSync()
+{
+    try
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.SyncCompanyDetails();
+        ManageDiscounts();
+        TotalCosts();
+        RedrawSeatOrders();
+        HighlightSelectedItem();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncSiteMenus()
+{
+    try
+    {
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+        if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(dBTransaction))
+        {
+            MessageBox("There are no menus to sync. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else
+        {
+            TMMProcessingState State(Screen->ActiveForm, "Syncing Menu With cloud Please Wait...", "Syncing Menu");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            AnsiString ErrorMessage;
+            TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
+            TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+            MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendMenu(menuInfo);
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+            if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+            {
+                throw Exception("Authentication failed with Loyaltymate Service");
+            }
+            else if(createResponse.IsSuccesful)
+            {
+                //MessageBox("Menu synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+            }
+            else
+            {
+                if(createResponse.Description == "Failed to update menu to server.")
+                  ErrorMessage = "Failed to update menu to server.";
+                else
+                  ErrorMessage = "Failed to update menu to server.";
+                throw Exception(ErrorMessage);
+            }
+            delete loyaltyMateInterface;
+            loyaltyMateInterface = NULL;
+        }
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//----------------------------------------------------------------------------------
+void TfrmSelectDish::SyncTaxSetting()
+{
+    try
+    {
+        TMMProcessingState State(Screen->ActiveForm, "Syncing Tax Settings With cloud Please Wait...", "Syncing Tax Settings");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        AnsiString ErrorMessage;
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+        TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
 
+        TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+        MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendTaxSettings(siteTaxSettingsinfo);
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Loyaltymate Service");
+        }
+        else if(createResponse.IsSuccesful)
+        {
+            //MessageBox("Tax synced successfully.", "Information", MB_OK + MB_ICONINFORMATION);
+        }
+        else
+        {
+            if(createResponse.Description == "Failed to update tax settings to server.")
+              ErrorMessage = "Failed to update tax settings to server.";
+            else
+              ErrorMessage = "Failed to update tax settings to server.";
+            throw Exception(ErrorMessage);
+        }
+        delete loyaltyMateInterface;
+        loyaltyMateInterface = NULL;
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+TLoginSuccess TfrmSelectDish::GetStaffLoginAccess(Database::TDBTransaction &DBTransaction, int access)
+{
+    TMMContactInfo TempUserInfo;
+	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, access);
+    return Result;
+
+}
+// -----------------------------------------------------------------------------
+void  TfrmSelectDish::ShowErrorMessage(std::string message, TLoginSuccess Result)
+{
+    if (Result == lsDenied)
+    {
+        MessageBox(message.c_str(), "Error", MB_OK + MB_ICONERROR);
+    }
+    else if (Result == lsPINIncorrect)
+    {
+        MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+    }
+}
+//-------------------------------------------------------------------------------
+bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
+{
+    bool retVal = false;
+
+    if(TDBTables::HasOnlineOrders(selectedTable))
+    {
+        UnicodeString memberEmail = TDBTables::GetMemberEmail(selectedTable);
+
+        if(memberEmail.Compare(Membership.Member.EMail))
+        {
+            MessageBox("Membership already applied on this online order.","Info",MB_OK+MB_ICONINFORMATION);
+            retVal = true;
+        }
+    }
+    return retVal;
+}

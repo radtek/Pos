@@ -19,10 +19,10 @@
 #include "PaymentTypeGroup.h"
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
-#include "ThorlinkDataObjects.h"
+//#include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
-
+#include "OnlineOrderingAttributes.h"
 
 class TReqPrintJob;
 class TItemComplete;
@@ -58,8 +58,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     int positionPoints;
     int positionVoucher;
      TDateTime TrasactionDate;
-    std::vector<TTenderDetails> tenderDetailsList;
-    std::vector<TItemDetailsThor> itemsList;
+    //std::vector<TTenderDetails> tenderDetailsList;
+    //std::vector<TItemDetailsThor> itemsList;
     TListPaymentSystem();
     virtual __fastcall ~TListPaymentSystem();
 
@@ -107,8 +107,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool AllowsTipsOnTransactions();
     std::vector<AnsiString> GetTippableCardTypes();
     int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
-    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
-    bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
+//    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
+   // bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
     AnsiString CreateFilename(TDateTime date);
     UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
     void SaveIntVariable(vmVariables vmVar, int CompName);
@@ -208,8 +208,8 @@ protected:
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
-     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
-     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
+//     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
+//     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
@@ -237,6 +237,14 @@ protected:
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);
+     void InsertDataInMallTables(TPaymentTransaction paymentTransaction, long arcBillKey);
+     void GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction);
+     TSiteOrderModel GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction);
+     std::list<TOrderItemModel> GetOrderItemModel(TPaymentTransaction paymentTransaction);
+     std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
+     TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
+     TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
+     bool IsRoomReceiptSettingEnable();
 };
 
 #endif

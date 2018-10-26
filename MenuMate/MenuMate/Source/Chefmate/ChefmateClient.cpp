@@ -917,6 +917,9 @@ UnicodeString TChefmateClient::cmStaffName(TItemComplete* inOrder)
 {
     try
 	{
+        if(inOrder->OrderGuid.Trim() != "")
+            return inOrder->OnlineChitType == 0 ? "PickUp" : (inOrder->OnlineChitType == 1 ? "DineIn" :"TakeAway");
+
 		TSecurityReference *Sec1 = inOrder->Security->SecurityGetType(secOrderedBy);
 		if (Sec1 != NULL)
 		{
@@ -970,7 +973,13 @@ UnicodeString TChefmateClient::cmTableTabName( TItemComplete *inOrder )
 {
 	try
 	{
-		return 	inOrder->TabContainerName + " : " + inOrder->TabName;
+        UnicodeString orderId = "";
+
+        if(inOrder->OrderGuid.Trim() != "" && inOrder->OnlineChitType != 1)
+            orderId = "#" + IntToStr(inOrder->OnlineOrderId);
+        else
+            orderId = inOrder->TabContainerName + " : " + inOrder->TabName;
+        return 	orderId;
 	}
 	catch( ... )
 	{

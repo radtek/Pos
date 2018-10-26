@@ -39,6 +39,7 @@
 
 #include "VerticalSelect.h"
 #define SelectionFormPtr std::auto_ptr<TfrmVerticalSelect>
+//#include "LoyaltyMateOperationDialogBox.h"
 
 // ---------------------------------------------------------------------------
 class TfrmMaintain : public TZForm
@@ -237,6 +238,14 @@ private:
     bool SetUpSiHot() ;
     bool SetUpPhoenix();
     bool SetUpOracle();
+    void EnableOnlineOrdering(Database::TDBTransaction &DBTransaction);
+    bool CanEnableOnlineOrdering();
+    bool TrySyncForLoyaltyMate();
+    void DeactivateLoyaltymate();
+    void UnloadSignalR();
+    bool SyncOnlineOrderingDetails();
+//    TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
+//    void __fastcall loyaltyMateOperationCompleted(TObject* sender);
 public: // User declarations
 };
 #endif

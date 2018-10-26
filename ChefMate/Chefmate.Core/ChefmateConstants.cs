@@ -8,8 +8,8 @@ namespace Chefmate.Core
         public const double UnitHeight = 50;
         public const double NoteHeight = 40;
         public const double WebOrderHeaderHeight = 100;
-        public const string Number = "6.52.0.5";
-        public const string DatabaseVersion = "1.3";
+        public const string Number = "6.54.0.0";
+        public const string DatabaseVersion = "1.4";
         public const string OrderAction = "order";
         public const string WebOrderAction = "webOrder";
 

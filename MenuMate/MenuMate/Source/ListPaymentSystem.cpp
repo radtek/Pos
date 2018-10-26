@@ -521,10 +521,10 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	{
           LoadMemberPaymentTypes(PaymentTransaction);
 	}
-    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-    {
-        LoadClippPaymentTypes(PaymentTransaction);
-    }
+//    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//    {
+//        LoadClippPaymentTypes(PaymentTransaction);
+//    }
 	IBInternalQuery->Close();
 	IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
 	IBInternalQuery->ExecQuery();
@@ -1668,33 +1668,8 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     if(isSCDOrPWDApplied)
         PrepareSCDOrPWDCustomerDetails(PaymentTransaction, ArcBillKey);
 
-    if(TGlobalSettings::Instance().mallInfo.MallId && PaymentTransaction.Orders->Count)
-    {
-        //Check if mall type is dean and deluca
-        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
-        {
-            TItemComplete *item = (TItemComplete*)(PaymentTransaction.Orders->Items[0]);
-            if(item->TableNo)
-            {
-                TGlobalSettings::Instance().MezzanineTablesMap.clear();
-                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(PaymentTransaction.DBTransaction);
-                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
-                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
-                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
-                {
-                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
-                    bool canContinue = (innerit == outerit->second.end());
-
-                    if(!canContinue)
-                        InsertMezzanineSales(PaymentTransaction);
-                }
-            }
-        }
-        //Instantiation is happenning in a factory based on the active mall in database
-        TMallExport* mall = TMallFactory::GetMallType();
-        mall->PushToDatabase(PaymentTransaction, ArcBillKey, currentTime);
-        delete mall;
-    }
+    InsertDataInMallTables(PaymentTransaction, ArcBillKey);
+    GetAndUploadOnlineOrderingInvoice(PaymentTransaction);
 }
 
 void TListPaymentSystem::CheckPatronByOrderIdentification(TPaymentTransaction &PaymentTransaction)
@@ -2075,14 +2050,33 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		Retval = IBInternalQuery->Fields[0]->AsInteger;
 		IBInternalQuery->Close();
 
+        int AdyenServiceId = 0;
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+		    {
+                TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
+                if (SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && SubPayment->GetPay() != 0)
+                {
+                    IBInternalQuery->Close();
+                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ADYENSERVICEID, 0) FROM RDB$DATABASE";
+                    IBInternalQuery->ExecQuery();
+                    AdyenServiceId = IBInternalQuery->Fields[0]->AsInteger;
+                    IBInternalQuery->Close();
+                    break;
+                }
+            }
+        }
+
 		IBInternalQuery->Close();
 		IBInternalQuery->SQL->Text =
 		"INSERT INTO DAYARCBILL (" "ARCBILL_KEY, " "TERMINAL_NAME, " "STAFF_NAME, " "TIME_STAMP, " "TOTAL, " "DISCOUNT, "
 		"PATRON_COUNT, " "RECEIPT, " "SECURITY_REF, " "BILLED_LOCATION, " "INVOICE_NUMBER, " "SALES_TYPE, " "INVOICE_KEY,"
-        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT ) " "VALUES ("
+        "ROUNDING_ADJUSTMENT," "ORDER_IDENTIFICATION_NUMBER, " "REFUND_REFRECEIPT, EFTPOS_SERVICE_ID ) "
+        "VALUES ("
 		":ARCBILL_KEY, " ":TERMINAL_NAME, " ":STAFF_NAME, " ":TIME_STAMP, " ":TOTAL, " ":DISCOUNT, " ":PATRON_COUNT, " ":RECEIPT, "
 		":SECURITY_REF, " ":BILLED_LOCATION," ":INVOICE_NUMBER, " ":SALES_TYPE, " ":INVOICE_KEY, "
-        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT ) ";
+        ":ROUNDING_ADJUSTMENT," ":ORDER_IDENTIFICATION_NUMBER, " ":REFUND_REFRECEIPT, :EFTPOS_SERVICE_ID ) ";
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
@@ -2090,15 +2084,12 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
         currentTime = IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime;
 		IBInternalQuery->ParamByName("TOTAL")->AsCurrency = Total;
 		IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Discount;
-        IBInternalQuery->ParamByName("ROUNDING_ADJUSTMENT")->AsCurrency = RoundToNearest(
-					PaymentTransaction.Money.RoundingAdjustment,
-					0.01,
-					TGlobalSettings::Instance().MidPointRoundsDown);
+        IBInternalQuery->ParamByName("ROUNDING_ADJUSTMENT")->AsCurrency = RoundToNearest(PaymentTransaction.Money.RoundingAdjustment, 0.01,
+					                                                            TGlobalSettings::Instance().MidPointRoundsDown);
 		int TotalCount = 0;
 		std::vector <TPatronType> ::iterator ptrPatronTypes;
         if(!MakePatronCountZero)
         {
-
             for (ptrPatronTypes = PaymentTransaction.Patrons.begin(); ptrPatronTypes != PaymentTransaction.Patrons.end(); ptrPatronTypes++)
             {
                 TotalCount += ptrPatronTypes->Count;
@@ -2123,6 +2114,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("BILLED_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
 		IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = PaymentTransaction.InvoiceKey;
 		IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = PaymentTransaction.RefundRefReceipt;
+        IBInternalQuery->ParamByName("EFTPOS_SERVICE_ID")->AsInteger = AdyenServiceId;
 
 		// set the receipt information if available, else insert null
 
@@ -2554,7 +2546,9 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				"DISCOUNT_WITHOUT_TAX,"
 				"TAX_ON_DISCOUNT,"
                 "PRICE_INCL, "
-                "PRICE_ADJUST "
+                "PRICE_ADJUST, "
+                "ONLINE_CHIT_TYPE, "
+                "ORDER_GUID "
 				")"
 				" VALUES "
 				"("
@@ -2604,7 +2598,9 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				":DISCOUNT_WITHOUT_TAX,"
 				":TAX_ON_DISCOUNT,"
                 ":PRICE_INCL, "
-                ":PRICE_ADJUST "
+                ":PRICE_ADJUST, "
+                ":ONLINE_CHIT_TYPE, "
+                ":ORDER_GUID "
 				");";
 
                 IBInternalQuery->ParamByName("CHIT_NAME")->AsString = Order->ChitNumber.Name;
@@ -2671,26 +2667,26 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                   IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = Order->BillCalcResult.BasePrice;///Order->GetQty();
 
 
-            if(Order->TotalAdjustment()>0&&Order->BillCalcResult.DiscountWithoutTax<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.DiscountWithoutTax>0)
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*Order->BillCalcResult.DiscountWithoutTax;
-             }
-            else
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = Order->BillCalcResult.DiscountWithoutTax;
-            }
+                if(Order->TotalAdjustment()>0&&Order->BillCalcResult.DiscountWithoutTax<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.DiscountWithoutTax>0)
+                {
+                   IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*Order->BillCalcResult.DiscountWithoutTax;
+                }
+                else
+                {
+                   IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = Order->BillCalcResult.DiscountWithoutTax;
+                }
 
-            if(Order->TotalAdjustment()>0&&Order->BillCalcResult.TaxOnDiscount<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.TaxOnDiscount>0)
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* Order->BillCalcResult.TaxOnDiscount;
-            }
-            else
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = Order->BillCalcResult.TaxOnDiscount;
-            }
+                if(Order->TotalAdjustment()>0&&Order->BillCalcResult.TaxOnDiscount<0||Order->TotalAdjustment()<0&&Order->BillCalcResult.TaxOnDiscount>0)
+                {
+                  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* Order->BillCalcResult.TaxOnDiscount;
+                }
+                else
+                {
+                  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = Order->BillCalcResult.TaxOnDiscount;
+                }
 
-            IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
-            IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
+                IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = Order->BillCalcResult.PriceIncl;
+                IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = Order->PriceLevelCustom;
 
 
      			if (Order->ServingCourse.ServingCourseKey == 0)
@@ -2701,6 +2697,9 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				{
 					IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = Order->ServingCourse.ServingCourseKey;
 				}
+
+                IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
 
 				IBInternalQuery->ExecQuery();
 				ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, MasterArchiveKey, Order);
@@ -2755,7 +2754,8 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 "PRICE_LEVEL0," "PRICE_LEVEL1," "SERVINGCOURSES_KEY, CHIT_NAME, CHIT_OPTION,"
                          "BASE_PRICE,"
                          "DISCOUNT_WITHOUT_TAX,"
-                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST )" " VALUES (" ":ARCHIVE_KEY," ":ARCBILL_KEY," ":TERMINAL_NAME,"
+                         "TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ORDER_GUID )"
+                         " VALUES (" ":ARCHIVE_KEY," ":ARCBILL_KEY," ":TERMINAL_NAME,"
 						 ":MENU_NAME," ":COURSE_NAME," ":ITEM_NAME," ":ITEM_CATEGORY," ":ITEM_SHORT_NAME," ":ITEM_ID," ":SIZE_NAME,"
 						 ":TABLE_NUMBER," ":TABLE_NAME," ":SEAT_NUMBER," ":SERVER_NAME," ":TAB_NAME," ":LOYALTY_NAME," ":ORDER_TYPE,"
 						 ":TIME_STAMP," ":TIME_STAMP_BILLED," ":ORDER_LOCATION," ":PRICE," ":COST," ":HAPPY_HOUR," ":NOTE," ":SECURITY_REF,"
@@ -2764,7 +2764,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						 ":SERVINGCOURSES_KEY, :CHIT_NAME, :CHIT_OPTION, "
                          ":BASE_PRICE,"
                          ":DISCOUNT_WITHOUT_TAX,"
-                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST );";
+                         ":TAX_ON_DISCOUNT, :PRICE_INCL, :PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ORDER_GUID  );";
 
 					IBInternalQuery->ParamByName("CHIT_NAME")->AsString =
 					Order->ChitNumber.Name;
@@ -2838,25 +2838,25 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                     IBInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = CurrentSubOrder->BillCalcResult.BasePrice;//Order->GetQty();
 
                      if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.DiscountWithoutTax<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.DiscountWithoutTax>0)
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
-             }
-            else
-            {
-               IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
-            }
+                    {
+                       IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency =-1*CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
+                     }
+                    else
+                    {
+                       IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
+                    }
 
-            if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount>0)
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-            }
-            else
-            {
-              IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
-            }
+                    if(CurrentSubOrder->TotalAdjustment()>0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount<0||CurrentSubOrder->TotalAdjustment()<0&&CurrentSubOrder->BillCalcResult.TaxOnDiscount>0)
+                    {
+                      IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency =-1* CurrentSubOrder->BillCalcResult.TaxOnDiscount;
+                    }
+                    else
+                    {
+                      IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
+                    }
 
-            IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
-            IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
+                    IBInternalQuery->ParamByName("PRICE_INCL")->AsCurrency = CurrentSubOrder->BillCalcResult.PriceIncl;
+                    IBInternalQuery->ParamByName("PRICE_ADJUST")->AsCurrency = CurrentSubOrder->PriceLevelCustom;
 
                   //  IBInternalQuery->ParamByName("DISCOUNT_WITHOUT_TAX")->AsCurrency = CurrentSubOrder->BillCalcResult.DiscountWithoutTax;
                   //  IBInternalQuery->ParamByName("TAX_ON_DISCOUNT")->AsCurrency = CurrentSubOrder->BillCalcResult.TaxOnDiscount;
@@ -2871,7 +2871,9 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 						IBInternalQuery->ParamByName("SERVINGCOURSES_KEY")->AsInteger = CurrentSubOrder->ServingCourse.ServingCourseKey;
 					}
 
-					IBInternalQuery->ExecQuery();
+                    IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                    IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
+                    IBInternalQuery->ExecQuery();
 
 					ArchiveOrderDiscounts(PaymentTransaction.DBTransaction, SubArchiveKey, CurrentSubOrder);
 					ArchiveOrderTaxes(PaymentTransaction.DBTransaction, SubArchiveKey, CurrentSubOrder);
@@ -3697,7 +3699,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
             }
             else
             {
-                if (CloseAndPrint)
+                if (CloseAndPrint || IsRoomReceiptSettingEnable())
                 {
                     PrintReceipt(RequestEFTPOSReceipt);
                 }
@@ -4843,10 +4845,10 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
                 /***Send Requests to Thor*****/
                 /////////////////////////////////////////////////
-                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                {
-                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
+//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                {
+//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                }
 
 				if (PaymentComplete)
 				{
@@ -4979,10 +4981,10 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         /////////////////////////////////////////////////
                         /***Send Requests to Thor*****/
                         /////////////////////////////////////////////////
-                        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                        {
-                            PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                        }
+//                        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                        {
+//                            PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                        }
 
                         if (PaymentComplete)
                         {
@@ -5141,10 +5143,10 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                     /////////////////////////////////////////////////
                     /***Send Requests to Thor*****/
                     /////////////////////////////////////////////////
-                    if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                    {
-                        PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                    }
+//                    if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                    {
+//                        PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                    }
 
 					if (PaymentComplete)
 					{
@@ -5253,10 +5255,10 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
         /////////////////////////////////////////////////
         /***Send Requests to Thor*****/
         /////////////////////////////////////////////////
-        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-        {
-            PaymentComplete = PrepareThorRequest(PaymentTransaction);
-        }
+//        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//        {
+//            PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//        }
 
          //if payment complete is true then check whether transaction has SCD or PWD Discount
         if(PaymentComplete)
@@ -5323,10 +5325,10 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
                 /////////////////////////////////////////////////
                 /***Send Requests to Thor*****/
                 /////////////////////////////////////////////////
-                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                {
-                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
+//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                {
+//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                }
 
 				if (PaymentComplete)
 				{
@@ -5402,10 +5404,10 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
                 /////////////////////////////////////////////////
                 /***Send Requests to Thor*****/
                 /////////////////////////////////////////////////
-                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                {
-                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
+//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                {
+//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                }
 
 				if (PaymentComplete)
 				{
@@ -5490,10 +5492,10 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
                 /////////////////////////////////////////////////
                 /***Send Requests to Thor*****/
                 /////////////////////////////////////////////////
-                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-                {
-                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-                }
+//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
+//                {
+//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
+//                }
 
 				if (PaymentComplete)
 				{
@@ -5763,209 +5765,209 @@ void TListPaymentSystem::DelayAllPayments(TPaymentTransaction &PaymentTransactio
   }
 }
 
-void TListPaymentSystem::LoadClippPaymentTypes(TPaymentTransaction &paymentTransaction)
-{
-    //Creating New Payment Type Clipp
-    TPayment* clippPayment = new TPayment;
-    clippPayment->Name = "Clipp";
-    clippPayment->SysNameOveride = "Clipp";
-    clippPayment->SetPaymentAttribute(ePayTypeClipp);
-    clippPayment->DisplayOrder = 1;
-    clippPayment->GroupNumber = -999;
-    clippPayment->Colour = clTeal;
-    clippPayment->PaymentThirdPartyID = "10007243";
-    clippPayment->Visible = false;
-    paymentTransaction.PaymentAdd(clippPayment);
-}
+//void TListPaymentSystem::LoadClippPaymentTypes(TPaymentTransaction &paymentTransaction)
+//{
+//    //Creating New Payment Type Clipp
+//    TPayment* clippPayment = new TPayment;
+//    clippPayment->Name = "Clipp";
+//    clippPayment->SysNameOveride = "Clipp";
+//    clippPayment->SetPaymentAttribute(ePayTypeClipp);
+//    clippPayment->DisplayOrder = 1;
+//    clippPayment->GroupNumber = -999;
+//    clippPayment->Colour = clTeal;
+//    clippPayment->PaymentThirdPartyID = "10007243";
+//    clippPayment->Visible = false;
+//    paymentTransaction.PaymentAdd(clippPayment);
+//}
 
-bool TListPaymentSystem::PrepareThorRequest(TPaymentTransaction &paymentTransaction)
-{
-    bool retValue = false;
-    if(paymentTransaction.Money.Total > 0)
-        retValue = PrepareThorPurchaseRequest(paymentTransaction);
-    else
-        if(paymentTransaction.Membership.Member.Name.Length() != 0)
-            retValue = PrepareThorRefundRequest(paymentTransaction);
-        else
-            retValue = true;
-    return retValue;
-}
+//bool TListPaymentSystem::PrepareThorRequest(TPaymentTransaction &paymentTransaction)
+//{
+//    bool retValue = false;
+//    if(paymentTransaction.Money.Total > 0)
+//        retValue = PrepareThorPurchaseRequest(paymentTransaction);
+//    else
+//        if(paymentTransaction.Membership.Member.Name.Length() != 0)
+//            retValue = PrepareThorRefundRequest(paymentTransaction);
+//        else
+//            retValue = true;
+//    return retValue;
+//}
 
-bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction)
-{
-    bool returnValue = true;
-    TItemDetailsThor itemThor ;
-    TTenderDetails tenderDetails;
-    tenderDetails.sendTransactionValue = true;
-    tenderDetailsList.erase(tenderDetailsList.begin(),tenderDetailsList.end());
-    itemsList.erase(itemsList.begin(),itemsList.end());
-
-    for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
-    {
-        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
-        itemThor.thirdPartyCode = itemComplete->ThirdPartyCode;
-        double price = itemComplete->BillCalcResult.FinalPrice/itemComplete->GetQty();
-        itemThor.unitPrice = price;
-        itemThor.qty = itemComplete->GetQty();
-        itemsList.push_back(itemThor);
-        if(itemComplete->DiscountReason.Length() != 0)
-        {
-            tenderDetails.tenderType = eThorVoucher;
-            tenderDetails.tenderIdentifier = "0";
-            for(std::vector<TDiscount>::iterator i = itemComplete->Discounts.begin() ; i != itemComplete->Discounts.end() ; ++i)
-            {
-                if(i->VoucherCode.Length() != 0)
-                {
-                    tenderDetails.tenderIdentifier = i->VoucherCode;
-                }
-            }
-            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-            tenderDetails.tenderValue = 0;
-        }
-        if(itemComplete->SubOrders->Count > 0)
-        {
-            for(int subOrdersCount = 0 ; subOrdersCount < itemComplete->SubOrders->Count; subOrdersCount++)
-            {
-                TItemComplete *subItem = (TItemComplete*)itemComplete->SubOrders->Items[subOrdersCount];
-                itemThor.thirdPartyCode = subItem->ThirdPartyCode;
-                double price = subItem->BillCalcResult.FinalPrice/subItem->GetQty();
-                itemThor.unitPrice = price;
-                itemThor.qty = subItem->GetQty();
-                itemsList.push_back(itemThor);
-                if(subItem->DiscountReason.Length() != 0)
-                {
-                    tenderDetails.tenderType = eThorVoucher;
-                    tenderDetails.tenderIdentifier = "0";
-                    for(std::vector<TDiscount>::iterator i = subItem->Discounts.begin() ; i != subItem->Discounts.end() ; ++i)
-                    {
-                        if(i->VoucherCode.Length() != 0)
-                        {
-                              tenderDetails.tenderIdentifier = i->VoucherCode;
-                        }
-                    }
-                    tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-                    tenderDetails.tenderValue = 0;
-                }
-            }
-        }
-    }
-    if((tenderDetails.tenderType == eThorVoucher) && (tenderDetails.tenderIdentifier != "0"))
-    {
-        tenderDetailsList.push_back(tenderDetails);
-    }
-    for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
-    {
-        TPayment *payment = paymentTransaction.PaymentGet(i);
-        if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered()>0)))
-        {
-            tenderDetails.tenderValue =0;
-            tenderDetails.tenderType = eThorCash;
-            tenderDetails.tenderIdentifier = "0";
-            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-            double price = payment->GetPayTendered();
-            tenderDetails.tenderValue = price;
-            tenderDetailsList.push_back(tenderDetails);
-        }
-        if((payment->GetPaymentAttribute(ePayTypeElectronicTransaction)) && (payment->GetPayTendered()>0))
-        {
-            tenderDetails.tenderValue =0;
-            tenderDetails.tenderType = eThorDebitCard;
-            tenderDetails.tenderIdentifier = "0";
-            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-            double price = payment->GetPayTendered();
-            tenderDetails.tenderValue = price;
-            tenderDetailsList.push_back(tenderDetails);
-        }
-        if((payment->GetPaymentAttribute(ePayTypeChequeVerify)) && (payment->GetPayTendered()>0))
-        {
-            tenderDetails.tenderValue =0;
-            tenderDetails.tenderType = eThorCheque;
-            tenderDetails.tenderIdentifier = "0";
-            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-            double price = payment->GetPayTendered();
-            tenderDetails.tenderValue = price;
-            tenderDetailsList.push_back(tenderDetails);
-        }
-    }
-    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed() > 0)
-    {
-            tenderDetails.tenderValue = 0;
-            tenderDetails.tenderType = eThorPoints;
-            tenderDetails.tenderIdentifier = "0";
-            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-            double price = paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed();
-            tenderDetails.tenderValue = price;
-            if(!TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints))
-            {
-                tenderDetails.sendTransactionValue = false;
-            }
-            tenderDetailsList.push_back(tenderDetails);
-    }
-    if(tenderDetailsList.size() == 0)
-    {
-        tenderDetails.tenderValue =0;
-        tenderDetails.tenderType = eThorCash;
-        tenderDetails.tenderIdentifier = "0";
-        tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-        tenderDetails.tenderValue = 0;
-        tenderDetailsList.push_back(tenderDetails);
-    }
-    AnsiString message = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForPay(tenderDetailsList,itemsList);
-    if(message.Length() != 0)
-    {
-        MessageBox(message, "Transaction Error",MB_OK + MB_ICONERROR);
-        returnValue = false;
-    }
-    return returnValue;
-}
-
-bool TListPaymentSystem::PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction)
-{
-    bool retValue = true;
-    TRefundTransaction refundTransaction;
-    refundTransaction.cardNumber = paymentTransaction.Membership.Member.CardStr;
-    refundTransaction.creditValue = 0.0;
-    double transactionValue = 0;
-    double loyaltyValue = 0;
-
-    if(paymentTransaction.Money.Total > 0)
-        transactionValue = paymentTransaction.Money.Total;
-    else
-        transactionValue = -paymentTransaction.Money.Total;
-
-    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() > 0)
-        loyaltyValue = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
-    else
-        loyaltyValue = -paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
-
-    if(transactionValue != 0)
-        refundTransaction.transactionValue = transactionValue;
-    else
-        refundTransaction.transactionValue = loyaltyValue;
-
-    if(paymentTransaction.Orders->Count > 0)
-        refundTransaction.loyaltyValue = loyaltyValue;
-    else
-    {
-        refundTransaction.loyaltyValue = loyaltyValue;
-        for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
-        {
-            TPayment *payment = paymentTransaction.PaymentGet(i);
-            if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered() != 0)))
-            {
-                refundTransaction.loyaltyValue = 0;
-            }
-        }
-    }
-
-    AnsiString errorMessage = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForRefund(refundTransaction);
-    if(errorMessage.Length() != 0)
-    {
-        MessageBox(errorMessage, "Transaction Error", MB_OK + MB_ICONERROR);
-        retValue = false;
-    }
-    return retValue;
-}
+//bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction)
+//{
+//    bool returnValue = true;
+//    TItemDetailsThor itemThor ;
+//    TTenderDetails tenderDetails;
+//    tenderDetails.sendTransactionValue = true;
+//    tenderDetailsList.erase(tenderDetailsList.begin(),tenderDetailsList.end());
+//    itemsList.erase(itemsList.begin(),itemsList.end());
+//
+//    for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
+//    {
+//        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
+//        itemThor.thirdPartyCode = itemComplete->ThirdPartyCode;
+//        double price = itemComplete->BillCalcResult.FinalPrice/itemComplete->GetQty();
+//        itemThor.unitPrice = price;
+//        itemThor.qty = itemComplete->GetQty();
+//        itemsList.push_back(itemThor);
+//        if(itemComplete->DiscountReason.Length() != 0)
+//        {
+//            tenderDetails.tenderType = eThorVoucher;
+//            tenderDetails.tenderIdentifier = "0";
+//            for(std::vector<TDiscount>::iterator i = itemComplete->Discounts.begin() ; i != itemComplete->Discounts.end() ; ++i)
+//            {
+//                if(i->VoucherCode.Length() != 0)
+//                {
+//                    tenderDetails.tenderIdentifier = i->VoucherCode;
+//                }
+//            }
+//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//            tenderDetails.tenderValue = 0;
+//        }
+//        if(itemComplete->SubOrders->Count > 0)
+//        {
+//            for(int subOrdersCount = 0 ; subOrdersCount < itemComplete->SubOrders->Count; subOrdersCount++)
+//            {
+//                TItemComplete *subItem = (TItemComplete*)itemComplete->SubOrders->Items[subOrdersCount];
+//                itemThor.thirdPartyCode = subItem->ThirdPartyCode;
+//                double price = subItem->BillCalcResult.FinalPrice/subItem->GetQty();
+//                itemThor.unitPrice = price;
+//                itemThor.qty = subItem->GetQty();
+//                itemsList.push_back(itemThor);
+//                if(subItem->DiscountReason.Length() != 0)
+//                {
+//                    tenderDetails.tenderType = eThorVoucher;
+//                    tenderDetails.tenderIdentifier = "0";
+//                    for(std::vector<TDiscount>::iterator i = subItem->Discounts.begin() ; i != subItem->Discounts.end() ; ++i)
+//                    {
+//                        if(i->VoucherCode.Length() != 0)
+//                        {
+//                              tenderDetails.tenderIdentifier = i->VoucherCode;
+//                        }
+//                    }
+//                    tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//                    tenderDetails.tenderValue = 0;
+//                }
+//            }
+//        }
+//    }
+//    if((tenderDetails.tenderType == eThorVoucher) && (tenderDetails.tenderIdentifier != "0"))
+//    {
+//        tenderDetailsList.push_back(tenderDetails);
+//    }
+//    for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
+//    {
+//        TPayment *payment = paymentTransaction.PaymentGet(i);
+//        if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered()>0)))
+//        {
+//            tenderDetails.tenderValue =0;
+//            tenderDetails.tenderType = eThorCash;
+//            tenderDetails.tenderIdentifier = "0";
+//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//            double price = payment->GetPayTendered();
+//            tenderDetails.tenderValue = price;
+//            tenderDetailsList.push_back(tenderDetails);
+//        }
+//        if((payment->GetPaymentAttribute(ePayTypeElectronicTransaction)) && (payment->GetPayTendered()>0))
+//        {
+//            tenderDetails.tenderValue =0;
+//            tenderDetails.tenderType = eThorDebitCard;
+//            tenderDetails.tenderIdentifier = "0";
+//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//            double price = payment->GetPayTendered();
+//            tenderDetails.tenderValue = price;
+//            tenderDetailsList.push_back(tenderDetails);
+//        }
+//        if((payment->GetPaymentAttribute(ePayTypeChequeVerify)) && (payment->GetPayTendered()>0))
+//        {
+//            tenderDetails.tenderValue =0;
+//            tenderDetails.tenderType = eThorCheque;
+//            tenderDetails.tenderIdentifier = "0";
+//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//            double price = payment->GetPayTendered();
+//            tenderDetails.tenderValue = price;
+//            tenderDetailsList.push_back(tenderDetails);
+//        }
+//    }
+//    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed() > 0)
+//    {
+//            tenderDetails.tenderValue = 0;
+//            tenderDetails.tenderType = eThorPoints;
+//            tenderDetails.tenderIdentifier = "0";
+//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//            double price = paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed();
+//            tenderDetails.tenderValue = price;
+//            if(!TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints))
+//            {
+//                tenderDetails.sendTransactionValue = false;
+//            }
+//            tenderDetailsList.push_back(tenderDetails);
+//    }
+//    if(tenderDetailsList.size() == 0)
+//    {
+//        tenderDetails.tenderValue =0;
+//        tenderDetails.tenderType = eThorCash;
+//        tenderDetails.tenderIdentifier = "0";
+//        tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
+//        tenderDetails.tenderValue = 0;
+//        tenderDetailsList.push_back(tenderDetails);
+//    }
+//    AnsiString message = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForPay(tenderDetailsList,itemsList);
+//    if(message.Length() != 0)
+//    {
+//        MessageBox(message, "Transaction Error",MB_OK + MB_ICONERROR);
+//        returnValue = false;
+//    }
+//    return returnValue;
+//}
+//
+//bool TListPaymentSystem::PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction)
+//{
+//    bool retValue = true;
+//    TRefundTransaction refundTransaction;
+//    refundTransaction.cardNumber = paymentTransaction.Membership.Member.CardStr;
+//    refundTransaction.creditValue = 0.0;
+//    double transactionValue = 0;
+//    double loyaltyValue = 0;
+//
+//    if(paymentTransaction.Money.Total > 0)
+//        transactionValue = paymentTransaction.Money.Total;
+//    else
+//        transactionValue = -paymentTransaction.Money.Total;
+//
+//    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() > 0)
+//        loyaltyValue = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+//    else
+//        loyaltyValue = -paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+//
+//    if(transactionValue != 0)
+//        refundTransaction.transactionValue = transactionValue;
+//    else
+//        refundTransaction.transactionValue = loyaltyValue;
+//
+//    if(paymentTransaction.Orders->Count > 0)
+//        refundTransaction.loyaltyValue = loyaltyValue;
+//    else
+//    {
+//        refundTransaction.loyaltyValue = loyaltyValue;
+//        for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
+//        {
+//            TPayment *payment = paymentTransaction.PaymentGet(i);
+//            if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered() != 0)))
+//            {
+//                refundTransaction.loyaltyValue = 0;
+//            }
+//        }
+//    }
+//
+//    AnsiString errorMessage = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForRefund(refundTransaction);
+//    if(errorMessage.Length() != 0)
+//    {
+//        MessageBox(errorMessage, "Transaction Error", MB_OK + MB_ICONERROR);
+//        retValue = false;
+//    }
+//    return retValue;
+//}
 /**********************DLF MALL START****************************************/
 
 /************************DLF_MALL_CMD_CODE=1**START********************************************/
@@ -6732,9 +6734,12 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
         TGlobalSettings::Instance().PrintCardHolderReceipt )
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
-    if (TGlobalSettings::Instance().DuplicateReceipts)
-    {
-        if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
+
+      if(TGlobalSettings::Instance().DuplicateReceipts || (TGlobalSettings::Instance().PrintSignatureReceiptsTwice && TGlobalSettings::Instance().AutoPrintRoomReceipts
+      && TDeviceRealTerminal::Instance().BasePMS->Enabled) )
+      {
+
+       if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
         {
             // Print all the TPrintouts including the EFTPOS one.
             LastReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
@@ -6743,8 +6748,9 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         {
             // Only print the first TPrintout as the EFTPOS job does not need duplication.
             LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
+
         }
-    }
+      }
 }
 //-------------------------------------------------------------------------------------------
 bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction)
@@ -6907,4 +6913,283 @@ void TListPaymentSystem::UpdateEftposLogsForInvoice(TPaymentTransaction paymentT
     }
 }
 //----------------------------------------------------------------------------
+void TListPaymentSystem::InsertDataInMallTables(TPaymentTransaction paymentTransaction, long arcBillKey)
+{
+    if(TGlobalSettings::Instance().mallInfo.MallId && paymentTransaction.Orders->Count)
+    {
+        //Check if mall type is dean and deluca
+        if(TGlobalSettings::Instance().mallInfo.MallId == 2)
+        {
+            TItemComplete *item = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+            if(item->TableNo)
+            {
+                TGlobalSettings::Instance().MezzanineTablesMap.clear();
+                TGlobalSettings::Instance().MezzanineTablesMap = TManagerMallSetup::LoadMezzanineAreaTablesByLocations(paymentTransaction.DBTransaction);
+                int locationId = TGlobalSettings::Instance().ReservationsEnabled == true ? TGlobalSettings::Instance().LastSelectedFloorPlanLocationID : 0;
+                std::map<int, std::set<int> >::iterator outerit = TGlobalSettings::Instance().MezzanineTablesMap.find(locationId);
+                if(outerit != TGlobalSettings::Instance().MezzanineTablesMap.end())
+                {
+                    std::set<int>::iterator innerit = outerit->second.find(item->TableNo);
+                    bool canContinue = (innerit == outerit->second.end());
 
+                    if(!canContinue)
+                        InsertMezzanineSales(paymentTransaction);
+                }
+            }
+        }
+        //Instantiation is happenning in a factory based on the active mall in database
+        TMallExport* mall = TMallFactory::GetMallType();
+        mall->PushToDatabase(paymentTransaction, arcBillKey, currentTime);
+        delete mall;
+    }
+}
+//----------------------------------------------------------------------------
+void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction)
+{
+    try
+    {
+        if(paymentTransaction.Orders->Count)
+        {
+            TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+            if(Order->OrderGuid.Trim() != "")
+            {
+                TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction);
+                TMMProcessingState State(Screen->ActiveForm, "Posting Invoice to cloud Please Wait...", "Posting Invoice");
+                TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+                AnsiString ErrorMessage;
+
+                TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
+                MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
+                TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+                {
+                    throw Exception("Authentication failed with Loyaltymate Service");
+                }
+                else if(!createResponse.IsSuccesful)
+                {
+                    ErrorMessage = "Failed to post invoice info.";
+                    if(createResponse.Description == "Failed to post invoice info.")
+                      ErrorMessage = "Failed to post invoice info.";
+
+                    throw Exception(ErrorMessage);
+                }
+                delete loyaltyMateInterface;
+                loyaltyMateInterface = NULL;
+            }
+        }
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        //throw;
+    }
+}
+//----------------------------------------------------------------------------
+TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction)
+{
+    TSiteOrderModel siteOrderModel;
+    try
+    {
+        TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+        siteOrderModel.CompanyId = 0;
+        siteOrderModel.SiteId = Order->SiteId;
+        siteOrderModel.OrderId = Order->OnlineOrderId;
+        siteOrderModel.TransactionType = paymentTransaction.SalesType;
+        siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
+        siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
+        siteOrderModel.ContainerNumber = Order->ContainerTabType == TabTableSeat ? Order->TableNo : Order->TabKey;
+        siteOrderModel.ContainerType = Order->ContainerTabType == TabTableSeat ? OnlineTable : OnlineTab;
+
+        if(TGlobalSettings::Instance().ReservationsEnabled)
+            siteOrderModel.ContainerName = Order->ContainerTabType == TabTableSeat ? Order->TabContainerName : Order->Email;
+        else
+        {
+            UnicodeString containerName = " #" + IntToStr(Order->TableNo);
+            siteOrderModel.ContainerName = Order->ContainerTabType == TabTableSeat ? containerName : Order->Email;
+        }
+
+        siteOrderModel.OrderGuid = Order->OrderGuid;
+        siteOrderModel.UserReferenceId = Order->ContactsKey;
+        siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
+        siteOrderModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
+        siteOrderModel.TransactionDate = Now();;
+        siteOrderModel.OrderType = Order->OrderType;
+        siteOrderModel.IsConfirmed = true;
+        siteOrderModel.UserEmailId = Order->Email;
+        siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
+        siteOrderModel.TransactionType = Order->OnlineChitType;
+        siteOrderModel.OrderInvoiceTransaction = GetOrderInvoiceTransaction(paymentTransaction);
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return siteOrderModel;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemModel> TListPaymentSystem::GetOrderItemModel(TPaymentTransaction paymentTransaction)
+{
+    std::list<TOrderItemModel> orderItemModelList;
+    try
+    {
+        std::map<int, TOrderItemModel >OrderItemModelMap;
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+            TOrderItemModel orderItemModel;
+            TItemComplete* Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+
+
+             std::map<int,TOrderItemModel>::iterator it;
+             it = OrderItemModelMap.find(Order->OrderItemId);
+
+             if(it == OrderItemModelMap.end())
+             {
+                orderItemModel.OrderItemId = Order->OrderItemId;
+                orderItemModel.Name = Order->Item;
+                orderItemModel.Description = Order->Item;
+                orderItemModel.SiteItemId = 0;//Order->SiteId;
+                orderItemModel.Price = Order->PriceEach_BillCalc();
+
+                std::list<TOrderItemSizeModel> orderItemSizeModelList;
+
+                TOrderItemSizeModel orderItemSizeModel;
+
+                orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+                orderItemSizeModel.OrderItemId = Order->OrderItemId;
+                orderItemSizeModel.Name = Order->Size;
+                orderItemSizeModel.ItemSizeId = Order->Item_ID;
+                orderItemSizeModel.Quantity = Order->GetQty();
+                orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+                orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+                orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+                orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
+                orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+
+                orderItemSizeModelList.push_back(orderItemSizeModel);
+
+                orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
+
+                OrderItemModelMap[Order->OrderItemId] = orderItemModel;
+            }
+            else
+            {
+                it->second.Price = it->second.Price + Order->PriceEach_BillCalc();
+
+                TOrderItemSizeModel orderItemSizeModel;
+
+                orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+                orderItemSizeModel.OrderItemId = Order->OrderItemId;
+                orderItemSizeModel.Name = Order->Size;
+                orderItemSizeModel.ItemSizeId = Order->Item_ID;
+                orderItemSizeModel.Quantity = Order->GetQty();
+                orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+                orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+                orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+                orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
+                orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+
+                it->second.OrderItemSizes.push_back(orderItemSizeModel);
+            }
+        }
+
+        //Now iterate values from map and insert it into list..
+        for(std::map<int,TOrderItemModel>::iterator it = OrderItemModelMap.begin();  it != OrderItemModelMap.end(); it++)
+        {
+            orderItemModelList.push_back(it->second);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderItemModelList;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemSizeDiscountModel> TListPaymentSystem::GetOrderItemSizeDiscountModel(TItemMinorComplete *Order)
+{
+    std::list<TOrderItemSizeDiscountModel> orderItemSizeDiscountModelList;
+    try
+    {
+        for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();
+        std::advance(ptrDiscounts, 1))
+        {
+            if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+                continue;
+
+            TOrderItemSizeDiscountModel orderItemSizeDisountModel;
+            orderItemSizeDisountModel.OrderItemSizeId = Order->OrderItemSizeId;
+            orderItemSizeDisountModel.Name = ptrDiscounts->Name.SubString(1, 15);
+            orderItemSizeDisountModel.Value = RoundToNearest(Order->DiscountValue_BillCalc(ptrDiscounts),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+            orderItemSizeDisountModel.Code = ptrDiscounts->DiscountCode;
+            orderItemSizeDiscountModelList.push_back(orderItemSizeDisountModel);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderItemSizeDiscountModelList;
+}
+//-------------------------------------------------------------------------------------------------
+TOrderInvoiceTransactionModel TListPaymentSystem::GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction)
+{
+    TOrderInvoiceTransactionModel orderInvoiceTransactionModel;
+    try
+    {
+        orderInvoiceTransactionModel.OrderInvoiceTransactionId = 0;
+        orderInvoiceTransactionModel.OrderId = 0;//;
+        orderInvoiceTransactionModel.InvoiceTransactionId = 0;           //todo
+        orderInvoiceTransactionModel.InvoiceTransaction = GetInvoiceTransaction(paymentTransaction);
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderInvoiceTransactionModel;
+}
+//---------------------------------------------------------------------------------------
+TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTransaction paymentTransaction)
+{
+    TInvoiceTransactionModel invoiceTransactionModel;
+    try
+    {
+         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+         invoiceTransactionModel.InvoiceTransactionId = 0;;
+	     invoiceTransactionModel.InvoiceNumber = paymentTransaction.InvoiceNumber;
+	     invoiceTransactionModel.TotalSaleAmount = paymentTransaction.Money.RoundedGrandTotal;
+	     invoiceTransactionModel.TransactionDate = Now();
+	     invoiceTransactionModel.SiteId = Order->SiteId;
+	     invoiceTransactionModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
+
+         if( ManagerReceipt->ReceiptToArchive->Size > 0 )
+		 {
+            ManagerReceipt->ReceiptToArchive-> Position =  0 ;
+            invoiceTransactionModel.Receipt.set_length ( ManagerReceipt->ReceiptToArchive->Size) ;
+            ManagerReceipt->ReceiptToArchive->ReadBuffer ( & invoiceTransactionModel.Receipt[ 0 ] , ManagerReceipt->ReceiptToArchive-> Size ) ;
+		 }
+
+	     invoiceTransactionModel.ReceiptPath = "";
+	     invoiceTransactionModel.Rounding = RoundToNearest(paymentTransaction.Money.RoundingAdjustment, 0.01,
+                                                    TGlobalSettings::Instance().MidPointRoundsDown);
+	     invoiceTransactionModel.UserReferenceId = Order->ContactsKey;
+	     invoiceTransactionModel.UserType = 0;//         to do check whetrher user is a member or staff..
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return invoiceTransactionModel;
+}
+//----------------------------------------------------------
+ bool TListPaymentSystem:: IsRoomReceiptSettingEnable()
+ {
+  return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
+
+ }

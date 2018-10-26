@@ -1123,8 +1123,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             "ROOM_NO, "
             "ACC_NO, "
             "FIRST_NAME, "
-            "LAST_NAME "
-          ") "
+            "LAST_NAME, "
+            "ONLINE_CHIT_TYPE, "
+            "ORDER_GUID, "
+            "SITE_ID, "
+            "ORDER_ITEM_ID, "
+            "ORDER_ITEM_SIZE_ID, "
+            "REFERENCE_ORDER_ITEM_SIZE_ID, "
+            "EMAIL, "
+            "ONLINE_ORDER_ID "
+            ") "
 			"VALUES "
 			"( "
 			":ORDER_KEY,"
@@ -1203,8 +1211,16 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
             ":ROOM_NO, "
             ":ACC_NO, "
             ":FIRST_NAME, "
-            ":LAST_NAME "
-          	");";
+            ":LAST_NAME, "
+            ":ONLINE_CHIT_TYPE, "
+            ":ORDER_GUID, "
+            ":SITE_ID, "
+            ":ORDER_ITEM_ID, "
+            ":ORDER_ITEM_SIZE_ID, "
+            ":REFERENCE_ORDER_ITEM_SIZE_ID, "
+            ":EMAIL, "
+            ":ONLINE_ORDER_ID "
+            ");";
 
 			IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = Order->OrderKey;
             IBInternalQuery->ParamByName("ORDER_IDENTIFICATION_NUMBER")->AsInteger = Order->OrderIdentificationNo;
@@ -1229,7 +1245,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 				break;
 			case TabRoom :
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 			case TabParkedSale :
 				IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 				IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
@@ -1247,7 +1263,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("ORDER_TYPE")->AsInteger = Order->OrderType;
 			IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = Order->Terminal;
 			IBInternalQuery->ParamByName("MENU_NAME")->AsString = Order->MenuName;
-			IBInternalQuery->ParamByName("TAB_NAME")->AsString =  Order->TabName.SubString(1,32);
+			IBInternalQuery->ParamByName("TAB_NAME")->AsString =  Order->TabName.SubString(1,80);
 			IBInternalQuery->ParamByName("COURSE_NAME")->AsString = Order->Course;
 			IBInternalQuery->ParamByName("HAPPYHOUR")->AsString 	= Order->HappyHour?"T":"F";
 			IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
@@ -1335,6 +1351,17 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			{
 				IBInternalQuery->ParamByName("ACTIVECHITNUMBER_KEY")->AsInteger = Order->GetActiveChitNumberKey();
 			}
+
+
+            IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+            IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
+            IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Order->SiteId;
+            IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
+            IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
+            IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
+            IBInternalQuery->ParamByName("EMAIL")->AsString = Order->Email;
+            IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsInteger = Order->OnlineOrderId;
+
 			IBInternalQuery->ExecQuery();
 
 			// Options
@@ -1529,7 +1556,15 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 "ROOM_NO, "
                 "ACC_NO, "
                 "FIRST_NAME, "
-                "LAST_NAME "
+                "LAST_NAME, "
+               "ONLINE_CHIT_TYPE, "
+                "ORDER_GUID, "
+                "SITE_ID, "
+                "ORDER_ITEM_ID, "
+                "ORDER_ITEM_SIZE_ID, "
+                "REFERENCE_ORDER_ITEM_SIZE_ID, "
+                "EMAIL, "
+                "ONLINE_ORDER_ID "
 		   	") "
 				"VALUES "
 				"( "
@@ -1609,7 +1644,15 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                 ":ROOM_NO, "
                 ":ACC_NO, "
                 ":FIRST_NAME, "
-                ":LAST_NAME "
+                ":LAST_NAME, "
+                ":ONLINE_CHIT_TYPE, "
+                ":ORDER_GUID, "
+                ":SITE_ID, "
+                ":ORDER_ITEM_ID, "
+                ":ORDER_ITEM_SIZE_ID, "
+                ":REFERENCE_ORDER_ITEM_SIZE_ID, "
+                ":EMAIL, "
+                ":ONLINE_ORDER_ID "
             	");";
 
 				IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = CurrentSubOrder->OrderKey;
@@ -1631,11 +1674,11 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                                 case TabDelayedPayment :
 				case TabTableSeat :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				case TabRoom :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->RoomNo;
-					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
+					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName.SubString(1,25);
 					break;
 				case TabParkedSale :
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
@@ -1721,6 +1764,14 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
                     IBInternalQuery->ParamByName("ACC_NO")->AsString =  "";
                 IBInternalQuery->ParamByName("FIRST_NAME")->AsString =  Order->FirstName;
                 IBInternalQuery->ParamByName("LAST_NAME")->AsString =  Order->LastName;
+                IBInternalQuery->ParamByName("ONLINE_CHIT_TYPE")->AsInteger = Order->OnlineChitType;
+                IBInternalQuery->ParamByName("ORDER_GUID")->AsString = Order->OrderGuid;
+                IBInternalQuery->ParamByName("SITE_ID")->AsInteger = Order->SiteId;
+                IBInternalQuery->ParamByName("ORDER_ITEM_ID")->AsInteger = Order->OrderItemId;
+                IBInternalQuery->ParamByName("ORDER_ITEM_SIZE_ID")->AsInteger = Order->OrderItemSizeId;
+                IBInternalQuery->ParamByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger = Order->ReferenceOrderItemSizeId;
+                IBInternalQuery->ParamByName("EMAIL")->AsString = Order->Email;
+                IBInternalQuery->ParamByName("ONLINE_ORDER_ID")->AsInteger = Order->OnlineOrderId;
 
 				IBInternalQuery->ExecQuery();
 
@@ -4177,6 +4228,15 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
         Order->AccNo = atoi(AnsiString(OrderTable->FieldByName("ACC_NO")->AsString).c_str());
         Order->FirstName = (AnsiString(OrderTable->FieldByName("FIRST_NAME")->AsString));
         Order->LastName = (AnsiString(OrderTable->FieldByName("LAST_NAME")->AsString));
+        Order->OrderGuid = (AnsiString(OrderTable->FieldByName("ORDER_GUID")->AsString));
+        Order->OrderItemId = OrderTable->FieldByName("ORDER_ITEM_ID")->AsInteger;
+        Order->OrderItemSizeId = OrderTable->FieldByName("ORDER_ITEM_SIZE_ID")->AsInteger;
+        Order->ReferenceOrderItemSizeId = OrderTable->FieldByName("REFERENCE_ORDER_ITEM_SIZE_ID")->AsInteger;
+        Order->SiteId = OrderTable->FieldByName("SITE_ID")->AsInteger;
+		Order->Email = (AnsiString(OrderTable->FieldByName("EMAIL")->AsString));
+        Order->ContactsKey = OrderTable->FieldByName("CONTACTS_KEY")->AsInteger;
+        Order->OnlineChitType = OrderTable->FieldByName("ONLINE_CHIT_TYPE")->AsInteger;
+        Order->OnlineOrderId = OrderTable->FieldByName("ONLINE_ORDER_ID")->AsInteger;
  	}
 }
 
@@ -5055,3 +5115,42 @@ UnicodeString TDBOrder::getOrderKeysList(TList *Orders)
     return orderKeyList;
 }
 //-----------------------------------------------------------------------------
+void TDBOrder::SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email)
+{
+    try
+    {   
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "UPDATE ORDERS SET LOYALTY_KEY =:LOYALTY_KEY, EMAIL = :EMAIL "
+                                      " WHERE TABLE_NUMBER=:TABLE_NUMBER";
+
+       IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+       IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = loyaltyKey;
+       IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+       IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TDBOrder::SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransaction,int tabKey,int loyaltyKey, UnicodeString email)
+{
+    try
+    {
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "UPDATE ORDERS SET LOYALTY_KEY =:LOYALTY_KEY, EMAIL = :EMAIL "
+                                      " WHERE TAB_KEY=:TAB_KEY";
+
+       IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+       IBInternalQuery->ParamByName("LOYALTY_KEY")->AsInteger = loyaltyKey;
+       IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+       IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+}

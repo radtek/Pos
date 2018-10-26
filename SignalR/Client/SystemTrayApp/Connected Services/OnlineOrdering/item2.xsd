@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.OnlineOrdering" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" />
+  <xs:complexType name="SiteTaxSettingsinfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="SiteId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteTaxSettings" nillable="true" type="tns:ArrayOfTaxSettingsInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteTaxSettingsinfo" nillable="true" type="tns:SiteTaxSettingsinfo" />
+  <xs:complexType name="ArrayOfTaxSettingsInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TaxSettingsInfo" nillable="true" type="tns:TaxSettingsInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTaxSettingsInfo" nillable="true" type="tns:ArrayOfTaxSettingsInfo" />
+  <xs:complexType name="TaxSettingsInfo">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" minOccurs="0" name="SettingType" type="q1:SiteSettingType" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TaxSettingsInfo" nillable="true" type="tns:TaxSettingsInfo" />
+</xs:schema>

@@ -17,3 +17,10 @@ D:\shared\FiscalPrinterCode\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegrat
 C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.dll
 C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.pdb
 C:\MM_Cloud_Git\V6-Master\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.tlb
+D:\shared\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.dll
+D:\shared\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.pdb
+D:\shared\FiscalLibrary\FiscalPrinterIntegration\bin\Debug\FiscalIntegration.tlb
+D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\Fiscalintegration.csprojResolveAssemblyReference.cache
+D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\Fiscalintegration.csproj.CoreCompileInputs.cache
+D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.dll
+D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.pdb

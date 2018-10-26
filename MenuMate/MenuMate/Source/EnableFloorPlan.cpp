@@ -4,6 +4,7 @@
 
 #include "GlobalSettings.h"
 #include "DeviceRealTerminal.h"
+#include "DBTables.h"
 
 
 //---------------------------------------------------------------------------
@@ -39,6 +40,7 @@ bool TEnableFloorPlan::Run(
                                   bool  inShowAll,
                 TFloorPlanReturnParams& inFloorPlanReturnParams, bool isNormalArea )
 {
+
 	if( initialiseFloorPlan() )
     {
 		return runNewFloorPlan( inOwner, inFloorPlanReturnParams, isNormalArea );
@@ -156,6 +158,7 @@ bool TEnableFloorPlan::runNewFloorPlan(TForm* inOwner, TFloorPlanReturnParams& i
         inFloorPlanReturnParams.TabContainerNumber = frmSelectTable2->SelectedTabContainerNumber;
         inFloorPlanReturnParams.TabContainerName   = frmSelectTable2->SelectedTabContainerName;
         inFloorPlanReturnParams.PartyName = frmSelectTable2->SelectedPartyName;
+        inFloorPlanReturnParams.HasOnlineOrders    = TDBTables::HasOnlineOrders(inFloorPlanReturnParams.TabContainerNumber);
         ReleaseFormMemory(frmSelectTable2);
         frmSelectTable2.reset();
         controller.reset();
@@ -196,6 +199,7 @@ bool TEnableFloorPlan::runBackupFloorPlan(TForm* inOwner, bool  inShowAll, TFloo
         inFloorPlanReturnParams.TabContainerNumber = frmSelectTable->SelectedTabContainerNumber;
         inFloorPlanReturnParams.TabContainerName   = frmSelectTable->SelectedTabContainerName;
         inFloorPlanReturnParams.PartyName          = frmSelectTable->SelectedPartyName;
+        inFloorPlanReturnParams.HasOnlineOrders    = TDBTables::HasOnlineOrders(inFloorPlanReturnParams.TabContainerNumber);
 
         return true;
     }

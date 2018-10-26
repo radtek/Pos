@@ -47,7 +47,8 @@ enum TTreeIndex {
 					MENU_3RD_PARTY_INDEX								,
 					MENU_ITEM_BARCODES								,
                     Tax_Profile_INDEX                                   ,
-                    Breakdown_Category                               ,                                     
+                    Breakdown_Category                               ,
+                    MENU_ITEMS_IDENTIFIER                              ,
 			FINANCIAL_INDEX											,
                     CASHUP_INDEX										,
                     SALES_SUMMARY_INDEX								,
@@ -793,6 +794,7 @@ private:	// User declarations
     void PrintProfitLossSummary(TReportControl *ReportControl);
     void GetStockSupplierList(TReportFilter *ReportFilter);
     void PrintMezzanineSales(TReportControl *ReportControl);
+    void PrintMenuItemsIdentifier(TReportControl *ReportControl);
 public:		// User declarations
 	__fastcall TfrmReports(TComponent* Owner);
     bool SaveReportToFile(AnsiString &EmailFileName );

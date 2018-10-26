@@ -18,7 +18,7 @@
 #include "MM_DBCore.h"
 #include "Processing.h"
 #include "Contact.h"
-#include "ThorlinkDataObjects.h"
+//#include "ThorlinkDataObjects.h"
 #include "PointsTransaction.h"
 #include <map>
 // ---------------------------------------------------------------------------
@@ -246,8 +246,8 @@ public:
     double GetEarnedPointsForCurrentYear(Database::TDBTransaction &DBTransaction,TMMContactInfo &Member);
     virtual bool LoyaltyMemberSelected(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode,bool triggeredByCard);
     virtual bool UpdateMemberCardCode(Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo,AnsiString memberCardCode);
-    virtual AnsiString SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList);
-   virtual AnsiString SendRequestForRefund(TRefundTransaction refundTransaction);
+   // virtual AnsiString SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList);
+   //virtual AnsiString SendRequestForRefund(TRefundTransaction refundTransaction);
    virtual bool CallInitMethod();
 };
 #endif

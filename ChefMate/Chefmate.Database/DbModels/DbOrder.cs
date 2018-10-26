@@ -302,5 +302,47 @@ namespace Chefmate.Database.DbModels
                 return false;
             }
         }
-    }
+
+        public static List<string> GetAccumulatedItems(int terminalKey)
+        {
+            var totalItems = new List<String>();
+            var queryString = @"SELECT Count(*) || ' x ' || AccumulatedQuery.ITEM_NAME ITEM_NAME 
+                                FROM
+                                    (SELECT A.ORDERITEM_KEY, A.ITEM_KEY, 
+                                        (CASE WHEN (OIO.OPTION_NAME <> '') THEN B.ITEM_NAME || ' - ' || OIO.OPTION_NAME ELSE B.ITEM_NAME END) ITEM_NAME 
+                                                FROM ORDERITEMS A
+                                                INNER JOIN ITEMS B
+                                                ON A.ITEM_KEY = B.ITEM_KEY
+                                                LEFT JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
+                                                LEFT JOIN(SELECT OIO.ORDERITEM_KEY, OIO.ORDERITEMOPTION_KEY, b.OPTION_KEY, OPTIONS.OPTION_NAME
+                                                        FROM (SELECT A.ORDERITEM_KEY,MIN(a.ORDERITEMOPTION_KEY) ORDERITEMOPTION_KEY  
+                                                                    FROM ORDERITEMOPTIONS a 
+                                                                    GROUP BY 1) OIO 
+                                                        INNER JOIN ORDERITEMOPTIONS b ON OIO.ORDERITEMOPTION_KEY = b.ORDERITEMOPTION_KEY 
+                                                        INNER JOIN OPTIONS ON b.OPTION_KEY = OPTIONS.OPTION_KEY)OIO ON A.ORDERITEM_KEY = OIO.ORDERITEM_KEY 
+                                                WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
+                                                AND ORDER_ITEM_STATUS <> @CANCEL_ITEM
+                                                GROUP BY A.ORDERITEM_KEY, A.ITEM_KEY, B.ITEM_NAME, OIO.OPTION_NAME
+                                    UNION ALL 
+                                    SELECT OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME ITEM_NAME FROM ORDERITEMS A
+                                                INNER JOIN ORDERITEMSIDES OD ON A.ORDERITEM_KEY = OD.ORDERITEM_KEY
+                                                INNER JOIN SIDES ON OD.SIDE_KEY = SIDES.SIDE_KEY
+                                                WHERE A.TERMINAL_KEY = @TERMINAL_KEY AND A.ORDER_ITEM_STATUS <> @ORDER_ITEM_STATUS 
+                                                AND ORDER_ITEM_STATUS <> @CANCEL_ITEM 
+                                                GROUP BY OD.ORDERITEMSIDE_KEY, OD.SIDE_KEY, SIDES.SIDE_NAME) AccumulatedQuery                                
+                                GROUP BY AccumulatedQuery.ITEM_NAME";    
+           
+            var queryParameters = new List<QueryParameter>();
+            queryParameters.Add(new QueryParameter("TERMINAL_KEY", terminalKey));
+            queryParameters.Add(new QueryParameter("ORDER_ITEM_STATUS", OrderStatus.Bumped));
+            queryParameters.Add(new QueryParameter("CANCEL_ITEM", OrderStatus.Canceled));
+
+            var resultSet = DatabaseCore.Instance.ExecuteDataSetQuery(queryString, queryParameters);
+            for (int i = 0; i < resultSet.Rows.Count; i++)
+            {
+                totalItems.Add(Convert.ToString(resultSet.Rows[i][0]));
+            }
+            return totalItems;
+        }
+    }    
 }

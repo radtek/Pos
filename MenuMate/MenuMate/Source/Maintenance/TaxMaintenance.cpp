@@ -8,6 +8,7 @@
 #include "MMMessageBox.h"
 #include "MMTouchKeyboard.h"
 #include "FiscalPrinterAdapter.h"
+#include "SelectDish.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -128,10 +129,12 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
                 DBTransaction.Commit();
             }
+            SyncTaxSettingWithWeb();
             Close();
         }
         else
         {
+            SyncTaxSettingWithWeb();
             Close();
         }
     }
@@ -398,4 +401,12 @@ void __fastcall TfrmTaxMaintenance::edLogicalNameClick(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
+void TfrmTaxMaintenance::SyncTaxSettingWithWeb()
+{
+     //Sync Menu with web for online ordering..
+     if(TGlobalSettings::Instance().EnableOnlineOrdering)
+     {
+        frmSelectDish->SyncTaxSetting();
+     }
+}
 

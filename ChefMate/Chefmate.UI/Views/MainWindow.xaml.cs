@@ -38,6 +38,7 @@ namespace Chefmate.UI.Views
         private DispatcherTimer _orderTimer;
         private double _horizontalScale;
         private bool _isRecallEnabled;
+        private bool _isSummaryEnabled;
         private int _lastSelectedIndex = -1;
         private double _cordX;
         private double _cordY;
@@ -54,6 +55,7 @@ namespace Chefmate.UI.Views
             if (ChefmateController.Instance.CurrentSettings != null)
             {
                 IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
+                IsSummaryEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
                 SetFont();
             }
             _processingBox = new ProcessingBox();
@@ -193,6 +195,15 @@ namespace Chefmate.UI.Views
                 OnPropertyChanged("IsRecallEnabled");
             }
         }
+        public bool IsSummaryEnabled
+        {
+            get { return _isSummaryEnabled; }
+            set
+            {
+                _isSummaryEnabled = value;
+                OnPropertyChanged("IsSummaryEnabled");
+            }
+        }
         public ObservableCollection<Order> WebOrders
         {
             get
@@ -292,6 +303,7 @@ namespace Chefmate.UI.Views
             var settingView = new SettingView { ShowInTaskbar = false, Topmost = true };
             settingView.ShowDialog();
             IsRecallEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
+            IsSummaryEnabled = ChefmateController.Instance.CurrentSettings.TerminalType == TerminalType.Kitchen;
             Properties.Settings.Default.DatabasePath = ChefmateController.Instance.CurrentSettings.DbPath;
             Properties.Settings.Default.DatabaseAddress = ChefmateController.Instance.CurrentSettings.DbIpAddress;
             Properties.Settings.Default.Save();
@@ -312,6 +324,21 @@ namespace Chefmate.UI.Views
             {
                 ChefmateController.Instance.AddRecallOrder(recallOrderView.SelectedOrder);
             }
+            OrderContainer.Focus();
+        }
+
+        private void Summary(object sender, RoutedEventArgs e)
+        {//todo
+            //SummaryView
+            SummaryView summaryOrderView = new SummaryView
+            {
+                ShowInTaskbar = false
+            };
+            summaryOrderView.ShowDialog();
+            //if (summaryOrderView.ModalResult && summaryOrderView.SelectedOrder != null)
+            //{
+            //    ChefmateController.Instance.AddAccumulatdrder(summaryOrderView.SelectedOrder);
+            //}
             OrderContainer.Focus();
         }
         #endregion
@@ -368,15 +395,18 @@ namespace Chefmate.UI.Views
             GuiStyles.GroupFontSize = ChefmateController.Instance.CurrentSettings.GroupFontSize;
             GuiStyles.OrderHeaderFontSize = ChefmateController.Instance.CurrentSettings.OrderHeaderFontSize;
             GuiStyles.AnalysisFontSize = ChefmateController.Instance.CurrentSettings.AnalysisFontSize;
+            //GuiStyles.ItemSummaryFontSize = ChefmateController.Instance.CurrentSettings.ItemSummaryFontSize;
 
             GuiStyles.GroupFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.GroupFontFamily);
             GuiStyles.ItemFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.ItemFontFamily);
             GuiStyles.AnalysisFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.AnalysisFontFamily);
+            //GuiStyles.ItemSummaryFontFamily = new FontFamily(ChefmateController.Instance.CurrentSettings.ItemSummaryFontFamily);
 
             GuiStyles.AnalysisFontWeight = ChefmateController.Instance.CurrentSettings.AnalysisFontBold ? FontWeights.Bold : FontWeights.Normal;
             GuiStyles.GroupFontWeight = ChefmateController.Instance.CurrentSettings.GroupFontBold ? FontWeights.Bold : FontWeights.Normal;
             GuiStyles.HeaderForeGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderForegroundColor));
             GuiStyles.HeaderBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.HeaderBackgroundColor));
+            //GuiStyles.ItemSummaryBackGround = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.ItemSummaryBackgroundColor));
 
             var color = (Color)ColorConverter.ConvertFromString(ChefmateController.Instance.CurrentSettings.FirstWarningColor);
             ChefmateConstants.FirstWarningOrderColor = new SolidColorBrush(Color.FromArgb(200, color.R, color.G, color.B));

@@ -3,8 +3,8 @@ object dmMMReportData: TdmMMReportData
   OnDestroy = DataModuleDestroy
   Left = 4
   Top = 6
-  Height = 319
-  Width = 942
+  Height = 853
+  Width = 1504
   object qrMenu: TIBQuery
     Database = dmMMData.dbMenuMate
     Transaction = MMTrans
@@ -3058,14 +3058,14 @@ object dmMMReportData: TdmMMReportData
       #9#9#9'BlindBalance.Z_Key,'
       #9#9#9'BlindBalance.Payment_Group,'
       #9#9#9'BlindBalance.Payment')
-    Left = 112
-    Top = 816
+    Left = 24
+    Top = 725
   end
   object ravCashupRecon: TRvDataSetConnection
     RuntimeVisibility = rtEndUser
     DataSet = qrCashupRecon
-    Left = 224
-    Top = 816
+    Left = 96
+    Top = 725
   end
   object ravMembershipAuditPointsBreakdown: TRvDataSetConnection
     RuntimeVisibility = rtDeveloper
@@ -4761,5 +4761,44 @@ object dmMMReportData: TdmMMReportData
     DataSet = qrMezzanine
     Left = 1706
     Top = 827
+  end
+  object qrMenuItem: TIBQuery
+    Database = dmMMData.dbMenuMate
+    Transaction = MMTrans
+    SQL.Strings = (
+      'Select'
+      '   Menu.Menu_Name,'
+      '   Course.Course_Name,'
+      '   Item.Item_Name,'
+      '   ItemSize.ItemSize_Key,'
+      '   ItemSize.Size_Name,'
+      '   ItemSize.Price,'
+      '   ItemSize.Special_Price,'
+      '   ItemSize.Barcode,'
+      '   ThirdPartyCodes.Code'
+      'From'
+      '   Menu Left Join Course On'
+      '      Menu.Menu_Key = Course.Menu_Key'
+      '   Left Join Item On'
+      '      Course.Course_Key = Item.Course_Key'
+      '   Left Join ItemSize On'
+      '      Item.Item_Key = ItemSize.Item_Key'
+      '   Left Join ThirdPartyCodes On'
+      
+        '       ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdParty' +
+        'Codes_Key'
+      'Order By'
+      '   Menu.Menu_Name,'
+      '   Course.Course_Name,'
+      '   Item.Item_Name,'
+      '   ItemSize.Size_Name')
+    Left = 176
+    Top = 730
+  end
+  object ravMenuItem: TRvDataSetConnection
+    RuntimeVisibility = rtEndUser
+    DataSet = qrMenuItem
+    Left = 240
+    Top = 730
   end
 end

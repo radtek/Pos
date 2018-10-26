@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "FiscalPrinterAdapter.h"
-#include "main.h"
+//#include "main.h"
 #include <Math.hpp>
 #include "MMMessageBox.h"
 #include "FiscalIntegration_OCX.h"

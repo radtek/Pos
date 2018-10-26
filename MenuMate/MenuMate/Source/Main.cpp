@@ -9,7 +9,7 @@
 #include "Main.h"
 #include "enum.h"
 #include "MMLogging.h"
-#include "ManagerClippIntegration.h"
+//#include "ManagerClippIntegration.h"
 #include "Setup.h"
 #include "Maintain.h"
 #include "DbMod.h"
@@ -94,6 +94,7 @@
 #include "EftposSmartConnect.h"
 #include "EftposAdyen.h"
 #include "EFTPOSPaymentSense.h"
+#include "SignalRUtility.h"
 
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
@@ -481,8 +482,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-            TManagerClippIntegration::Instance();
+//         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
+//            TManagerClippIntegration::Instance();
 
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
@@ -500,6 +501,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
        {
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
        }
+       WriteDBPathAndIPToFile();
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -510,15 +512,47 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 	}
 }
 //---------------------------------------------------------------------------
-
 void TfrmMain::SyncCompanyDetails()
 {
-   if (TGlobalSettings::Instance().LoyaltyMateEnabled)
-         {
-           TManagerCloudSync ManagerCloudSync;
-           ManagerCloudSync.CheckSyndCodes();
-           ManagerCloudSync.SyncCompanyDetails();
-         }
+    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.CheckSyndCodes();
+        bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
+        if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            UnloadSignalR();
+            EnableOnlineOrdering();
+        }
+        else if(!isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            DisableOnlineOrdering();
+            UnicodeString strValue = "Online ordering could not be enabled since sync with online module failed.\r";
+            strValue += "Please ensure below mentioned things:-.\r";
+            strValue += "1. Syndicate code & Site Id are correct.\r";
+            strValue += "2. POS terminal is connected to network.";
+            MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
+        }
+    }
+    else
+    {
+       DisableOnlineOrdering();
+    }
+
+}
+//---------------------------------------------------------------------------
+void TfrmMain::UnsetOrderingDetails()
+{
+    if (TGlobalSettings::Instance().LoyaltyMateEnabled)
+    {
+        TManagerCloudSync ManagerCloudSync;
+        ManagerCloudSync.CheckSyndCodes();
+        bool isSyncSuccessful = ManagerCloudSync.UnsetSinalRConnectionStatus();
+    }
+    else
+    {
+       DisableOnlineOrdering();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMain::FormActivate(TObject *Sender)
@@ -590,6 +624,12 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
 	if(Continue)
 	{
         TerminateProcess(TGlobalSettings::Instance().piOracleApp.hProcess , 0);
+        // call api to set connection status of signalR
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().EnableOnlineOrdering)
+        {
+            UnsetOrderingDetails();
+            UnloadSignalR();
+        }
 		frmSecurity->LogOut();
 		frmMain->Close();
 	}
@@ -1787,4 +1827,80 @@ void TfrmMain::SaveItemPriceIncludeTaxToDatabase(vmVariables vmVariable, bool va
 	DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------
+void TfrmMain::EnableOnlineOrdering()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        if(SyncOnlineOrderingDetails())
+        {
+            std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+            if(signalRUtility->LoadSignalRUtility())
+            {
+                TGlobalSettings::Instance().EnableOnlineOrdering = true;
+            }
+        }
+        else
+        {
+            TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        }
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        DBTransaction.Rollback();
+	}
+}
+//-----------------------------------------------------------------------------
+void TfrmMain::DisableOnlineOrdering()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        UnloadSignalR();
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TGlobalSettings::Instance().EnableOnlineOrdering = false;
+        DBTransaction.Rollback();
+	}
+}
+//-----------------------------------------------------------------------------
+void TfrmMain::UnloadSignalR()
+{
+    std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
+    signalRUtility->UnloadSignalRUtility();
+}
+//-----------------------------------------------------------------------------
+bool TfrmMain::SyncOnlineOrderingDetails()
+{
+    bool result = false;
+    TManagerCloudSync ManagerCloudSync;
+    result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    return result;
+}
+//-----------------------------------------------------------------------------
+void TfrmMain::WriteDBPathAndIPToFile()
+{
+    AnsiString DirectoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services/MenumateDBPath";
+    if (!DirectoryExists(DirectoryName))
+        CreateDir(DirectoryName);
+    AnsiString fileName =  DirectoryName + "/" + "DBPathAndIP.txt";
 
+    std::auto_ptr <TStringList> logList(new TStringList);
+    logList->Add(TGlobalSettings::Instance().InterbaseIP);
+    logList->Add(TGlobalSettings::Instance().DatabasePath);
+    if(TGlobalSettings::Instance().ReservationsEnabled)
+        logList->Add(ExtractFilePath(Application->ExeName));
+    logList->SaveToFile(fileName );
+}
+////------------------------------------------------------------------------------------------

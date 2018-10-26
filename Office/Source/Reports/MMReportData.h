@@ -267,7 +267,8 @@ TRvDataSetConnection *ravCheckRemoval;      //MM-4327
     TIBQuery *qrTurnAroundExcel;
     TIBQuery *qrMezzanine;
     TRvDataSetConnection *ravMezzanine;
-
+    TIBQuery *qrMenuItem;
+    TRvDataSetConnection *ravMenuItem;
 	void __fastcall qrMenuAfterScroll(TDataSet *DataSet);
 	void __fastcall qrAveSummaryAfterScroll(TDataSet *DataSet);
 	void __fastcall qrBillPaymentsAfterScroll(TDataSet *DataSet);
@@ -307,7 +308,7 @@ public:		// User declarations
 	void SetupMenuRecipes(TDateTime StartTime, TDateTime EndTime, TStrings *Menus, bool IncGST);
 	void SetupStockReductionItems(TStrings *Locations, TStrings *Groups);
 	void SetupMenu3rdPartyCodes(TStrings *Menus);
-
+    void SetupMenuItemAndUniqueId(TStrings *Menus);
 	void SetupCashup(TDateTime StartTime, TDateTime EndTime, TStrings *Terminals);
 	void SetupCashupReconciliation(TDateTime StartTime, TDateTime EndTime, TStrings *Terminals);
 	void SetupCategoryAnalysis(TDateTime StartTime, TDateTime EndTime, TStrings *Locations, bool GroupByLocation);

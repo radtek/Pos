@@ -314,15 +314,13 @@ class TImportMenu
 								bool inEnabled, bool inItemOnlySide,
 								bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 								__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
-								__int32 inIAO,
-								Database::TDBTransaction *inDBTransaction, WideString inHandheldName );
+								__int32 inIAO, Database::TDBTransaction *inDBTransaction, WideString inHandheldName, int inItemIdentifier );
 		   void InsertItemInDBWithKey( __int32 inKey, __int32 inCourseKey, WideString inDescription,
 								WideString inKitchenName, TColor inButtonColor, bool inDisplaySizes,
 								bool inEnabled, bool inItemOnlySide,
 								bool inPrintUnderlined, bool inPrintBold, TColor inPrintColor,
 								__int32 inPrintFont, bool inPrintDoubleWidth, bool inPrintDoubleHeight,
-								__int32 inIAO,
-								Database::TDBTransaction *inDBTransaction, WideString inHandheldName );
+								__int32 inIAO, Database::TDBTransaction *inDBTransaction, WideString inHandheldName, int inItemIdentifier);
 
 		__int32 InsertForcedSideInDB( __int32 inMasterItemKey, __int32 inItemKey, __int32 inIOO,
 									  __int32 inGroupNumber, __int32 inMaxSelect, bool inSideGroupSkip,
@@ -377,6 +375,7 @@ class TImportMenu
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
                         int        inrevenueCode,
+                        int        itemSizeIdentifier,
 						Database::TDBTransaction *inDBTransaction );
 
 		   void InsertItemSizeInDBWithKey(
@@ -421,6 +420,7 @@ class TImportMenu
                         int        inDefaultPatronCount,
                         Currency   inPriceForPoints,
                         int        inrevenueCode,
+                        int        inItemSizeIdentifier,
 						Database::TDBTransaction *inDBTransaction );
 
 		__int32 InsertBCategoryInDB( __int32 inItemSizeKey, __int32 inCategoryKey,

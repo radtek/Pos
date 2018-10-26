@@ -193,6 +193,24 @@ class TLoyaltyMateReleaseVoucherThread: public TThread
         AnsiString ErrorMessage;
 };
 //--------------------------------------------------------------------------
+class TLoyaltyMateOnlineOrderingThread: public TThread
+{
+	private:
+		TSyndCode _syndicateCode;
+		void SyncOnlineOrderingDetails();
+		void ThreadTerminated();
+        void UnsetSignalRStatusAtCloud();
+
+	protected:
+		virtual void __fastcall Execute();
+
+	public:
+        TLoyaltyMateOnlineOrderingThread(TSyndCode inSyndicateCode);
+        bool OperationSuccessful;
+        AnsiString ErrorMessage;
+        bool UnsetSignalRStatus;
+};
+//--------------------------------------------------------------------------
 class TManagerLoyaltyMate
 {
     private:

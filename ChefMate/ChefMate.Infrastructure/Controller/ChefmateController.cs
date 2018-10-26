@@ -459,11 +459,32 @@ namespace Chefmate.Infrastructure.Controller
                 foreach (var item in order.Items)
                 {
                     DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, CurrenTerminal.TerminalId);
+                    DbOrderItem.UpdateOrderItemStatus(item.OrderItemKey, OrderStatus.Normal); //if you want recall order on summary screen then uncomment it.
                 }
                 TotalOrders.Add(order);
                 PublishAddOrder(order);
             }
         }
+        #endregion
+
+       #region Accumulated Order
+      /*   public void AddAccumulatdrder(Order inOrder)
+        {
+            lock (_syncRoot)
+            {
+                var order = DbOrder.GetOrder(inOrder.OrderKey, 0, true);
+                AnalyticalData.CurrentOrdersCount++;
+                AnalyticalData.CurrentItems += order.Items.Count;
+                TimeSpan recalledOrderMakeTime = order.BumpTime - order.ArrivalTime;
+                AnalyticalData.TotalMakeTime = new TimeSpan(AnalyticalData.TotalMakeTime.Ticks - recalledOrderMakeTime.Ticks);
+                foreach (var item in order.Items)
+                {
+                    DbOrderItem.UpdateOrderItemTerminalKey(item.OrderItemKey, CurrenTerminal.TerminalId);
+                }
+                TotalOrders.Add(order);
+                PublishAddOrder(order);
+            }
+        }*/
         #endregion
 
         #region Terminal

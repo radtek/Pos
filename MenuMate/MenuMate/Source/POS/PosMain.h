@@ -91,6 +91,7 @@ public:		// User declarations
 	bool RedrawMenus;
 	bool SendHeldOrders;
     bool ShowTablePicker;
+    bool TransferSelected;
 	void OnLockOutTimer(TSystemEvents *Sender);
     TChitNumber WebOrderChitNumber;
     TMMContactInfo MemberInfo;
