@@ -106,16 +106,18 @@ class TManagerReports
 {
    private :
       TForm *Owner;
-      void AddSectionTitle(TPrintout *Printout,AnsiString Title);
+      void AddSectionTitle(TPrintout *Printout,AnsiString Title, bool isNonPMSReport = true);
 	  void AddSubSectionTitle(TPrintout *Printout,AnsiString Title);
-	TMemoryStream * ZedToArchive;
+	  TMemoryStream * ZedToArchive;
    public :
       TManagerReports(TForm * inOwner);
 	  void PrintConsumption(Database::TDBTransaction &DBTransaction);
 	  void PrintTableTabSummaryReport(Database::TDBTransaction &);
+//       void PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTransaction);
    ~TManagerReports();
 	  void PrintConsumptionByMenu(Database::TDBTransaction &DBTransaction, AnsiString SelectedMenu);
 	  void PrintFloatAdjustments(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
+     void PrintPMSRoomPaymentReport(Database::TDBTransaction &DBTransaction);
 };
 
 #endif

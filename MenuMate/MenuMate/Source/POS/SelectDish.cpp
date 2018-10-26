@@ -9984,7 +9984,7 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 
 				frmShowPrintout->btnCancel->Caption = "Close";
 				frmShowPrintout->btnClosePrint->Caption = "Print";
-				frmShowPrintout->Execute();
+                frmShowPrintout->Execute();
 
 			}break;
 		case 8: // Tabs and Tables
@@ -10033,6 +10033,20 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 			{
                 std::auto_ptr<TManagerReportExport> managerReportExport(new TManagerReportExport());
                 managerReportExport->ExportReport(1);
+			}break;
+        case 14: // Genrating Room Payment Summary
+			{
+
+				std::auto_ptr<TManagerReports>rep_mgr(new TManagerReports((TForm*)this));
+                std::auto_ptr<TfrmProcessing>working_dlg(TfrmProcessing::Create<TfrmProcessing>(this));
+                Database::TDBTransaction trans(TDeviceRealTerminal::Instance().DBControl);
+                working_dlg->Message = "Please Wait...";
+				TDeviceRealTerminal::Instance().RegisterTransaction(trans);
+                working_dlg->Show();
+                trans.StartTransaction();
+                rep_mgr->PrintPMSRoomPaymentReport(trans);
+                trans.Commit();
+
 			}break;
 		}
 	}
