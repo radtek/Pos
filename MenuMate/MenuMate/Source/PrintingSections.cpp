@@ -6644,7 +6644,7 @@ void TPrintSection::PrintPaymentTotals(TReqPrintJob *PrintJob)
 		Empty = false;
 	}
 
-	if (PrintJob->Transaction->Money.Change != 0)
+	if (PrintJob->Transaction->Money.Change != 0  && PrintJob->Transaction->SalesType != eCreditPurchase)
 	{
 		pPrinter->NewLine();
 		pPrinter->Line->Columns[1]->Width = CurrToStrF(PrintJob->Transaction->Money.RoundedChange, ffNumber, CurrencyDecimals).Length() + 1;
