@@ -403,18 +403,6 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         OnKeyPress = neCostKeyPress
         DecimalPlaces = 4
       end
-      object neTotalCost: TRichEdit
-        Left = 588
-        Top = 104
-        Width = 69
-        Height = 21
-        TabOrder = 5
-        Visible = False
-        OnChange = neTotalCostChange
-        OnExit = neTotalCostExit
-        OnKeyDown = neStockQtyKeyDown
-        OnKeyPress = neTotalCostKeyPress
-      end
       object btnAdd: TBitBtn
         Left = 8
         Top = 273
@@ -517,6 +505,20 @@ object frmReceiveInvoice: TfrmReceiveInvoice
         OnExit = myEditBoxExit
         OnKeyDown = myEditBoxKeyDown
         OnKeyPress = myEditBoxKeyPress
+      end
+      object neTotalCost: TNumericEdit
+        Left = 588
+        Top = 104
+        Width = 69
+        Height = 21
+        Precision = 5
+        FixedPoint = True
+        TabOrder = 5
+        Visible = False
+        OnExit = neTotalCostExit
+        OnKeyDown = neStockQtyKeyDown
+        OnKeyPress = neTotalCostKeyPress
+        DecimalPlaces = 4
       end
     end
     object btnFind: TBitBtn
