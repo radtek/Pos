@@ -187,7 +187,7 @@ void __fastcall TfrmBillGroup::FormDestroy(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
 {
-    TGlobalSettings::Instance().EnableOnlineOrdering = true;
+//    TGlobalSettings::Instance().EnableOnlineOrdering = true;
 	FormResize(this);
 	InCheckFunc = false;
     ClipTabInTable =false;
