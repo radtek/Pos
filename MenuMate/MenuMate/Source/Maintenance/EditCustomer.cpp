@@ -101,6 +101,11 @@ void __fastcall TfrmEditCustomer::FormShow(TObject *Sender)
    }
    cbNoEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
    edEmail->Enabled = Info.EMail == "" || Info.EMail == NULL;
+   if(!Info.ValidEmail() && TGlobalSettings::Instance().LoyaltyMateEnabled)
+   {
+    edEmail->Enabled= true;
+    cbNoEmail->Enabled = true;
+   }
    if(TGlobalSettings::Instance().MembershipType != MembershipTypeMenuMate || !TGlobalSettings::Instance().LoyaltyMateEnabled)
    {
         cbNoEmail->Visible = false;

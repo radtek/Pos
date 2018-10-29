@@ -15435,7 +15435,7 @@ void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, T
 
             if(memberExist)
              {
-             if (Info.Valid())
+             if (Info.Valid() &&  Info.ValidEmail())
              {
                 TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
                 ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);
