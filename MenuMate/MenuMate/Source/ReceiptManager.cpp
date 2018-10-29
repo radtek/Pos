@@ -991,14 +991,14 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
 
 		 for(std::vector<AnsiString>::iterator i = tippableCardTypes.begin() ; i != tippableCardTypes.end() ; i++)
 		 {
-			 tipCardTypesStr += "\'";
-			 tipCardTypesStr += *i;
-			 tipCardTypesStr += "\',";
+            tipCardTypesStr += "\'";
+            tipCardTypesStr += *i;
+            tipCardTypesStr += "\',";
 		 }
 
 		 tipCardTypesStr = tipCardTypesStr.SubString(0, tipCardTypesStr.Length()-1);
 
-         if( tipCardTypesStr.Length() > 0 )
+         if( tipCardTypesStr.Length() > 0 || TGlobalSettings::Instance().EnableEftPosAdyen)
          {
              Database::TDBTransaction DBTransaction(DBControl);
              DBTransaction.StartTransaction();
@@ -1010,8 +1010,15 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                                             " where DAP.ARCBILL_KEY = :ARCBILL_KEY "
                                             " and "
                                             " CHARACTER_LENGTH(TRIM(BOTH ' ' from DAP.PAY_TYPE_DETAILS)) > 0 "
-                                            " and TRIM(DAP.PAYMENT_CARD_TYPE) in ( " + tipCardTypesStr + ") "
                                             " AND PAY_TYPE not in ('Cash','Tip') ";
+
+            if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                IBInternalQuery->SQL->Text += "AND (TRIM(DAP.PAYMENT_CARD_TYPE) CONTAINING ('MC') or TRIM(DAP.PAYMENT_CARD_TYPE) CONTAINING ('Visa')) ";
+            else
+                IBInternalQuery->SQL->Text += " AND TRIM(DAP.PAYMENT_CARD_TYPE) in ( " + tipCardTypesStr + ") ";
+
+            if(TGlobalSettings::Instance().EnableEftPosAdyen)
+
              IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Array[ArrayIndex].second;
 
              IBInternalQuery->ExecQuery();
@@ -1023,7 +1030,9 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                 outArcbillKey = Array[ArrayIndex].second;
                 AnsiString properties = IBInternalQuery->Fields[4]->AsString;
                 AnsiString proptoSearch = IntToStr(ePayTypeAllowTips) + ",";
-                if(TStringTools::Instance()->HasAllProperties(properties,proptoSearch))
+
+                if((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()) ||
+                    (TStringTools::Instance()->HasAllProperties(properties,proptoSearch)))
                     retVal = true;
              }
 

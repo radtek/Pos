@@ -61,5 +61,6 @@ public:
         void UpdateEFTPOSLogs(bool status);
         AnsiString GetLogFileName();
         void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
+        bool AllowsTipsOnTransactions();
 };
 #endif
