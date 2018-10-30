@@ -20,7 +20,6 @@ class TManagerMews : public TBasePMS
        void GetMewsCustomer(UnicodeString queryString, std::vector<TCustomerMews> &customerMews,bool isSpace);
     private :
        AnsiString GetLogFileName();
-       void UpdateMewsLogs(bool status);
        void WaitOrProceedWithPost();
        void SetPostingFlag();
        void LogWaitStatus(std::auto_ptr<TStringList> waitLogs);
@@ -35,5 +34,6 @@ class TManagerMews : public TBasePMS
        UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete,UnicodeString name = "");
        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
        void CalculateQtyAndvariance(double &qtyItemD, int &qtyItem, double &varianceAdditive);
+       void UpdateMewsLogs(bool status);
 };
 #endif

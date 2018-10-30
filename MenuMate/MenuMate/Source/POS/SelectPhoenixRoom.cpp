@@ -1205,6 +1205,7 @@ void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
 		List->RowCount = 1;
 		List->Cells[0][0] = "";
         edSearch->Enabled = true;
+        btnNumPadClick(NULL);
     }
 }
 //---------------------------------------------------------------------------

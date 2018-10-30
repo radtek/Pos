@@ -130,7 +130,7 @@ protected:
     void _processEftposRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
     void _processRewardsRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
 
-    TMMProcessingState _createProcessingStateMessage();
+    TMMProcessingState _createProcessingStateMessage(TPaymentTransaction &PaymentTransaction);
     bool _isSmartCardPresent();
 
 	void TransRetriveElectronicResult(TPaymentTransaction &PaymentTransaction,TPayment *Payment);
@@ -234,6 +234,9 @@ protected:
      TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
      TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
      bool IsRoomReceiptSettingEnable();
+     bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
+     bool IsMewsConfigured();
+     bool TryToEnableMews();
 };
 
 #endif

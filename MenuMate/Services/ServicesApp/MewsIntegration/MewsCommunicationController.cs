@@ -268,11 +268,13 @@ namespace MewsIntegration
                 logsList.Add("Web Exception is                                   " + we.Message);
                 logsList.Add("Web Exception Message is                           " + we.InnerException.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                retValue = we.InnerException.Message;
             }
             catch (Exception ex)
             {
                 logsList.Add("Exception is                                       " + ex.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                retValue = ex.Message;
             }
             finally
             {
@@ -291,11 +293,11 @@ namespace MewsIntegration
             return retValue;
         }
 
-        public bool PostBill(string platformAddress, Order order, List<string> logsList)
+        public string PostBill(string platformAddress, Order order, List<string> logsList)
         {
             order.ClientToken = MewsRequestAddress.ClientToken;
             string responseString = "";
-            bool returnValue = false;
+            string retValue = "";
             string url = platformAddress + MewsRequestAddress.AddBill;
             string dateTimeUTC = DateTime.UtcNow.ToString("s") + "Z";
 
@@ -328,11 +330,13 @@ namespace MewsIntegration
                 logsList.Add("Exception is                                       " + we.Message);
                 logsList.Add("Web Exception Message is                           " + we.InnerException.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                retValue = we.InnerException.Message;
             }
             catch (Exception ex)
             {
                 logsList.Add("Exception is                                       " + ex.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                retValue = ex.Message;
             }
             finally
             {
@@ -343,12 +347,12 @@ namespace MewsIntegration
             }
             if (webResponse.StatusCode == HttpStatusCode.OK)
             {
-                returnValue = true;
+                retValue = "Successful";
                 logsList.Add("Status is                                          " + "Successful");
             }
             else
                 logsList.Add("Status is                                          " + "UnSuccessful");
-            return returnValue;
+            return retValue;
         }
         private HttpWebRequest GetWebRequest<T>(string url, T obj, List<string> logsList)
         {

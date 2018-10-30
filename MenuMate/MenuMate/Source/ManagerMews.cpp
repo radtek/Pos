@@ -110,13 +110,18 @@ void TManagerMews::Initialise()
                         if(DefaultSurchargeAccount.Trim() != "" && DefaultSurchargeAccount.Trim() != 0)
                             if(ServiceChargeAccount.Trim() != "" && ServiceChargeAccount.Trim() != 0)
                                 if(CreditCategory.Trim() != "" && CreditCategory.Trim() != 0)
-                                   // if(TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0)
+                                    if(TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0)
                                         if(TipAccount.Trim() != "")
-                                            Enabled = true;
+                                        {
+                                            Enabled = GetSpaces(TCPIPAddress, ExpensesAccount, RevenueCentre,DBTransaction);
+                                            if(!Enabled)
+                                                errorMessage = "Mews interface is not enabled as Menumate could not communicate with Mews.";
+//                                            Enabled = true;
+                                        }
                                         else
                                             errorMessage = "Tip Account selection is Required for Mews Integration.\rPlease provide Tip Account.";
-//                                    else
-//                                        errorMessage = "Service selection is Required for Mews Integration.\rPlease provide Service.";
+                                    else
+                                        errorMessage = "Service selection is Required for Mews Integration.\rPlease provide Service.";
                                 else
                                     errorMessage = "Credit Account selection is Required for Mews Integration.\rPlease provide Credit Account.";
                             else
@@ -339,15 +344,27 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     mewsOrder.Items.clear();
                     GetDetailsForMewsOrderBill(_paymentTransaction, portion, i,tipPortion,mewsOrder,false);
                     UnicodeString value = "";
+                    UnicodeString auxMessage = "";
                     value = mewsInterface->PostMewsOrder(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,mewsOrder);
                     if(value.Trim() == "Successful")
                         isSuccessful = true;
-                    else
+                    else if(value.Trim() != "Successful" && value.Trim() != "")
                     {
-                        MessageBox("Posting to Mews failed.\rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
-                        isSuccessful = false;
+                        auxMessage = "Posting to Mews failed.\r";
+                        auxMessage += value;
+                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         isPostedRoomPost = isSuccessful;
                         break;
+                    }
+                    else
+                    {
+                        auxMessage = "Posting to Mews failed.\r";
+                        if(value.Trim() != "")
+                            auxMessage += value;
+                        else
+                            auxMessage += "Menumate could not communicate with Mews.";
+                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                        isSuccessful = false;
                     }
                     isPostedRoomPost = isSuccessful;
                 }
@@ -429,15 +446,28 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
          }
          if(mewsOrderBill.Bills.size() > 0)
          {
-            bool value = false;
+            UnicodeString value = "";
+            UnicodeString auxMessage = "";
             if((hasRoomPost && isPostedRoomPost) || (!hasRoomPost))
             {
                 value = mewsInterface->PostMewsBill(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,mewsOrderBill);
-                if(value)
+                if(value.Trim() == "Successful")
                     isSuccessful = true;
+                else if(value.Trim() != "Successful" && value.Trim() != "")
+                {
+                    auxMessage = "Posting to Mews failed.\r";
+                    auxMessage += value;
+                    MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                    isSuccessful = false;
+                }
                 else
                 {
-                    MessageBox("Posting to Mews failed.\rPlease contact support team","Info",MB_OK+MB_ICONINFORMATION);
+                    auxMessage = "Posting to Mews failed.\r";
+                    if(value.Trim() != "")
+                        auxMessage += value;
+                    else
+                        auxMessage += "Menumate could not communicate with Mews.";
+                    MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                     isSuccessful = false;
                 }
             }
@@ -449,6 +479,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
 //        DBTransaction.Rollback();
     }
     UnsetPostingFlag();
+    if(!isSuccessful)
+       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     return isSuccessful;
 }
 void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCustomerMews> &customerMews,bool isSpace)
@@ -479,9 +511,9 @@ AnsiString TManagerMews::GetLogFileName()
     AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
-    directoryName = directoryName + "\\logs";
-    if (!DirectoryExists(directoryName))
-        CreateDir(directoryName);
+//    directoryName = directoryName + "\\logs";
+//    if (!DirectoryExists(directoryName))
+//        CreateDir(directoryName);
     directoryName = directoryName + "\\Mews Post Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);

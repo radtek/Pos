@@ -422,7 +422,7 @@ std::map<AnsiString,AnsiString> TMewsDataProcessor::GetAllMewsDetailsFromDB(Data
             AnsiString code = "";
             AnsiString name = "";
             if(identifier == 3)
-                name = IBInternalQuery->FieldByName("CODE")->AsString;
+                name = IBInternalQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
             else
                 name = IBInternalQuery->FieldByName("NAME")->AsString;
             code = IBInternalQuery->FieldByName("UNIQUEID")->AsString;

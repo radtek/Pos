@@ -23,6 +23,6 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         string PostOrder(string platformAddress, Order order);
         [OperationContract]
-        bool PostBill(string platformAddress, Order order);
+        string PostBill(string platformAddress, Order order);
     }
 }

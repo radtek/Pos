@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8747/MenumateServices/MewsService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (26/10/2018 6:11:02 p.m. - - $Rev: 25127 $)
+// (29/10/2018 7:01:07 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   MewsWSDLH
@@ -18,7 +18,7 @@
 #include <System.hpp>
 #include <InvokeRegistry.hpp>
 #include <XSBuiltIns.hpp>
-#include "winsock2.h"
+#include <winsock2.h>
 #include <SOAPHTTPClient.hpp>
 
 #if !defined(SOAP_REMOTABLE_CLASS)
@@ -964,7 +964,7 @@ public:
   virtual ArrayOfCustomerDetailsMews SearchCustomers(const UnicodeString platformAddress, const CustomerSearch* customerSearch) = 0; 
   virtual SpaceDetails*   GetSpaceIds(const UnicodeString platformAddress, const BasicInquiry* customerSearch) = 0; 
   virtual UnicodeString   PostOrder(const UnicodeString platformAddress, const Order* order) = 0; 
-  virtual bool            PostBill(const UnicodeString platformAddress, const Order* order) = 0; 
+  virtual UnicodeString   PostBill(const UnicodeString platformAddress, const Order* order) = 0; 
 };
 typedef DelphiInterface<IMewsIntegrationWebService> _di_IMewsIntegrationWebService;
 

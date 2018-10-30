@@ -222,9 +222,9 @@ UnicodeString TMewsInterface::PostMewsOrder(UnicodeString platformAddress,TOrder
     }
     return retValue;
 }
-bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
+UnicodeString TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
 {
-    bool retValue = false;
+    UnicodeString retValue = "";
     try
     {
         Order* orderMews = new Order();
@@ -264,7 +264,7 @@ bool TMewsInterface::PostMewsBill(UnicodeString platformAddress,TOrder order)
     }
     catch(Exception &ex)
     {
-         return false;
+         return "";
     }
     return retValue;
 }

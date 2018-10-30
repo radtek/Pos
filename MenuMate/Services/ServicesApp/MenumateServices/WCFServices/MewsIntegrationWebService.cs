@@ -105,8 +105,14 @@ namespace MenumateServices.WCFServices
             List<string> logsList = new List<string>();
             try
             {
-                MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
-                retValue = mewsCommunicationController.PostOrder(platformAddress, order, logsList);
+                for (int count = 1; count < 3; count++)
+                {
+                    logsList.Add("Try Number                          :" + count);
+                    MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
+                    retValue = mewsCommunicationController.PostOrder(platformAddress, order, logsList);
+                    if (retValue == "Successful")
+                        break;
+                }
             }
             catch (Exception exception)
             {
@@ -115,15 +121,21 @@ namespace MenumateServices.WCFServices
             WriteToFile(logsList);
             return retValue;
         }
-        public bool PostBill(string platformAddress, Order order)
+        public string PostBill(string platformAddress, Order order)
         {
-            bool retValue = false;
+            string retValue = "";
             SpaceDetails spaceDetails = new SpaceDetails();
             List<string> logsList = new List<string>();
             try
             {
-                MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
-                retValue = mewsCommunicationController.PostBill(platformAddress, order, logsList);
+                for (int count = 1; count < 3; count++)
+                {
+                    logsList.Add("Try Number                          :" + count);
+                    MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
+                    retValue = mewsCommunicationController.PostBill(platformAddress, order, logsList);
+                    if (retValue == "Successful")
+                        break;
+                }
             }
             catch (Exception exception)
             {

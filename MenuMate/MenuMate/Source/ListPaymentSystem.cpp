@@ -73,6 +73,7 @@
 #include "FiscalPrinterAdapter.h"
 #include "ManagerPMSCodes.h"
 #include "SaveLogs.h"
+#include "ManagerMews.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -778,7 +779,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		RequestEFTPOSReceipt = false;
 		bool reprintEftposReceipt = false;
 		bool isRecovering = false;
-		State = _createProcessingStateMessage();
+		State = _createProcessingStateMessage(PaymentTransaction);
 
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
@@ -1328,8 +1329,26 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
+                    AnsiString stateMessageOld = "";
+                    AnsiString stateTitleOld   = "";
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                    {
+                        stateMessageOld = State.Message;
+                        stateTitleOld   = State.Title;
 
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        State.Message = "Waiting For Adyen EFTPOS...";
+                        State.Title = "Processing Bill";
+                        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+                    }
+					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                    {
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        State.Message = stateMessageOld;
+                        State.Title = stateTitleOld;
+                        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+                    }
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))
 					{
 						TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(Payment->ReferenceNumber);
@@ -1483,6 +1502,20 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
         {
             OpenCashDrawer(PaymentTransaction);
         }
+        AnsiString stateMessageOld = State.Message;
+        AnsiString stateTitleOld   = State.Title;
+
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(TGlobalSettings::Instance().PMSType == Mews)
+            State.Message = "Waiting for Mews to process Bill...";
+        else if(TGlobalSettings::Instance().PMSType == SiHot)
+            State.Message = "Waiting for Sihot to process Bill...";
+        else if(TGlobalSettings::Instance().PMSType == Oracle)
+            State.Message = "Waiting for Oracle to process Bill...";
+        else
+            State.Message = "Waiting for PMS to process Bill...";
+        State.Title = "Processing Bill";
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
@@ -1502,6 +1535,10 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
             RetVal = true;
 		}
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        State.Message = stateMessageOld;
+        State.Title = stateTitleOld;
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 	}
 	return RetVal;
 }
@@ -3783,6 +3820,26 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             }
         }
     }
+    else if(IsMewsConfigured())
+    {
+            /*
+               mews could be enabled but is not. Hence we need to try making it
+               enabled if possible.
+            */
+        bool mewsEnabled = TryToEnableMews();
+        if(mewsEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              ResetPayments(PaymentTransaction);
+          }
+        }
+    }
 	if(!PhoenixHSOk)
 	   return RetVal;
 
@@ -5436,10 +5493,10 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 	}
 }
 //------------------------------------------------------------------------------
-TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
+TMMProcessingState TListPaymentSystem::_createProcessingStateMessage(TPaymentTransaction &_paymentTransaction)
 {
     UnicodeString message = "Processing Bill";
-    if(TGlobalSettings::Instance().EnableEftPosAdyen && !_isSmartCardPresent())
+    if(IsPaidByAdyen(_paymentTransaction) && !_isSmartCardPresent())
         message = "Waiting For Adyen EFTPOS";
 
 	TMMProcessingState State(Screen->ActiveForm, message, "Processing Bill");
@@ -5451,6 +5508,34 @@ TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 	}
 
 	return State;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::IsPaidByAdyen(TPaymentTransaction &_paymentTransaction)
+{
+    bool retValue = false;
+    try
+    {
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+            {
+                TPayment *payment = _paymentTransaction.PaymentGet(i);
+                if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+                {
+                    double amount = (double)payment->GetPayTendered();
+                    if(amount != 0)
+                    {
+                         retValue = true;
+                    }
+                }
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::_isSmartCardPresent()
@@ -6385,6 +6470,59 @@ bool TListPaymentSystem::IsOracleConfigured()
         (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
         (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
         (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL));
+}
+//--------------------------------------------------------------------------
+bool TListPaymentSystem::IsMewsConfigured()
+{
+    try
+    {
+        return (TGlobalSettings::Instance().PMSType == Mews &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != 0  &&
+        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != 0 &&
+        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" &&
+        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->TipAccount.Trim() != "");
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return false;
+}
+//---------------------------------------------------------------------------
+bool TListPaymentSystem::TryToEnableMews()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eSelf);
+        TDeviceRealTerminal::Instance().BasePMS->Initialise();
+        retValue = TDeviceRealTerminal::Instance().BasePMS->Enabled;
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
