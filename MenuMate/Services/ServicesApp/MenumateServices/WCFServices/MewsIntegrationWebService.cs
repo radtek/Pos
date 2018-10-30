@@ -107,7 +107,9 @@ namespace MenumateServices.WCFServices
             {
                 for (int count = 1; count < 3; count++)
                 {
-                    logsList.Add("Try Number                          :" + count);
+                    if(count != 1)
+                        logsList.Add("=================================================================================");                    
+					logsList.Add("Try Number                          :" + count);
                     MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
                     retValue = mewsCommunicationController.PostOrder(platformAddress, order, logsList);
                     if (retValue == "Successful")
@@ -128,9 +130,11 @@ namespace MenumateServices.WCFServices
             List<string> logsList = new List<string>();
             try
             {
-                for (int count = 1; count < 3; count++)
+                for (int count = 1; count <= 3; count++)
                 {
-                    logsList.Add("Try Number                          :" + count);
+                    if(count != 1)
+                        logsList.Add("=================================================================================");
+                    logsList.Add("Try Number                          :" + count.ToString());
                     MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
                     retValue = mewsCommunicationController.PostBill(platformAddress, order, logsList);
                     if (retValue == "Successful")
@@ -153,7 +157,7 @@ namespace MenumateServices.WCFServices
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
-                string location = Path.Combine(path, "logs");
+                string location = path;//Path.Combine(path, "logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");
