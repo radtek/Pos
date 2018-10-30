@@ -12,11 +12,11 @@ using AdyenIntegration.Domain.ResponseEnvelop;
 using System.Net;
 using System.IO;
 using AdyenIntegration.Tools;
-
+using AdyenIntegration.Domain.AdjustAuthorisation;
 
 namespace AdyenIntegration
 {
-    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund, eLoginToSystem, eLogoutSystem };
+    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund, eLoginToSystem, eLogoutSystem,eAdjustAuthorisation };
 
     public class AdyenIntegrationController
     {
@@ -455,6 +455,44 @@ namespace AdyenIntegration
                 }  
             }
             return retValue;
+        }
+
+        public AdjustAndCaptureResponse AdjustAuthorisation(AdjustAuthorisation authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                stringList.Add("********Request to AdjustAuthorisation********");
+                var webRequest = CreateWebRequest(details);
+                //  envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+                //      response = PostRequest(authRequest, webRequest, RequestType.eProcessSale);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in AdjustAuthorisation " + ex.Message);
+                stringList.Add("Exception in AdjustAuthorisation at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            WriteToFile(stringList);
+            return response;
+        }
+
+        public AdjustAndCaptureResponse CaptureModifiedAmount(AdjustAuthorisation authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                stringList.Add("********Request to CaptureModifiedAmount********");
+                var webRequest = CreateWebRequest(details);
+                // envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");
+                //      response = PostRequest(authRequest, webRequest, RequestType.eProcessSale);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in CaptureModifiedAmount " + ex.Message);
+                stringList.Add("Exception in CaptureModifiedAmount at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            WriteToFile(stringList);
+            return response;
         }
         private void WriteToFile(List<string> list)
         {

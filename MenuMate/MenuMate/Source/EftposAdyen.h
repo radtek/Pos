@@ -7,7 +7,8 @@
 #include "DropDown.h"
 #include "DropDownVar.h"
 //---------------------------------------------------------------------------
-enum AdyenRequestType {eAdyenNormalSale = 1, eAdyenRefundSale, eAdyenPingRequest, eAdyenLoginRequest, eAdyenLogOutRequest, eAdyenTransactionStatus};
+enum AdyenRequestType {eAdyenNormalSale = 1, eAdyenRefundSale, eAdyenPingRequest, eAdyenLoginRequest, eAdyenLogOutRequest, eAdyenTransactionStatus,
+                       eAdjustAuthorisation};
 class TEftposAdyen : public TEftPos
 {
    protected :
@@ -62,5 +63,6 @@ public:
         AnsiString GetLogFileName();
         void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
         bool AllowsTipsOnTransactions();
+        void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef);
 };
 #endif

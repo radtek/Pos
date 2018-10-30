@@ -8,6 +8,7 @@ using AdyenIntegration.Domain.Common;
 using AdyenIntegration.Domain.RequestEnvelop;
 using AdyenIntegration.Domain.ResponseEnvelop;
 using AdyenIntegration.Domain.Constants;
+using AdyenIntegration.Domain.AdjustAuthorisation;
 
 namespace MenumateServices.WCFServices
 {
@@ -31,5 +32,9 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         SaleToPOIResponse LogoutSystem(Envelop envelop, ResourceDetails details);
+        [OperationContract]
+        AdjustAndCaptureResponse AdjustAuthorisation(AdjustAuthorisation authRequest, ResourceDetails details);
+        [OperationContract]
+        AdjustAndCaptureResponse CaptureModifiedAmount(AdjustAuthorisation authRequest, ResourceDetails details);
     }
 }

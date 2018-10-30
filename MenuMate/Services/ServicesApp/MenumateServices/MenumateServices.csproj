@@ -93,6 +93,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdyenIntegration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Ready for Distribution\AdyenIntegration.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
@@ -427,10 +431,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdyenIntegration\AdyenIntegration.csproj">
-      <Project>{71986902-F877-4F9E-A692-15D2FC3DC65E}</Project>
-      <Name>AdyenIntegration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Loyaltymate\Loyaltymate.csproj">
       <Project>{5926EAF0-F930-4522-8EDE-E27F76E109C7}</Project>
       <Name>Loyaltymate</Name>

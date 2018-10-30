@@ -526,9 +526,14 @@ Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType req
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleTransactionID->TimeStamp = "";
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleReferenceID = saleRefId;
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->TokenRequestedType = "Customer";
+
         if(requestType == eAdyenNormalSale && TGlobalSettings::Instance().EnableDPSTipping )
         {
-            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "tenderOption=AskGratuity";
+            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "tenderOption=AskGratuity&authorisationType=PreAuth";
+        }
+        else
+        {
+            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "authorisationType=PreAuth";
         }
 
         envelop->SaleToPOIRequest->PaymentRequest->PaymentTransaction = new PaymentTransaction();
@@ -825,4 +830,14 @@ bool TEftposAdyen::AllowsTipsOnTransactions()
 {
     return true;
 }
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------void TEftposAdyen::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
+{
+//	EftPosDPS->DpsTxnRef = OriginalDpsTxnRef;
+//	EftPosDPS->Amount = FormatFloat("0.00",OriginalAmount);
+//	EftPosDPS->Amount2 = FormatFloat("0.00",OriginalAmount + TipAmount);
+//	EftPosDPS->TxnType = "Tip";
+//	DpsEftposTipOwnerRefNumber = OriginalDpsTxnRef;
+//	EftPosDPS->DoEditTender();
+}
+
+//---------------------------------------------------------------------------
