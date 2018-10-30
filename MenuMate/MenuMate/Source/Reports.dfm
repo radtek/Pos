@@ -275,6 +275,25 @@ object frmReports: TfrmReports
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnHavanaReportMouseClick
     end
+    object btnRoomPaymentReport: TTouchBtn
+      Left = 168
+      Top = 221
+      Width = 145
+      Height = 65
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWhite
+      Font.Height = -19
+      Font.Name = 'Ariel'
+      Font.Style = []
+      ParentFont = False
+      ParentColor = True
+      Caption = 'PMS Room Payment'
+      ButtonColor = 6052441
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = btnbtnRoomPaymentReportMouseClick
+    end
   end
   object Panel1: TPanel
     Left = 633

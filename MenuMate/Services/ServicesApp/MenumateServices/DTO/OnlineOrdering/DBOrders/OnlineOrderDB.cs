@@ -361,6 +361,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     command.ExecuteNonQuery();
                     SetSeatTab(tabKey, seatKey);
                 }
+                else
+                {
+                    command = dbQueries.UpdateTabName(connection, transaction, tabKey, containerName);
+                    command.ExecuteNonQuery();
+                }
 
             }
             catch (Exception e)
@@ -404,7 +409,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 FbCommand command;
 
                 if (tableNumber > 0)
+                {
                     command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableNumber);
+                }
                 else
                     command = dbQueries.CheckTableAlreadyOccupied(connection, transaction, email, tableName);
 
@@ -418,12 +425,36 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                                         0));
                 }
 
+                if (orderKey > 0)
+                {
+                    if (tableNumber > 0)
+                    {
+                        command = dbQueries.TableWithSameMemberAlreadyExist(connection, transaction, email, tableNumber);
+                    }
+                    else
+                        command = dbQueries.TableWithSameMemberAlreadyExist(connection, transaction, email, tableName);
+
+                    using (FbDataReader reader = command.ExecuteReader())
+                    {
+                        int secondOrderKey = 0;
+                        if (reader.Read())
+                            secondOrderKey = Convert.ToInt32(
+                                            getReaderColumnValue(
+                                                            reader,
+                                                            "ORDER_KEY",
+                                                            0));
+                        if (secondOrderKey > 0)
+                            orderKey = 0;
+                    }
+                }
+
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in IsTableBusy " + e.Message, e);
                 throw;
             }
+
             return orderKey > 0;
         }
 

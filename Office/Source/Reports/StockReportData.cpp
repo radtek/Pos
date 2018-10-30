@@ -785,7 +785,7 @@ void TdmStockReportData::SetupManufactureRecipe(TDateTime StartTime, TDateTime E
 			"StockTrans.Created,"
 			"StockTrans.Location,"
 			"abs(StockTrans.Qty) Qty, "
-            "StockTrans.Total_Cost,"
+            "Cast(abs(StockTrans.Qty * StockTrans.Unit_Cost) As Numeric(15,2)) Total_Cost,"
             "StockTrans.Unit_Cost,"
             "StockTrans.Unit,"
             "StockTrans.Note "

@@ -47,6 +47,9 @@ private:	// User declarations
     void UpdateColor(int tableNo, bool isSelected);
     std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
     std::set<int> AssignedMezzanineTable;
+    bool IsTableAvailable(Database::TDBTransaction &DBTransaction,int TableNumber);
+
+
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	BEGIN_MESSAGE_MAP

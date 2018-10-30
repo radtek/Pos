@@ -26,8 +26,8 @@ namespace AdyenIntegration.Domain
         // cluster
         //[DataMember]
         //public string SaleToPOIData { get; set; }
-        //[DataMember]
-        //public string SaleToAcquirerData { get; set; }
+        [DataMember]
+        public string SaleToAcquirerData { get; set; }
         //[DataMember]
         //public SaleToIssuerData SaleToIssuerData { get; set; }
     }
