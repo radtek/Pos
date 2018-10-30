@@ -107,9 +107,7 @@ namespace MenumateServices.WCFServices
             {
                 for (int count = 1; count < 3; count++)
                 {
-                    if(count != 1)
-                        logsList.Add("=================================================================================");                    
-					logsList.Add("Try Number                          :" + count);
+                    logsList.Add("Try Number                          :" + count);
                     MewsCommunicationController mewsCommunicationController = new MewsCommunicationController();
                     retValue = mewsCommunicationController.PostOrder(platformAddress, order, logsList);
                     if (retValue == "Successful")

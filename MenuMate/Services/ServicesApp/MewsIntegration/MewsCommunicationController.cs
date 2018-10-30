@@ -5,6 +5,8 @@ using System.Net;
 using System.Text;
 using MewsIntegration.Domain;
 using MewsIntegration.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MewsIntegration
 {
@@ -369,7 +371,15 @@ namespace MewsIntegration
             var request = (HttpWebRequest)WebRequest.Create(new Uri(url));
             logsList.Add("Creating Web Request");
             var jsonString = JsonUtility.Serialize(obj);
-            logsList.Add("Request Data is                                    " + jsonString);
+            string jsonStringLogs = jsonString;
+            JObject jObj = JObject.Parse(jsonStringLogs);
+            if (jsonStringLogs.Contains("ClientToken"))
+                jObj["ClientToken"] = "";
+            if (jsonStringLogs.Contains("AccessToken"))
+                jObj["AccessToken"] = "";
+            jsonStringLogs = JsonConvert.SerializeObject(jObj, Formatting.None,
+                         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            logsList.Add("Request Data is                                    " + jsonStringLogs);
             byte[] bytes = Encoding.UTF8.GetBytes(jsonString);
 
             request.Method = WebRequestMethods.Http.Post;
