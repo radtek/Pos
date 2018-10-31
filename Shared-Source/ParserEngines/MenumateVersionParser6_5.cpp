@@ -37,6 +37,13 @@ void TApplyParser::upgrade6_54Tables()
 {
     update6_54Tables();
 }
+
+void TApplyParser::upgrade6_55Tables()
+{
+    update6_55Tables();
+}
+
+
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -78,6 +85,15 @@ void TApplyParser::update6_54Tables()
   AlterTableOrders6_54(_dbControl);
   AlterTableArchives6_54(_dbControl);
 }
+//---------------------------------------------------------
+
+void TApplyParser::update6_55Tables()
+{
+    Create6_55Table(_dbControl);
+    Create6_55Generator(_dbControl);
+
+}
+
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
 {
@@ -670,8 +686,42 @@ void TApplyParser::AlterTableArchives6_54(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
 	}
 }
-}
+
 //------------------------------------------------------------------------------
+void TApplyParser::Create6_55Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSREFRENECE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSREFRENECE "
+        "( "
+        "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  INVOICE_NO VARCHAR(20),                       "
+        "  ORIGINAL VARCHAR(20),                            "
+        "  REFRENCE VARCHAR(22),               "
+        "  PSREFERENCE VARCHAR(20),              "
+        "  MODIFIED_REFERENCE VARCHAR(20),              "
+        "  IS_SETTLED VARCHAR(20),                "
+        "  MERCHANT_ID VARCHAR(20)                "
+        ");",
+		inDBControl );
+    }
+}
+
+////------------------------------------------------------------------------------
+void TApplyParser::Create6_55Generator(TDBControl* const inDBControl)
+{
+
+     if(!generatorExists("GEN_EFTPOSREFERENCE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSREFERENCE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSREFERENCE_ID TO 0;", inDBControl);
+	}
+
+}
+}
+
+
 
 
 
