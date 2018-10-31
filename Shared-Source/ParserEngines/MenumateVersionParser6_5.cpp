@@ -698,7 +698,7 @@ void TApplyParser::Create6_55Table(TDBControl* const inDBControl)
         "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
         "  INVOICE_NO VARCHAR(50),                       "
         "  ORIGINAL_REFERENCE VARCHAR(50),                            "
-        "  PSREFERENCE VARCHAR(50),              "
+        "  PSPREFERENCE VARCHAR(50),              "
         "  MODIFIED_REFERENCE VARCHAR(50),              "
         "  IS_SETTLED CHAR(1) DEFAULT 'F',                "
         "  MERCHANT_ID VARCHAR(50)                "
@@ -710,13 +710,11 @@ void TApplyParser::Create6_55Table(TDBControl* const inDBControl)
 ////------------------------------------------------------------------------------
 void TApplyParser::Create6_55Generator(TDBControl* const inDBControl)
 {
-
-     if(!generatorExists("GEN_EFTPOSREFERENCE_ID", _dbControl))
+    if(!generatorExists("GEN_EFTPOSREFERENCE_ID", _dbControl))
 	{
 		executeQuery("CREATE GENERATOR GEN_EFTPOSREFERENCE_ID;", inDBControl);
 		executeQuery("SET GENERATOR GEN_EFTPOSREFERENCE_ID TO 0;", inDBControl);
 	}
-
 }
 }
 

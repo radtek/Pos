@@ -208,6 +208,7 @@ TEftPosTransaction::TEftPosTransaction(AnsiString inID,eEFTTransactionType inTra
     TipAmount = "";
     SurchargeAmount = "";
     CashOutAmount = "";
+    MerchantAccount = "";
 }
 
 __fastcall TListEftPosTransContainer::~TListEftPosTransContainer()

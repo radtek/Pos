@@ -477,7 +477,6 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
 		return;
 	}
 
-
     if (MessageBox("Are you sure you wish to add a tip on this transaction ?" ,"Add a tip to transaction", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
 	{
         std::auto_ptr <TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create <TfrmTouchNumpad> (Screen->ActiveForm));

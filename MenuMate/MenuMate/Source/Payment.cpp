@@ -69,6 +69,7 @@ TPayment::TPayment(TPaymentTransaction *inOwner) : Owner(inOwner)
     SmartConnectQREnabled = false;
     EFTPOSSurcharge = 0;
     ExternalCashOut = 0;
+    MerchantAccount = "";
 }
 
 void TPayment:: operator = (const TPayment & Data)
@@ -124,6 +125,7 @@ void TPayment:: operator = (const TPayment & Data)
     SmartConnectQREnabled = Data.SmartConnectQREnabled;
     EFTPOSSurcharge = Data.EFTPOSSurcharge;
     ExternalCashOut = Data.ExternalCashOut;
+    MerchantAccount = Data.MerchantAccount;
 }
 
 void TPayment::Reset()
@@ -148,6 +150,7 @@ void TPayment::Reset()
    SmartConnectQREnabled = false;
    EFTPOSSurcharge = 0;
    ExternalCashOut = 0;
+   MerchantAccount = "";
 }
 
 void TPayment::Failed()

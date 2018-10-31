@@ -61,6 +61,7 @@ public:
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
     AnsiString CashOutAmount;
+    AnsiString MerchantAccount;
 };
 
 class TListEftPosTransContainer : public TList

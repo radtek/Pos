@@ -200,6 +200,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                               EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
                               EftTrans->EftposTransactionID = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                              EftTrans->MerchantAccount = response->PaymentResponse->PaymentResult->PaymentAcquirerData->MerchantID;
 
                               // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                               if(TGlobalSettings::Instance().PrintCardHolderReceipt)
@@ -229,6 +230,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
 
                                       EftTrans->EftposTransactionID = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                                      EftTrans->MerchantAccount = response->PaymentResponse->PaymentResult->PaymentAcquirerData->MerchantID;
 
                                       // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                                       if(TGlobalSettings::Instance().PrintCardHolderReceipt)

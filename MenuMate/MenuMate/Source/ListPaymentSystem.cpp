@@ -1363,6 +1363,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 AnsiString cardtype = EftTrans->CardType;
 								Payment->CardType = TStringTools::Instance()->UpperCaseWithNoSpace(cardtype); // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
+                                Payment->MerchantAccount = EftTrans->MerchantAccount;
+
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
@@ -2450,6 +2452,39 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->ExecQuery();
 			}
 		}
+
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+            {
+                TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
+                if(SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+                {
+                    if(SubPayment->GetPayTendered() != 0)
+                    {
+                        // Get New Key
+                        IBInternalQuery2->Close();
+                        IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSREFERENCE_ID, 1) FROM RDB$DATABASE";
+                        IBInternalQuery2->ExecQuery();
+                        int eftposreferenceId = IBInternalQuery2->Fields[0]->AsInteger;
+
+                        IBInternalQuery->Close();
+                        IBInternalQuery->SQL->Text =
+                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, ORIGINAL_REFERENCE, PSPREFERENCE, MODIFIED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
+                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :ORIGINAL_REFERENCE, :PSPREFERENCE, :MODIFIED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
+
+                        IBInternalQuery->ParamByName("EFTPOSREFRENCE_ID")->AsInteger = eftposreferenceId;
+                        IBInternalQuery->ParamByName("INVOICE_NO")->AsString = PaymentTransaction.InvoiceNumber;;
+                        IBInternalQuery->ParamByName("ORIGINAL_REFERENCE")->AsString = SubPayment->EftposTransactionID;
+                        IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("MODIFIED_REFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
+                        IBInternalQuery->ParamByName("MERCHANT_ID")->AsString = SubPayment->MerchantAccount;
+                        IBInternalQuery->ExecQuery();
+                    }
+                }
+            }
+        }
 
 	}
 	catch(Exception & E)
