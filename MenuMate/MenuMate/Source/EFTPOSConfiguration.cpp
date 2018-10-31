@@ -229,6 +229,11 @@ void TfrmEFTPOSConfig::UpdateGUI()
         SidePanel->Height = SidePanel->Height - GroupBox1->Height;
         Height =  Height - GroupBox1->Height;
     }
+    else
+    {
+     tbEftPosTerminalID->Enabled = true;
+
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -317,3 +322,4 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
          MessageBox(strValue,"Information",MB_OK+MB_ICONINFORMATION);
     }
 }
+
