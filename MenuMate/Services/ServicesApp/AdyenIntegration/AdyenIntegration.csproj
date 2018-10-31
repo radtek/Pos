@@ -54,6 +54,7 @@
     <Compile Include="Domain\AcquirerTransactionID.cs" />
     <Compile Include="Domain\AdjustAuthorisation\AdditionalData.cs" />
     <Compile Include="Domain\AdjustAuthorisation\AdjustAuthorisation.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\CaptureModifiedAmount.cs" />
     <Compile Include="Domain\AdjustAuthorisation\AdjustAndCaptureResponse.cs" />
     <Compile Include="Domain\AdjustAuthorisation\ModificationAmount.cs" />
     <Compile Include="Domain\AdjustAuthorisation\ResultNotifications.cs" />

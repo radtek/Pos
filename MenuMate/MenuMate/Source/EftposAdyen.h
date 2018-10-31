@@ -32,6 +32,7 @@ class TEftposAdyen : public TEftPos
         SaleToPOIResponse* TriggerEnquiry(Currency AmtPurchase, UnicodeString TxnRef);
         Envelop* GetEnquiryEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef);
         void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
+        void CaptureAmount(AdjustAuthorisation* adjustAuthorisation );
 public:
         TEftposAdyen();
         ~TEftposAdyen();

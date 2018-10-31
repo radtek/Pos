@@ -16,7 +16,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (31/10/2018 5:26:43 p.m. - - $Rev: 25127 $)
+// (31/10/2018 10:53:43 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -227,6 +227,11 @@ __fastcall SaleToPOIResponse::~SaleToPOIResponse()
   delete FMessageHeader;
   delete FPaymentResponse;
   delete FTransactionStatusResponse;
+}
+
+__fastcall CaptureModifiedAmount::~CaptureModifiedAmount()
+{
+  delete FmodificationAmount;
 }
 
 __fastcall AdjustAuthorisation::~AdjustAuthorisation()
@@ -450,22 +455,26 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse");
   /* SaleToPOIResponse */
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse2", L"SaleToPOIResponse");
-  /* AdjustAuthorisation */
-  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation");
-  /* AdditionalData */
-  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData");
+  /* CaptureModifiedAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(CaptureModifiedAmount), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"CaptureModifiedAmount");
   /* ModificationAmount */
   RemClassRegistry()->RegisterXSClass(__classid(ModificationAmount), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"ModificationAmount");
   /* AdjustAndCaptureResponse */
   RemClassRegistry()->RegisterXSClass(__classid(AdjustAndCaptureResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAndCaptureResponse");
   /* AdjustAuthorisation */
-  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation2", L"AdjustAuthorisation");
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation");
   /* AdditionalData */
-  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData2", L"AdditionalData");
+  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData");
+  /* CaptureModifiedAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(CaptureModifiedAmount2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"CaptureModifiedAmount2", L"CaptureModifiedAmount");
   /* ModificationAmount */
   RemClassRegistry()->RegisterXSClass(__classid(ModificationAmount2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"ModificationAmount2", L"ModificationAmount");
   /* AdjustAndCaptureResponse */
   RemClassRegistry()->RegisterXSClass(__classid(AdjustAndCaptureResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAndCaptureResponse2", L"AdjustAndCaptureResponse");
+  /* AdjustAuthorisation */
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation2", L"AdjustAuthorisation");
+  /* AdditionalData */
+  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData2", L"AdditionalData");
   /* ArrayOfPaymentReceipt */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPaymentReceipt), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfPaymentReceipt");
   /* ArrayOfAllowedProduct */

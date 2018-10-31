@@ -12,6 +12,6 @@ namespace AdyenIntegration.Domain.AdjustAuthorisation
         [DataMember]
         public string pspReference { get; set; }
         [DataMember]
-        public string[] response { get; set; }
+        public string response { get; set; }
     }
 }

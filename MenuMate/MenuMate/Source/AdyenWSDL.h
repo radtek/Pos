@@ -16,7 +16,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (31/10/2018 5:26:43 p.m. - - $Rev: 25127 $)
+// (31/10/2018 10:53:43 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
@@ -157,14 +157,16 @@ class SOAP_REMOTABLE_CLASS Envelop2;
 class SOAP_REMOTABLE_CLASS SaleToPOIRequest2;
 class SOAP_REMOTABLE_CLASS SaleToPOIResponse;
 class SOAP_REMOTABLE_CLASS SaleToPOIResponse2;
-class SOAP_REMOTABLE_CLASS AdjustAuthorisation;
-class SOAP_REMOTABLE_CLASS AdditionalData;
+class SOAP_REMOTABLE_CLASS CaptureModifiedAmount;
 class SOAP_REMOTABLE_CLASS ModificationAmount;
 class SOAP_REMOTABLE_CLASS AdjustAndCaptureResponse;
-class SOAP_REMOTABLE_CLASS AdjustAuthorisation2;
-class SOAP_REMOTABLE_CLASS AdditionalData2;
+class SOAP_REMOTABLE_CLASS AdjustAuthorisation;
+class SOAP_REMOTABLE_CLASS AdditionalData;
+class SOAP_REMOTABLE_CLASS CaptureModifiedAmount2;
 class SOAP_REMOTABLE_CLASS ModificationAmount2;
 class SOAP_REMOTABLE_CLASS AdjustAndCaptureResponse2;
+class SOAP_REMOTABLE_CLASS AdjustAuthorisation2;
+class SOAP_REMOTABLE_CLASS AdditionalData2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -2607,6 +2609,101 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : CaptureModifiedAmount, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class CaptureModifiedAmount : public TRemotable {
+private:
+  UnicodeString   FmerchantAccount;
+  bool            FmerchantAccount_Specified;
+  ModificationAmount* FmodificationAmount;
+  bool            FmodificationAmount_Specified;
+  UnicodeString   ForiginalReference;
+  bool            ForiginalReference_Specified;
+  UnicodeString   Freference;
+  bool            Freference_Specified;
+  void __fastcall SetmerchantAccount(int Index, UnicodeString _prop_val)
+  {  FmerchantAccount = _prop_val; FmerchantAccount_Specified = true;  }
+  bool __fastcall merchantAccount_Specified(int Index)
+  {  return FmerchantAccount_Specified;  } 
+  void __fastcall SetmodificationAmount(int Index, ModificationAmount* _prop_val)
+  {  FmodificationAmount = _prop_val; FmodificationAmount_Specified = true;  }
+  bool __fastcall modificationAmount_Specified(int Index)
+  {  return FmodificationAmount_Specified;  } 
+  void __fastcall SetoriginalReference(int Index, UnicodeString _prop_val)
+  {  ForiginalReference = _prop_val; ForiginalReference_Specified = true;  }
+  bool __fastcall originalReference_Specified(int Index)
+  {  return ForiginalReference_Specified;  } 
+  void __fastcall Setreference(int Index, UnicodeString _prop_val)
+  {  Freference = _prop_val; Freference_Specified = true;  }
+  bool __fastcall reference_Specified(int Index)
+  {  return Freference_Specified;  } 
+
+public:
+  __fastcall ~CaptureModifiedAmount();
+__published:
+  __property UnicodeString merchantAccount = { index=(IS_OPTN|IS_NLBL), read=FmerchantAccount, write=SetmerchantAccount, stored = merchantAccount_Specified };
+  __property ModificationAmount* modificationAmount = { index=(IS_OPTN|IS_NLBL), read=FmodificationAmount, write=SetmodificationAmount, stored = modificationAmount_Specified };
+  __property UnicodeString originalReference = { index=(IS_OPTN|IS_NLBL), read=ForiginalReference, write=SetoriginalReference, stored = originalReference_Specified };
+  __property UnicodeString  reference = { index=(IS_OPTN|IS_NLBL), read=Freference, write=Setreference, stored = reference_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ModificationAmount, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class ModificationAmount : public TRemotable {
+private:
+  UnicodeString   Fcurrency;
+  bool            Fcurrency_Specified;
+  int             Fvalue;
+  bool            Fvalue_Specified;
+  void __fastcall Setcurrency(int Index, UnicodeString _prop_val)
+  {  Fcurrency = _prop_val; Fcurrency_Specified = true;  }
+  bool __fastcall currency_Specified(int Index)
+  {  return Fcurrency_Specified;  } 
+  void __fastcall Setvalue(int Index, int _prop_val)
+  {  Fvalue = _prop_val; Fvalue_Specified = true;  }
+  bool __fastcall value_Specified(int Index)
+  {  return Fvalue_Specified;  } 
+__published:
+  __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
+  __property int             value = { index=(IS_OPTN), read=Fvalue, write=Setvalue, stored = value_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdjustAndCaptureResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAndCaptureResponse : public TRemotable {
+private:
+  UnicodeString   FpspReference;
+  bool            FpspReference_Specified;
+  UnicodeString   Fresponse;
+  bool            Fresponse_Specified;
+  void __fastcall SetpspReference(int Index, UnicodeString _prop_val)
+  {  FpspReference = _prop_val; FpspReference_Specified = true;  }
+  bool __fastcall pspReference_Specified(int Index)
+  {  return FpspReference_Specified;  } 
+  void __fastcall Setresponse(int Index, UnicodeString _prop_val)
+  {  Fresponse = _prop_val; Fresponse_Specified = true;  }
+  bool __fastcall response_Specified(int Index)
+  {  return Fresponse_Specified;  } 
+__published:
+  __property UnicodeString pspReference = { index=(IS_OPTN|IS_NLBL), read=FpspReference, write=SetpspReference, stored = pspReference_Specified };
+  __property UnicodeString   response = { index=(IS_OPTN|IS_NLBL), read=Fresponse, write=Setresponse, stored = response_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : AdjustAuthorisation, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
 // ************************************************************************ //
@@ -2676,74 +2773,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : ModificationAmount, global, <complexType>
+// XML       : CaptureModifiedAmount, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
 // ************************************************************************ //
-class ModificationAmount : public TRemotable {
-private:
-  UnicodeString   Fcurrency;
-  bool            Fcurrency_Specified;
-  int             Fvalue;
-  bool            Fvalue_Specified;
-  void __fastcall Setcurrency(int Index, UnicodeString _prop_val)
-  {  Fcurrency = _prop_val; Fcurrency_Specified = true;  }
-  bool __fastcall currency_Specified(int Index)
-  {  return Fcurrency_Specified;  } 
-  void __fastcall Setvalue(int Index, int _prop_val)
-  {  Fvalue = _prop_val; Fvalue_Specified = true;  }
-  bool __fastcall value_Specified(int Index)
-  {  return Fvalue_Specified;  } 
-__published:
-  __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
-  __property int             value = { index=(IS_OPTN), read=Fvalue, write=Setvalue, stored = value_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : AdjustAndCaptureResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
-// ************************************************************************ //
-class AdjustAndCaptureResponse : public TRemotable {
-private:
-  UnicodeString   FpspReference;
-  bool            FpspReference_Specified;
-  ArrayOfstring   Fresponse;
-  bool            Fresponse_Specified;
-  void __fastcall SetpspReference(int Index, UnicodeString _prop_val)
-  {  FpspReference = _prop_val; FpspReference_Specified = true;  }
-  bool __fastcall pspReference_Specified(int Index)
-  {  return FpspReference_Specified;  } 
-  void __fastcall Setresponse(int Index, ArrayOfstring _prop_val)
-  {  Fresponse = _prop_val; Fresponse_Specified = true;  }
-  bool __fastcall response_Specified(int Index)
-  {  return Fresponse_Specified;  } 
-__published:
-  __property UnicodeString pspReference = { index=(IS_OPTN|IS_NLBL), read=FpspReference, write=SetpspReference, stored = pspReference_Specified };
-  __property ArrayOfstring   response = { index=(IS_OPTN|IS_NLBL), read=Fresponse, write=Setresponse, stored = response_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : AdjustAuthorisation, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
-// ************************************************************************ //
-class AdjustAuthorisation2 : public AdjustAuthorisation {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : AdditionalData, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
-// ************************************************************************ //
-class AdditionalData2 : public AdditionalData {
+class CaptureModifiedAmount2 : public CaptureModifiedAmount {
 private:
 __published:
 };
@@ -2774,6 +2807,30 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : AdjustAuthorisation, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAuthorisation2 : public AdjustAuthorisation {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdditionalData, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdditionalData2 : public AdditionalData {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IAdyenIntegrationWebService/%operationName%
@@ -2792,9 +2849,9 @@ public:
   virtual SaleToPOIResponse* Refund(const Envelop* envelop, const ResourceDetails* details) = 0; 
   virtual SaleToPOIResponse* GetTransactionStatus(const Envelop* envelop, const ResourceDetails* details) = 0; 
   virtual SaleToPOIResponse* LoginToSystem(const Envelop* envelop, const ResourceDetails* details) = 0; 
-  virtual SaleToPOIResponse* LogoutSystem(const Envelop* envelop, const ResourceDetails* details) = 0;
-  virtual AdjustAndCaptureResponse* CaptureModifiedAmount(const AdjustAuthorisation* authRequest, const ResourceDetails* details) = 0;
-  virtual AdjustAndCaptureResponse* AdjustAuthorisation(const AdjustAuthorisation* authRequest, const ResourceDetails* details) = 0;
+  virtual SaleToPOIResponse* LogoutSystem(const Envelop* envelop, const ResourceDetails* details) = 0; 
+  virtual AdjustAndCaptureResponse* CaptureModifiedAmount(const CaptureModifiedAmount* authRequest, const ResourceDetails* details) = 0; 
+  virtual AdjustAndCaptureResponse* AdjustAuthorisation(const AdjustAuthorisation* authRequest, const ResourceDetails* details) = 0; 
 };
 typedef DelphiInterface<IAdyenIntegrationWebService> _di_IAdyenIntegrationWebService;
 

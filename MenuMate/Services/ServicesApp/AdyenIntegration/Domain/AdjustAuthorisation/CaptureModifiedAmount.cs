@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace AdyenIntegration.Domain.AdjustAuthorisation
 {
     [DataContract]
-    public class AdjustAuthorisation
+    public class CaptureModifiedAmount
     {
         [DataMember]
         public string merchantAccount { get; set; }
@@ -16,8 +16,6 @@ namespace AdyenIntegration.Domain.AdjustAuthorisation
         [DataMember]
         public string originalReference { get; set; }
         [DataMember]
-        public string reference { get; set; } 
-        [DataMember]
-        public AdditionalData additionalData { get; set; }
+        public string reference { get; set; }        
     }
 }
