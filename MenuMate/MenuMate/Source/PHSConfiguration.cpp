@@ -256,19 +256,30 @@ void TfrmPHSConfiguration::UpdateGUI()
         //tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
         tbRevenueCentre->Caption = "Access Token\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
         AnsiString outletName   = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount,Outlet);
+        if(outletName.Trim() == "")
+        {
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultAccount,"");
+            DBTransaction1.Commit();
+        }
         tbPhoenixID->Caption = "Outlet\r" + outletName;
         AnsiString serviceName   = GetMewsName(TGlobalSettings::Instance().OracleInterfaceIPAddress,Service);
+        if(serviceName.Trim() == "")
+        {
+            TGlobalSettings::Instance().OracleInterfaceIPAddress = "";
+        }
         tbPaymentDefCat->Caption = "Service\r" + serviceName;
-        AnsiString serviceChargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount,AccountingCategory);
-        tbServiceCharge->Caption = "Service Charge\r" + serviceChargeName;
-        AnsiString surchargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,AccountingCategory);
-        tbSurchargeCat->Caption = "Surcharge Account\r" + surchargeName;
-        AnsiString tipName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->TipAccount,AccountingCategory);
-        tbTipAccount->Caption = "Tip Account\r" + tipName;
-        AnsiString creditName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->CreditCategory,AccountingCategory);
-        tbCreditCat->Caption = "Credit Account\r" + creditName;
-        AnsiString pointsName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,AccountingCategory);
-        tbPointCat->Caption = "Points Account\r" + pointsName;
+        //AnsiString serviceChargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount,AccountingCategory);
+        tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;//serviceChargeName;
+        //AnsiString surchargeName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,AccountingCategory);
+        tbSurchargeCat->Caption = "Surcharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;//surchargeName;
+        //AnsiString tipName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->TipAccount,AccountingCategory);
+        tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;//tipName;
+        //AnsiString creditName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->CreditCategory,AccountingCategory);
+        tbCreditCat->Caption = "Credit Account\r" + TDeviceRealTerminal::Instance().BasePMS->CreditCategory;//creditName;
+        //AnsiString pointsName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,AccountingCategory);
+        tbPointCat->Caption = "Points Account\r" + TDeviceRealTerminal::Instance().BasePMS->PointsCategory;//pointsName;
         tbRevenueCodes->Caption = "Revenue Mapping";
         tbPhoenixPortNumber->Enabled = true;
         tbPhoenixPortNumber->Caption = "Payments Mapping";
@@ -410,9 +421,8 @@ void __fastcall TfrmPHSConfiguration::tbPointCatClick(TObject *Sender)
         if(codeSelected != "")
         {
             TDeviceRealTerminal::Instance().BasePMS->PointsCategory = codeSelected;
-            AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->PointsCategory,AccountingCategory);
-            tbPointCat->Caption = "Points Account\r" + labelName;
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,TDeviceRealTerminal::Instance().BasePMS->PointsCategory);
+            tbPointCat->Caption = "Points Account\r" + codeSelected;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSPointsCategory,codeSelected);
         }
         DBTransaction1.Commit();
     }
@@ -443,9 +453,8 @@ void __fastcall TfrmPHSConfiguration::tbCreditCatClick(TObject *Sender)
         if(codeSelected != "")
         {
             TDeviceRealTerminal::Instance().BasePMS->CreditCategory = codeSelected;
-            AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->CreditCategory,AccountingCategory);
-            tbCreditCat->Caption = "Credit Account\r" + labelName;
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSCreditCategory,TDeviceRealTerminal::Instance().BasePMS->CreditCategory);
+            tbCreditCat->Caption = "Credit Account\r" + codeSelected;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSCreditCategory,codeSelected);
         }
         DBTransaction1.Commit();
    }
@@ -494,10 +503,14 @@ void __fastcall TfrmPHSConfiguration::tbSurchargeCatClick(TObject *Sender)
             AnsiString codeSelected = GetDropDownResult(AccountingCategory);
             if(codeSelected != "")
             {
+//                TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount = codeSelected;
+//                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,AccountingCategory);
+//                tbSurchargeCat->Caption = "Surcahrge Account\r" + labelName;
+//                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultSurchargeAccount,TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount);
                 TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount = codeSelected;
-                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,AccountingCategory);
-                tbSurchargeCat->Caption = "Surcahrge Account\r" + labelName;
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultSurchargeAccount,TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount);
+//                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,AccountingCategory);
+                tbSurchargeCat->Caption = "Surcahrge Account\r" + codeSelected;
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSDefaultSurchargeAccount,codeSelected);
             }
         }
         DBTransaction1.Commit();
@@ -593,9 +606,8 @@ void __fastcall TfrmPHSConfiguration::tbTipAccountClick(TObject *Sender)
             if(codeSelected != "")
             {
                 TDeviceRealTerminal::Instance().BasePMS->TipAccount = codeSelected;
-                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->TipAccount,AccountingCategory);
-                tbTipAccount->Caption = "Tip Account\r" + labelName;
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSTipAccount,TDeviceRealTerminal::Instance().BasePMS->TipAccount);
+                tbTipAccount->Caption = "Tip Account\r" + codeSelected;
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSTipAccount,codeSelected);
             }
         }
         DBTransaction1.Commit();
@@ -645,9 +657,8 @@ void __fastcall TfrmPHSConfiguration::tbServiceChargeMouseClick(TObject *Sender)
             if(codeSelected != "")
             {
                 TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount = codeSelected;
-                AnsiString labelName = GetMewsName(TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount,AccountingCategory);
-                tbServiceCharge->Caption = "Service Charge Account\r" + labelName;
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSServiceChargeAccount,TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount);
+                tbServiceCharge->Caption = "Service Charge Account\r" + codeSelected;
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmPMSServiceChargeAccount,codeSelected);
             }
         }
         DBTransaction1.Commit();
@@ -1022,7 +1033,7 @@ AnsiString TfrmPHSConfiguration::ShowVerticalSelection(eVertSel selectionType)
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
     {
-        retValue = SelectedItem.Properties["Action"];
+        retValue = SelectedItem.Title;//Properties["Action"];
     }
     DBTransaction1.Commit();
     return retValue;

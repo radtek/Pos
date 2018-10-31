@@ -31,9 +31,11 @@ class TManagerMews : public TBasePMS
        void GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
                                             double tipPortion,TOrder &mewsOrder,bool isBill);
        TUnitCost GetUnitCost(TItemComplete* itemComplete, double portion,bool &seperateDiscount,double &value);
-       UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete,UnicodeString name = "");
+       UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete,bool isDefaultRequired,UnicodeString name = "");
        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
        void CalculateQtyAndvariance(double &qtyItemD, int &qtyItem, double &varianceAdditive);
        void UpdateMewsLogs(bool status);
+       UnicodeString CheckMewsCategoryExists(UnicodeString category);
+       void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
 };
 #endif
