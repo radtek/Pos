@@ -140,7 +140,7 @@ class TEftPos
 
 	// checks whether en eftpos supports tip transactions. default is false
 	virtual bool AllowsTipsOnTransactions();
-	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
+	virtual bool ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool IsCashOutSupported();

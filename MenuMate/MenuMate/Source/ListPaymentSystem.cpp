@@ -4717,16 +4717,25 @@ bool TListPaymentSystem::ProcessTipOnVisaTransaction(int arcBillKey, WideString 
 
 		// TODO: set the recovery information
 
-		EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "GeneratorHostelsPOS");
 
-		if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
+            if(retVal)
+                InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
+        }
+		else
 		{
-			TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
-			if (EftTrans != NULL && EftTrans->Result == eAccepted)
-			{
-				InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
-				retVal = true;
-			}
+            EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
+            if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
+            {
+                TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
+                if (EftTrans != NULL && EftTrans->Result == eAccepted)
+                {
+                    InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
+                    retVal = true;
+                }
+            }
 		}
 
 		// TODO: clear recovery information

@@ -828,29 +828,16 @@ void TEftposAdyen::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
 //------------------------------------------------------------------------------
 bool TEftposAdyen::AllowsTipsOnTransactions()
 {
-    return true;
+    return TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
 }
-//------------------------------------------------------------------------------void TEftposAdyen::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
+//------------------------------------------------------------------------------bool TEftposAdyen::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
 {
-    AdjustAndCaptureResponse* response;
+    bool retVal = false;
     try
-    {    MessageBox("1","1",MB_OK);
-        AdjustAuthorisation *adjustAuthorisation =  new AdjustAuthorisation();
-        adjustAuthorisation->additionalData = new AdditionalData();
-        adjustAuthorisation->additionalData->industryUsage = "DelayedCharge";
-
-        CaptureModifiedAmount *captureModifiedAmount =  new CaptureModifiedAmount();
-        captureModifiedAmount->merchantAccount = "GeneratorHostelsPOS";
-        captureModifiedAmount->modificationAmount = new ModificationAmount();
-        captureModifiedAmount->modificationAmount->currency = CurrencyString;
+    {
         int val = (OriginalAmount + TipAmount)*100;
-        captureModifiedAmount->modificationAmount->value = val;
-        captureModifiedAmount->originalReference = OriginalDpsTxnRef;
-        captureModifiedAmount->reference = (OriginalDpsTxnRef + "_1");
-
-
-
-        adjustAuthorisation->merchantAccount = "GeneratorHostelsPOS";
+        AdjustAuthorisation *adjustAuthorisation =  new AdjustAuthorisation();
+        adjustAuthorisation->merchantAccount = MerchantRef;
         adjustAuthorisation->modificationAmount = new ModificationAmount();
         adjustAuthorisation->modificationAmount->currency = CurrencyString;
 
@@ -858,26 +845,40 @@ bool TEftposAdyen::AllowsTipsOnTransactions()
         adjustAuthorisation->originalReference = OriginalDpsTxnRef;
         adjustAuthorisation->reference = (OriginalDpsTxnRef + "_1");
 
-        ResourceDetails *details = GetResourceDetails();
-        details->URL =  "https://pal-test.adyen.com/pal/servlet/Payment/v40/adjustAuthorisation";
+        if(TipAmount > OriginalAmount)
+        {
+            adjustAuthorisation->additionalData = new AdditionalData();
+            adjustAuthorisation->additionalData->industryUsage = "DelayedCharge";
 
-        CoInitialize(NULL);
-        response = AdyenClient->AdjustAuthorisation(adjustAuthorisation,details);
-         MessageBox("1.1","1.1",MB_OK);
-        CaptureAmount(adjustAuthorisation);
-        //AdyenClient->CaptureModifiedAmount(adjustAuthorisation,details);
+            ResourceDetails *details = GetResourceDetails();
+            details->URL =  "https://pal-test.adyen.com/pal/servlet/Payment/v40/adjustAuthorisation";
+
+            CoInitialize(NULL);
+            AdjustAndCaptureResponse* response = AdyenClient->AdjustAuthorisation(adjustAuthorisation,details);
+
+            if(response->response.Pos("[adjustAuthorisation-received]") != 0)
+            {
+                retVal = CaptureAmount(adjustAuthorisation);
+            }
+        }
+        else
+        {
+            retVal = CaptureAmount(adjustAuthorisation);
+        }
     }
     catch(Exception &Ex)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retVal = false;
     }
-   // return response;
+    return retVal;
 }
 //--------------------------------------------------------------------------
-void TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
+bool TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
 {
+    bool retVal = false;
     try
-    {    MessageBox("2","2",MB_OK);
+    {   // MessageBox("2","2",MB_OK);
         CaptureModifiedAmount *captureModifiedAmount =  new CaptureModifiedAmount();
         captureModifiedAmount->merchantAccount = adjustAuthorisation->merchantAccount;
         captureModifiedAmount->modificationAmount = new ModificationAmount();
@@ -891,10 +892,17 @@ void TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
 
         CoInitialize(NULL);
         AdjustAndCaptureResponse* response = AdyenClient->CaptureModifiedAmount(captureModifiedAmount, details);
+
+        if(response->response.Pos("[capture-received]") != 0)
+        {
+            retVal = true;
+        }
     }
     catch(Exception &Ex)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retVal = false;
     }
+    return retVal;
 }
 

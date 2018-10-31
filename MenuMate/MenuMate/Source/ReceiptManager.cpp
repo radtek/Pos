@@ -1017,8 +1017,6 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
             else
                 IBInternalQuery->SQL->Text += " AND TRIM(DAP.PAYMENT_CARD_TYPE) in ( " + tipCardTypesStr + ") ";
 
-            if(TGlobalSettings::Instance().EnableEftPosAdyen)
-
              IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = Array[ArrayIndex].second;
 
              IBInternalQuery->ExecQuery();

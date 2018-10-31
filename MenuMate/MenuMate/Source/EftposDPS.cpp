@@ -506,7 +506,7 @@ bool TEftPosMMDPS::AllowsTipsOnTransactions()
 }
 
 //---------------------------------------------------------------------------
-void TEftPosMMDPS::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
+bool TEftPosMMDPS::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
 {
 	EftPosDPS->DpsTxnRef = OriginalDpsTxnRef;
 	EftPosDPS->Amount = FormatFloat("0.00",OriginalAmount);

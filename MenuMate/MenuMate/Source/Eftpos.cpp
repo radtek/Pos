@@ -289,7 +289,7 @@ bool TEftPos::AllowsTipsOnTransactions()
 	return AllowsTipping == true;
 }
 //--------------------------------------------------------------------------
-void TEftPos::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
+bool TEftPos::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
 {
     // does nothing here. this method needs to be overwritten by childs who implements tipping
 }
