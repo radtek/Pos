@@ -4207,6 +4207,12 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
+               Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -4320,6 +4326,12 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
                Instruction = new TPSectionInstruction(epofiPrintSignatureSection);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
+
+
+               Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -4448,6 +4460,10 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
+                Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
+			   Instruction->GroupNo = 1;
+			   Instruction->DrawLineAbove = true;
+			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -5314,10 +5330,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 	}
 }
 //---------------------------------------------------------------------------
-
-
-
-
 void __fastcall TfrmPrinterMaintenance::cbPrintVoidClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5353,9 +5365,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnRefundReferenceLabelMouseClick(TObje
    }
 }
 //---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5398,3 +5407,8 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
       memCustomizeSubHeader->Enabled = false;
 }
 //-------------------------------------------------------------------------------------
+//void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender)
+//{
+//    //todo
+//}
+

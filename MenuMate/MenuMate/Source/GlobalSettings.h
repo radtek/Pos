@@ -540,6 +540,9 @@ public:
     bool SendNoTaxToSiHot;
     UnicodeString RevenueCodeDiscountPart;
     bool EnableOnlineOrdering;
+    bool EnableEftPosPreAuthorisation;
+    bool PrintTipAndSignature;
+    bool EnableAdjustAuthorisationOnCards;
 };
 
 #endif
