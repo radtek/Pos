@@ -1204,7 +1204,7 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 /************MM-5048***************************/
 	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot &&
-        TGlobalSettings::Instance().PMSType != Oracle)
+        TGlobalSettings::Instance().PMSType != Oracle && TGlobalSettings::Instance().PMSType != Mews)
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
@@ -1215,7 +1215,9 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}
-    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" && TGlobalSettings::Instance().PMSType == SiHot && IsRoomPayment(PrintJob))
+    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" &&
+            (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Mews)
+             && IsRoomPayment(PrintJob))
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumberStr;

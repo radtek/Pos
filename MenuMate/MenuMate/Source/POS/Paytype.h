@@ -203,9 +203,7 @@ __fastcall TfrmPaymentType(TComponent* Owner,TPaymentTransaction &inCurrentTrans
     void ApplyAccount(TMMContactInfo &Member);
     void ClearAccount();
     void RemoveMembership();
-    void ProcessThorVouchers();
   bool IsMemberSelected;
-  bool ThorMemberIsUnregistered();
   bool IsReceipeAdded(TList *Orders);
   bool IsItemAssignToPrinter(TList *Orders);
 };

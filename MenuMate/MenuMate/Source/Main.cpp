@@ -9,7 +9,6 @@
 #include "Main.h"
 #include "enum.h"
 #include "MMLogging.h"
-//#include "ManagerClippIntegration.h"
 #include "Setup.h"
 #include "Maintain.h"
 #include "DbMod.h"
@@ -408,12 +407,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			frmSplitPayment = TfrmSplitPayment::Create<TfrmSplitPayment>(this);
 			frmSecurity = TfrmSecurity::Create<TfrmSecurity>(this);
 			frmSelectDish = TfrmSelectDish::Create<TfrmSelectDish>(this);
-            if(TGlobalSettings::Instance().IsThorlinkSelected)
-            {
-                TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CallInitMethod();
-            }
-
-			/* POS */
+            /* POS */
 
 			frmDBMod->SetCaption("Cleaning Logs");
 			RemoveOldLogs();
@@ -482,17 +476,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-//         if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-//            TManagerClippIntegration::Instance();
-
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
             TManagerPanasonic::Instance();
             TManagerPanasonic::Instance()->PrepareTenderTypes();
             TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
         }
-
-
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);

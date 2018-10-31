@@ -107,7 +107,6 @@ __published:	// IDE-managed Components
     void __fastcall tbtnSplitMouseClick(TObject *Sender);
     void __fastcall tbtnCancelMouseClick(TObject *Sender);
     void __fastcall tbtnSelectZoneMouseClick(TObject *Sender);
-    void __fastcall ProcessBillThorVouchers(Database::TDBTransaction &DBTransaction);
     void __fastcall SplitTimerTick(TObject *Sender);
     void __fastcall tgridItemListMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton, int X, int Y);
@@ -145,7 +144,6 @@ private:	// User declarations
     void ClearTabOnDelayedPaymentSelection(Database::TDBTransaction &DBTransaction,int inSelectedTab);
     void UpdateBilledPatronCount(Database::TDBTransaction &DBTransaction,int tableNo);
     bool discountFormProcessed;
-    void RemoveThorMembership();
     std::pair<int, int> CalculatePatronCount();
     int DeterminePatronCount();
     std::auto_ptr<TChefmateClientManager> cmClientManager;
@@ -231,7 +229,6 @@ public:		// User declarations
 	void UpdateContainerListColourDisplay();
 	void UpdateItemListColourDisplay();
 	void __fastcall ApplyDiscount(Database::TDBTransaction &DBTransaction,int DiscountKey,TDiscountSource DiscountSource = dsMMUser);
-    void __fastcall ApplyThorDiscount(Database::TDBTransaction &DBTransaction,int DiscountKey,TDiscountSource DiscountSource = dsMMUser);
 	bool AddToSelectedTabs(Database::TDBTransaction &DBTransaction,long TabKey);
 	void ApplyMembership(Database::TDBTransaction &DBTransaction,TMMContactInfo &MembershipInfo);
    void OnSmartCardInserted(TSystemEvents *Sender);
@@ -240,9 +237,6 @@ public:		// User declarations
    TDateTime delivery_time;
    TChitNumber WebOrderChitNumber;
    TMMContactInfo MemberInfo;
-   void UpdateBillGroupBtnVisibilityInClipTabCase(Database::TDBTransaction &DBTransaction,std::map<__int64,TPnMOrder> &SelectedItems);
-   void CheckingClipItemsInSelectedList(Database::TDBTransaction &DBTransaction);
-   int CheckIfListContainOnlyClipItems(Database::TDBTransaction &DBTransaction,std::map<__int64,TPnMOrder> &SelectedItems);
    void CheckLinkedTable(int TableNumber);
    int PatronCountForMallExport;
 };

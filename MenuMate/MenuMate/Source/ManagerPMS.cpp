@@ -10,7 +10,7 @@
 #include "PhoenixHotelSystem.h"
 #include "ManagerSiHot.h"
 #include "ManagerOraclePMS.h"
-
+#include "ManagerMews.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -30,14 +30,19 @@ void TManagerPMS::Initialize(Database::TDBControl &inDBControl, int pmsIdentifie
             TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerSiHot());
             break;
         }
-        default:
-        {
-             TDeviceRealTerminal::Instance().BasePMS.reset(new TPhoenixHM());
-             break;
-        }
         case 3:
         {
              TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerOraclePMS());
+             break;
+        }
+        case 4:
+        {
+             TDeviceRealTerminal::Instance().BasePMS.reset(new TManagerMews());
+             break;
+        }
+        default:
+        {
+             TDeviceRealTerminal::Instance().BasePMS.reset(new TPhoenixHM());
              break;
         }
     }

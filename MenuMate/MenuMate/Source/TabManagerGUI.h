@@ -71,7 +71,6 @@ __published:	// IDE-managed Components
     TPanel *Panel1;
     TTouchBtn *TouchBtn1;
     TTouchBtn *btnSubsidisedProfile;
-    TTouchBtn *btnClippTab;
     void __fastcall btnShowNormalTabsClick(TObject *Sender);
     void __fastcall btnMemberTabsClick(TObject *Sender);
     void __fastcall btnStaffTabsClick(TObject *Sender);
@@ -98,8 +97,6 @@ __published:	// IDE-managed Components
     void __fastcall tgDiscountsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
     void __fastcall btnSubsidisedProfileMouseClick(TObject *Sender);
     void __fastcall TouchBtn1MouseClick(TObject *Sender);
-    void __fastcall btnClippTabMouseClick(TObject *Sender);
-
 private:	// User declarations
 	__fastcall TfrmTabManager(TComponent* Owner,Database::TDBControl &inDBControl);
 	

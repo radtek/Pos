@@ -3,9 +3,6 @@
 #ifndef POS_XMLTransactionH
 #define POS_XMLTransactionH
 //---------------------------------------------------------------------------
-#include "POS_XMLBase.h"
-
-
 #include "ItemComplete.h"
 #include "Payment.h"
 

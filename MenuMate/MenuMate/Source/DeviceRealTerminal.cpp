@@ -27,7 +27,6 @@ TDeviceRealTerminal::TDeviceRealTerminal()
 	                                             Modules)),
     Scales(new TScaleModel),
     PocketVouchers(new TManagerPocketVoucher),
-	IMManager(new TIMManager),
 	ManagerGeneralLedger(new TManagerGeneralLedger),
     FiscalPort(new TFiscalPort)
 {
@@ -333,15 +332,6 @@ void __fastcall TDeviceRealTerminal::OnTimerTick(TObject *Sender)
 		 ResetEventLockOutTimer();
 	  }
    }
-
-   if (IMManager->Registered && IMManager->Enabled)
-   {
-	  if (IMStatusLastFired + (60 * 1000) < ::GetTickCount())
-	  {
-		 IMManager->Status();
-		 IMStatusLastFired = ::GetTickCount();
-	  }
-   }
 }
 
 void TDeviceRealTerminal::ResetEventLockOutTimer()
@@ -395,12 +385,6 @@ void TDeviceRealTerminal::Initialise(Database::TDBTransaction &DBTransaction)
    }
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
    Timer->Enabled = true;
-
-   if (Modules.Status[eIntaMate]["Registered"])
-   {
-	  IMManager->Registered = true;
-	  IMManager->Initialise(TGlobalSettings::Instance().IntaMateIPAddress, TGlobalSettings::Instance().IntaMatePort, TGlobalSettings::Instance().IntaMateTerminalID, TGlobalSettings::Instance().IntaMateTCPTimeOut_ms);
-   }
 }
 
 void TDeviceRealTerminal::TriggerTabStateChanged()
@@ -408,30 +392,3 @@ void TDeviceRealTerminal::TriggerTabStateChanged()
    AfterTabStateChanged.Occured();
 }
 
-void TDeviceRealTerminal::BuildXMLVersion( TPOS_XMLBase &Data, int SiteID )
-{
-   try
-   {
-	  Data.Doc.Clear();
-
-	  TiXmlDeclaration * decl = new TiXmlDeclaration(_T("1.0"), _T("UTF-8"), _T(""));
-	  Data.Doc.LinkEndChild(decl);
-
-	  AnsiString version = GetFileVersion();
-
-	  // Insert DOCTYPE definiation here.
-	  TiXmlElement * List = new TiXmlElement( xmlEleVersion );
-	  List->SetAttribute( xmlAttrID,               AnsiString(Data.IntaMateID).c_str() );
-	  List->SetAttribute( xmlAttrSiteID,           SiteID );
-	  List->SetAttribute( xmlAttrPOSVersion,       version.c_str() );
-	  List->SetAttribute( xmlAttrInterfaceVersion, version.c_str() );
-
-	  Data.Doc.LinkEndChild(List);
-   }
-   catch(Exception & E)
-   {
-	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-	  throw;
-   }
-}
-//..............................................................................

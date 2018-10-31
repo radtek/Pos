@@ -564,14 +564,8 @@ void __fastcall TfrmSelectMember::btnAddUserClick(TObject *Sender)
 
    if (Result == lsAccepted)
    {
-	  TPOS_XMLBase POSXML("Update Member Export");
 	  TMMContactInfo ContactInfo;
 	  TDeviceRealTerminal::Instance().ManagerMembership->AddMember(ContactInfo);
-	  DBTransaction.StartTransaction();
-	  TDeviceRealTerminal::Instance().ManagerMembership->BuildXMLMemberUpdate(DBTransaction, ContactInfo, POSXML);
-	  DBTransaction.Commit();
-	  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	  POSXML.SaveToFile();
 	  RefreshDisplay();
 	  switch(SearchType)
 	  {
@@ -626,15 +620,11 @@ void __fastcall TfrmSelectMember::btnEditUserClick(TObject *Sender)
     DBTransaction.Commit();
    if (Result == lsAccepted)
    {
-	  TPOS_XMLBase POSXML("Update Member Export");
 	  TMMContactInfo ContactInfo;
 	  ContactInfo.ContactKey = SelectedUser.ContactKey;
 	  DBTransaction.StartTransaction();
 	  TDeviceRealTerminal::Instance().ManagerMembership->EditMember(DBTransaction, ContactInfo);
-	  TDeviceRealTerminal::Instance().ManagerMembership->BuildXMLMemberUpdate(DBTransaction, ContactInfo, POSXML);
 	  DBTransaction.Commit();
-	  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	  POSXML.SaveToFile();
 	  RefreshDisplay();
    }
    else if (Result == lsDenied)
@@ -824,15 +814,11 @@ void __fastcall TfrmSelectMember::btnDeleteMouseClick(TObject *Sender)
    DBTransaction.Commit();
    if (Result == lsAccepted)
    {
-	  TPOS_XMLBase POSXML("Update Member Export");
 	  TMMContactInfo ContactInfo;
 	  ContactInfo.ContactKey = SelectedUser.ContactKey;
 	  DBTransaction.StartTransaction();
 	  TDeviceRealTerminal::Instance().ManagerMembership->DeleteMember(DBTransaction, ContactInfo);
-	  TDeviceRealTerminal::Instance().ManagerMembership->BuildXMLMemberUpdate(DBTransaction, ContactInfo, POSXML);
 	  DBTransaction.Commit();
-	  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	  POSXML.SaveToFile();
 	  SetSelectedMember(0, false);
 	  RefreshDisplay();
    }

@@ -217,8 +217,6 @@ object frmSystemConfig: TfrmSystemConfig
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbOkClick
-      ExplicitLeft = 6
-      ExplicitTop = 1
     end
     object tbtnQuit: TTouchBtn
       Left = 5

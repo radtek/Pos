@@ -5,7 +5,7 @@
 #include "SelectPhoenixRoom.h"
 #include "MMMessageBox.h"
 #include "MMLogging.h"
-
+#include "ManagerMews.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -21,6 +21,10 @@ char MemButtonChar[24][2] = { {'~', '`'}, {'!', '1'}, {'@', '2'}, {'#', '3'}, {'
 __fastcall TfrmPhoenixRoom::TfrmPhoenixRoom(TComponent* Owner)
 	: TZForm(Owner)//, *roomResult(new TRoomInquiryResult())
 {
+    spaces.clear();
+    CustomersMews.clear();
+    RadioGroupSelection->OnClick = NULL;
+    RadioGroupSelection->ItemIndex = 1;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::FormCreate(TObject *Sender)
@@ -35,7 +39,6 @@ void __fastcall TfrmPhoenixRoom::FormCreate(TObject *Sender)
 	{
 	  ((TTouchBtn *)pnlLastPicked->Controls[i])->Color = clMaroon;
 	}
-
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::FormDestroy(TObject *Sender)
@@ -58,10 +61,10 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
 	DrawUpDownPanel(ShiftDown, pnlShift1);
 	DrawUpDownPanel(CapsDown, pnlCapsLock);
 	DrawLetters();
-	edSearch->SetFocus();
+	//edSearch->SetFocus();
 	SelectionVisible = false;
 
-	UpdateInterface();	
+	UpdateInterface();
 
 	int ButtonIndex = 0;
 	TTouchBtn *Button = NULL;
@@ -90,6 +93,36 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
 	{
 		pnlLastPicked->Width = Button->Left + Button->Width + 6;
 	}
+    SpaceShow = true;
+    if(TGlobalSettings::Instance().PMSType == Mews)
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        try
+        {
+            SpaceShow = true;
+            btnSpaces->Enabled = true;
+            btnSpaces->Visible = true;
+            Label32->Caption = "Search By Space." ;
+            RadioGroupSelection->OnClick = RadioGroupSelectionClick;
+            RadioGroupSelection->Enabled = true;
+            //edSearch->Enabled = false;
+            ShowSpaces(DBTransaction);
+            DBTransaction.Commit();
+        }
+        catch(Exception &ex)
+        {
+            DBTransaction.Rollback();
+        }
+    }
+    else
+    {
+        btnSpaces->Enabled = false;
+        btnSpaces->Visible = false;
+        SpaceShow = false;
+        RadioGroupSelection->Enabled = false;
+        RadioGroupSelection->Visible = false;
+    }
 }
 
 //---------------------------------------------------------------------------
@@ -141,25 +174,25 @@ void __fastcall TfrmPhoenixRoom::ButtonMouseUp(TObject *Sender,
 	if (((TPanel *)Sender)->Tag == 251)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\t', 0);
-		edSearch->SetFocus();
+		//edSearch->SetFocus();
 	}
 	// Print the backspace
 	else if (((TPanel *)Sender)->Tag == 252)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\b', 0);
-		edSearch->SetFocus();
+		//edSearch->SetFocus();
    }
 	// Print the Return
 	else if (((TPanel *)Sender)->Tag == 253)
    {
 		PostMessage(edSearch->Handle, WM_CHAR, '\r', 0);
-      edSearch->SetFocus();		
+      //edSearch->SetFocus();
 	}
    // Print the space
 	else if (((TPanel *)Sender)->Tag == 254)
    {
       PostMessage(edSearch->Handle, WM_CHAR, ' ', 0);
-      edSearch->SetFocus();
+      //edSearch->SetFocus();
    }
    // Print the character
 	else if (((TPanel *)Sender)->Tag == 255)
@@ -167,7 +200,7 @@ void __fastcall TfrmPhoenixRoom::ButtonMouseUp(TObject *Sender,
       Word Key;
 		Key = ((TPanel *)Sender)->Caption.c_str()[0];
       PostMessage(edSearch->Handle, WM_CHAR, Key, 0);
-      edSearch->SetFocus();
+      //edSearch->SetFocus();
    }
    // Print the number / others
    else if (((TComponent *)Sender)->Tag != 0 && ((TComponent *)Sender)->Tag != 255)
@@ -239,7 +272,7 @@ void __fastcall TfrmPhoenixRoom::CapsLockClick(TObject *Sender)
 void TfrmPhoenixRoom::DrawLetters()
 {
    // Sets upper or lower case letters.
-   
+
 	for (int i=0; i<pnlKeys->ControlCount; i++)
    {
       if (String(pnlKeys->Controls[i]->ClassName()) == "TPanel")
@@ -351,6 +384,22 @@ void __fastcall TfrmPhoenixRoom::WMDisplayChange(TWMDisplayChange& Message)
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::btnOkClick(TObject *Sender)
 {
+    bool canProceed = true;
+    if(TGlobalSettings::Instance().PMSType == 4)
+    {
+        UnicodeString classifications = "";
+        for(int indexClassifications = 0;
+            indexClassifications < CustomersMews[List->Row].Classifications.size();
+                                                                        indexClassifications++)
+        {
+            if(CustomersMews[List->Row].Classifications[indexClassifications].Trim() == "Cashlist")
+            {
+                canProceed = false;
+                MessageBox("Room charges are not allowed for the selected customer","Info",MB_OK+MB_ICONINFORMATION);
+            }
+        }
+    }
+    if(canProceed)
 	ModalResult = mrOk;
 }
 //---------------------------------------------------------------------------
@@ -398,7 +447,6 @@ void TfrmPhoenixRoom::QuickSearch()
 	SelectedRoom.AccountNumber = edSearch->Text;
     if(TGlobalSettings::Instance().PMSType == Oracle)
     {
-//        MessageBox(roomResult.RoomInquiryItem.size(),"size()",MB_OK);
         roomResult.RoomInquiryItem.clear();
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(edSearch->Text,roomResult);
     }
@@ -409,6 +457,64 @@ void TfrmPhoenixRoom::QuickSearch()
         SiHotAccounts.push_back(siHotAccount);
         TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SiHotAccounts,PMSIPAddress,PMSPort);
     }
+    else if(TGlobalSettings::Instance().PMSType == Mews)
+    {
+        // Name inquiry here
+        bool isInvalidSearchParameter = false;
+        if(!SpaceShow)
+        {
+//            MessageBox("!SpaceShow","",MB_OK);
+            std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+            managerMews->GetMewsCustomer(edSearch->Text.Trim(), CustomersMews,false);
+            edSearch->Enabled = true;
+        }
+        else
+        {
+            if(edSearch->Text.Trim() == "")
+            {
+//                MessageBox("SpaceShow and edSearch->Text.Trim() == balnk","",MB_OK);
+                std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+                managerMews->GetMewsCustomer(spaces[List->Row].Id, CustomersMews,true);
+            }
+            else
+            {
+//                MessageBox("SpaceShow and edSearch->Text.Trim() != balnk","",MB_OK);
+                UnicodeString spaceValue = "";
+                for(int i = 0; i < spaces.size(); i++)
+                {
+                    if(edSearch->Text.Trim() == spaces[i].Number.Trim())
+                    {
+                        spaceValue = spaces[i].Id;
+                        break;
+                    }
+                }
+                if(spaceValue != "")
+                {
+//                    MessageBox(spaceValue,"Searching",MB_OK);
+                   std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+                   managerMews->GetMewsCustomer(spaceValue, CustomersMews,true);
+                }
+                else
+                {
+                    MessageBox("The value entered for space is not valid.\rPlease enter a valid value or update spaces and then retry."
+                                ,"Info",MB_OK+MB_ICONINFORMATION);
+                    isInvalidSearchParameter = true;
+                }
+            }
+            if(CustomersMews.size() > 0)
+            {
+                memText->Clear();
+                edSearch->Enabled = true;
+                SpaceShow = false;
+                SelectedRoom.Folders->Clear();
+                List->RowCount = 1;
+                List->Cells[0][0] = "";
+                RadioGroupSelection->ItemIndex = 0;
+            }
+        }
+        if(CustomersMews.size() == 0 && !isInvalidSearchParameter)
+            MessageBox("No customers found for selection criteria","Info",MB_OK+MB_ICONINFORMATION);
+    }
     else
     {
     	TDeviceRealTerminal::Instance().BasePMS->GetRoomStatus(SelectedRoom,PMSIPAddress,PMSPort);
@@ -418,7 +524,6 @@ void TfrmPhoenixRoom::QuickSearch()
         }
     }
     ShowAccount();
-
     for (int i=0; i<pnlLastPicked->ControlCount; i++)
     {
         TTouchBtn *UnSelected = (TTouchBtn * )pnlLastPicked->Controls[i];
@@ -554,7 +659,43 @@ void TfrmPhoenixRoom::RefreshList()
         List->Row = SelectedRow;
         List->SetFocus();
     }
-    else if(TGlobalSettings::Instance().PMSType != SiHot)
+    else if(TGlobalSettings::Instance().PMSType == SiHot)
+    {
+        List->RowCount = SiHotAccounts.size();
+        List->Cells[0][0] = "";
+        bool CommitTransaction = false;
+        int Row = 0;
+        int SelectedRow = 0;
+        List->Cols[0] = SelectedRoom.Folders;
+        List->Row = SelectedRow;
+        List->SetFocus();
+    }
+    else if(TGlobalSettings::Instance().PMSType == Mews)
+    {
+        if(SpaceShow)
+        {
+            List->RowCount = spaces.size();
+            List->Cells[0][0] = "";
+            bool CommitTransaction = false;
+            int Row = 0;
+            int SelectedRow = 0;
+            List->Cols[0] = SelectedRoom.Folders;
+            List->Row = SelectedRow;
+            List->SetFocus();
+        }
+        else
+        {
+            List->RowCount = CustomersMews.size();
+            List->Cells[0][0] = "";
+            bool CommitTransaction = false;
+            int Row = 0;
+            int SelectedRow = 0;
+            List->Cols[0] = SelectedRoom.Folders;
+            List->Row = SelectedRow;
+            List->SetFocus();
+        }
+    }
+    else
     {
         List->RowCount = SelectedRoom.Folders->Count;
         List->Cells[0][0] = "";
@@ -563,17 +704,6 @@ void TfrmPhoenixRoom::RefreshList()
         int Row = 0;
         int SelectedRow = 0;
 
-        List->Cols[0] = SelectedRoom.Folders;
-        List->Row = SelectedRow;
-        List->SetFocus();
-    }
-    else if(TGlobalSettings::Instance().PMSType == SiHot)
-    {
-        List->RowCount = SiHotAccounts.size();
-        List->Cells[0][0] = "";
-        bool CommitTransaction = false;
-        int Row = 0;
-        int SelectedRow = 0;
         List->Cols[0] = SelectedRoom.Folders;
         List->Row = SelectedRow;
         List->SetFocus();
@@ -597,13 +727,60 @@ void TfrmPhoenixRoom::DisplayData()
        }
        RefreshList();
     }
-	else if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
+	else if(TGlobalSettings::Instance().PMSType == Mews)
 	{
-		AnsiString Balance = CurrToStrF(SelectedRoom.Balance, ffCurrency, 2);
-		AnsiString CreditLimit = CurrToStrF(SelectedRoom.CreditLimit, ffCurrency, 2);
-		memText->Lines->Add("Room Number : " + SelectedRoom.AccountNumber);
-		memText->Lines->Add("Balance   : " + Balance);
-		memText->Lines->Add("Credit Limit : " + CreditLimit);
+        if(SpaceShow)
+        {
+           AnsiString Balance = "0.0";
+           SelectedRoom.Folders->Clear();
+           memText->Clear();
+           if(CustomersMews.size() > 0)
+           {
+               memText->Lines->Add("Room Number : " + CustomersMews[0].Number);
+               memText->Lines->Add("Email       : " + CustomersMews[0].Email );
+               memText->Lines->Add("Phone       : " + CustomersMews[0].Phone);
+                UnicodeString classifications = "";
+                for(int indexClassifications = 0;
+                    indexClassifications < CustomersMews[0].Classifications.size();
+                                                                                indexClassifications++)
+                {
+                    if(indexClassifications != 0)
+                        classifications += ", ";
+                    classifications += CustomersMews[0].Classifications[indexClassifications];
+                }
+                memText->Lines->Add("Classifications : " + classifications);
+               for(std::vector<TCustomerMews>::iterator itcust = CustomersMews.begin();
+                  itcust != CustomersMews.end(); ++itcust)
+               {
+                   SelectedRoom.Folders->Add(itcust->FirstName + " " + itcust->LastName);
+               }
+           }
+           else if(spaces.size() > 0)
+           {
+               for(std::vector<TSpace>::iterator itspaces = spaces.begin();
+                  itspaces != spaces.end(); ++itspaces)
+               {
+                   SelectedRoom.Folders->Add(itspaces->Number + " (" + itspaces->Type + ")");
+               }
+           }
+        }
+        else
+        {
+           AnsiString Balance = "0.0";
+           SelectedRoom.Folders->Clear();
+           memText->Clear();
+           if(CustomersMews.size() > 0)
+           {
+               memText->Lines->Add("Room Number : " + CustomersMews[0].Number);
+               memText->Lines->Add("Email       : " + CustomersMews[0].Email );
+               memText->Lines->Add("Phone       : " + CustomersMews[0].Phone);
+               for(std::vector<TCustomerMews>::iterator itcust = CustomersMews.begin();
+                  itcust != CustomersMews.end(); ++itcust)
+               {
+                   SelectedRoom.Folders->Add(itcust->FirstName + " " + itcust->LastName);
+               }
+           }
+        }
 		RefreshList();
 	}
     else if(SiHotAccounts.size() != 0 && TGlobalSettings::Instance().PMSType == SiHot)
@@ -633,6 +810,15 @@ void TfrmPhoenixRoom::DisplayData()
           }
           RefreshList();
     }
+	else if(SelectedRoom.AccountNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot)
+	{
+		AnsiString Balance = CurrToStrF(SelectedRoom.Balance, ffCurrency, 2);
+		AnsiString CreditLimit = CurrToStrF(SelectedRoom.CreditLimit, ffCurrency, 2);
+		memText->Lines->Add("Room Number : " + SelectedRoom.AccountNumber);
+		memText->Lines->Add("Balance   : " + Balance);
+		memText->Lines->Add("Credit Limit : " + CreditLimit);
+		RefreshList();
+	}
 	else
 	{
 		List->RowCount = 1;
@@ -687,8 +873,31 @@ void __fastcall TfrmPhoenixRoom::btnUserDownMouseDown(TObject *Sender,
 
 void __fastcall TfrmPhoenixRoom::ListClick(TObject *Sender)
 {
-	edSearch->SelectAll();
-	SetSelectedFolder(List->Row+1);
+    if(TGlobalSettings::Instance().PMSType != Mews)
+    {
+        edSearch->SelectAll();
+        SetSelectedFolder(List->Row+1);
+    }
+    else
+    {
+        if(SpaceShow)
+        {
+            int i1 = spaces.size();
+            int i2 = List->Row;
+            edSearch->Text = "";
+            if(i1 > i2)
+            {
+                edSearch->Clear();
+                UnicodeString valueSelected = spaces[List->Row].Id;
+                SetSelectedFolder(List->Row+1);
+            }
+        }
+        else
+        {
+            edSearch->SelectAll();
+            SetSelectedFolder(List->Row+1);
+        }
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPhoenixRoom::btnRoomsLeftMouseDown(TObject *Sender,
@@ -809,6 +1018,7 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
             memText->Lines->Add("Credit Limit : " + roomResult.RoomInquiryItem[FolderNumber-1].CreditLimit);
             SelectedRoom.SiHotRoom = "";
             SelectedRoom.FolderNumber = FolderNumber;
+            tbtnOk->Enabled = true;
         }
         else if(TGlobalSettings::Instance().PMSType == SiHot)
         {
@@ -820,16 +1030,51 @@ int TfrmPhoenixRoom::SetSelectedFolder(int FolderNumber)
             memText->Lines->Add("Room Number : " + SiHotAccounts[FolderNumber-1].AccountDetails[0].RoomBedNumber);
             memText->Lines->Add("Balance   : " + Balance);
             memText->Lines->Add("Credit Limit : " + SiHotAccounts[FolderNumber-1].AccountDetails[0].CreditLimit);
-            SelectionVisible = true;
+            tbtnOk->Enabled = true;
+        }
+        else if(TGlobalSettings::Instance().PMSType == Mews)
+        {
+            if(SpaceShow)
+            {
+                //SelectedRoom.FolderNumber = FolderNumber;
+                AnsiString status = spaces[FolderNumber-1].State;
+                memText->Clear();
+                memText->Lines->Add("Status        : " +  spaces[FolderNumber-1].State);
+                memText->Lines->Add("FloorNumber   : " + spaces[FolderNumber-1].FloorNumber);
+                tbtnOk->Enabled = false;
+            }
+            else
+            {
+                SelectedRoom.AccountNumber = CustomersMews[FolderNumber-1].Id;
+                SelectedRoom.FolderNumber = FolderNumber;
+                SelectedRoom.SiHotRoom = CustomersMews[FolderNumber-1].Number;
+
+                memText->Clear();
+                memText->Lines->Add("Room Number     : " + CustomersMews[FolderNumber-1].Number);
+                memText->Lines->Add("Email           : " + CustomersMews[FolderNumber-1].Email );
+                memText->Lines->Add("Phone           : " + CustomersMews[FolderNumber-1].Phone);
+                UnicodeString classifications = "";
+                for(int indexClassifications = 0;
+                    indexClassifications < CustomersMews[FolderNumber-1].Classifications.size();
+                                                                                indexClassifications++)
+                {
+                    if(indexClassifications != 0)
+                        classifications += ", ";
+                    classifications += CustomersMews[FolderNumber-1].Classifications[indexClassifications];
+                }
+                memText->Lines->Add("Classifications : " + classifications);
+                tbtnOk->Enabled = true;
+            }
         }
         else
         {
             SelectedRoom.FolderNumber = FolderNumber;
             SelectedRoom.SiHotRoom = "";
-        }
             tbtnOk->Enabled = true;
+        }
+        if(tbtnOk->Enabled)
             tbtnOk->Caption = "Select\r" + List->Cols[0]->Strings[FolderNumber-1];
-            SelectionVisible = true;
+        SelectionVisible = true;
     }
 	else
 	{
@@ -900,5 +1145,94 @@ void TfrmPhoenixRoom::UpdateInterface()
 		pnlNumPad->Align = alBottom;
 	}
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmPhoenixRoom::btnSpacesMouseClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        // Call to get fresh spaces
+        std::auto_ptr<TManagerMews> managerMews(new TManagerMews());
+        managerMews->GetSpaces(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,
+                                TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount,
+                                TDeviceRealTerminal::Instance().BasePMS->RevenueCentre,DBTransaction);
+        ShowSpaces(DBTransaction);
+        RadioGroupSelection->ItemIndex = 1;
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
 
+void __fastcall TfrmPhoenixRoom::RadioGroupSelectionClick(TObject *Sender)
+{
+    if(RadioGroupSelection->ItemIndex == 1)
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        try
+        {
+            SpaceShow = true;
+            edSearch->Clear();
+            //edSearch->Enabled = false;
+            memText->Clear();
+            SpaceShow = false;
+            SelectedRoom.Folders->Clear();
+            List->RowCount = 1;
+            List->Cells[0][0] = "";
+            Label32->Caption = "Search By Space." ;
+            CustomersMews.clear();
+            ShowSpaces(DBTransaction);
+            tbtnOk->Enabled = false;
+            tbtnOk->Caption = "Select";
+            DBTransaction.Commit();
+        }
+        catch(Exception &ex)
+        {
+            DBTransaction.Rollback();
+        }
+    }
+    else
+    {
+        memText->Clear();
+        SpaceShow = false;
+        Label32->Caption = "Search By Name." ;
+        SelectedRoom.Folders->Clear();
+		List->RowCount = 1;
+		List->Cells[0][0] = "";
+        edSearch->Enabled = true;
+        btnNumPadClick(NULL);
+    }
+}
+//---------------------------------------------------------------------------
+void TfrmPhoenixRoom::ShowSpaces(Database::TDBTransaction &DBTransaction)
+{
+    SpaceShow = true;
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    spaces.clear();
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text =
+      "SELECT * FROM SPACES";
+    IBInternalQuery->ExecQuery();
+    for( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
+    {
+       TSpace space;
+       space.Id = IBInternalQuery->FieldByName("UNIQUEID")->AsString;
+       if(IBInternalQuery->FieldByName("ISACTIVE")->AsString == "T")
+           space.IsActive = true;
+       else
+           space.IsActive = false;
+       space.Number = IBInternalQuery->FieldByName("NUMBER")->AsString;
+       space.Type   = IBInternalQuery->FieldByName("TYPE")->AsString;
+       space.State  = IBInternalQuery->FieldByName("STATE")->AsString;
+       space.FloorNumber  = IBInternalQuery->FieldByName("FLOORNUMBER")->AsString;
+       spaces.push_back(space);
+    }
+    DisplayData();
+}
+//---------------------------------------------------------------------------
 

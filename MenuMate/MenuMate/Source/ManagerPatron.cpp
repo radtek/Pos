@@ -38,43 +38,6 @@ void TManagerPatron::GetPatronTypes(Database::TDBTransaction &DBTransaction, TSt
 		}
 	}
 }
-
-void TManagerPatron::BuildXMLListPatronCounts(Database::TDBTransaction &DBTransaction,TPOS_XMLBase &Data)
-{
-   try
-	{
-      // Update the IntaMate ID with the Invoice Number.
-      Data.Doc.Clear();
-      TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
-      Data.Doc.LinkEndChild( decl );
-
-      // Insert DOCTYPE definiation here.
-      TiXmlElement * List = new TiXmlElement( xmlEleListPatron );
-      List->SetAttribute(xmlAttrID, Data.IntaMateID.t_str());
-      List->SetAttribute(xmlAttrSiteID, TGlobalSettings::Instance().SiteID);
-
-      std::vector<TPatronType> Patrons;
-      GetPatronTypes(DBTransaction, Patrons);
-
-		for (std::vector<TPatronType>::iterator ptrPatron = Patrons.begin();
-			  ptrPatron != Patrons.end();
-			  ptrPatron++)
-		{
-         TiXmlElement *ElePatron = new TiXmlElement( xmlElePatronType );
-         ElePatron->SetAttribute(xmlAttrID,         ptrPatron->Name.t_str() );
-         ElePatron->SetAttribute(xmlAttrName,       ptrPatron->Name.t_str() );
-         ElePatron->SetAttribute(xmlAttrDefault,    ptrPatron->Default ? "yes" : "no" );
-         List->LinkEndChild( ElePatron );
-      }
-      Data.Doc.LinkEndChild( List );
-	}
-	catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-
 void TManagerPatron::GetPatronTypes(Database::TDBTransaction &DBTransaction, std::vector<TPatronType> &PatronTypes)
 {
 	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());

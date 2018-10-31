@@ -1062,41 +1062,6 @@ void TManagerMenusPOS::ForceMenu(TIBDatabase *IBDatabase, UnicodeString FileName
 			{
 			   Menu->SaveToFile(ExtractFilePath(Application->ExeName) + "Menu Import\\Old Menus\\" + Now().FormatString
 				  ("yyyy-mm-dd - hh-nn-ss ") + ExtractFileName(FileName));
-			   if (TDeviceRealTerminal::Instance().IMManager->Registered)
-			   {
-				  // Update IntaMate.
-				  std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-				  frmProcessing->CanCancel = false;
-				  frmProcessing->Message = "Exporting Products...";
-				  frmProcessing->ShowProgress = false;
-				  frmProcessing->Show();
-
-				  TPOS_XMLBase POSXML("Product Export");
-				  TDeviceRealTerminal::Instance().Menus->BuildXMLMenu(TDeviceRealTerminal::Instance().DBControl, POSXML,TGlobalSettings::Instance().SiteID);
-				  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				  POSXML.SaveToFile();
-				  frmProcessing->Close();
-
-				  frmProcessing->CanCancel = false;
-				  frmProcessing->Message = "Exporting Categories and Groups...";
-				  frmProcessing->ShowProgress = false;
-				  frmProcessing->Show();
-
-				  POSXML.Reset("Categories Export");
-				  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-				  DBTransaction.StartTransaction();
-				  TDeviceRealTerminal::Instance().Menus->BuildXMLListCategories(DBTransaction, POSXML,TGlobalSettings::Instance().SiteID);
-				  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				  POSXML.SaveToFile();
-
-				  POSXML.Reset("List Category Groups Export");
-				  DBTransaction.StartTransaction();
-				  TDeviceRealTerminal::Instance().Menus->BuildXMLListGroup(DBTransaction,POSXML,TGlobalSettings::Instance().SiteID);
-				  DBTransaction.Commit();
-				  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				  POSXML.SaveToFile();
-				  frmProcessing->Close();
-			   }
 			}
 			else
 			{

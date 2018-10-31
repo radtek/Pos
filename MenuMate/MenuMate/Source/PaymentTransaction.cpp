@@ -783,39 +783,12 @@ void __fastcall TPaymentTransaction::ApplyDiscounts()
 
    Money.Recalc(*this);
 }
-//---------------------------------------------------------------------------
-void TPaymentTransaction::BuildXMLPaymentTypes(TPOS_XMLBase &Data)
-{
-   // Update the IntaMate ID with the Invoice Number.
-   Data.Doc.Clear();
-
-	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
-   Data.Doc.LinkEndChild( decl );
-
-   // Insert DOCTYPE definiation here.
-   TiXmlElement * List = new TiXmlElement( xmlEleListPaymentTypes );
-	List->SetAttribute(xmlAttrID, AnsiString(Data.IntaMateID).c_str() );
-	List->SetAttribute(xmlAttrSiteID, TGlobalSettings::Instance().SiteID);
-
-	for ( int i = 0 ; i <  PaymentsCount(); i++ )
-	{
-		TPayment *Payment = PaymentGet(i);
-	  TiXmlElement *ElePaymnet = new TiXmlElement( xmlElePayment );
-	  ElePaymnet->SetAttribute(xmlAttrID, _T("") );
-	  ElePaymnet->SetAttribute(xmlAttrName, Payment->Name.t_str() );
-	  ElePaymnet->SetAttribute(xmlAttrCode, Payment->PaymentThirdPartyID.t_str() );
-	  List->LinkEndChild( ElePaymnet );
-   }
-   Data.Doc.LinkEndChild( List );
-}
-
 void TPaymentTransaction::ApplyMembership(TMMContactInfo inMember, eMemberSource inMemberSource)
 {
    if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
                 (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
    {
        ManagerDiscount->ClearMemberDiscounts(Orders);
-       ManagerDiscount->ClearThorVouchersDiscounts(Orders);
        Membership.Assign(inMember, inMemberSource);
        ApplyMembershipDiscounts();
        Recalc();
@@ -857,8 +830,6 @@ void TPaymentTransaction::RemoveMembership()
 {
 	// Clear the Member Discounts from the orders.
    ManagerDiscount->ClearMemberDiscounts(Orders);
-   ManagerDiscount->ClearThorVouchersDiscounts(Orders);
-
    //clear member discounts from discount list.
 	for (std::vector <TDiscount> ::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end();)
 	{
@@ -899,11 +870,7 @@ void TPaymentTransaction::LoadDiscount(int DiscountKey, TDiscountSource Discount
 	CurrentDiscount.Source = DiscountSource;
     if(CurrentDiscount.Source == dsMMMembership)
        {
-               CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
-               if(CurrentDiscount.IsThorBill)
-               {
-                    ManagerDiscount->GetThorlinkDiscount(DBTransaction,CurrentDiscount);
-               }
+               CurrentDiscount.IsThorBill = false;
        }
 	if (CurrentDiscount.Type == dtPromptDescription || CurrentDiscount.Type == dtPromptDescriptionAmount)
 	{
@@ -1103,32 +1070,6 @@ void TPaymentTransaction::copyPaymentsDetails(TList* PaymentsList)
 		PaymentList->Add(CopiedPayment);
 	}
 }
-//---------------------------------------------------------------------------
-bool TPaymentTransaction::CheckThorVoucherExistAsDiscount(AnsiString voucher_code)
-{
-    bool discountExists = false;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
-    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    IBInternalQuery->Close();
-    IBInternalQuery->SQL->Clear();
-    IBInternalQuery->SQL->Text =            " SELECT "
-                                            " NAME "
-                                            " FROM "
-                                            "  DISCOUNTS "
-                                            " WHERE "
-                                            " DISCOUNT_ID  = :DISCOUNT_ID ";
-    IBInternalQuery->ParamByName("DISCOUNT_ID")->AsString = voucher_code;
-    IBInternalQuery->ExecQuery();
-    if(IBInternalQuery->RecordCount != 0)
-    {
-        discountExists = true;
-    }
-    DBTransaction.Commit();
-
-    return discountExists;
-}
-
 //---------------------------------------------------------------------------
 void TPaymentTransaction::makeLogFile(UnicodeString str)
 {

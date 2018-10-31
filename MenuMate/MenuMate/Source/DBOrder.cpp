@@ -4341,18 +4341,9 @@ void TDBOrder::LoadOrderDiscounts(Database::TDBTransaction &DBTransaction,TItemM
 			Discount.MembersOnly = IBInternalQuery->FieldByName("MEMBERS_ONLY")->AsString == "T";
 			Discount.MembersExempt = IBInternalQuery->FieldByName("MEMBERS_EXEMPT")->AsString == "T";
             Discount.IsThorBill = IBInternalQuery->FieldByName("ISTHOR_DISCOUNT")->AsString == "T";
-            if(Discount.IsThorBill)
-                {
-                  TManagerDiscount::GetThorVoucherCategories(DBTransaction,Discount.DiscountKey,Discount);
-                }
-              else
-                {
-                    TManagerDiscount::GetDiscountCategories(DBTransaction,Discount.DiscountKey,Discount);
-                }
-
+            TManagerDiscount::GetDiscountCategories(DBTransaction,Discount.DiscountKey,Discount);
             TManagerDiscount::PopulateDiscountGroupPerType( Discount.DiscountKey, Discount );
 			Order->DiscountAdd(Discount);
-
         }
 	}
 	catch(Exception &E)
@@ -4852,42 +4843,7 @@ Currency TDBOrder::GetPriceForPoints(Database::TDBTransaction &DBTransaction,TIt
     }
     return RetVal;
 }
-////---------------------------------------------------------------------------
-void TDBOrder::UpdateOrderTableDlinkingWithClipp(Database::TDBTransaction &dbTransaction,long SourceKey)
-{
-    if(SourceKey <= 0)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG, "Source Key doesn't exist");
-        throw;
-    }
-    TIBSQL *updateQuery = dbTransaction.Query(dbTransaction.AddQuery());
-    try
-    {
-                updateQuery->Close();
-                updateQuery->SQL->Text =
-                                        " UPDATE ORDERS "
-                                        " SET "
-                                        " ORDERS.TABLE_NUMBER = :TABLE_NUMBER, "
-                                        " ORDERS.SEATNO = :SEATNO, "
-                                        " ORDERS.PARTY_NAME = :PARTY_NAME, "
-                                        " ORDERS.TABLE_NAME = :TABLE_NAME "
-                                        " WHERE "
-                                        " ORDERS.TAB_KEY = :TAB_KEY;";
-                updateQuery->ParamByName("TAB_KEY")->AsInteger = SourceKey;
-                updateQuery->ParamByName("TABLE_NUMBER")->AsInteger = 0;
-                updateQuery->ParamByName("SEATNO")->AsInteger = 0;
-                updateQuery->ParamByName("TABLE_NAME")->AsString = "";
-                updateQuery->ParamByName("PARTY_NAME")->AsString = "";
-                updateQuery->ExecQuery();
-    }
-    catch(Exception &E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        throw;
-    }
-
-}
-///-------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------
 void TDBOrder::UpdateTabNameInOrder(Database::TDBTransaction &DBTransaction,long SourceKey, UnicodeString clipTabName,bool isTabSelected)
 {
   TIBSQL *IBUpdateQuery = DBTransaction.Query(DBTransaction.AddQuery());

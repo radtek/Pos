@@ -4,7 +4,6 @@
 #define PaymentTransactionH
 //---------------------------------------------------------------------------
 #include "ReferenceManager.h"
-#include "POS_XMLBase.h"
 #include "Money.h"
 #include "TabCredit.h"
 #include "ContactMemberApplied.h"
@@ -16,10 +15,7 @@
 #include "Payment.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
-
-
 enum eTransactionType {eTab,eTableSeat,eCash,eAccount,eRoomSale,eCredited,eCreditPurchase,eWeb};
-
 enum TPaymentTransactionType {eTransUnknown,
 										eTransTabSet, 			// Paying a set of Tabs.
 										eTransOrderSet, 		// Paying a set of Orders.
@@ -32,17 +28,13 @@ enum TPaymentTransactionType {eTransUnknown,
 										eTransRewardsRecovery,	// Recovering From EFTPOS Rewards Transaction.
 										eTransInvoicePayment	// Paying set of Invoices
 										};
-
 enum TSaleType{ RegularSale,ComplimentarySale,NonChargableSale};
-
 // eNormal Entire Tab / Tabs are being paid
 // eSplitPayment Several Tabs are being Combined and Split
 // ePickNMix Individual Items are being billed of one or mare tabs.
 // eCashSale Quick Cash sale.
-
 typedef std::pair<AnsiString, AnsiString> TCustomerOrder;
 typedef int __fastcall (*TListPaymentCompare)(void * Item1, void * Item2);
-
 struct TRedeemPointsInformation
 {
     Currency RemainingPoints;
@@ -110,7 +102,6 @@ class TPaymentTransaction
     public:
         AnsiString PartyName;
         Database::TDBTransaction &DBTransaction;
-        void BuildXMLPaymentTypes(TPOS_XMLBase &Data);
         TPaymentTransactionType Type; // eTransTabSet,eTransOrderSet,ePickNMix,eCashSale,eSplitPayment,
         eTransactionType SalesType;
         TMoney Money;
@@ -203,7 +194,6 @@ class TPaymentTransaction
         TDateTime DeliveryTime;
         int SplittedItemKey;
         int WebOrderKey;
-        bool CheckThorVoucherExistAsDiscount(AnsiString voucher_code) ;
         Currency TaxOnClippDiscount;
         Currency ServiceChargeWithTax;
         bool CheckDiscountApplied(TDiscount CurrentDiscount);

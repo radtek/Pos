@@ -12,7 +12,7 @@
 #include "MMLogging.h"
 #include "TaxProfile.h"
 #include "TaxProfileDBAccessManager_MM.h"
-
+#include "MewsDataProcessor.h"
 //#pragma link "IBDatabase"
 
 //---------------------------------------------------------------------------
@@ -269,7 +269,8 @@ bool TImportMenu::CreateMenuInDB( TLoadMenu* inMenu, Database::TDBTransaction *i
        SaveAllForcedOptionsFromMenu(inMenu, inDBTransaction);
 
        ReInsertServingCoursePrintOrdersInDB( inDBTransaction, menuKey );
-
+       std::auto_ptr<TMewsDataProcessor> mewsdataProcessor(new TMewsDataProcessor());
+       mewsdataProcessor->InitializeMewsCategories(*inDBTransaction);
        result = true;
    }
    catch( Exception& exc )
@@ -312,7 +313,6 @@ bool TImportMenu::SaveMenuInDB( TLoadMenu* inMenu, Database::TDBTransaction *inD
 
 	   SaveAllForcedSidesFromMenu( inMenu, inDBTransaction );
        SaveAllForcedOptionsFromMenu(inMenu, inDBTransaction);
-
        result = true;
    }
    catch( Exception& exc )
@@ -635,6 +635,8 @@ void TImportMenu::SaveCategoryFromMenu( __int32 inIndex, __int32 inCGXMLHandle, 
                         tempCategoryKey, description.Trim(), glcode.Trim(), cDeleted, inCGroupKey, inDBTransaction );
 //                    // This Key Map will be used in the ItemSize section.
 					AddKeyMap( "categories", xmlKey, tempCategoryKey );
+                    std::auto_ptr<TMewsDataProcessor> processor(new TMewsDataProcessor());
+                    processor->UpdateCategories(tempCategoryKey, description.Trim(),cDeleted,*inDBTransaction);
             }
         }
     }
