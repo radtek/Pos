@@ -11,6 +11,8 @@ namespace AdyenIntegration.Domain
         [DataMember]
         public string SaleReferenceID { get; set; }
         [DataMember]
+        public string TokenRequestedType { get; set; }
+        [DataMember]
         public string SaleToAcquirerData { get; set; }
     }
 }

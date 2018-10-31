@@ -12,10 +12,11 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd6
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd7
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd9
+//  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd10
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (11/05/2018 2:37:48 a.m. - - $Rev: 25127 $)
+// (31/10/2018 5:26:43 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
@@ -23,8 +24,8 @@
 
 #include <System.hpp>
 #include <InvokeRegistry.hpp>
-#include <winsock2.h>
 #include <XSBuiltIns.hpp>
+#include <winsock2.h>
 #include <SOAPHTTPClient.hpp>
 
 #if !defined(SOAP_REMOTABLE_CLASS)
@@ -66,7 +67,6 @@ class SOAP_REMOTABLE_CLASS PaymentData;
 class SOAP_REMOTABLE_CLASS PaymentTransaction;
 class SOAP_REMOTABLE_CLASS SaleData;
 class SOAP_REMOTABLE_CLASS AmountsReq;
-class SOAP_REMOTABLE_CLASS SaleToIssuerData;
 class SOAP_REMOTABLE_CLASS SaleTransactionID;
 class SOAP_REMOTABLE_CLASS ReversalRequest;
 class SOAP_REMOTABLE_CLASS OriginalPOITransaction;
@@ -77,30 +77,17 @@ class SOAP_REMOTABLE_CLASS PaymentResponse;
 class SOAP_REMOTABLE_CLASS PaymentResult;
 class SOAP_REMOTABLE_CLASS PaymentReceipt;
 class SOAP_REMOTABLE_CLASS OutputContent;
-class SOAP_REMOTABLE_CLASS PredefinedContent;
 class SOAP_REMOTABLE_CLASS OutputText;
 class SOAP_REMOTABLE_CLASS AmountsResp;
-class SOAP_REMOTABLE_CLASS CapturedSignature;
-class SOAP_REMOTABLE_CLASS CurrencyConversion;
-class SOAP_REMOTABLE_CLASS Instalment;
 class SOAP_REMOTABLE_CLASS PaymentAcquirerData;
 class SOAP_REMOTABLE_CLASS PaymentInstrumentData;
-class SOAP_REMOTABLE_CLASS AreaSize;
-class SOAP_REMOTABLE_CLASS ConvertedAmount;
 class SOAP_REMOTABLE_CLASS AcquirerTransactionID;
-class SOAP_REMOTABLE_CLASS CheckData;
-class SOAP_REMOTABLE_CLASS MobileData;
-class SOAP_REMOTABLE_CLASS StoredValueAccountID;
 class SOAP_REMOTABLE_CLASS CardData;
 class SOAP_REMOTABLE_CLASS PaymentToken;
 class SOAP_REMOTABLE_CLASS SensitiveCardData;
 class SOAP_REMOTABLE_CLASS AllowedProduct;
 class SOAP_REMOTABLE_CLASS CustomerOrder;
 class SOAP_REMOTABLE_CLASS TrackData;
-class SOAP_REMOTABLE_CLASS Geolocation;
-class SOAP_REMOTABLE_CLASS SensitiveMobileData;
-class SOAP_REMOTABLE_CLASS GeographicCoordinates;
-class SOAP_REMOTABLE_CLASS UTMCoordinates;
 class SOAP_REMOTABLE_CLASS SaleSoftware2;
 class SOAP_REMOTABLE_CLASS SaleTerminalData2;
 class SOAP_REMOTABLE_CLASS SaleProfile2;
@@ -109,7 +96,6 @@ class SOAP_REMOTABLE_CLASS PaymentData2;
 class SOAP_REMOTABLE_CLASS PaymentTransaction2;
 class SOAP_REMOTABLE_CLASS AmountsReq2;
 class SOAP_REMOTABLE_CLASS SaleData2;
-class SOAP_REMOTABLE_CLASS SaleToIssuerData2;
 class SOAP_REMOTABLE_CLASS SaleTransactionID2;
 class SOAP_REMOTABLE_CLASS ReversalRequest2;
 class SOAP_REMOTABLE_CLASS OriginalPOITransaction2;
@@ -120,14 +106,8 @@ class SOAP_REMOTABLE_CLASS POIData2;
 class SOAP_REMOTABLE_CLASS PaymentReceipt2;
 class SOAP_REMOTABLE_CLASS OutputContent2;
 class SOAP_REMOTABLE_CLASS OutputText2;
-class SOAP_REMOTABLE_CLASS PredefinedContent2;
 class SOAP_REMOTABLE_CLASS PaymentResult2;
 class SOAP_REMOTABLE_CLASS AmountsResp2;
-class SOAP_REMOTABLE_CLASS CapturedSignature2;
-class SOAP_REMOTABLE_CLASS AreaSize2;
-class SOAP_REMOTABLE_CLASS CurrencyConversion2;
-class SOAP_REMOTABLE_CLASS ConvertedAmount2;
-class SOAP_REMOTABLE_CLASS Instalment2;
 class SOAP_REMOTABLE_CLASS PaymentAcquirerData2;
 class SOAP_REMOTABLE_CLASS AcquirerTransactionID2;
 class SOAP_REMOTABLE_CLASS PaymentInstrumentData2;
@@ -137,13 +117,6 @@ class SOAP_REMOTABLE_CLASS CustomerOrder2;
 class SOAP_REMOTABLE_CLASS PaymentToken2;
 class SOAP_REMOTABLE_CLASS SensitiveCardData2;
 class SOAP_REMOTABLE_CLASS TrackData2;
-class SOAP_REMOTABLE_CLASS CheckData2;
-class SOAP_REMOTABLE_CLASS MobileData2;
-class SOAP_REMOTABLE_CLASS Geolocation2;
-class SOAP_REMOTABLE_CLASS GeographicCoordinates2;
-class SOAP_REMOTABLE_CLASS UTMCoordinates2;
-class SOAP_REMOTABLE_CLASS SensitiveMobileData2;
-class SOAP_REMOTABLE_CLASS StoredValueAccountID2;
 class SOAP_REMOTABLE_CLASS DiagnosisRequest;
 class SOAP_REMOTABLE_CLASS DiagnosisResponse;
 class SOAP_REMOTABLE_CLASS POIStatus;
@@ -184,6 +157,14 @@ class SOAP_REMOTABLE_CLASS Envelop2;
 class SOAP_REMOTABLE_CLASS SaleToPOIRequest2;
 class SOAP_REMOTABLE_CLASS SaleToPOIResponse;
 class SOAP_REMOTABLE_CLASS SaleToPOIResponse2;
+class SOAP_REMOTABLE_CLASS AdjustAuthorisation;
+class SOAP_REMOTABLE_CLASS AdditionalData;
+class SOAP_REMOTABLE_CLASS ModificationAmount;
+class SOAP_REMOTABLE_CLASS AdjustAndCaptureResponse;
+class SOAP_REMOTABLE_CLASS AdjustAuthorisation2;
+class SOAP_REMOTABLE_CLASS AdditionalData2;
+class SOAP_REMOTABLE_CLASS ModificationAmount2;
+class SOAP_REMOTABLE_CLASS AdjustAndCaptureResponse2;
 
 typedef DynamicArray<UnicodeString> ArrayOfstring;  /* "http://schemas.microsoft.com/2003/10/Serialization/Arrays"[GblCplx] */
 
@@ -359,62 +340,26 @@ __published:
 // ************************************************************************ //
 class SaleData : public TRemotable {
 private:
-  UnicodeString   FCustomerOrderID;
-  bool            FCustomerOrderID_Specified;
-  UnicodeString   FOperatorId;
-  bool            FOperatorId_Specified;
   UnicodeString   FSaleReferenceID;
   bool            FSaleReferenceID_Specified;
-  SaleTerminalData* FSaleTerminalData;
-  bool            FSaleTerminalData_Specified;
   UnicodeString   FSaleToAcquirerData;
   bool            FSaleToAcquirerData_Specified;
-  SaleToIssuerData* FSaleToIssuerData;
-  bool            FSaleToIssuerData_Specified;
-  UnicodeString   FSaleToPOIData;
-  bool            FSaleToPOIData_Specified;
   SaleTransactionID* FSaleTransactionID;
   bool            FSaleTransactionID_Specified;
-  UnicodeString   FShiftNumber;
-  bool            FShiftNumber_Specified;
   UnicodeString   FTokenRequestedType;
   bool            FTokenRequestedType_Specified;
-  void __fastcall SetCustomerOrderID(int Index, UnicodeString _prop_val)
-  {  FCustomerOrderID = _prop_val; FCustomerOrderID_Specified = true;  }
-  bool __fastcall CustomerOrderID_Specified(int Index)
-  {  return FCustomerOrderID_Specified;  } 
-  void __fastcall SetOperatorId(int Index, UnicodeString _prop_val)
-  {  FOperatorId = _prop_val; FOperatorId_Specified = true;  }
-  bool __fastcall OperatorId_Specified(int Index)
-  {  return FOperatorId_Specified;  } 
   void __fastcall SetSaleReferenceID(int Index, UnicodeString _prop_val)
   {  FSaleReferenceID = _prop_val; FSaleReferenceID_Specified = true;  }
   bool __fastcall SaleReferenceID_Specified(int Index)
   {  return FSaleReferenceID_Specified;  } 
-  void __fastcall SetSaleTerminalData(int Index, SaleTerminalData* _prop_val)
-  {  FSaleTerminalData = _prop_val; FSaleTerminalData_Specified = true;  }
-  bool __fastcall SaleTerminalData_Specified(int Index)
-  {  return FSaleTerminalData_Specified;  } 
   void __fastcall SetSaleToAcquirerData(int Index, UnicodeString _prop_val)
   {  FSaleToAcquirerData = _prop_val; FSaleToAcquirerData_Specified = true;  }
   bool __fastcall SaleToAcquirerData_Specified(int Index)
   {  return FSaleToAcquirerData_Specified;  } 
-  void __fastcall SetSaleToIssuerData(int Index, SaleToIssuerData* _prop_val)
-  {  FSaleToIssuerData = _prop_val; FSaleToIssuerData_Specified = true;  }
-  bool __fastcall SaleToIssuerData_Specified(int Index)
-  {  return FSaleToIssuerData_Specified;  } 
-  void __fastcall SetSaleToPOIData(int Index, UnicodeString _prop_val)
-  {  FSaleToPOIData = _prop_val; FSaleToPOIData_Specified = true;  }
-  bool __fastcall SaleToPOIData_Specified(int Index)
-  {  return FSaleToPOIData_Specified;  } 
   void __fastcall SetSaleTransactionID(int Index, SaleTransactionID* _prop_val)
   {  FSaleTransactionID = _prop_val; FSaleTransactionID_Specified = true;  }
   bool __fastcall SaleTransactionID_Specified(int Index)
   {  return FSaleTransactionID_Specified;  } 
-  void __fastcall SetShiftNumber(int Index, UnicodeString _prop_val)
-  {  FShiftNumber = _prop_val; FShiftNumber_Specified = true;  }
-  bool __fastcall ShiftNumber_Specified(int Index)
-  {  return FShiftNumber_Specified;  } 
   void __fastcall SetTokenRequestedType(int Index, UnicodeString _prop_val)
   {  FTokenRequestedType = _prop_val; FTokenRequestedType_Specified = true;  }
   bool __fastcall TokenRequestedType_Specified(int Index)
@@ -423,15 +368,9 @@ private:
 public:
   __fastcall ~SaleData();
 __published:
-  __property UnicodeString CustomerOrderID = { index=(IS_OPTN|IS_NLBL), read=FCustomerOrderID, write=SetCustomerOrderID, stored = CustomerOrderID_Specified };
-  __property UnicodeString OperatorId = { index=(IS_OPTN|IS_NLBL), read=FOperatorId, write=SetOperatorId, stored = OperatorId_Specified };
   __property UnicodeString SaleReferenceID = { index=(IS_OPTN|IS_NLBL), read=FSaleReferenceID, write=SetSaleReferenceID, stored = SaleReferenceID_Specified };
-  __property SaleTerminalData* SaleTerminalData = { index=(IS_OPTN|IS_NLBL), read=FSaleTerminalData, write=SetSaleTerminalData, stored = SaleTerminalData_Specified };
   __property UnicodeString SaleToAcquirerData = { index=(IS_OPTN|IS_NLBL), read=FSaleToAcquirerData, write=SetSaleToAcquirerData, stored = SaleToAcquirerData_Specified };
-  __property SaleToIssuerData* SaleToIssuerData = { index=(IS_OPTN|IS_NLBL), read=FSaleToIssuerData, write=SetSaleToIssuerData, stored = SaleToIssuerData_Specified };
-  __property UnicodeString SaleToPOIData = { index=(IS_OPTN|IS_NLBL), read=FSaleToPOIData, write=SetSaleToPOIData, stored = SaleToPOIData_Specified };
   __property SaleTransactionID* SaleTransactionID = { index=(IS_OPTN|IS_NLBL), read=FSaleTransactionID, write=SetSaleTransactionID, stored = SaleTransactionID_Specified };
-  __property UnicodeString ShiftNumber = { index=(IS_OPTN|IS_NLBL), read=FShiftNumber, write=SetShiftNumber, stored = ShiftNumber_Specified };
   __property UnicodeString TokenRequestedType = { index=(IS_OPTN|IS_NLBL), read=FTokenRequestedType, write=SetTokenRequestedType, stored = TokenRequestedType_Specified };
 };
 
@@ -459,25 +398,6 @@ private:
 __published:
   __property UnicodeString   Currency = { index=(IS_OPTN|IS_NLBL), read=FCurrency, write=SetCurrency, stored = Currency_Specified };
   __property double     RequestedAmount = { index=(IS_OPTN), read=FRequestedAmount, write=SetRequestedAmount, stored = RequestedAmount_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SaleToIssuerData, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class SaleToIssuerData : public TRemotable {
-private:
-  UnicodeString   FStatementReference;
-  bool            FStatementReference_Specified;
-  void __fastcall SetStatementReference(int Index, UnicodeString _prop_val)
-  {  FStatementReference = _prop_val; FStatementReference_Specified = true;  }
-  bool __fastcall StatementReference_Specified(int Index)
-  {  return FStatementReference_Specified;  } 
-__published:
-  __property UnicodeString StatementReference = { index=(IS_OPTN|IS_NLBL), read=FStatementReference, write=SetStatementReference, stored = StatementReference_Specified };
 };
 
 
@@ -714,62 +634,16 @@ class PaymentResult : public TRemotable {
 private:
   AmountsResp*    FAmountsResp;
   bool            FAmountsResp_Specified;
-  ArrayOfstring   FAuthenticationMethod;
-  bool            FAuthenticationMethod_Specified;
-  CapturedSignature* FCapturedSignature;
-  bool            FCapturedSignature_Specified;
-  CurrencyConversion* FCurrencyConversion;
-  bool            FCurrencyConversion_Specified;
-  UnicodeString   FCustomerLanguage;
-  bool            FCustomerLanguage_Specified;
-  Instalment*     FInstalment;
-  bool            FInstalment_Specified;
-  UnicodeString   FMerchantOverrideFlag;
-  bool            FMerchantOverrideFlag_Specified;
-  UnicodeString   FOnlineFlag;
-  bool            FOnlineFlag_Specified;
   PaymentAcquirerData* FPaymentAcquirerData;
   bool            FPaymentAcquirerData_Specified;
   PaymentInstrumentData* FPaymentInstrumentData;
   bool            FPaymentInstrumentData_Specified;
   UnicodeString   FPaymentType;
   bool            FPaymentType_Specified;
-  UnicodeString   FProtectedSignature;
-  bool            FProtectedSignature_Specified;
-  UnicodeString   FValidityDate;
-  bool            FValidityDate_Specified;
   void __fastcall SetAmountsResp(int Index, AmountsResp* _prop_val)
   {  FAmountsResp = _prop_val; FAmountsResp_Specified = true;  }
   bool __fastcall AmountsResp_Specified(int Index)
   {  return FAmountsResp_Specified;  } 
-  void __fastcall SetAuthenticationMethod(int Index, ArrayOfstring _prop_val)
-  {  FAuthenticationMethod = _prop_val; FAuthenticationMethod_Specified = true;  }
-  bool __fastcall AuthenticationMethod_Specified(int Index)
-  {  return FAuthenticationMethod_Specified;  } 
-  void __fastcall SetCapturedSignature(int Index, CapturedSignature* _prop_val)
-  {  FCapturedSignature = _prop_val; FCapturedSignature_Specified = true;  }
-  bool __fastcall CapturedSignature_Specified(int Index)
-  {  return FCapturedSignature_Specified;  } 
-  void __fastcall SetCurrencyConversion(int Index, CurrencyConversion* _prop_val)
-  {  FCurrencyConversion = _prop_val; FCurrencyConversion_Specified = true;  }
-  bool __fastcall CurrencyConversion_Specified(int Index)
-  {  return FCurrencyConversion_Specified;  } 
-  void __fastcall SetCustomerLanguage(int Index, UnicodeString _prop_val)
-  {  FCustomerLanguage = _prop_val; FCustomerLanguage_Specified = true;  }
-  bool __fastcall CustomerLanguage_Specified(int Index)
-  {  return FCustomerLanguage_Specified;  } 
-  void __fastcall SetInstalment(int Index, Instalment* _prop_val)
-  {  FInstalment = _prop_val; FInstalment_Specified = true;  }
-  bool __fastcall Instalment_Specified(int Index)
-  {  return FInstalment_Specified;  } 
-  void __fastcall SetMerchantOverrideFlag(int Index, UnicodeString _prop_val)
-  {  FMerchantOverrideFlag = _prop_val; FMerchantOverrideFlag_Specified = true;  }
-  bool __fastcall MerchantOverrideFlag_Specified(int Index)
-  {  return FMerchantOverrideFlag_Specified;  } 
-  void __fastcall SetOnlineFlag(int Index, UnicodeString _prop_val)
-  {  FOnlineFlag = _prop_val; FOnlineFlag_Specified = true;  }
-  bool __fastcall OnlineFlag_Specified(int Index)
-  {  return FOnlineFlag_Specified;  } 
   void __fastcall SetPaymentAcquirerData(int Index, PaymentAcquirerData* _prop_val)
   {  FPaymentAcquirerData = _prop_val; FPaymentAcquirerData_Specified = true;  }
   bool __fastcall PaymentAcquirerData_Specified(int Index)
@@ -782,31 +656,14 @@ private:
   {  FPaymentType = _prop_val; FPaymentType_Specified = true;  }
   bool __fastcall PaymentType_Specified(int Index)
   {  return FPaymentType_Specified;  } 
-  void __fastcall SetProtectedSignature(int Index, UnicodeString _prop_val)
-  {  FProtectedSignature = _prop_val; FProtectedSignature_Specified = true;  }
-  bool __fastcall ProtectedSignature_Specified(int Index)
-  {  return FProtectedSignature_Specified;  } 
-  void __fastcall SetValidityDate(int Index, UnicodeString _prop_val)
-  {  FValidityDate = _prop_val; FValidityDate_Specified = true;  }
-  bool __fastcall ValidityDate_Specified(int Index)
-  {  return FValidityDate_Specified;  } 
 
 public:
   __fastcall ~PaymentResult();
 __published:
   __property AmountsResp* AmountsResp = { index=(IS_OPTN|IS_NLBL), read=FAmountsResp, write=SetAmountsResp, stored = AmountsResp_Specified };
-  __property ArrayOfstring AuthenticationMethod = { index=(IS_OPTN|IS_NLBL), read=FAuthenticationMethod, write=SetAuthenticationMethod, stored = AuthenticationMethod_Specified };
-  __property CapturedSignature* CapturedSignature = { index=(IS_OPTN|IS_NLBL), read=FCapturedSignature, write=SetCapturedSignature, stored = CapturedSignature_Specified };
-  __property CurrencyConversion* CurrencyConversion = { index=(IS_OPTN|IS_NLBL), read=FCurrencyConversion, write=SetCurrencyConversion, stored = CurrencyConversion_Specified };
-  __property UnicodeString CustomerLanguage = { index=(IS_OPTN|IS_NLBL), read=FCustomerLanguage, write=SetCustomerLanguage, stored = CustomerLanguage_Specified };
-  __property Instalment* Instalment = { index=(IS_OPTN|IS_NLBL), read=FInstalment, write=SetInstalment, stored = Instalment_Specified };
-  __property UnicodeString MerchantOverrideFlag = { index=(IS_OPTN|IS_NLBL), read=FMerchantOverrideFlag, write=SetMerchantOverrideFlag, stored = MerchantOverrideFlag_Specified };
-  __property UnicodeString OnlineFlag = { index=(IS_OPTN|IS_NLBL), read=FOnlineFlag, write=SetOnlineFlag, stored = OnlineFlag_Specified };
   __property PaymentAcquirerData* PaymentAcquirerData = { index=(IS_OPTN|IS_NLBL), read=FPaymentAcquirerData, write=SetPaymentAcquirerData, stored = PaymentAcquirerData_Specified };
   __property PaymentInstrumentData* PaymentInstrumentData = { index=(IS_OPTN|IS_NLBL), read=FPaymentInstrumentData, write=SetPaymentInstrumentData, stored = PaymentInstrumentData_Specified };
   __property UnicodeString PaymentType = { index=(IS_OPTN|IS_NLBL), read=FPaymentType, write=SetPaymentType, stored = PaymentType_Specified };
-  __property UnicodeString ProtectedSignature = { index=(IS_OPTN|IS_NLBL), read=FProtectedSignature, write=SetProtectedSignature, stored = ProtectedSignature_Specified };
-  __property UnicodeString ValidityDate = { index=(IS_OPTN|IS_NLBL), read=FValidityDate, write=SetValidityDate, stored = ValidityDate_Specified };
 };
 
 
@@ -866,8 +723,6 @@ private:
   bool            FOutputFormat_Specified;
   ArrayOfOutputText FOutputText;
   bool            FOutputText_Specified;
-  PredefinedContent* FPredefinedContent;
-  bool            FPredefinedContent_Specified;
   void __fastcall SetOutputFormat(int Index, UnicodeString _prop_val)
   {  FOutputFormat = _prop_val; FOutputFormat_Specified = true;  }
   bool __fastcall OutputFormat_Specified(int Index)
@@ -876,43 +731,12 @@ private:
   {  FOutputText = _prop_val; FOutputText_Specified = true;  }
   bool __fastcall OutputText_Specified(int Index)
   {  return FOutputText_Specified;  } 
-  void __fastcall SetPredefinedContent(int Index, PredefinedContent* _prop_val)
-  {  FPredefinedContent = _prop_val; FPredefinedContent_Specified = true;  }
-  bool __fastcall PredefinedContent_Specified(int Index)
-  {  return FPredefinedContent_Specified;  } 
 
 public:
   __fastcall ~OutputContent();
 __published:
   __property UnicodeString OutputFormat = { index=(IS_OPTN|IS_NLBL), read=FOutputFormat, write=SetOutputFormat, stored = OutputFormat_Specified };
   __property ArrayOfOutputText OutputText = { index=(IS_OPTN|IS_NLBL), read=FOutputText, write=SetOutputText, stored = OutputText_Specified };
-  __property PredefinedContent* PredefinedContent = { index=(IS_OPTN|IS_NLBL), read=FPredefinedContent, write=SetPredefinedContent, stored = PredefinedContent_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : PredefinedContent, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class PredefinedContent : public TRemotable {
-private:
-  UnicodeString   FLanguage;
-  bool            FLanguage_Specified;
-  UnicodeString   FReferenceID;
-  bool            FReferenceID_Specified;
-  void __fastcall SetLanguage(int Index, UnicodeString _prop_val)
-  {  FLanguage = _prop_val; FLanguage_Specified = true;  }
-  bool __fastcall Language_Specified(int Index)
-  {  return FLanguage_Specified;  } 
-  void __fastcall SetReferenceID(int Index, UnicodeString _prop_val)
-  {  FReferenceID = _prop_val; FReferenceID_Specified = true;  }
-  bool __fastcall ReferenceID_Specified(int Index)
-  {  return FReferenceID_Specified;  } 
-__published:
-  __property UnicodeString   Language = { index=(IS_OPTN|IS_NLBL), read=FLanguage, write=SetLanguage, stored = Language_Specified };
-  __property UnicodeString ReferenceID = { index=(IS_OPTN|IS_NLBL), read=FReferenceID, write=SetReferenceID, stored = ReferenceID_Specified };
 };
 
 
@@ -1062,174 +886,6 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : CapturedSignature, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CapturedSignature : public TRemotable {
-private:
-  AreaSize*       FAreaSize;
-  bool            FAreaSize_Specified;
-  UnicodeString   FSignaturePoint;
-  bool            FSignaturePoint_Specified;
-  void __fastcall SetAreaSize(int Index, AreaSize* _prop_val)
-  {  FAreaSize = _prop_val; FAreaSize_Specified = true;  }
-  bool __fastcall AreaSize_Specified(int Index)
-  {  return FAreaSize_Specified;  } 
-  void __fastcall SetSignaturePoint(int Index, UnicodeString _prop_val)
-  {  FSignaturePoint = _prop_val; FSignaturePoint_Specified = true;  }
-  bool __fastcall SignaturePoint_Specified(int Index)
-  {  return FSignaturePoint_Specified;  } 
-
-public:
-  __fastcall ~CapturedSignature();
-__published:
-  __property AreaSize*    AreaSize = { index=(IS_OPTN|IS_NLBL), read=FAreaSize, write=SetAreaSize, stored = AreaSize_Specified };
-  __property UnicodeString SignaturePoint = { index=(IS_OPTN|IS_NLBL), read=FSignaturePoint, write=SetSignaturePoint, stored = SignaturePoint_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : CurrencyConversion, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CurrencyConversion : public TRemotable {
-private:
-  double          FCommission;
-  bool            FCommission_Specified;
-  ConvertedAmount* FConvertedAmount;
-  bool            FConvertedAmount_Specified;
-  UnicodeString   FCustomerApprovedFlag;
-  bool            FCustomerApprovedFlag_Specified;
-  UnicodeString   FDeclaration;
-  bool            FDeclaration_Specified;
-  double          FMarkup;
-  bool            FMarkup_Specified;
-  double          FRate;
-  bool            FRate_Specified;
-  void __fastcall SetCommission(int Index, double _prop_val)
-  {  FCommission = _prop_val; FCommission_Specified = true;  }
-  bool __fastcall Commission_Specified(int Index)
-  {  return FCommission_Specified;  } 
-  void __fastcall SetConvertedAmount(int Index, ConvertedAmount* _prop_val)
-  {  FConvertedAmount = _prop_val; FConvertedAmount_Specified = true;  }
-  bool __fastcall ConvertedAmount_Specified(int Index)
-  {  return FConvertedAmount_Specified;  } 
-  void __fastcall SetCustomerApprovedFlag(int Index, UnicodeString _prop_val)
-  {  FCustomerApprovedFlag = _prop_val; FCustomerApprovedFlag_Specified = true;  }
-  bool __fastcall CustomerApprovedFlag_Specified(int Index)
-  {  return FCustomerApprovedFlag_Specified;  } 
-  void __fastcall SetDeclaration(int Index, UnicodeString _prop_val)
-  {  FDeclaration = _prop_val; FDeclaration_Specified = true;  }
-  bool __fastcall Declaration_Specified(int Index)
-  {  return FDeclaration_Specified;  } 
-  void __fastcall SetMarkup(int Index, double _prop_val)
-  {  FMarkup = _prop_val; FMarkup_Specified = true;  }
-  bool __fastcall Markup_Specified(int Index)
-  {  return FMarkup_Specified;  } 
-  void __fastcall SetRate(int Index, double _prop_val)
-  {  FRate = _prop_val; FRate_Specified = true;  }
-  bool __fastcall Rate_Specified(int Index)
-  {  return FRate_Specified;  } 
-
-public:
-  __fastcall ~CurrencyConversion();
-__published:
-  __property double     Commission = { index=(IS_OPTN), read=FCommission, write=SetCommission, stored = Commission_Specified };
-  __property ConvertedAmount* ConvertedAmount = { index=(IS_OPTN|IS_NLBL), read=FConvertedAmount, write=SetConvertedAmount, stored = ConvertedAmount_Specified };
-  __property UnicodeString CustomerApprovedFlag = { index=(IS_OPTN|IS_NLBL), read=FCustomerApprovedFlag, write=SetCustomerApprovedFlag, stored = CustomerApprovedFlag_Specified };
-  __property UnicodeString Declaration = { index=(IS_OPTN|IS_NLBL), read=FDeclaration, write=SetDeclaration, stored = Declaration_Specified };
-  __property double         Markup = { index=(IS_OPTN), read=FMarkup, write=SetMarkup, stored = Markup_Specified };
-  __property double           Rate = { index=(IS_OPTN), read=FRate, write=SetRate, stored = Rate_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : Instalment, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class Instalment : public TRemotable {
-private:
-  double          FCharges;
-  bool            FCharges_Specified;
-  double          FCumulativeAmount;
-  bool            FCumulativeAmount_Specified;
-  double          FFirstAmount;
-  bool            FFirstAmount_Specified;
-  UnicodeString   FFirstPaymentDate;
-  bool            FFirstPaymentDate_Specified;
-  UnicodeString   FInstalmentType;
-  bool            FInstalmentType_Specified;
-  int             FMyPropTotalNbOfPaymentserty;
-  bool            FMyPropTotalNbOfPaymentserty_Specified;
-  int             FPeriod;
-  bool            FPeriod_Specified;
-  UnicodeString   FPeriodUnit;
-  bool            FPeriodUnit_Specified;
-  UnicodeString   FPlanID;
-  bool            FPlanID_Specified;
-  int             FSequenceNumber;
-  bool            FSequenceNumber_Specified;
-  void __fastcall SetCharges(int Index, double _prop_val)
-  {  FCharges = _prop_val; FCharges_Specified = true;  }
-  bool __fastcall Charges_Specified(int Index)
-  {  return FCharges_Specified;  } 
-  void __fastcall SetCumulativeAmount(int Index, double _prop_val)
-  {  FCumulativeAmount = _prop_val; FCumulativeAmount_Specified = true;  }
-  bool __fastcall CumulativeAmount_Specified(int Index)
-  {  return FCumulativeAmount_Specified;  } 
-  void __fastcall SetFirstAmount(int Index, double _prop_val)
-  {  FFirstAmount = _prop_val; FFirstAmount_Specified = true;  }
-  bool __fastcall FirstAmount_Specified(int Index)
-  {  return FFirstAmount_Specified;  } 
-  void __fastcall SetFirstPaymentDate(int Index, UnicodeString _prop_val)
-  {  FFirstPaymentDate = _prop_val; FFirstPaymentDate_Specified = true;  }
-  bool __fastcall FirstPaymentDate_Specified(int Index)
-  {  return FFirstPaymentDate_Specified;  } 
-  void __fastcall SetInstalmentType(int Index, UnicodeString _prop_val)
-  {  FInstalmentType = _prop_val; FInstalmentType_Specified = true;  }
-  bool __fastcall InstalmentType_Specified(int Index)
-  {  return FInstalmentType_Specified;  } 
-  void __fastcall SetMyPropTotalNbOfPaymentserty(int Index, int _prop_val)
-  {  FMyPropTotalNbOfPaymentserty = _prop_val; FMyPropTotalNbOfPaymentserty_Specified = true;  }
-  bool __fastcall MyPropTotalNbOfPaymentserty_Specified(int Index)
-  {  return FMyPropTotalNbOfPaymentserty_Specified;  } 
-  void __fastcall SetPeriod(int Index, int _prop_val)
-  {  FPeriod = _prop_val; FPeriod_Specified = true;  }
-  bool __fastcall Period_Specified(int Index)
-  {  return FPeriod_Specified;  } 
-  void __fastcall SetPeriodUnit(int Index, UnicodeString _prop_val)
-  {  FPeriodUnit = _prop_val; FPeriodUnit_Specified = true;  }
-  bool __fastcall PeriodUnit_Specified(int Index)
-  {  return FPeriodUnit_Specified;  } 
-  void __fastcall SetPlanID(int Index, UnicodeString _prop_val)
-  {  FPlanID = _prop_val; FPlanID_Specified = true;  }
-  bool __fastcall PlanID_Specified(int Index)
-  {  return FPlanID_Specified;  } 
-  void __fastcall SetSequenceNumber(int Index, int _prop_val)
-  {  FSequenceNumber = _prop_val; FSequenceNumber_Specified = true;  }
-  bool __fastcall SequenceNumber_Specified(int Index)
-  {  return FSequenceNumber_Specified;  } 
-__published:
-  __property double        Charges = { index=(IS_OPTN), read=FCharges, write=SetCharges, stored = Charges_Specified };
-  __property double     CumulativeAmount = { index=(IS_OPTN), read=FCumulativeAmount, write=SetCumulativeAmount, stored = CumulativeAmount_Specified };
-  __property double     FirstAmount = { index=(IS_OPTN), read=FFirstAmount, write=SetFirstAmount, stored = FirstAmount_Specified };
-  __property UnicodeString FirstPaymentDate = { index=(IS_OPTN|IS_NLBL), read=FFirstPaymentDate, write=SetFirstPaymentDate, stored = FirstPaymentDate_Specified };
-  __property UnicodeString InstalmentType = { index=(IS_OPTN|IS_NLBL), read=FInstalmentType, write=SetInstalmentType, stored = InstalmentType_Specified };
-  __property int        MyPropTotalNbOfPaymentserty = { index=(IS_OPTN), read=FMyPropTotalNbOfPaymentserty, write=SetMyPropTotalNbOfPaymentserty, stored = MyPropTotalNbOfPaymentserty_Specified };
-  __property int            Period = { index=(IS_OPTN), read=FPeriod, write=SetPeriod, stored = Period_Specified };
-  __property UnicodeString PeriodUnit = { index=(IS_OPTN|IS_NLBL), read=FPeriodUnit, write=SetPeriodUnit, stored = PeriodUnit_Specified };
-  __property UnicodeString     PlanID = { index=(IS_OPTN|IS_NLBL), read=FPlanID, write=SetPlanID, stored = PlanID_Specified };
-  __property int        SequenceNumber = { index=(IS_OPTN), read=FSequenceNumber, write=SetSequenceNumber, stored = SequenceNumber_Specified };
-};
-
-
-
-
-// ************************************************************************ //
 // XML       : PaymentAcquirerData, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
@@ -1294,28 +950,14 @@ class PaymentInstrumentData : public TRemotable {
 private:
   CardData*       FCardData;
   bool            FCardData_Specified;
-  CheckData*      FCheckData;
-  bool            FCheckData_Specified;
-  MobileData*     FMobileData;
-  bool            FMobileData_Specified;
   UnicodeString   FPaymentInstrumentType;
   bool            FPaymentInstrumentType_Specified;
   UnicodeString   FProtectedCardData;
   bool            FProtectedCardData_Specified;
-  StoredValueAccountID* FStoredValueAccountID;
-  bool            FStoredValueAccountID_Specified;
   void __fastcall SetCardData(int Index, CardData* _prop_val)
   {  FCardData = _prop_val; FCardData_Specified = true;  }
   bool __fastcall CardData_Specified(int Index)
   {  return FCardData_Specified;  } 
-  void __fastcall SetCheckData(int Index, CheckData* _prop_val)
-  {  FCheckData = _prop_val; FCheckData_Specified = true;  }
-  bool __fastcall CheckData_Specified(int Index)
-  {  return FCheckData_Specified;  } 
-  void __fastcall SetMobileData(int Index, MobileData* _prop_val)
-  {  FMobileData = _prop_val; FMobileData_Specified = true;  }
-  bool __fastcall MobileData_Specified(int Index)
-  {  return FMobileData_Specified;  } 
   void __fastcall SetPaymentInstrumentType(int Index, UnicodeString _prop_val)
   {  FPaymentInstrumentType = _prop_val; FPaymentInstrumentType_Specified = true;  }
   bool __fastcall PaymentInstrumentType_Specified(int Index)
@@ -1324,72 +966,13 @@ private:
   {  FProtectedCardData = _prop_val; FProtectedCardData_Specified = true;  }
   bool __fastcall ProtectedCardData_Specified(int Index)
   {  return FProtectedCardData_Specified;  } 
-  void __fastcall SetStoredValueAccountID(int Index, StoredValueAccountID* _prop_val)
-  {  FStoredValueAccountID = _prop_val; FStoredValueAccountID_Specified = true;  }
-  bool __fastcall StoredValueAccountID_Specified(int Index)
-  {  return FStoredValueAccountID_Specified;  } 
 
 public:
   __fastcall ~PaymentInstrumentData();
 __published:
   __property CardData*    CardData = { index=(IS_OPTN|IS_NLBL), read=FCardData, write=SetCardData, stored = CardData_Specified };
-  __property CheckData*  CheckData = { index=(IS_OPTN|IS_NLBL), read=FCheckData, write=SetCheckData, stored = CheckData_Specified };
-  __property MobileData* MobileData = { index=(IS_OPTN|IS_NLBL), read=FMobileData, write=SetMobileData, stored = MobileData_Specified };
   __property UnicodeString PaymentInstrumentType = { index=(IS_OPTN|IS_NLBL), read=FPaymentInstrumentType, write=SetPaymentInstrumentType, stored = PaymentInstrumentType_Specified };
   __property UnicodeString ProtectedCardData = { index=(IS_OPTN|IS_NLBL), read=FProtectedCardData, write=SetProtectedCardData, stored = ProtectedCardData_Specified };
-  __property StoredValueAccountID* StoredValueAccountID = { index=(IS_OPTN|IS_NLBL), read=FStoredValueAccountID, write=SetStoredValueAccountID, stored = StoredValueAccountID_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : AreaSize, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class AreaSize : public TRemotable {
-private:
-  UnicodeString   FX;
-  bool            FX_Specified;
-  UnicodeString   FY;
-  bool            FY_Specified;
-  void __fastcall SetX(int Index, UnicodeString _prop_val)
-  {  FX = _prop_val; FX_Specified = true;  }
-  bool __fastcall X_Specified(int Index)
-  {  return FX_Specified;  } 
-  void __fastcall SetY(int Index, UnicodeString _prop_val)
-  {  FY = _prop_val; FY_Specified = true;  }
-  bool __fastcall Y_Specified(int Index)
-  {  return FY_Specified;  } 
-__published:
-  __property UnicodeString          X = { index=(IS_OPTN|IS_NLBL), read=FX, write=SetX, stored = X_Specified };
-  __property UnicodeString          Y = { index=(IS_OPTN|IS_NLBL), read=FY, write=SetY, stored = Y_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : ConvertedAmount, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class ConvertedAmount : public TRemotable {
-private:
-  double          FAmountValue;
-  bool            FAmountValue_Specified;
-  UnicodeString   FCurrency;
-  bool            FCurrency_Specified;
-  void __fastcall SetAmountValue(int Index, double _prop_val)
-  {  FAmountValue = _prop_val; FAmountValue_Specified = true;  }
-  bool __fastcall AmountValue_Specified(int Index)
-  {  return FAmountValue_Specified;  } 
-  void __fastcall SetCurrency(int Index, UnicodeString _prop_val)
-  {  FCurrency = _prop_val; FCurrency_Specified = true;  }
-  bool __fastcall Currency_Specified(int Index)
-  {  return FCurrency_Specified;  } 
-__published:
-  __property double     AmountValue = { index=(IS_OPTN), read=FAmountValue, write=SetAmountValue, stored = AmountValue_Specified };
-  __property UnicodeString   Currency = { index=(IS_OPTN|IS_NLBL), read=FCurrency, write=SetCurrency, stored = Currency_Specified };
 };
 
 
@@ -1416,181 +999,6 @@ private:
 __published:
   __property UnicodeString  TimeStamp = { index=(IS_OPTN|IS_NLBL), read=FTimeStamp, write=SetTimeStamp, stored = TimeStamp_Specified };
   __property UnicodeString TransactionID = { index=(IS_OPTN|IS_NLBL), read=FTransactionID, write=SetTransactionID, stored = TransactionID_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : CheckData, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CheckData : public TRemotable {
-private:
-  UnicodeString   FAccountNumber;
-  bool            FAccountNumber_Specified;
-  UnicodeString   FBankID;
-  bool            FBankID_Specified;
-  UnicodeString   FCheckCardNumber;
-  bool            FCheckCardNumber_Specified;
-  UnicodeString   FCheckNumber;
-  bool            FCheckNumber_Specified;
-  UnicodeString   FCountry;
-  bool            FCountry_Specified;
-  TrackData*      FTrackData;
-  bool            FTrackData_Specified;
-  void __fastcall SetAccountNumber(int Index, UnicodeString _prop_val)
-  {  FAccountNumber = _prop_val; FAccountNumber_Specified = true;  }
-  bool __fastcall AccountNumber_Specified(int Index)
-  {  return FAccountNumber_Specified;  } 
-  void __fastcall SetBankID(int Index, UnicodeString _prop_val)
-  {  FBankID = _prop_val; FBankID_Specified = true;  }
-  bool __fastcall BankID_Specified(int Index)
-  {  return FBankID_Specified;  } 
-  void __fastcall SetCheckCardNumber(int Index, UnicodeString _prop_val)
-  {  FCheckCardNumber = _prop_val; FCheckCardNumber_Specified = true;  }
-  bool __fastcall CheckCardNumber_Specified(int Index)
-  {  return FCheckCardNumber_Specified;  } 
-  void __fastcall SetCheckNumber(int Index, UnicodeString _prop_val)
-  {  FCheckNumber = _prop_val; FCheckNumber_Specified = true;  }
-  bool __fastcall CheckNumber_Specified(int Index)
-  {  return FCheckNumber_Specified;  } 
-  void __fastcall SetCountry(int Index, UnicodeString _prop_val)
-  {  FCountry = _prop_val; FCountry_Specified = true;  }
-  bool __fastcall Country_Specified(int Index)
-  {  return FCountry_Specified;  } 
-  void __fastcall SetTrackData(int Index, TrackData* _prop_val)
-  {  FTrackData = _prop_val; FTrackData_Specified = true;  }
-  bool __fastcall TrackData_Specified(int Index)
-  {  return FTrackData_Specified;  } 
-
-public:
-  __fastcall ~CheckData();
-__published:
-  __property UnicodeString AccountNumber = { index=(IS_OPTN|IS_NLBL), read=FAccountNumber, write=SetAccountNumber, stored = AccountNumber_Specified };
-  __property UnicodeString     BankID = { index=(IS_OPTN|IS_NLBL), read=FBankID, write=SetBankID, stored = BankID_Specified };
-  __property UnicodeString CheckCardNumber = { index=(IS_OPTN|IS_NLBL), read=FCheckCardNumber, write=SetCheckCardNumber, stored = CheckCardNumber_Specified };
-  __property UnicodeString CheckNumber = { index=(IS_OPTN|IS_NLBL), read=FCheckNumber, write=SetCheckNumber, stored = CheckNumber_Specified };
-  __property UnicodeString    Country = { index=(IS_OPTN|IS_NLBL), read=FCountry, write=SetCountry, stored = Country_Specified };
-  __property TrackData*  TrackData = { index=(IS_OPTN|IS_NLBL), read=FTrackData, write=SetTrackData, stored = TrackData_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : MobileData, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class MobileData : public TRemotable {
-private:
-  Geolocation*    FGeolocation;
-  bool            FGeolocation_Specified;
-  UnicodeString   FMaskedMSISDN;
-  bool            FMaskedMSISDN_Specified;
-  UnicodeString   FMobileCountryCode;
-  bool            FMobileCountryCode_Specified;
-  UnicodeString   FMobileNetworkCode;
-  bool            FMobileNetworkCode_Specified;
-  UnicodeString   FProtectedMobileData;
-  bool            FProtectedMobileData_Specified;
-  SensitiveMobileData* FSensitiveMobileData;
-  bool            FSensitiveMobileData_Specified;
-  void __fastcall SetGeolocation(int Index, Geolocation* _prop_val)
-  {  FGeolocation = _prop_val; FGeolocation_Specified = true;  }
-  bool __fastcall Geolocation_Specified(int Index)
-  {  return FGeolocation_Specified;  } 
-  void __fastcall SetMaskedMSISDN(int Index, UnicodeString _prop_val)
-  {  FMaskedMSISDN = _prop_val; FMaskedMSISDN_Specified = true;  }
-  bool __fastcall MaskedMSISDN_Specified(int Index)
-  {  return FMaskedMSISDN_Specified;  } 
-  void __fastcall SetMobileCountryCode(int Index, UnicodeString _prop_val)
-  {  FMobileCountryCode = _prop_val; FMobileCountryCode_Specified = true;  }
-  bool __fastcall MobileCountryCode_Specified(int Index)
-  {  return FMobileCountryCode_Specified;  } 
-  void __fastcall SetMobileNetworkCode(int Index, UnicodeString _prop_val)
-  {  FMobileNetworkCode = _prop_val; FMobileNetworkCode_Specified = true;  }
-  bool __fastcall MobileNetworkCode_Specified(int Index)
-  {  return FMobileNetworkCode_Specified;  } 
-  void __fastcall SetProtectedMobileData(int Index, UnicodeString _prop_val)
-  {  FProtectedMobileData = _prop_val; FProtectedMobileData_Specified = true;  }
-  bool __fastcall ProtectedMobileData_Specified(int Index)
-  {  return FProtectedMobileData_Specified;  } 
-  void __fastcall SetSensitiveMobileData(int Index, SensitiveMobileData* _prop_val)
-  {  FSensitiveMobileData = _prop_val; FSensitiveMobileData_Specified = true;  }
-  bool __fastcall SensitiveMobileData_Specified(int Index)
-  {  return FSensitiveMobileData_Specified;  } 
-
-public:
-  __fastcall ~MobileData();
-__published:
-  __property Geolocation* Geolocation = { index=(IS_OPTN|IS_NLBL), read=FGeolocation, write=SetGeolocation, stored = Geolocation_Specified };
-  __property UnicodeString MaskedMSISDN = { index=(IS_OPTN|IS_NLBL), read=FMaskedMSISDN, write=SetMaskedMSISDN, stored = MaskedMSISDN_Specified };
-  __property UnicodeString MobileCountryCode = { index=(IS_OPTN|IS_NLBL), read=FMobileCountryCode, write=SetMobileCountryCode, stored = MobileCountryCode_Specified };
-  __property UnicodeString MobileNetworkCode = { index=(IS_OPTN|IS_NLBL), read=FMobileNetworkCode, write=SetMobileNetworkCode, stored = MobileNetworkCode_Specified };
-  __property UnicodeString ProtectedMobileData = { index=(IS_OPTN|IS_NLBL), read=FProtectedMobileData, write=SetProtectedMobileData, stored = ProtectedMobileData_Specified };
-  __property SensitiveMobileData* SensitiveMobileData = { index=(IS_OPTN|IS_NLBL), read=FSensitiveMobileData, write=SetSensitiveMobileData, stored = SensitiveMobileData_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : StoredValueAccountID, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class StoredValueAccountID : public TRemotable {
-private:
-  UnicodeString   FEntryMode;
-  bool            FEntryMode_Specified;
-  UnicodeString   FExpiryDate;
-  bool            FExpiryDate_Specified;
-  UnicodeString   FIdentificationType;
-  bool            FIdentificationType_Specified;
-  UnicodeString   FOwnerName;
-  bool            FOwnerName_Specified;
-  UnicodeString   FStoredValueAccountType;
-  bool            FStoredValueAccountType_Specified;
-  UnicodeString   FStoredValueID;
-  bool            FStoredValueID_Specified;
-  UnicodeString   FStoredValueProvider;
-  bool            FStoredValueProvider_Specified;
-  void __fastcall SetEntryMode(int Index, UnicodeString _prop_val)
-  {  FEntryMode = _prop_val; FEntryMode_Specified = true;  }
-  bool __fastcall EntryMode_Specified(int Index)
-  {  return FEntryMode_Specified;  } 
-  void __fastcall SetExpiryDate(int Index, UnicodeString _prop_val)
-  {  FExpiryDate = _prop_val; FExpiryDate_Specified = true;  }
-  bool __fastcall ExpiryDate_Specified(int Index)
-  {  return FExpiryDate_Specified;  } 
-  void __fastcall SetIdentificationType(int Index, UnicodeString _prop_val)
-  {  FIdentificationType = _prop_val; FIdentificationType_Specified = true;  }
-  bool __fastcall IdentificationType_Specified(int Index)
-  {  return FIdentificationType_Specified;  } 
-  void __fastcall SetOwnerName(int Index, UnicodeString _prop_val)
-  {  FOwnerName = _prop_val; FOwnerName_Specified = true;  }
-  bool __fastcall OwnerName_Specified(int Index)
-  {  return FOwnerName_Specified;  } 
-  void __fastcall SetStoredValueAccountType(int Index, UnicodeString _prop_val)
-  {  FStoredValueAccountType = _prop_val; FStoredValueAccountType_Specified = true;  }
-  bool __fastcall StoredValueAccountType_Specified(int Index)
-  {  return FStoredValueAccountType_Specified;  } 
-  void __fastcall SetStoredValueID(int Index, UnicodeString _prop_val)
-  {  FStoredValueID = _prop_val; FStoredValueID_Specified = true;  }
-  bool __fastcall StoredValueID_Specified(int Index)
-  {  return FStoredValueID_Specified;  } 
-  void __fastcall SetStoredValueProvider(int Index, UnicodeString _prop_val)
-  {  FStoredValueProvider = _prop_val; FStoredValueProvider_Specified = true;  }
-  bool __fastcall StoredValueProvider_Specified(int Index)
-  {  return FStoredValueProvider_Specified;  } 
-__published:
-  __property UnicodeString  EntryMode = { index=(IS_OPTN|IS_NLBL), read=FEntryMode, write=SetEntryMode, stored = EntryMode_Specified };
-  __property UnicodeString ExpiryDate = { index=(IS_OPTN|IS_NLBL), read=FExpiryDate, write=SetExpiryDate, stored = ExpiryDate_Specified };
-  __property UnicodeString IdentificationType = { index=(IS_OPTN|IS_NLBL), read=FIdentificationType, write=SetIdentificationType, stored = IdentificationType_Specified };
-  __property UnicodeString  OwnerName = { index=(IS_OPTN|IS_NLBL), read=FOwnerName, write=SetOwnerName, stored = OwnerName_Specified };
-  __property UnicodeString StoredValueAccountType = { index=(IS_OPTN|IS_NLBL), read=FStoredValueAccountType, write=SetStoredValueAccountType, stored = StoredValueAccountType_Specified };
-  __property UnicodeString StoredValueID = { index=(IS_OPTN|IS_NLBL), read=FStoredValueID, write=SetStoredValueID, stored = StoredValueID_Specified };
-  __property UnicodeString StoredValueProvider = { index=(IS_OPTN|IS_NLBL), read=FStoredValueProvider, write=SetStoredValueProvider, stored = StoredValueProvider_Specified };
 };
 
 
@@ -1922,127 +1330,6 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : Geolocation, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class Geolocation : public TRemotable {
-private:
-  GeographicCoordinates* FGeographicCoordinates;
-  bool            FGeographicCoordinates_Specified;
-  UTMCoordinates* FUTMCoordinates;
-  bool            FUTMCoordinates_Specified;
-  void __fastcall SetGeographicCoordinates(int Index, GeographicCoordinates* _prop_val)
-  {  FGeographicCoordinates = _prop_val; FGeographicCoordinates_Specified = true;  }
-  bool __fastcall GeographicCoordinates_Specified(int Index)
-  {  return FGeographicCoordinates_Specified;  } 
-  void __fastcall SetUTMCoordinates(int Index, UTMCoordinates* _prop_val)
-  {  FUTMCoordinates = _prop_val; FUTMCoordinates_Specified = true;  }
-  bool __fastcall UTMCoordinates_Specified(int Index)
-  {  return FUTMCoordinates_Specified;  } 
-
-public:
-  __fastcall ~Geolocation();
-__published:
-  __property GeographicCoordinates* GeographicCoordinates = { index=(IS_OPTN|IS_NLBL), read=FGeographicCoordinates, write=SetGeographicCoordinates, stored = GeographicCoordinates_Specified };
-  __property UTMCoordinates* UTMCoordinates = { index=(IS_OPTN|IS_NLBL), read=FUTMCoordinates, write=SetUTMCoordinates, stored = UTMCoordinates_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SensitiveMobileData, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class SensitiveMobileData : public TRemotable {
-private:
-  UnicodeString   FIMEI;
-  bool            FIMEI_Specified;
-  UnicodeString   FISMI;
-  bool            FISMI_Specified;
-  UnicodeString   FMSISDN;
-  bool            FMSISDN_Specified;
-  void __fastcall SetIMEI(int Index, UnicodeString _prop_val)
-  {  FIMEI = _prop_val; FIMEI_Specified = true;  }
-  bool __fastcall IMEI_Specified(int Index)
-  {  return FIMEI_Specified;  } 
-  void __fastcall SetISMI(int Index, UnicodeString _prop_val)
-  {  FISMI = _prop_val; FISMI_Specified = true;  }
-  bool __fastcall ISMI_Specified(int Index)
-  {  return FISMI_Specified;  } 
-  void __fastcall SetMSISDN(int Index, UnicodeString _prop_val)
-  {  FMSISDN = _prop_val; FMSISDN_Specified = true;  }
-  bool __fastcall MSISDN_Specified(int Index)
-  {  return FMSISDN_Specified;  } 
-__published:
-  __property UnicodeString       IMEI = { index=(IS_OPTN|IS_NLBL), read=FIMEI, write=SetIMEI, stored = IMEI_Specified };
-  __property UnicodeString       ISMI = { index=(IS_OPTN|IS_NLBL), read=FISMI, write=SetISMI, stored = ISMI_Specified };
-  __property UnicodeString     MSISDN = { index=(IS_OPTN|IS_NLBL), read=FMSISDN, write=SetMSISDN, stored = MSISDN_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : GeographicCoordinates, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class GeographicCoordinates : public TRemotable {
-private:
-  UnicodeString   FLatitude;
-  bool            FLatitude_Specified;
-  UnicodeString   FLongitude;
-  bool            FLongitude_Specified;
-  void __fastcall SetLatitude(int Index, UnicodeString _prop_val)
-  {  FLatitude = _prop_val; FLatitude_Specified = true;  }
-  bool __fastcall Latitude_Specified(int Index)
-  {  return FLatitude_Specified;  } 
-  void __fastcall SetLongitude(int Index, UnicodeString _prop_val)
-  {  FLongitude = _prop_val; FLongitude_Specified = true;  }
-  bool __fastcall Longitude_Specified(int Index)
-  {  return FLongitude_Specified;  } 
-__published:
-  __property UnicodeString   Latitude = { index=(IS_OPTN|IS_NLBL), read=FLatitude, write=SetLatitude, stored = Latitude_Specified };
-  __property UnicodeString  Longitude = { index=(IS_OPTN|IS_NLBL), read=FLongitude, write=SetLongitude, stored = Longitude_Specified };
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : UTMCoordinates, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class UTMCoordinates : public TRemotable {
-private:
-  UnicodeString   FUTMEastward;
-  bool            FUTMEastward_Specified;
-  UnicodeString   FUTMNorthward;
-  bool            FUTMNorthward_Specified;
-  UnicodeString   FUTMZone;
-  bool            FUTMZone_Specified;
-  void __fastcall SetUTMEastward(int Index, UnicodeString _prop_val)
-  {  FUTMEastward = _prop_val; FUTMEastward_Specified = true;  }
-  bool __fastcall UTMEastward_Specified(int Index)
-  {  return FUTMEastward_Specified;  } 
-  void __fastcall SetUTMNorthward(int Index, UnicodeString _prop_val)
-  {  FUTMNorthward = _prop_val; FUTMNorthward_Specified = true;  }
-  bool __fastcall UTMNorthward_Specified(int Index)
-  {  return FUTMNorthward_Specified;  } 
-  void __fastcall SetUTMZone(int Index, UnicodeString _prop_val)
-  {  FUTMZone = _prop_val; FUTMZone_Specified = true;  }
-  bool __fastcall UTMZone_Specified(int Index)
-  {  return FUTMZone_Specified;  } 
-__published:
-  __property UnicodeString UTMEastward = { index=(IS_OPTN|IS_NLBL), read=FUTMEastward, write=SetUTMEastward, stored = UTMEastward_Specified };
-  __property UnicodeString UTMNorthward = { index=(IS_OPTN|IS_NLBL), read=FUTMNorthward, write=SetUTMNorthward, stored = UTMNorthward_Specified };
-  __property UnicodeString    UTMZone = { index=(IS_OPTN|IS_NLBL), read=FUTMZone, write=SetUTMZone, stored = UTMZone_Specified };
-};
-
-
-
-
-// ************************************************************************ //
 // XML       : SaleSoftware, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
@@ -2131,18 +1418,6 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
 class SaleData2 : public SaleData {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SaleToIssuerData, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class SaleToIssuerData2 : public SaleToIssuerData {
 private:
 __published:
 };
@@ -2271,18 +1546,6 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : PredefinedContent, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class PredefinedContent2 : public PredefinedContent {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
 // XML       : PaymentResult, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
@@ -2299,66 +1562,6 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
 class AmountsResp2 : public AmountsResp {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : CapturedSignature, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CapturedSignature2 : public CapturedSignature {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : AreaSize, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class AreaSize2 : public AreaSize {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : CurrencyConversion, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CurrencyConversion2 : public CurrencyConversion {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : ConvertedAmount, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class ConvertedAmount2 : public ConvertedAmount {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : Instalment, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class Instalment2 : public Instalment {
 private:
 __published:
 };
@@ -2467,90 +1670,6 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
 // ************************************************************************ //
 class TrackData2 : public TrackData {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : CheckData, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class CheckData2 : public CheckData {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : MobileData, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class MobileData2 : public MobileData {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : Geolocation, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class Geolocation2 : public Geolocation {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : GeographicCoordinates, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class GeographicCoordinates2 : public GeographicCoordinates {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : UTMCoordinates, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class UTMCoordinates2 : public UTMCoordinates {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : SensitiveMobileData, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class SensitiveMobileData2 : public SensitiveMobileData {
-private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : StoredValueAccountID, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain
-// ************************************************************************ //
-class StoredValueAccountID2 : public StoredValueAccountID {
 private:
 __published:
 };
@@ -3486,6 +2605,175 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : AdjustAuthorisation, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAuthorisation : public TRemotable {
+private:
+  AdditionalData* FadditionalData;
+  bool            FadditionalData_Specified;
+  UnicodeString   FmerchantAccount;
+  bool            FmerchantAccount_Specified;
+  ModificationAmount* FmodificationAmount;
+  bool            FmodificationAmount_Specified;
+  UnicodeString   ForiginalReference;
+  bool            ForiginalReference_Specified;
+  UnicodeString   Freference;
+  bool            Freference_Specified;
+  void __fastcall SetadditionalData(int Index, AdditionalData* _prop_val)
+  {  FadditionalData = _prop_val; FadditionalData_Specified = true;  }
+  bool __fastcall additionalData_Specified(int Index)
+  {  return FadditionalData_Specified;  } 
+  void __fastcall SetmerchantAccount(int Index, UnicodeString _prop_val)
+  {  FmerchantAccount = _prop_val; FmerchantAccount_Specified = true;  }
+  bool __fastcall merchantAccount_Specified(int Index)
+  {  return FmerchantAccount_Specified;  } 
+  void __fastcall SetmodificationAmount(int Index, ModificationAmount* _prop_val)
+  {  FmodificationAmount = _prop_val; FmodificationAmount_Specified = true;  }
+  bool __fastcall modificationAmount_Specified(int Index)
+  {  return FmodificationAmount_Specified;  } 
+  void __fastcall SetoriginalReference(int Index, UnicodeString _prop_val)
+  {  ForiginalReference = _prop_val; ForiginalReference_Specified = true;  }
+  bool __fastcall originalReference_Specified(int Index)
+  {  return ForiginalReference_Specified;  } 
+  void __fastcall Setreference(int Index, UnicodeString _prop_val)
+  {  Freference = _prop_val; Freference_Specified = true;  }
+  bool __fastcall reference_Specified(int Index)
+  {  return Freference_Specified;  } 
+
+public:
+  __fastcall ~AdjustAuthorisation();
+__published:
+  __property AdditionalData* additionalData = { index=(IS_OPTN|IS_NLBL), read=FadditionalData, write=SetadditionalData, stored = additionalData_Specified };
+  __property UnicodeString merchantAccount = { index=(IS_OPTN|IS_NLBL), read=FmerchantAccount, write=SetmerchantAccount, stored = merchantAccount_Specified };
+  __property ModificationAmount* modificationAmount = { index=(IS_OPTN|IS_NLBL), read=FmodificationAmount, write=SetmodificationAmount, stored = modificationAmount_Specified };
+  __property UnicodeString originalReference = { index=(IS_OPTN|IS_NLBL), read=ForiginalReference, write=SetoriginalReference, stored = originalReference_Specified };
+  __property UnicodeString  reference = { index=(IS_OPTN|IS_NLBL), read=Freference, write=Setreference, stored = reference_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdditionalData, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdditionalData : public TRemotable {
+private:
+  UnicodeString   FindustryUsage;
+  bool            FindustryUsage_Specified;
+  void __fastcall SetindustryUsage(int Index, UnicodeString _prop_val)
+  {  FindustryUsage = _prop_val; FindustryUsage_Specified = true;  }
+  bool __fastcall industryUsage_Specified(int Index)
+  {  return FindustryUsage_Specified;  } 
+__published:
+  __property UnicodeString industryUsage = { index=(IS_OPTN|IS_NLBL), read=FindustryUsage, write=SetindustryUsage, stored = industryUsage_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ModificationAmount, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class ModificationAmount : public TRemotable {
+private:
+  UnicodeString   Fcurrency;
+  bool            Fcurrency_Specified;
+  int             Fvalue;
+  bool            Fvalue_Specified;
+  void __fastcall Setcurrency(int Index, UnicodeString _prop_val)
+  {  Fcurrency = _prop_val; Fcurrency_Specified = true;  }
+  bool __fastcall currency_Specified(int Index)
+  {  return Fcurrency_Specified;  } 
+  void __fastcall Setvalue(int Index, int _prop_val)
+  {  Fvalue = _prop_val; Fvalue_Specified = true;  }
+  bool __fastcall value_Specified(int Index)
+  {  return Fvalue_Specified;  } 
+__published:
+  __property UnicodeString   currency = { index=(IS_OPTN|IS_NLBL), read=Fcurrency, write=Setcurrency, stored = currency_Specified };
+  __property int             value = { index=(IS_OPTN), read=Fvalue, write=Setvalue, stored = value_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdjustAndCaptureResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAndCaptureResponse : public TRemotable {
+private:
+  UnicodeString   FpspReference;
+  bool            FpspReference_Specified;
+  ArrayOfstring   Fresponse;
+  bool            Fresponse_Specified;
+  void __fastcall SetpspReference(int Index, UnicodeString _prop_val)
+  {  FpspReference = _prop_val; FpspReference_Specified = true;  }
+  bool __fastcall pspReference_Specified(int Index)
+  {  return FpspReference_Specified;  } 
+  void __fastcall Setresponse(int Index, ArrayOfstring _prop_val)
+  {  Fresponse = _prop_val; Fresponse_Specified = true;  }
+  bool __fastcall response_Specified(int Index)
+  {  return Fresponse_Specified;  } 
+__published:
+  __property UnicodeString pspReference = { index=(IS_OPTN|IS_NLBL), read=FpspReference, write=SetpspReference, stored = pspReference_Specified };
+  __property ArrayOfstring   response = { index=(IS_OPTN|IS_NLBL), read=Fresponse, write=Setresponse, stored = response_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdjustAuthorisation, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAuthorisation2 : public AdjustAuthorisation {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdditionalData, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdditionalData2 : public AdditionalData {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : ModificationAmount, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class ModificationAmount2 : public ModificationAmount {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : AdjustAndCaptureResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation
+// ************************************************************************ //
+class AdjustAndCaptureResponse2 : public AdjustAndCaptureResponse {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/IAdyenIntegrationWebService/%operationName%
@@ -3504,7 +2792,9 @@ public:
   virtual SaleToPOIResponse* Refund(const Envelop* envelop, const ResourceDetails* details) = 0; 
   virtual SaleToPOIResponse* GetTransactionStatus(const Envelop* envelop, const ResourceDetails* details) = 0; 
   virtual SaleToPOIResponse* LoginToSystem(const Envelop* envelop, const ResourceDetails* details) = 0; 
-  virtual SaleToPOIResponse* LogoutSystem(const Envelop* envelop, const ResourceDetails* details) = 0; 
+  virtual SaleToPOIResponse* LogoutSystem(const Envelop* envelop, const ResourceDetails* details) = 0;
+  virtual AdjustAndCaptureResponse* CaptureModifiedAmount(const AdjustAuthorisation* authRequest, const ResourceDetails* details) = 0;
+  virtual AdjustAndCaptureResponse* AdjustAuthorisation(const AdjustAuthorisation* authRequest, const ResourceDetails* details) = 0;
 };
 typedef DelphiInterface<IAdyenIntegrationWebService> _di_IAdyenIntegrationWebService;
 

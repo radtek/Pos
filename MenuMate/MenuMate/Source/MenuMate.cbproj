@@ -1134,17 +1134,21 @@
 				<DependentOn>Maintenance\NewUser.h</DependentOn>
 				<BuildOrder>132</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="SalesTypeItemDetails.cpp">
+				<DependentOn>SalesTypeItemDetails.h</DependentOn>
+				<BuildOrder>764</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="SiHotDataObjects.cpp">
 				<DependentOn>SiHotDataObjects.h</DependentOn>
 				<BuildOrder>767</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="AdyenWSDL.cpp">
-				<DependentOn>AdyenWSDL.h</DependentOn>
-				<BuildOrder>797</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="SmartConnectWSDL.cpp">
 				<DependentOn>SmartConnectWSDL.h</DependentOn>
 				<BuildOrder>792</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RunRateTcpStreamSender.cpp">
+				<DependentOn>RunRateTcpStreamSender.h</DependentOn>
+				<BuildOrder>803</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="RunRateTcpStreamSenderSettings.cpp">
 				<DependentOn>RunRateTcpStreamSenderSettings.h</DependentOn>
@@ -1153,10 +1157,6 @@
 			<CppCompile Include="DBSalesTypeAssignment.cpp">
 				<DependentOn>DBSalesTypeAssignment.h</DependentOn>
 				<BuildOrder>766</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="SalesTypeItemDetails.cpp">
-				<DependentOn>SalesTypeItemDetails.h</DependentOn>
-				<BuildOrder>764</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ManagerPMSCodes.cpp">
 				<DependentOn>ManagerPMSCodes.h</DependentOn>
@@ -1182,6 +1182,10 @@
 				<DependentOn>OracleTCPIP.h</DependentOn>
 				<BuildOrder>779</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.cpp">
+				<DependentOn>..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.h</DependentOn>
+				<BuildOrder>785</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="PaymentSenseWSDL.cpp">
 				<DependentOn>PaymentSenseWSDL.h</DependentOn>
 				<BuildOrder>799</BuildOrder>
@@ -1191,10 +1195,6 @@
 				<DependentOn>Analysis.h</DependentOn>
 				<BuildOrder>791</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="RunRateInterface.cpp">
-				<DependentOn>RunRateInterface.h</DependentOn>
-				<BuildOrder>804</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="OnlineOrdering\OnlineOrderDocketPrinter.cpp">
 				<DependentOn>OnlineOrdering\OnlineOrderDocketPrinter.h</DependentOn>
 				<BuildOrder>793</BuildOrder>
@@ -1203,9 +1203,9 @@
 				<DependentOn>Analysis\ReportSectionStrategies\ClientDetailsFromFileStrategy.h</DependentOn>
 				<BuildOrder>792</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.cpp">
-				<DependentOn>..\..\Components BCB6\Eftpos\DPSEFTXLib_OCX.h</DependentOn>
-				<BuildOrder>785</BuildOrder>
+			<CppCompile Include="EftposAdyen.cpp">
+				<DependentOn>EftposAdyen.h</DependentOn>
+				<BuildOrder>795</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="EFTPOSConfiguration.cpp">
 				<Form>frmEFTPOSConfig</Form>
@@ -1216,9 +1216,9 @@
 				<DependentOn>EftposSmartConnect.h</DependentOn>
 				<BuildOrder>791</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="RunRateTcpStreamSender.cpp">
-				<DependentOn>RunRateTcpStreamSender.h</DependentOn>
-				<BuildOrder>803</BuildOrder>
+			<CppCompile Include="RunRateInterface.cpp">
+				<DependentOn>RunRateInterface.h</DependentOn>
+				<BuildOrder>804</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="RunRateClient.cpp">
 				<DependentOn>RunRateClient.h</DependentOn>
@@ -1227,10 +1227,6 @@
 			<CppCompile Include="SaveLogs.cpp">
 				<DependentOn>SaveLogs.h</DependentOn>
 				<BuildOrder>801</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="EftposAdyen.cpp">
-				<DependentOn>EftposAdyen.h</DependentOn>
-				<BuildOrder>795</BuildOrder>
 			</CppCompile>
 			<None Include="StringTableVariables.h">
 				<BuildOrder>750</BuildOrder>
@@ -3463,6 +3459,10 @@
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
+				<BuildOrder>789</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AdyenWSDL.cpp">
+				<DependentOn>AdyenWSDL.h</DependentOn>
 				<BuildOrder>789</BuildOrder>
 			</CppCompile>
 			<FormResources Include="POS\PosMain.dfm"/>
