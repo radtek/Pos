@@ -696,13 +696,12 @@ void TApplyParser::Create6_55Table(TDBControl* const inDBControl)
 		"CREATE TABLE EFTPOSREFRENECE "
         "( "
         "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
-        "  INVOICE_NO VARCHAR(20),                       "
-        "  ORIGINAL VARCHAR(20),                            "
-        "  REFRENCE VARCHAR(22),               "
-        "  PSREFERENCE VARCHAR(20),              "
-        "  MODIFIED_REFERENCE VARCHAR(20),              "
-        "  IS_SETTLED VARCHAR(20),                "
-        "  MERCHANT_ID VARCHAR(20)                "
+        "  INVOICE_NO VARCHAR(50),                       "
+        "  ORIGINAL_REFERENCE VARCHAR(50),                            "
+        "  PSREFERENCE VARCHAR(50),              "
+        "  MODIFIED_REFERENCE VARCHAR(50),              "
+        "  IS_SETTLED CHAR(1) DEFAULT 'F',                "
+        "  MERCHANT_ID VARCHAR(50)                "
         ");",
 		inDBControl );
     }
