@@ -445,5 +445,7 @@ TGlobalSettings::TGlobalSettings()
     SendNoTaxToSiHot = false;
     RevenueCodeDiscountPart = "";
     EnableOnlineOrdering = false;
+    EnableEftPosPreAuthorisation = false;
+    PrintTipAndSignature = false;
 }
 

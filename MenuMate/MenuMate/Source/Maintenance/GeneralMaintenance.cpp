@@ -244,6 +244,8 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
     cbShowReprintDetails->Checked = TGlobalSettings::Instance().ShowReprintReceiptDetails;
     cbShowCashDrawerCount->Checked = TGlobalSettings::Instance().ShowCashDrawerOpeningsCount;
+     cbIntegratedEftposPreAuthorisaton->Checked = TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
+  
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -494,7 +496,8 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     {
         cbIntegratedEftposAdyen->Checked                     = true;
         cbIntegratedEftposAdyen->Enabled                     = true;
-        cbEnableDPSTipping->Enabled                          = true;
+         cbEnableDPSTipping->Enabled                          = true;
+        cbIntegratedEftposPreAuthorisaton->Enabled           = true;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Adyen Details";
@@ -1583,6 +1586,14 @@ void __fastcall TfrmGeneralMaintenance::cbEnableDPSTippingClick(TObject *Sender)
 	TGlobalSettings::Instance().EnableDPSTipping = cbEnableDPSTipping->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
+       if(TGlobalSettings::Instance().EnableDPSTipping)
+    {
+        cbIntegratedEftposPreAuthorisaton->Enabled = false;
+     }
+     else
+     {
+       cbIntegratedEftposPreAuthorisaton->Enabled = true;
+     }
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableDPSTipping,TGlobalSettings::Instance().EnableDPSTipping);
 	DBTransaction.Commit();
 }
@@ -4507,6 +4518,7 @@ void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObj
 //----------------------------------------------------------------------------
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sender)
 {
+
     TGlobalSettings::Instance().EnableEftPosAdyen = cbIntegratedEftposAdyen->Checked;
     if(TGlobalSettings::Instance().EnableEftPosAdyen)
         MessageBox("Please provide Adyen Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
@@ -4611,6 +4623,7 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
         tbtnSmartLinkIp->Caption                             = "PaymentSense Details";
     }
 
+
     if(eftposSettingCount == 11) //if any new setting made then incremet 10 by 1.
         EnableOtherEFTPOS();
 }
@@ -4648,8 +4661,10 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
         cbICELink->Checked                                   = false;
     }
     cbEnableDPSTipping->Enabled                          = false;
+    cbIntegratedEftposPreAuthorisaton->Enabled           =  false;
     if(!TGlobalSettings::Instance().EnableEftPosDPS)
     {
+
         cbIntegratedEftposDPS->Enabled                       = true;
         cbIntegratedEftposDPS->Checked                       = false;
     }
@@ -4724,3 +4739,27 @@ void __fastcall TfrmGeneralMaintenance::cbRestartServiceAtZedClick(TObject *Send
     DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
+{
+
+
+   TGlobalSettings::Instance().EnableEftPosPreAuthorisation = cbIntegratedEftposPreAuthorisaton->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+  //  ChangeSetting();
+    if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+    {
+        cbEnableDPSTipping->Enabled = false;
+     }
+     else
+     {
+       cbEnableDPSTipping->Enabled = true;
+     }
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosPreAuthorisation,TGlobalSettings::Instance().EnableEftPosPreAuthorisation);
+	DBTransaction.Commit();
+
+
+
+}
+//------------------------------------------------------------------------------
+

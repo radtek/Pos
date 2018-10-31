@@ -5314,10 +5314,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 	}
 }
 //---------------------------------------------------------------------------
-
-
-
-
 void __fastcall TfrmPrinterMaintenance::cbPrintVoidClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5353,9 +5349,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnRefundReferenceLabelMouseClick(TObje
    }
 }
 //---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5398,3 +5391,8 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
       memCustomizeSubHeader->Enabled = false;
 }
 //-------------------------------------------------------------------------------------
+//void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender)
+//{
+//    //todo
+//}
+

@@ -3406,6 +3406,13 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmSendNoTaxToSihot,"No Tax to SiHot", "This setting will Postings to SiHot with No Tax", vmg3rdPartyInterface, false);
         SetVarStr(DBTransaction, vmRevenueCodeDiscountPart, "Revenue Code for discount", "Revenue Code for discount", vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction,vmEnableOnlineOrdering,"Enable Online Ordering","Enable or disables online ordering access from pos", vmgPOS, false);
+        SetVarBool(DBTransaction, vmEnableEftPosPreAuthorisation, "Enable Pre-Authorisation","Enable When Adyen Eftpos Enable",vmg3rdPartyInterface,
+		false);
+        SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt",
+		"Show  Tip And Signature.\r"
+		"Default is False",
+		vmgPrinting, false);
+
 	}
 	catch(Exception &E)
 	{

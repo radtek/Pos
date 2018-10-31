@@ -293,6 +293,8 @@ __published:	// IDE-managed Components
     TCheckBox *cbShowVoidNumber;
     TTouchBtn *tbtnRefundReferenceLabel;
     TCheckBox *cbSetSubHeader;
+    TCheckBox *cbPrintTipAndSignature;
+   
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
@@ -453,6 +455,8 @@ __published:	// IDE-managed Components
     void __fastcall cbAlwaysPrintDiscountSalesClick(TObject *Sender);
     void __fastcall cbPrintSignatureOnDiscountSalesClick(TObject *Sender);
     void __fastcall cbPrintSignatureOnRoomSalesClick(TObject *Sender);
+//    void __fastcall cbPrintTipAndSignatureClick(TObject *Sender);
+
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	 BEGIN_MESSAGE_MAP

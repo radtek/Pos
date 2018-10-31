@@ -2373,13 +2373,13 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 75
           Width = 505
-          Height = 324
+          Height = 345
           Anchors = [akLeft]
           Caption = 'Integrated EFTPOS'
           TabOrder = 0
           DesignSize = (
             505
-            324)
+            345)
           object cbIntegratedEftposANZ: TCheckBox
             Left = 8
             Top = 23
@@ -2497,8 +2497,18 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS Payment Sense'
-            TabOrder = 6
+            TabOrder = 12
             OnClick = cbIntegratedEftposPaymentSenseClick
+          end
+          object cbIntegratedEftposPreAuthorisaton: TCheckBox
+            Left = 8
+            Top = 310
+            Width = 257
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'Enable Pre-Authorisation'
+            TabOrder = 11
+            OnClick = cbPreAuthorisatonClick
           end
         end
         object Panel11: TPanel

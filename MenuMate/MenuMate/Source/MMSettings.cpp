@@ -436,6 +436,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().SendNoTaxToSiHot = TManagerVariable::Instance().GetBool(DBTransaction, vmSendNoTaxToSihot, false);
         TGlobalSettings::Instance().RevenueCodeDiscountPart = TManagerVariable::Instance().GetStr(DBTransaction, vmRevenueCodeDiscountPart, "");
         TGlobalSettings::Instance().EnableOnlineOrdering = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
+        TGlobalSettings::Instance().EnableEftPosPreAuthorisation = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPreAuthorisation, false);
+        TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
+
+
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

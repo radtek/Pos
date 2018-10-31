@@ -5144,7 +5144,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                           Left = 0
                           Top = 0
                           Width = 387
-                          Height = 537
+                          Height = 625
                           BevelOuter = bvNone
                           BorderWidth = 4
                           Color = 14342874
@@ -5160,7 +5160,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             Left = 4
                             Top = 0
                             Width = 359
-                            Height = 531
+                            Height = 625
                             Caption = 'Receipt Information'
                             Color = 14342874
                             Ctl3D = True
@@ -5443,6 +5443,20 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               ParentFont = False
                               TabOrder = 14
                               OnClick = cbPrintZeroTaxesClick
+                            end
+                            object cbPrintTipAndSignature: TCheckBox
+                              Left = 12
+                              Top = 495
+                              Width = 315
+                              Height = 20
+                              Caption = 'Print Tip And Signature on Final Receipt'
+                              Font.Charset = DEFAULT_CHARSET
+                              Font.Color = clWindowText
+                              Font.Height = -16
+                              Font.Name = 'Tahoma'
+                              Font.Style = []
+                              ParentFont = False
+                              TabOrder = 18
                             end
                           end
                         end
