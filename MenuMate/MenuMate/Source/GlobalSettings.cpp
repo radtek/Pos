@@ -447,5 +447,6 @@ TGlobalSettings::TGlobalSettings()
     EnableOnlineOrdering = false;
     EnableEftPosPreAuthorisation = false;
     PrintTipAndSignature = false;
+     EnableAdjustAuthorisationOnCards = false;
 }
 

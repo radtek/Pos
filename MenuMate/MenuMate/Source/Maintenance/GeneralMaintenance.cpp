@@ -245,7 +245,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbShowReprintDetails->Checked = TGlobalSettings::Instance().ShowReprintReceiptDetails;
     cbShowCashDrawerCount->Checked = TGlobalSettings::Instance().ShowCashDrawerOpeningsCount;
      cbIntegratedEftposPreAuthorisaton->Checked = TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
-  
+     cbIntegratedAuthorisationOnCards->Checked = TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards;
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -498,6 +498,7 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposAdyen->Enabled                     = true;
          cbEnableDPSTipping->Enabled                          = true;
         cbIntegratedEftposPreAuthorisaton->Enabled           = true;
+         cbIntegratedAuthorisationOnCards->Enabled            = true;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Adyen Details";
@@ -4662,6 +4663,8 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
     }
     cbEnableDPSTipping->Enabled                          = false;
     cbIntegratedEftposPreAuthorisaton->Enabled           =  false;
+     cbIntegratedAuthorisationOnCards->Enabled            = false;
+
     if(!TGlobalSettings::Instance().EnableEftPosDPS)
     {
 
@@ -4762,4 +4765,13 @@ void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
 
 }
 //------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbIntegratedAuthorisationOnCardsClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+    TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = cbIntegratedAuthorisationOnCards->Checked;
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards);
+    DBTransaction.Commit();
+
+}
 

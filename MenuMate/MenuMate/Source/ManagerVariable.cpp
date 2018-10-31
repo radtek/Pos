@@ -3408,10 +3408,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmEnableOnlineOrdering,"Enable Online Ordering","Enable or disables online ordering access from pos", vmgPOS, false);
         SetVarBool(DBTransaction, vmEnableEftPosPreAuthorisation, "Enable Pre-Authorisation","Enable When Adyen Eftpos Enable",vmg3rdPartyInterface,
 		false);
-        SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt",
-		"Show  Tip And Signature.\r"
-		"Default is False",
-		vmgPrinting, false);
+        SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt","Show  Tip And Signature.\r""Default is False",vmgPrinting, false);
+        SetVarBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, "Enable Adjust Authorisation on all cards","Card will follow Master or Visa  card process \r""Default is False",vmg3rdPartyInterface, false);
 
 	}
 	catch(Exception &E)
