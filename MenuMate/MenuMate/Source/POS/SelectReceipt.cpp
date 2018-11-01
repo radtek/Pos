@@ -10,6 +10,7 @@
 #include "ReferenceManager.h"
 #include "DeviceRealTerminal.h"
 #include "MMTouchKeyboard.h"
+#include "DBAdyen.h"
 
 
 #define RECEIPT_DELIMITER "#####"
@@ -453,7 +454,8 @@ void TfrmSelectReceipt::toggleAvailabilityOfTippingButton()
 	int arcBillKey = -1;
 
 	if((ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey) ||
-                            TGlobalSettings::Instance().EnableEftPosAdyen) && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions())
+       TGlobalSettings::Instance().EnableEftPosAdyen) && (TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions() &&
+       TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)))
 	{
 		btnAddTip->Enabled = true;
 	}

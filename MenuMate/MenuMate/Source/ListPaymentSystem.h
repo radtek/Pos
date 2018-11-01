@@ -175,7 +175,7 @@ protected:
     bool ProcessCSVRoomExport( TPaymentTransaction &inPaymentTransaction );
 
    // tip related functions
-    void InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
+    void InsertOrUpdateTipTransactionRecordToDB(Database::TDBTransaction &DBTransaction, int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
 
     // loads up the payment groups for a given payment with its db key
     void loadPaymentTypeGroupsForPaymentType( int paymentDbKey, TPayment &payment );

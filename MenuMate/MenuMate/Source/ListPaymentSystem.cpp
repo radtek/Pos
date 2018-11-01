@@ -74,6 +74,7 @@
 #include "FiscalPrinterAdapter.h"
 #include "ManagerPMSCodes.h"
 #include "SaveLogs.h"
+#include "DBAdyen.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -2462,7 +2463,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                 {
                     if(SubPayment->GetPayTendered() != 0)
                     {
-                        // Get New Key
                         IBInternalQuery2->Close();
                         IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSREFERENCE_ID, 1) FROM RDB$DATABASE";
                         IBInternalQuery2->ExecQuery();
@@ -4745,48 +4745,67 @@ bool TListPaymentSystem::ProcessTipOnVisaTransaction(int arcBillKey, WideString 
 {
 	bool retVal = false;
 
-	if (EftPos->Enabled)
-	{
-		eEFTTransactionType TransType = TransactionType_TIP;
-		EftPos->SetTransactionEvent(paymentRefNumber,TransType );
-
-		// TODO: set the recovery information
-
-        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    try
+    {
+        if (EftPos->Enabled)
         {
-            retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "GeneratorHostelsPOS");
+            eEFTTransactionType TransType = TransactionType_TIP;
+            EftPos->SetTransactionEvent(paymentRefNumber,TransType );
 
-            if(retVal)
-                InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
-        }
-		else
-		{
-            EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
-            if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
+            // TODO: set the recovery information
+
+            if(TGlobalSettings::Instance().EnableEftPosAdyen)
             {
-                TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
-                if (EftTrans != NULL && EftTrans->Result == eAccepted)
+                UnicodeString InvoiceNumber = TDBAdyen::GetInvoiceNumber(arcBillKey);
+                MessageBox(InvoiceNumber,"InvoiceNumber",MB_OK);
+                UnicodeString MerchantAccount = TDBAdyen::GetMerchantAccount(InvoiceNumber);
+                 MessageBox(MerchantAccount,"MerchantAccount",MB_OK);
+                retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, MerchantAccount);
+
+                if(retVal)
                 {
-                    InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
-                    retVal = true;
+                    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                    DBTransaction.StartTransaction();
+                    InsertOrUpdateTipTransactionRecordToDB(DBTransaction, arcBillKey,tipAmount, paymentRefNumber);
+                    TDBAdyen::UpdateEFTPOSSettleField(DBTransaction, InvoiceNumber);
+                    DBTransaction.Commit();
                 }
             }
-		}
+            else
+            {
+                EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
+                if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
+                {
+                    TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
+                    if (EftTrans != NULL && EftTrans->Result == eAccepted)
+                    {
+                        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                        DBTransaction.StartTransaction();
+                        InsertOrUpdateTipTransactionRecordToDB(DBTransaction, arcBillKey,tipAmount, paymentRefNumber);
+                        DBTransaction.Commit();
+                        retVal = true;
+                    }
+                }
+            }
 
-		// TODO: clear recovery information
-	}
+            // TODO: clear recovery information
+        }
+    }
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = false;
+    }
 
 	return retVal;
 }
 
 // adds a record to database for tip transaction, this can be used in reports
-void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, Currency tipAmount, WideString originalPaymentRef)
+void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTransaction &DBTransaction, int arcBillKey, Currency tipAmount,
+                                                        WideString originalPaymentRef)
 {
 	try
 	{
-		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-		DBTransaction.StartTransaction();
-
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 		IBInternalQuery->Close();
 
@@ -4826,12 +4845,12 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, 
 			IBInternalQuery->ParamByName("PAYMENT_CARD_TYPE")->AsString = "";
 			IBInternalQuery->ExecQuery();
 		}
-		DBTransaction.Commit();
 	}
 	catch(Exception &err)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
-		//MessageBox(Err.Message, "There was an error ", MB_OK + MB_ICONERROR);
+        DBTransaction.Rollback();
+        throw;
 	}
 }
 
