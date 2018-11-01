@@ -9051,6 +9051,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
+            //Set the table status as availabale.
+            TDBTables::UpdateTableStatus(DBTransaction, frmBillGroup->CurrentTable, false);
 
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
@@ -9172,6 +9174,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				}
                 else
                 {
+                    //Set the table status as availabale.
+                    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
                    SelectedParty = SetPartyNameOnChitSettings(DBTransaction, SelectedParty, SelectedTable, true);
 
                    if(OrderContainer.Location["PrintPreLimReceipt"])

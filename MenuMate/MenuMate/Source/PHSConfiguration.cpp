@@ -1033,7 +1033,10 @@ AnsiString TfrmPHSConfiguration::ShowVerticalSelection(eVertSel selectionType)
     TVerticalSelection SelectedItem;
     if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
     {
-        retValue = SelectedItem.Title;//Properties["Action"];
+        if(selectionType == 3)
+            retValue = SelectedItem.Title;//Properties["Action"];
+        else
+            retValue = SelectedItem.Properties["Action"];
     }
     DBTransaction1.Commit();
     return retValue;
