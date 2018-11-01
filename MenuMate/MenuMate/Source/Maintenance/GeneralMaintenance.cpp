@@ -498,10 +498,20 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposAdyen->Enabled                     = true;
         cbEnableDPSTipping->Enabled                          = true;
         cbIntegratedEftposPreAuthorisaton->Enabled           = true;
-        cbIntegratedAuthorisationOnCards->Enabled            = true;
+        cbIntegratedAuthorisationOnCards->Enabled            = false;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Adyen Details";
+        if(cbEnableDPSTipping->Checked)
+        {
+            cbIntegratedEftposPreAuthorisaton->Enabled = false;
+            cbIntegratedAuthorisationOnCards->Enabled = false;
+        }
+        else if(cbIntegratedEftposPreAuthorisaton->Checked)
+        {
+            cbEnableDPSTipping->Enabled = false;
+            cbIntegratedAuthorisationOnCards->Enabled = true;
+        }
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
@@ -4746,17 +4756,20 @@ void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
 {
    TGlobalSettings::Instance().EnableEftPosPreAuthorisation = cbIntegratedEftposPreAuthorisaton->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
-  //  ChangeSetting();
     if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
     {
         cbEnableDPSTipping->Enabled = false;
-     }
-     else
-     {
+        cbIntegratedAuthorisationOnCards->Enabled = true;
+    }
+    else
+    {
        cbEnableDPSTipping->Enabled = true;
-     }
+       cbIntegratedAuthorisationOnCards->Enabled = false;
+       cbIntegratedAuthorisationOnCards->Checked = TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = false;
+    }
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosPreAuthorisation,TGlobalSettings::Instance().EnableEftPosPreAuthorisation);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableAdjustAuthorisationOnCards,TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards);
 	DBTransaction.Commit();
 }
 //------------------------------------------------------------------------------
