@@ -210,11 +210,16 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbEFTPOSURL->Caption = "Adyen URL\r" + TGlobalSettings::Instance().EFTPosURL;
         tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
-        tbEftPosTerminalID->Enabled = false;
+
         if(TGlobalSettings::Instance().EnableEftPosAdyen)
         {
             cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
             cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
+            tbEftPosTerminalID->Caption =  "Adjust Authorisation URL\r" + TGlobalSettings::Instance().EftPosTerminalId;
+        }
+        else
+        {
+            tbEftPosTerminalID->Enabled = false;
         }
     }
     if(!TGlobalSettings::Instance().EnableEftPosAdyen)
@@ -228,11 +233,6 @@ void TfrmEFTPOSConfig::UpdateGUI()
         MainPanel->Height = MainPanel->Height - GroupBox1->Height;
         SidePanel->Height = SidePanel->Height - GroupBox1->Height;
         Height =  Height - GroupBox1->Height;
-    }
-    else
-    {
-     tbEftPosTerminalID->Enabled = true;
-
     }
 }
 
@@ -256,6 +256,39 @@ void __fastcall TfrmEFTPOSConfig::cbMerchantCopyMouseClick(TObject *Sender)
 }
 //--------------------------------------------------------------------------------
 void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
+{
+    if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
+    {
+        PopulateTerminalIdList();
+    }
+    else
+    {
+        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+        frmTouchKeyboard->MaxLength = 0;
+        frmTouchKeyboard->AllowCarriageReturn = true;
+        frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
+        frmTouchKeyboard->StartWithShiftDown = false;
+
+        if(TGlobalSettings::Instance().EftPosTerminalId.Trim() == "")
+            TGlobalSettings::Instance().EftPosTerminalId = "https://pal-test.adyen.com/pal/servlet/Payment/v40";
+
+        frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EftPosTerminalId;
+        frmTouchKeyboard->Caption = "Enter Adjust Authorisation URL";
+
+        if (frmTouchKeyboard->ShowModal() == mrOk)
+        {
+            TGlobalSettings::Instance().EftPosTerminalId = frmTouchKeyboard->KeyboardText.Trim();
+            tbEftPosTerminalID->Caption = "Adjust Authorisation URL\r" + TGlobalSettings::Instance().EftPosTerminalId;
+            TGlobalSettings::Instance().EftPosTerminalId = frmTouchKeyboard->KeyboardText;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmEftPosTerminalId,TGlobalSettings::Instance().EftPosTerminalId);
+            DBTransaction.Commit();
+        }
+    }
+}
+//--------------------------------------------------------------------------------
+void TfrmEFTPOSConfig::PopulateTerminalIdList()
 {
     if(EftPos)
         delete EftPos;

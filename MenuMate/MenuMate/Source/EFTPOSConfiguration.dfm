@@ -135,7 +135,7 @@ object frmEFTPOSConfig: TfrmEFTPOSConfig
       Font.Style = [fsBold]
       ParentFont = False
       ParentColor = True
-      Caption = 'Adjust Authorisation URL'
+      Caption = 'EFTPOS Terminal ID'
       ButtonColor = clGreen
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace

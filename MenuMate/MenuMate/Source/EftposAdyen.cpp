@@ -853,7 +853,7 @@ bool TEftposAdyen::AllowsTipsOnTransactions()
             adjustAuthorisation->additionalData->industryUsage = "DelayedCharge";
 
             ResourceDetails *details = GetResourceDetails();
-            details->URL =  "https://pal-test.adyen.com/pal/servlet/Payment/v40/adjustAuthorisation";
+            details->URL =  TGlobalSettings::Instance().EftPosTerminalId + "/adjustAuthorisation";
 
             CoInitialize(NULL);
             AdjustAndCaptureResponse* response = AdyenClient->AdjustAuthorisation(adjustAuthorisation,details);
@@ -890,7 +890,7 @@ bool TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
         captureModifiedAmount->reference = adjustAuthorisation->reference;
 
         ResourceDetails *details = GetResourceDetails();
-        details->URL =  "https://pal-test.adyen.com/pal/servlet/Payment/v40/capture";
+        details->URL =  TGlobalSettings::Instance().EftPosTerminalId + "/capture";
 
         CoInitialize(NULL);
         AdjustAndCaptureResponse* response = AdyenClient->CaptureModifiedAmount(captureModifiedAmount, details);

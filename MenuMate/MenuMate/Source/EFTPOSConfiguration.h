@@ -38,6 +38,7 @@ private:	// User declarations
     __fastcall TfrmEFTPOSConfig(TComponent* Owner);
     void UpdateGUI();
     bool EnableEFTPOSTerminal();
+    void PopulateTerminalIdList();
 public:		// User declarations
 };
 //---------------------------------------------------------------------------
