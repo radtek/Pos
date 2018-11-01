@@ -52,6 +52,7 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.SmartConnect);
             AddService(serviceList, MenumateServicesIdentifier.AdyenIntegration);
             AddService(serviceList, MenumateServicesIdentifier.PaymentSense);
+            AddService(serviceList, MenumateServicesIdentifier.MewsIntegration);
             if (serviceList.Count == 0)
             {
                 ServiceLogger.Log(@"No Menumate Services to be loaded.");
@@ -167,6 +168,8 @@ namespace MenumateServices
                     return new MenumateServiceAdyenIntegration();
                 case MenumateServicesIdentifier.PaymentSense:
                     return new MenumateServicePaymentSense();
+                case MenumateServicesIdentifier.MewsIntegration:
+                    return new MenumateServiceMewsIntegration();
                 default: throw new Exception(String.Format("Unknown Service: {0}", serviceIdentifier));
             }
         }

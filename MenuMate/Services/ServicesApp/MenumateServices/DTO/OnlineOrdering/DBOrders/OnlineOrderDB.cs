@@ -5,6 +5,7 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using MenumateServices.Tools;
+using System.IO;
 
 namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 {

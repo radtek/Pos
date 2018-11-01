@@ -22,7 +22,7 @@ enum eMembershipType {
 };
 
 enum ePMSType{
-    Phoenix = 1,SiHot,Oracle
+    Phoenix = 1,SiHot,Oracle,Mews
 };
 
 enum eSetFontSize {eSeven , eEight, eNine, eTenth, eEleven };

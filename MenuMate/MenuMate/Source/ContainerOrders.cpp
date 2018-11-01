@@ -157,14 +157,8 @@ void __fastcall TContainerOrders::Compress()
 		ItemParentRedirect->ItemType << itMembershipDisplay;
 		ItemParentRedirect->ItemObject = NULL;
 
-        if((TGlobalSettings::Instance().MembershipType==MembershipTypeThor) && (TGlobalSettings::Instance().IsThorlinkSelected))
-        {
-           CompressedItem->Display->AddObject(AppliedMembership.Name, ItemParentRedirect);
-        }
-        else
-        {
-           CompressedItem->Display->AddObject(AppliedMembership.Name +" "+ AppliedMembership.Surname +" (" + AppliedMembership.MembershipNumber + ")" , ItemParentRedirect);
-        }
+        CompressedItem->Display->AddObject(AppliedMembership.Name +" "+ AppliedMembership.Surname +" (" + AppliedMembership.MembershipNumber + ")" , ItemParentRedirect);
+
 
 		if(TGlobalSettings::Instance().EnableSeperateEarntPts)
 		{

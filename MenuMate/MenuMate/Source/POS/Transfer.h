@@ -222,18 +222,11 @@ private:	// User declarations
     void ShowSelectScreen(Database::TDBTransaction &DBTransaction, AnsiString title);
     void DeleteEmptyTabs(Database::TDBTransaction &DBTransaction);
     void ShowProcessingBar();
-    void SendClippTabDetails(int clippTabKey);
-    void CloseClippTab(int clippTabKey);
-    void SendTabDetails(AnsiString source, AnsiString dest, int sourceItemCount, int destItemCount);
-
-
     unsigned __int32 getMaxSeatCount();
     int GetSeatNumber(Database::TDBTransaction &DBTransaction, long source_key, bool isTabSelected, int table_no);
     bool CheckNameIsNullOrNot(Database::TDBTransaction &DBTransaction, int tableNumber, int key, int seatkey); //
     int Gettabkey(int table_no, int seat_key);
     UnicodeString TabName(int TabKey);
-
-
     AnsiString GetItemQtyWithName(double qty, AnsiString itemSize, UnicodeString itemName);
     bool CheckSideIsSelected(TListBox *listBox, int i);
     int GetOrderKey(Database::TDBTransaction &DBTransaction, int tab_key, UnicodeString itemName);
@@ -242,8 +235,6 @@ private:	// User declarations
     bool DeductOrder(TItemMinorComplete * const Order1, TItemMinorComplete * const Order2, int cnt);
     UnicodeString GetItemName(TListBox *listBox, int i, bool isTabSelected);
     double GetItemQty(TListBox *listBox, int i, bool isTabSelected);
-
-
     TMMContactInfo TempUserInfo;
     bool IsSourceDestinationSame();
     bool IsPartialTransfer;
@@ -252,23 +243,11 @@ private:	// User declarations
     bool CheckSecurityEvent(Database::TDBTransaction &DBTransaction, int sec_ref);
     bool IsSCDAppliedOnDest(TList* Orders);
     bool IsPWDAppliedOnDest(TList* Orders);
-
-   ///clips functions
-    void SaveClipItemsInStructure();
-    void DoCliptabLinking(Database::TDBTransaction &DBTransaction,int sourceKey,int destKey);
-    void UpdateTabNameAndKey(Database::TDBTransaction &DBTransaction, int source_key, int dest_key);
     bool CheckLinkedTabValidations(Database::TDBTransaction &DBTransaction,bool checkClipTabLimit);
     bool CheckIfTransferringLinkedTabItems(Database::TDBTransaction &DBTransaction,int sourcekey,bool isTabSelected);
-    void DilinkingClipTab(Database::TDBTransaction &DBTransaction,long sourceTabKey,long destTabKey);
     bool CheckItemsInSeat(Database::TDBTransaction &DBTransaction, long tableNo,long seatNo);
-    void UpdateGuestNameByClippName(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, bool isTabSelected);
-    bool CheckPartialTransferInClipCase(Database::TDBTransaction &DBTransaction);
     void UpdatePanelSourceKey(int PreviousValue , int NewValue);
     void ChangeItemTabKey(TListBox *listBox, int pos ,int value);
-    void SaveClipItemsInStructure(Database::TDBTransaction &DBTransaction);
-    void CheckClipAndTableCondition(Database::TDBTransaction &DBTransaction);
-
-    bool CheckIfClipTransferringToAnotherLinkedGuest(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey, bool isTabSelected );
     void SetGuestNameForTable(Database::TDBTransaction &DBTransaction, long DestTabKey, long SourceKey, UnicodeString tabName);
     void SetPartyNameForDetinationTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);
     void SetPartyNameForSourceTable(Database::TDBTransaction &DBTransaction, UnicodeString partyname);

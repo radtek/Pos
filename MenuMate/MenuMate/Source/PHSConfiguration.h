@@ -12,7 +12,8 @@
 #include "TouchBtn.h"
 #include "TouchControls.h"
 //---------------------------------------------------------------------------
-enum ePMS { phoenix = 1, siHot, oracle};
+enum ePMS { phoenix = 1, siHot, oracle, mews};
+enum eVertSel {Outlet = 1, Service, AccountingCategory };
 class TfrmPHSConfiguration : public TZForm
 {
 	friend TZForm;
@@ -81,9 +82,14 @@ private:	// User declarations
    void InitializePMSDefaultPayment();
    bool DefaultPaymentInitRequired();
    void InitDefaultPaymentInDB();
+   AnsiString GetDropDownResult(eVertSel selectionType);
+   UnicodeString ShowKeyBoard(int maxLength,UnicodeString value,UnicodeString caption);
+   int ShowNumPad(UnicodeString caption,int value);
+   void SyncMewsDetailsFromCloud();
+   AnsiString ShowVerticalSelection(eVertSel selectionType);
+   AnsiString GetMewsName(AnsiString code,eVertSel selectionType);
 public:		// User declarations
    ePMS PMSType;
-
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmPHSConfiguration *frmPHSConfiguration;

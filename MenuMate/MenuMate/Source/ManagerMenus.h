@@ -61,12 +61,7 @@ public:
 
     std::vector<UnicodeString> GetCurrentMenus();
     bool MenuInCurrent(const UnicodeString &name);
-
-	void BuildXMLMenu(Database::TDBControl &DBControl, TPOS_XMLBase &Data, int SiteID);
-	void BuildXMLListCategories(Database::TDBTransaction &DBTransaction, TPOS_XMLBase &Data, int SiteID);
-	void BuildXMLListGroup(Database::TDBTransaction &DBTransaction, TPOS_XMLBase &Data,int SiteID);
-
-	TItem *FetchItemByKey(long inItemKey);
+    TItem *FetchItemByKey(long inItemKey);
 	TItem *FetchItemByID(long inItemID);
 
         TItemSize *FetchItemSizeByName(const UnicodeString &size_name,

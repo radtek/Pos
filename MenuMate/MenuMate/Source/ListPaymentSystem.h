@@ -19,11 +19,9 @@
 #include "PaymentTypeGroup.h"
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
-//#include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
 #include "OnlineOrderingAttributes.h"
-
 class TReqPrintJob;
 class TItemComplete;
 class TListSecurityRefContainer;
@@ -58,8 +56,6 @@ class TListPaymentSystem : public TMMPaymentSystem
     int positionPoints;
     int positionVoucher;
      TDateTime TrasactionDate;
-    //std::vector<TTenderDetails> tenderDetailsList;
-    //std::vector<TItemDetailsThor> itemsList;
     TListPaymentSystem();
     virtual __fastcall ~TListPaymentSystem();
 
@@ -107,18 +103,14 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool AllowsTipsOnTransactions();
     std::vector<AnsiString> GetTippableCardTypes();
     int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
-//    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
-   // bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
     AnsiString CreateFilename(TDateTime date);
     UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
     void SaveIntVariable(vmVariables vmVar, int CompName);
     void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
-    //void GetDLFMallInfo(TItemComplete &ItemComplete);
     void GetDLFMallCMDCodeFirst(AnsiString invoiceNumber,AnsiString fileStatus) ;
     void GetDLFMallCMDCodeSec(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeThird(TItemComplete *ItemComplete,AnsiString catkey,Currency discount);
     void GetDLFMallCMDCodeSubOrderThird(TItemCompleteSub *ItemComplete,AnsiString catkey,Currency discount);
-
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
@@ -140,13 +132,12 @@ protected:
     void _processEftposRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
     void _processRewardsRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
 
-    TMMProcessingState _createProcessingStateMessage();
+    TMMProcessingState _createProcessingStateMessage(TPaymentTransaction &PaymentTransaction);
     bool _isSmartCardPresent();
 
 	void TransRetriveElectronicResult(TPaymentTransaction &PaymentTransaction,TPayment *Payment);
     void TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction,TPayment *Payment);
 	bool TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction);
-	bool BuildXMLTransaction(TPaymentTransaction &PaymentTransaction);
 	void GetChequeVerifyResult(TPayment *Payment);
 
 	void PaymentsArchiveReceipt(TMoney *CurrentMoney,TReqPrintJob *Request,eTransactionType SalesType);
@@ -210,8 +201,6 @@ protected:
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
-//     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
-//     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
@@ -247,6 +236,9 @@ protected:
      TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
      TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
      bool IsRoomReceiptSettingEnable();
+     bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
+     bool IsMewsConfigured();
+     bool TryToEnableMews();
 };
 
 #endif

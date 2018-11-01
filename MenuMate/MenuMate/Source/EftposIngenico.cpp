@@ -44,16 +44,16 @@ void TEftPosIngenico::Initialise()
 	TEftPos::Initialise();
 	try
    {
-		if(TGlobalSettings::Instance().EnableEftPosIngenico)
+	  if(TGlobalSettings::Instance().EnableEftPosIngenico)
       {
-         Enabled = true;
-         EftPosControl = new TCsdEft(frmMain);
-			EftPosControl->OnPrintReceiptEvent = PrintReceiptEvent;
-			EftPosControl->OnReprintReceiptEvent = ReprintReceiptEvent;
-         EftPosControl->OnTransactionEvent = TransactionEvent;
-         EftPosControl->OnChequeVerifyEvent = ChequeVerifyEvent;
-         EftPosControl->OnGetLastTransactionEvent = GetLastTransactionEvent;
-			EftPosControl->OnGetLastReceiptEvent = GetLastReceiptEvent;
+        Enabled = true;
+        EftPosControl = new TCsdEft(frmMain);
+        EftPosControl->OnPrintReceiptEvent = PrintReceiptEvent;
+        EftPosControl->OnReprintReceiptEvent = ReprintReceiptEvent;
+        EftPosControl->OnTransactionEvent = TransactionEvent;
+        EftPosControl->OnChequeVerifyEvent = ChequeVerifyEvent;
+        EftPosControl->OnGetLastTransactionEvent = GetLastTransactionEvent;
+        EftPosControl->OnGetLastReceiptEvent = GetLastReceiptEvent;
 //         EftPosControl->OnGetMerchantsEvent = GetMerchantsEvent;
 //			EftPosControl->DoGetMerchants();
          if(EftPosControl->VersionMajor != 3)
@@ -73,7 +73,7 @@ void TEftPosIngenico::Initialise()
       TManagerLogs::Instance().Add(__FUNC__,EFTPOSLOG,"Unable to create TEftPosIngenico" + E.Message);
       TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,"Unable to create TEftPosIngenico"  + E.Message);
       EftPosControl = NULL;
-   	Enabled = false;
+   	  Enabled = false;
    }
 }
 
@@ -168,6 +168,7 @@ void __fastcall TEftPosIngenico::TransactionEvent(TObject *Sender)
 			{
 				EftTrans->SuppressReceipt = true;
 			}
+            //EftTrans->CardType = EftPosControl->CardType;
 		}
 		else
 		{
@@ -194,6 +195,7 @@ void __fastcall TEftPosIngenico::GetLastTransactionEvent(TObject *Sender)
 				}
 			}
 			EftTrans->ResultText = EftPosControl->ResponseText;
+            //EftTrans->CardType = EftPosControl->CardType;
 			EftTrans->EventCompleted = true;
 		}
 	}

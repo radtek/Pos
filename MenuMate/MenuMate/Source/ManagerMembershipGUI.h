@@ -2,9 +2,7 @@
 
 #ifndef ManagerMembershipGUIH
 #define ManagerMembershipGUIH
-
 #include "MembershipManagerSmartCards.h"
-
 //---------------------------------------------------------------------------
 class TManagerMembershipGUI : public TManagerMembershipSmartCards
 {

@@ -27,7 +27,6 @@
 #include "Commission.h"
 #include "PrinterReadings.h"
 #include "PaxCount.h"
-#include "POS_XMLBase.h"
 #include "GUIScale.h"
 #include "GlobalSettings.h"
 #include "ReportUtilities.h"
@@ -66,21 +65,6 @@ class TfrmAnalysis : public TZForm
 	void __fastcall GridMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
 
 private:	// User declarations
-	std::auto_ptr<TPOS_XMLBase> GroupTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> CategoriesTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> PaymentTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> CalculatedTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> DiscountTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> ProductTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> StaffTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> HourlyTotalsXML;
-	std::auto_ptr<TPOS_XMLBase> DiscountListXML;
-	std::auto_ptr<TPOS_XMLBase> StaffListXML;
-	std::auto_ptr<TPOS_XMLBase> PaymentTypeListXML;
-	std::auto_ptr<TPOS_XMLBase> PatronCountXML;
-	std::auto_ptr<TPOS_XMLBase> PatronListXML;
-	std::auto_ptr<TPOS_XMLBase> GroupsListXML;
-	std::auto_ptr<TPOS_XMLBase> CategoryListXML;
     UnicodeString StockMasterPath;
 	bool IntergratedEFT;
 	std::vector<UnicodeString>	PalmList;
@@ -114,22 +98,6 @@ private:	// User declarations
 	void __fastcall TfrmAnalysis::VariantDBAssign(TIBXSQLVAR *InData,TIBXSQLVAR *OutData);
 	bool __fastcall TfrmAnalysis::ParamExists(TIBSQL *IBSQL, AnsiString FieldName);
 	void __fastcall TableTabSummaryReport();
-	void __fastcall ExportIntaMateVersion();
-	void __fastcall ExportIntaMateListPaymentTypes();
-	void __fastcall ExportIntaMatePaymentTotals();
-	void __fastcall ExportIntaMateGroupTotals();
-	void __fastcall ExportIntaMateHourlyTotals();
-	void __fastcall ExportIntaMateCategoriesTotals();
-	void __fastcall ExportIntaMateListDiscounts();
-	void __fastcall ExportIntaMateDiscountTotals();
-	void __fastcall ExportIntaMateListCalculated(); // Fixed List.
-	void __fastcall ExportIntaMateCalculatedTotals();
-	void __fastcall ExportIntaMateProductTotals();
-	void __fastcall ExportIntaMateListStaff();
-	void __fastcall ExportIntaMateStaffTotals();
-	void __fastcall ExportIntaMatePatronCounts();
-	void __fastcall ExportIntaMateListGroups();
-	void __fastcall ExportIntaMateListCategories();
     void __fastcall ResetPoint(Database::TDBTransaction &DBTransaction, int ContactKey,TResetPoints check); //MM- 4579
     void __fastcall CheckDate(Database::TDBTransaction &DBTransaction, int keys,int ContactKey, double points,TResetPoints check, int caseTicked, AnsiString boxTicked,AnsiString options); //MM- 4579
     void __fastcall FiscalPrinterSettlement();
@@ -245,7 +213,6 @@ public:		// User declarations
 	static TLoginSuccess AuthenticateReportsAccess(TReportSource);
 	static const TMMContactInfo &GetLastAuthenticatedUser();
 	TFinancialDetails GetFinancialDetails(Database::TDBTransaction &DBTransaction,TTransactionInfo &TransactionInfo,AnsiString DeviceName);
-	void BuildXMLListCalculated(TPOS_XMLBase &Data);
 	void SiteSummaryReport(Database::TDBTransaction &, TPrintout *, TDateTime);
 	void PaxCountReport(Database::TDBTransaction &, TPrintout *, TPaxCount &PaxCount, Currency &Total, TStaffHoursInterface &inStaffHours, TCommissionCache &inCommission, TPrinterReadingsInterface &inPrinterReadings);
 	void PrintFloatAdjustments(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);

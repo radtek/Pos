@@ -18,6 +18,7 @@ namespace MenumateServices
         WalletPayments,
         SmartConnect,
         AdyenIntegration,
-        PaymentSense
+        PaymentSense,
+        MewsIntegration
     };
 }

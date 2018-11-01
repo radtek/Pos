@@ -6,10 +6,8 @@
 //---------------------------------------------------------------------------
 #include <IBDatabase.hpp>
 #include <IBQuery.hpp>
-
 #include "MM_DBCore.h"
 #include "StaffHours.h"
-#include "POS_XMLBase.h"
 #include "GlobalSettings.h"
 //---------------------------------------------------------------------------
 
@@ -37,7 +35,6 @@ class TManagerTimeClock
    int ClockedCount(Database::TDBTransaction &DBTransaction,int inContactKey);
    void MoveDisplayOrderUp(Database::TDBTransaction &DBTransaction,int Key);
 	void MoveDisplayOrderDown(Database::TDBTransaction &DBTransaction,int Key);
-	void BuildXMLTotalsTimeClock(TPOS_XMLBase &Data,int SiteID,int ContactKey, TDateTime &Login, TDateTime &LogOut);
 	TDateTime RoundTime(TDateTime inTime, int RoundTo);
    void ConvertTo(int &in);
 	void GetLoggedInDetails(Database::TDBTransaction &DBTransaction,TDateTime LogInTime, std::vector<TStaffHours> &inStaffHours,UnicodeString inDevicename);
