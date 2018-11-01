@@ -207,3 +207,27 @@ bool TDBAdyen::IsTipFromReceiptAlreadyAdded(int arcBillKey)
 	}
     return isTipAlreadyAdded;
 }
+//-----------------------------------------------------------------
+void TDBAdyen::UpdateEFTPOSReference(UnicodeString originalReference, UnicodeString modifiedReference, UnicodeString pspReference)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "UPDATE EFTPOSREFRENECE a SET a.PSPREFERENCE = :PSPREFERENCE, MODIFIED_REFERENCE = :MODIFIED_REFERENCE "
+                                     " WHERE a.ORIGINAL_REFERENCE = :ORIGINAL_REFERENCE ";
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamByName("ORIGINAL_REFERENCE")->AsString = originalReference;
+        IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = pspReference;
+        IBInternalQuery->ParamByName("MODIFIED_REFERENCE")->AsString = modifiedReference;
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+	{
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        DBTransaction.Rollback();
+	}
+}

@@ -897,6 +897,7 @@ bool TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
 
         if(response->response.Pos("[capture-received]") != 0)
         {
+            TDBAdyen::UpdateEFTPOSReference(adjustAuthorisation->originalReference, adjustAuthorisation->reference, response->pspReference);
             retVal = true;
         }
     }

@@ -20,5 +20,6 @@ public:
     static UnicodeString GetMerchantAccount(UnicodeString invoiceNumber);
     static void UpdateEFTPOSSettleField(Database::TDBTransaction &DBTransaction, UnicodeString invoiceNumber);
     static bool IsTipFromReceiptAlreadyAdded(int arcBillKey);
+    static void UpdateEFTPOSReference(UnicodeString originalReference, UnicodeString modifiedReference, UnicodeString pspReference);
 };
 #endif
