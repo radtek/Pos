@@ -7167,6 +7167,7 @@ void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseBu
 	bool SelectionRequired = false;
 	if (tbtnToggleMenus->Tag == 0) // Toggle
 	{
+
 		if (TDeviceRealTerminal::Instance().Menus->Current->Count <= 2)
 		{
 			TDeviceRealTerminal::Instance().Menus->ToggleMenus();
@@ -7215,6 +7216,9 @@ void TfrmSelectDish::SelectNewMenus()
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
     TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckMenuEditor);
+
+    if(SelectedTable)
+        TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 
         bool AskForLogin = false;
 	if ((!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))&&(Result == lsAccepted))
@@ -9984,7 +9988,7 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 
 				frmShowPrintout->btnCancel->Caption = "Close";
 				frmShowPrintout->btnClosePrint->Caption = "Print";
-                frmShowPrintout->Execute();
+				frmShowPrintout->Execute();
 
 			}break;
 		case 8: // Tabs and Tables
