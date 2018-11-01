@@ -118,10 +118,11 @@ UnicodeString TDBAdyen::GetInvoiceNumber(int arcBillKey)
     try
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->SQL->Text = "SELECT a.INVOICE_NUMBER FROM DAYARCBILL a WHERE a.ARCBILL_KEY = :ARCBILL_KEY";
         IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.INVOICE_NUMBER FROM DAYARCBILL a WHERE a.ARCBILL_KEY = :ARCBILL_KEY";
         IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
         IBInternalQuery->ExecQuery();
+
         if(IBInternalQuery->RecordCount)
         {
            InvoiceNumber = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
@@ -229,5 +230,40 @@ void TDBAdyen::UpdateEFTPOSReference(UnicodeString originalReference, UnicodeStr
 	{
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         DBTransaction.Rollback();
+	}
+}
+//---------------------------------------------------------------------------
+void TDBAdyen::ProcessTipForSelectedRecord(Database::TDBTransaction &DBTransaction, UnicodeString invoiceNumber, UnicodeString originalReference)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY, abp.SUBTOTAL, abp.PAY_TYPE_DETAILS FROM ARCBILL a "
+                                     "INNER JOIN ARCBILLPAY abp ON a.ARCBILL_KEY = abp.ARCBILL_KEY "
+                                     "WHERE a.INVOICE_NUMBER = :INVOICE_NUMBER  AND PAY_TYPE_DETAILS = :PAY_TYPE_DETAILS ";
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "AND a.TERMINAL_NAME = :TERMINAL_NAME ";
+
+        IBInternalQuery->SQL->Text = IBInternalQuery->SQL->Text + "GROUP BY 1,2,3 ";
+
+        IBInternalQuery->Close();
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+        IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = originalReference;
+
+        if(!TGlobalSettings::Instance().EnableDepositBagNum)
+            IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
+
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount && (TDeviceRealTerminal::Instance().PaymentSystem->ProcessTipAfterZED( invoiceNumber,
+                                        originalReference, IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency, 0.00)))
+        {
+                UpdateEFTPOSSettleField(DBTransaction, invoiceNumber);
+        }
+    }
+    catch(Exception & E)
+	{
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
 	}
 }

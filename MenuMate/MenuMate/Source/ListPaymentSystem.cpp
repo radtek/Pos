@@ -7254,3 +7254,26 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
   return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
 
  }
+ //-------------------------------------------------------------
+ bool TListPaymentSystem::ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount)
+{
+	bool retVal = false;
+
+    try
+    {
+        if (TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->Enabled)
+        {
+            eEFTTransactionType TransType = TransactionType_TIP;
+            EftPos->SetTransactionEvent(paymentRefNumber,TransType );
+            UnicodeString MerchantAccount = TDBAdyen::GetMerchantAccount(invoiceNumber);
+            retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, MerchantAccount);
+        }
+    }
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = false;
+    }
+
+	return retVal;
+}

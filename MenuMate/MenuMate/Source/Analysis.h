@@ -235,6 +235,7 @@ private:	// User declarations
     bool RestartFireBirdService();
     int UpdateZKeyInArcMallExportForMegaWorld();
     bool DuplicateEntryInTable;
+    void SettleEFTPOSBills();
 
 public:		// User declarations
 	bool ZedCancel;

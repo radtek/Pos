@@ -125,6 +125,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
     bool IsOracleConfigured();
     bool IsSiHotConfigured();
+     //settle th eeftpos bills after zed performed..
+    bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
 
 protected:
 

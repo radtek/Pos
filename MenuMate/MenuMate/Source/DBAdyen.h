@@ -21,5 +21,6 @@ public:
     static void UpdateEFTPOSSettleField(Database::TDBTransaction &DBTransaction, UnicodeString invoiceNumber);
     static bool IsTipFromReceiptAlreadyAdded(int arcBillKey);
     static void UpdateEFTPOSReference(UnicodeString originalReference, UnicodeString modifiedReference, UnicodeString pspReference);
+    static void ProcessTipForSelectedRecord(Database::TDBTransaction &DBTransaction, UnicodeString invoiceNumber, UnicodeString originalReference);
 };
 #endif

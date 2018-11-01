@@ -496,9 +496,9 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     {
         cbIntegratedEftposAdyen->Checked                     = true;
         cbIntegratedEftposAdyen->Enabled                     = true;
-         cbEnableDPSTipping->Enabled                          = true;
+        cbEnableDPSTipping->Enabled                          = true;
         cbIntegratedEftposPreAuthorisaton->Enabled           = true;
-         cbIntegratedAuthorisationOnCards->Enabled            = true;
+        cbIntegratedAuthorisationOnCards->Enabled            = true;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Adyen Details";
@@ -1587,14 +1587,14 @@ void __fastcall TfrmGeneralMaintenance::cbEnableDPSTippingClick(TObject *Sender)
 	TGlobalSettings::Instance().EnableDPSTipping = cbEnableDPSTipping->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
-       if(TGlobalSettings::Instance().EnableDPSTipping)
+    if(TGlobalSettings::Instance().EnableDPSTipping)
     {
         cbIntegratedEftposPreAuthorisaton->Enabled = false;
-     }
-     else
-     {
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
        cbIntegratedEftposPreAuthorisaton->Enabled = true;
-     }
+    }
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableDPSTipping,TGlobalSettings::Instance().EnableDPSTipping);
 	DBTransaction.Commit();
 }
@@ -4744,8 +4744,6 @@ void __fastcall TfrmGeneralMaintenance::cbRestartServiceAtZedClick(TObject *Send
 //----------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
 {
-
-
    TGlobalSettings::Instance().EnableEftPosPreAuthorisation = cbIntegratedEftposPreAuthorisaton->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
   //  ChangeSetting();
@@ -4760,9 +4758,6 @@ void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosPreAuthorisation,TGlobalSettings::Instance().EnableEftPosPreAuthorisation);
 	DBTransaction.Commit();
-
-
-
 }
 //------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbIntegratedAuthorisationOnCardsClick(TObject *Sender)
