@@ -16,7 +16,7 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (31/10/2018 10:53:43 p.m. - - $Rev: 25127 $)
+// (2/11/2018 1:32:52 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AdyenWSDLH
