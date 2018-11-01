@@ -61,7 +61,6 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
 	DrawUpDownPanel(ShiftDown, pnlShift1);
 	DrawUpDownPanel(CapsDown, pnlCapsLock);
 	DrawLetters();
-	//edSearch->SetFocus();
 	SelectionVisible = false;
 
 	UpdateInterface();
@@ -123,6 +122,7 @@ void __fastcall TfrmPhoenixRoom::FormShow(TObject *Sender)
         RadioGroupSelection->Enabled = false;
         RadioGroupSelection->Visible = false;
     }
+    edSearch->SetFocus();
 }
 
 //---------------------------------------------------------------------------
