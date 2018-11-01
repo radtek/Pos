@@ -455,7 +455,7 @@ __published:	// IDE-managed Components
     void __fastcall cbAlwaysPrintDiscountSalesClick(TObject *Sender);
     void __fastcall cbPrintSignatureOnDiscountSalesClick(TObject *Sender);
     void __fastcall cbPrintSignatureOnRoomSalesClick(TObject *Sender);
-//    void __fastcall cbPrintTipAndSignatureClick(TObject *Sender);
+    void __fastcall cbPrintTipAndSignatureClick(TObject *Sender);
 
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);

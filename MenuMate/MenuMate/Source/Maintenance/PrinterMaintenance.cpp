@@ -5378,7 +5378,8 @@ void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
 
 void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
-{
+{    int a = X;
+    a = Y;
    TDeviceRealTerminal::Instance().LoadHdrFtr();
    memCustomizeSubHeader->Lines = TGlobalSettings::Instance().SubHeader.get();
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5398,6 +5399,17 @@ void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMo
    }
    DBTransaction.Commit();
 }
+//-------------------------------------------------------------------------------------
+//void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender)
+//{
+//    //todo
+//}void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender){
+//   Database::TDBTransaction DBTransaction(DBControl);
+//   DBTransaction.StartTransaction();
+//   TGlobalSettings::Instance().AutoPrintWebReceipts = cbAPWOOS->Checked;
+//   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAutoPrintWebReceipts, TGlobalSettings::Instance().AutoPrintWebReceipts);
+//   DBTransaction.Commit();
+}
 //---------------------------------------------------------------------------
 void TfrmPrinterMaintenance::CheckSubHeaderSetting()
 {
@@ -5406,9 +5418,6 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
    else
       memCustomizeSubHeader->Enabled = false;
 }
-//-------------------------------------------------------------------------------------
-//void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender)
-//{
-//    //todo
-//}
+
+
 
