@@ -268,9 +268,8 @@ namespace MewsIntegration
             catch (WebException we)
             {
                 logsList.Add("Web Exception is                                   " + we.Message);
-                logsList.Add("Web Exception Message is                           " + we.InnerException.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                retValue = we.InnerException.Message;
+                retValue = we.Message;
             }
             catch (Exception ex)
             {
@@ -335,9 +334,8 @@ namespace MewsIntegration
             catch (WebException we)
             {
                 logsList.Add("Web Exception is                                   " + we.Message);
-                logsList.Add("Web Exception Message is                           " + we.InnerException.Message);
                 logsList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                retValue = we.InnerException.Message;
+                retValue = we.Message;
             }
             catch (Exception ex)
             {

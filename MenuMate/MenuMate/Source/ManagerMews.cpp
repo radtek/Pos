@@ -358,6 +358,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     {
                         auxMessage = "Posting to Mews failed.\r";
                         auxMessage += value;
+                        if(value.Pos("403") == 0)
+                        {
+                            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                            auxMessage += "\rMews interface is disabled now.";
+                        }
                         MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         isPostedRoomPost = isSuccessful;
                         break;
@@ -366,9 +371,20 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     {
                         auxMessage = "Posting to Mews failed.\r";
                         if(value.Trim() != "")
+                        {
                             auxMessage += value;
+                            if(value.Pos("403") == 0)
+                            {
+                                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                                auxMessage += "\rMews interface is disabled now.";
+                            }
+                        }
                         else
+                        {
                             auxMessage += "Menumate could not communicate with Mews.";
+                            auxMessage += "\rMews interface is disabled now.";
+                            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                        }
                         MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         isSuccessful = false;
                     }
@@ -480,6 +496,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                 {
                     auxMessage = "Posting to Mews failed.\r";
                     auxMessage += value;
+                    if(value.Pos("403") == 0)
+                    {
+                        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                        auxMessage += "\rMews interface is disabled now.";
+                    }
                     MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                     isSuccessful = false;
                 }
@@ -487,9 +508,20 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                 {
                     auxMessage = "Posting to Mews failed.\r";
                     if(value.Trim() != "")
+                    {
                         auxMessage += value;
+                        if(value.Pos("403") == 0)
+                        {
+                            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                            auxMessage += "\rMews interface is disabled now.";
+                        }
+                    }
                     else
+                    {
                         auxMessage += "Menumate could not communicate with Mews.";
+                        auxMessage += "\rMews interface is disabled now.";
+                        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                    }
                     MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                     isSuccessful = false;
                 }
@@ -502,8 +534,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
 //        DBTransaction.Rollback();
     }
     UnsetPostingFlag();
-    if(!isSuccessful)
-       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+//    if(!isSuccessful)
+//       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     return isSuccessful;
 }
 void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCustomerMews> &customerMews,bool isSpace)
@@ -524,7 +556,8 @@ void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCusto
     }
     catch(Exception &ex)
     {
-        MessageBox(ex.Message,"Exception",MB_OK);
+        //MessageBox(ex.Message,"Exception",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     Processing->Close();
 }
@@ -923,7 +956,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
 	catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        MessageBox(E.Message,"",MB_OK);
+        //MessageBox(E.Message,"",MB_OK);
 	}
 
 }
