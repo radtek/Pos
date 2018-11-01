@@ -4689,6 +4689,8 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
     {
         cbIntegratedEftposAdyen->Enabled                     = true;
         cbIntegratedEftposAdyen->Checked                     = false;
+        cbIntegratedEftposPreAuthorisaton->Checked                     = false;
+        cbIntegratedAuthorisationOnCards->Checked                     = false;
     }
     if(!TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
