@@ -4757,9 +4757,7 @@ bool TListPaymentSystem::ProcessTipOnVisaTransaction(int arcBillKey, WideString 
             if(TGlobalSettings::Instance().EnableEftPosAdyen)
             {
                 UnicodeString InvoiceNumber = TDBAdyen::GetInvoiceNumber(arcBillKey);
-                MessageBox(InvoiceNumber,"InvoiceNumber",MB_OK);
                 UnicodeString MerchantAccount = TDBAdyen::GetMerchantAccount(InvoiceNumber);
-                 MessageBox(MerchantAccount,"MerchantAccount",MB_OK);
                 retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, MerchantAccount);
 
                 if(retVal)

@@ -455,7 +455,7 @@ void TfrmSelectReceipt::toggleAvailabilityOfTippingButton()
 
 	if((ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey) ||
        TGlobalSettings::Instance().EnableEftPosAdyen) && (TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions() &&
-       TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)))
+       !TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)))
 	{
 		btnAddTip->Enabled = true;
 	}
@@ -519,8 +519,7 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
                     MessageBox("Tip applied successfully", "Tip Applied", MB_ICONINFORMATION + MB_OK);
             }
         }
-
-
+        toggleAvailabilityOfTippingButton();
 	}
 }
 //---------------------------------------------------------------------------

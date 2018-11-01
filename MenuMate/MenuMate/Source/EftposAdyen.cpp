@@ -880,7 +880,7 @@ bool TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
 {
     bool retVal = false;
     try
-    {   // MessageBox("2","2",MB_OK);
+    {
         CaptureModifiedAmount *captureModifiedAmount =  new CaptureModifiedAmount();
         captureModifiedAmount->merchantAccount = adjustAuthorisation->merchantAccount;
         captureModifiedAmount->modificationAmount = new ModificationAmount();
