@@ -216,12 +216,12 @@ void TDBAdyen::UpdateEFTPOSReference(UnicodeString originalReference, UnicodeStr
     try
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->SQL->Text = "UPDATE EFTPOSREFRENECE a SET a.UPDATED_REFERENCE = :UPDATED_REFERENCE, MM_REFERENCE = :MM_REFERENCE "
+        IBInternalQuery->SQL->Text = "UPDATE EFTPOSREFRENECE a SET a.UPDATED_REFERENCE = :UPDATED_REFERENCE, MM_PSPREFERENCE = :MM_PSPREFERENCE "
                                      " WHERE a.PSPREFERENCE = :PSPREFERENCE ";
         IBInternalQuery->Close();
         IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = originalReference;
         IBInternalQuery->ParamByName("UPDATED_REFERENCE")->AsString = pspReference;
-        IBInternalQuery->ParamByName("MM_REFERENCE")->AsString = modifiedReference;
+        IBInternalQuery->ParamByName("MM_PSPREFERENCE")->AsString = modifiedReference;
         IBInternalQuery->ExecQuery();
 
         DBTransaction.Commit();

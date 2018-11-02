@@ -2476,13 +2476,13 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
                         IBInternalQuery->Close();
                         IBInternalQuery->SQL->Text =
-                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, PSPREFERENCE, MM_REFERENCE, UPDATED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
-                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :PSPREFERENCE, :MM_REFERENCE, :UPDATED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
+                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, PSPREFERENCE, MM_PSPREFERENCE, UPDATED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
+                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :PSPREFERENCE, :MM_PSPREFERENCE, :UPDATED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
 
                         IBInternalQuery->ParamByName("EFTPOSREFRENCE_ID")->AsInteger = eftposreferenceId;
                         IBInternalQuery->ParamByName("INVOICE_NO")->AsString = PaymentTransaction.InvoiceNumber;;
                         IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = SubPayment->EftposTransactionID;
-                        IBInternalQuery->ParamByName("MM_REFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("MM_PSPREFERENCE")->AsString = "";
                         IBInternalQuery->ParamByName("UPDATED_REFERENCE")->AsString = "";
                         IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
                         IBInternalQuery->ParamByName("MERCHANT_ID")->AsString = SubPayment->MerchantAccount;
@@ -4848,7 +4848,7 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTra
 			IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 			IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
 			IBInternalQuery->ParamByName("NOTE")->AsString = "";
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = 0;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = ePayTypeCustomSurcharge;
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = 0;
 			IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = originalPaymentRef;
 			IBInternalQuery->ParamByName("PAYMENT_CARD_TYPE")->AsString = "";
