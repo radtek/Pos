@@ -5393,9 +5393,6 @@ void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sen
    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintTipAndSignature, TGlobalSettings::Instance().PrintTipAndSignature);
    DBTransaction.Commit();
 }
-
-
-
 //---------------------------------------------------------------------------
 void TfrmPrinterMaintenance::CheckSubHeaderSetting()
 {
