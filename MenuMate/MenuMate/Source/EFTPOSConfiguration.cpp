@@ -220,6 +220,8 @@ void TfrmEFTPOSConfig::UpdateGUI()
         else
         {
             tbEftPosTerminalID->Enabled = false;
+            if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                tbEftPosTerminalID->Caption =  "Adjust Authorisation URL\r";
         }
     }
     if(!TGlobalSettings::Instance().EnableEftPosAdyen)
