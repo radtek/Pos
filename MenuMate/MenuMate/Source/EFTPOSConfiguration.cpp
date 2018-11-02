@@ -269,9 +269,6 @@ void __fastcall TfrmEFTPOSConfig::tbEftPosTerminalIDMouseClick(TObject *Sender)
         frmTouchKeyboard->CloseOnDoubleCarriageReturn = false;
         frmTouchKeyboard->StartWithShiftDown = false;
 
-        if(TGlobalSettings::Instance().EftPosTerminalId.Trim() == "")
-            TGlobalSettings::Instance().EftPosTerminalId = "https://pal-test.adyen.com/pal/servlet/Payment/v40";
-
         frmTouchKeyboard->KeyboardText = TGlobalSettings::Instance().EftPosTerminalId;
         frmTouchKeyboard->Caption = "Enter Adjust Authorisation URL";
 
