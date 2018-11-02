@@ -9203,7 +9203,7 @@ void TfrmAnalysis::SettleEFTPOSBills()
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.INVOICE_NO, a.ORIGINAL_REFERENCE FROM EFTPOSREFRENECE a "
+        IBInternalQuery->SQL->Text = "SELECT a.INVOICE_NO, a.PSPREFERENCE FROM EFTPOSREFRENECE a "
                                      "WHERE a.IS_SETTLED = :IS_SETTLED ";
         IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
         IBInternalQuery->ExecQuery();
@@ -9211,7 +9211,7 @@ void TfrmAnalysis::SettleEFTPOSBills()
         for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             UnicodeString invoiceNumber = IBInternalQuery->FieldByName("INVOICE_NO")->AsString;
-            UnicodeString originalReference = IBInternalQuery->FieldByName("ORIGINAL_REFERENCE")->AsString;
+            UnicodeString originalReference = IBInternalQuery->FieldByName("PSPREFERENCE")->AsString;
             TDBAdyen::ProcessTipForSelectedRecord(DBTransaction, invoiceNumber, originalReference);
         }
         DBTransaction.Commit();

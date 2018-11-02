@@ -869,9 +869,9 @@ void TApplyParser::Create6_56Table(TDBControl* const inDBControl)
         "( "
         "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
         "  INVOICE_NO VARCHAR(50),                       "
-        "  ORIGINAL_REFERENCE VARCHAR(50),                            "
-        "  PSPREFERENCE VARCHAR(50),              "
-        "  MODIFIED_REFERENCE VARCHAR(50),              "
+        "  PSPREFERENCE VARCHAR(50),                            "
+        "  MM_REFERENCE VARCHAR(50),              "
+        "  UPDATED_REFERENCE VARCHAR(50),              "
         "  IS_SETTLED CHAR(1) DEFAULT 'F',                "
         "  MERCHANT_ID VARCHAR(50)                "
         ");",

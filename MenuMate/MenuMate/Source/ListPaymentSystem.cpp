@@ -2476,14 +2476,14 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
                         IBInternalQuery->Close();
                         IBInternalQuery->SQL->Text =
-                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, ORIGINAL_REFERENCE, PSPREFERENCE, MODIFIED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
-                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :ORIGINAL_REFERENCE, :PSPREFERENCE, :MODIFIED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
+                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, PSPREFERENCE, MM_REFERENCE, UPDATED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
+                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :PSPREFERENCE, :MM_REFERENCE, :UPDATED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
 
                         IBInternalQuery->ParamByName("EFTPOSREFRENCE_ID")->AsInteger = eftposreferenceId;
                         IBInternalQuery->ParamByName("INVOICE_NO")->AsString = PaymentTransaction.InvoiceNumber;;
-                        IBInternalQuery->ParamByName("ORIGINAL_REFERENCE")->AsString = SubPayment->EftposTransactionID;
-                        IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = "";
-                        IBInternalQuery->ParamByName("MODIFIED_REFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = SubPayment->EftposTransactionID;
+                        IBInternalQuery->ParamByName("MM_REFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("UPDATED_REFERENCE")->AsString = "";
                         IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
                         IBInternalQuery->ParamByName("MERCHANT_ID")->AsString = SubPayment->MerchantAccount;
                         IBInternalQuery->ExecQuery();
