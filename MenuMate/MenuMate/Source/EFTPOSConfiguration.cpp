@@ -211,7 +211,7 @@ void TfrmEFTPOSConfig::UpdateGUI()
         tbAPIKey->Caption = "API Key\r" + TGlobalSettings::Instance().EFTPosAPIKey;
         tbDeviceID->Caption = "Device ID\r" + TGlobalSettings::Instance().EFTPosDeviceID;
 
-        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
         {
             cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
             cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
