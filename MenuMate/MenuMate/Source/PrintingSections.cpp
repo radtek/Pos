@@ -9343,9 +9343,9 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
 //-----------------------------------------
 void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
 {
-
-		if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature)
-       {
+    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature &&
+            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS))
+    {
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width / 2;
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
@@ -9357,32 +9357,15 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->Line->Columns[0]->Text  = "Total :_____________";
         pPrinter->AddLine();
 
-				pPrinter->Line->Columns[0]->Width = pPrinter->Width;
-				pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
-
-			   //	pPrinter->AddLine();
-              //  pPrinter->AddLine();
-				pPrinter->NewLine();
-                pPrinter->NewLine();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->NewLine();
+        pPrinter->NewLine();
         pPrinter->Line->Columns[0]->Width = pPrinter->Width ;
 
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Text  = "Signature :__________";
         pPrinter->AddLine();
-
-
-       }
-
-
-
-
-
-
-
-
-
-
-
-
+    }
 }
-
+//--------------------------------------------------------------------------------------
