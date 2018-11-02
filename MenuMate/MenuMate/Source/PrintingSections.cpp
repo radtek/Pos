@@ -324,8 +324,8 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
     Instructions[i++] = InstructionPair(epofiPrintPatronsSection, "Patron Count Section");
 	DefaultCaption[epofiPrintPatronsSection] = "Patron Count Section";
 
-    Instructions[i++] = InstructionPair(epofiPrinttipAndSignatureSection, "Tip And Signature Section");
-	DefaultCaption[epofiPrinttipAndSignatureSection] =  "Tip And Signature Section";
+    Instructions[i++] = InstructionPair(epofiPrinttipAndSignatureSection, "Tip & Signature Section");
+	DefaultCaption[epofiPrinttipAndSignatureSection] =  "Tip & Signature Section";
 
 }
 
@@ -9343,6 +9343,9 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
 //-----------------------------------------
 void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
 {
+
+if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature)
+       {
         pPrinter->Line->ColCount = 1;
         pPrinter->Line->Columns[0]->Width = pPrinter->Width / 2;
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
@@ -9368,7 +9371,7 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->AddLine();
 
 
-
+       }
 
 
 

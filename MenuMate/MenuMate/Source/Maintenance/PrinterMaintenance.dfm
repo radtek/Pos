@@ -5449,7 +5449,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Top = 532
                               Width = 315
                               Height = 20
-                              Caption = 'Print Tip And Signature on Final Receipt'
+                              Caption = 'Print Tip & Signature on Final Receipt'
                               Font.Charset = DEFAULT_CHARSET
                               Font.Color = clWindowText
                               Font.Height = -16
@@ -5457,6 +5457,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               Font.Style = []
                               ParentFont = False
                               TabOrder = 18
+                              OnClick = cbPrintTipAndSignatureClick
                             end
                           end
                         end

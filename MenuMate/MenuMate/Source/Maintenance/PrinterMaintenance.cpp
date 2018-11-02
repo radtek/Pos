@@ -327,6 +327,7 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
       tbtnReceiptNumber->Caption = TGlobalSettings::Instance().ReceiptDigits;
       cbPrintVoid->Checked = TGlobalSettings::Instance().ShowVoidOrRefund;
       cbShowVoidNumber->Checked = TGlobalSettings::Instance().ShowVoidNumber;
+      cbPrintTipAndSignature->Checked = TGlobalSettings::Instance().PrintTipAndSignature;
       CheckVoidFooterSetting();
       CheckSubHeaderSetting();
    }
@@ -5400,16 +5401,17 @@ void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMo
    DBTransaction.Commit();
 }
 //-------------------------------------------------------------------------------------
-//void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender)
-//{
-//    //todo
-//}void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender){
-//   Database::TDBTransaction DBTransaction(DBControl);
-//   DBTransaction.StartTransaction();
-//   TGlobalSettings::Instance().AutoPrintWebReceipts = cbAPWOOS->Checked;
-//   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmAutoPrintWebReceipts, TGlobalSettings::Instance().AutoPrintWebReceipts);
-//   DBTransaction.Commit();
-}
+
+void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender){
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintTipAndSignature = cbPrintTipAndSignature->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintTipAndSignature, TGlobalSettings::Instance().PrintTipAndSignature);
+   DBTransaction.Commit();
+}
+
+
+
 //---------------------------------------------------------------------------
 void TfrmPrinterMaintenance::CheckSubHeaderSetting()
 {
