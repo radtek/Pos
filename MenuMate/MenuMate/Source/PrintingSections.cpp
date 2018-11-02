@@ -9344,7 +9344,7 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
 void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
 {
     if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature &&
-            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS))
+            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS) && PrintJob->PaymentType != ptPreliminary)
     {
         pPrinter->NewLine();
         pPrinter->Line->ColCount = 1;
