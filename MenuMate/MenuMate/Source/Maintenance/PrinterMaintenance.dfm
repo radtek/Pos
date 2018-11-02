@@ -5100,7 +5100,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Left = 0
                   Top = 0
                   Width = 379
-                  Height = 636
+                  Height = 580
                   Margins.Left = 0
                   Margins.Top = 0
                   Margins.Right = 0
@@ -5122,7 +5122,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Left = 0
                       Top = 0
                       Width = 371
-                      Height = 626
+                      Height = 570
                       Align = alClient
                       Font.Charset = DEFAULT_CHARSET
                       Font.Color = clWindow
@@ -5138,7 +5138,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 574
+                        Height = 518
                         Caption = 'Receipt General Info'
                         object PanelGeneralInfo: TPanel
                           Left = 0
@@ -5176,7 +5176,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             TabOrder = 0
                             object cbAlwaysPrintReceiptTenderedSales: TCheckBox
                               Left = 11
-                              Top = 28
+                              Top = 25
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt on tendered sales'
@@ -5191,7 +5191,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbReceiptBarCodes: TCheckBox
                               Left = 11
-                              Top = 252
+                              Top = 225
                               Width = 289
                               Height = 20
                               Caption = 'Show bar codes on receipt.'
@@ -5206,7 +5206,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbDoublePrint: TCheckBox
                               Left = 11
-                              Top = 224
+                              Top = 200
                               Width = 315
                               Height = 20
                               Caption = 'Duplicate auto print receipts'
@@ -5221,7 +5221,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAlwaysPrintCashSales: TCheckBox
                               Left = 11
-                              Top = 56
+                              Top = 50
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt on cash sales'
@@ -5236,7 +5236,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAlwaysPrintDiscountSales: TCheckBox
                               Left = 11
-                              Top = 84
+                              Top = 75
                               Width = 315
                               Height = 20
                               Caption = 'Always print receipt with discounts'
@@ -5251,7 +5251,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintSignatureOnDiscountSales: TCheckBox
                               Left = 11
-                              Top = 112
+                              Top = 100
                               Width = 315
                               Height = 20
                               Caption = 'Print signature section on discount sale'
@@ -5266,7 +5266,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintSignatureOnRoomSales: TCheckBox
                               Left = 11
-                              Top = 140
+                              Top = 125
                               Width = 315
                               Height = 20
                               Caption = 'Print signature section on room sale'
@@ -5281,7 +5281,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbDuplicateReceipts: TCheckBox
                               Left = 11
-                              Top = 168
+                              Top = 150
                               Width = 315
                               Height = 20
                               Caption = 'Duplicate all receipts'
@@ -5296,7 +5296,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPTROS: TCheckBox
                               Left = 11
-                              Top = 280
+                              Top = 250
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Tab Receipt On Save'
@@ -5311,7 +5311,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPSROS: TCheckBox
                               Left = 11
-                              Top = 308
+                              Top = 275
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Staff Receipt On Save'
@@ -5326,7 +5326,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPMOS: TCheckBox
                               Left = 11
-                              Top = 336
+                              Top = 300
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Member Receipt On Save'
@@ -5341,7 +5341,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPTAROS: TCheckBox
                               Left = 11
-                              Top = 364
+                              Top = 325
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Table Receipt On Save'
@@ -5356,7 +5356,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPCROS: TCheckBox
                               Left = 11
-                              Top = 392
+                              Top = 350
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Cash Receipt On Save'
@@ -5371,7 +5371,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPRROS: TCheckBox
                               Left = 11
-                              Top = 420
+                              Top = 375
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Room Receipt On Sale'
@@ -5386,7 +5386,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPIROS: TCheckBox
                               Left = 11
-                              Top = 448
+                              Top = 400
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Invoice On Save'
@@ -5401,7 +5401,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbSaveAndPrint: TCheckBox
                               Left = 11
-                              Top = 196
+                              Top = 175
                               Width = 340
                               Height = 20
                               Caption = #39'Save and Print'#39' prints only the new orders'
@@ -5416,7 +5416,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbAPWOOS: TCheckBox
                               Left = 11
-                              Top = 476
+                              Top = 425
                               Width = 315
                               Height = 20
                               Caption = 'Auto Print Web Order On Save'
@@ -5431,7 +5431,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintZeroTaxes: TCheckBox
                               Left = 11
-                              Top = 504
+                              Top = 450
                               Width = 318
                               Height = 20
                               Caption = 'Print Taxes On Receipt When Zero'
@@ -5446,7 +5446,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintTipAndSignature: TCheckBox
                               Left = 11
-                              Top = 532
+                              Top = 475
                               Width = 315
                               Height = 20
                               Caption = 'Print Tip && Signature on Final Receipt'
@@ -5466,7 +5466,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 574
+                        Height = 518
                         Caption = 'Receipt Custom Info'
                         object PanelCustomInfo: TPanel
                           Left = 0
@@ -5488,7 +5488,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             Left = 4
                             Top = 0
                             Width = 360
-                            Height = 514
+                            Height = 560
                             Caption = 'Receipt Customize Information'
                             Color = 14342874
                             Ctl3D = True
