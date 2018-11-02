@@ -4762,6 +4762,8 @@ void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
     {
         cbEnableDPSTipping->Enabled = false;
         cbIntegratedAuthorisationOnCards->Enabled = true;
+        TGlobalSettings::Instance().PrintCardHolderReceipt = true;
+        TGlobalSettings::Instance().PrintMerchantReceipt = true;
     }
     else
     {
@@ -4772,6 +4774,8 @@ void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
 	DBTransaction.StartTransaction();
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosPreAuthorisation,TGlobalSettings::Instance().EnableEftPosPreAuthorisation);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableAdjustAuthorisationOnCards,TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintCardHolderReceipt, TGlobalSettings::Instance().PrintCardHolderReceipt);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintMerchantReceipt, TGlobalSettings::Instance().PrintMerchantReceipt);
 	DBTransaction.Commit();
 }
 //------------------------------------------------------------------------------
