@@ -41,7 +41,7 @@ void __fastcall TfrmWalletConfiguration::FormResize(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmWalletConfiguration::btnMerchentIdMouseClick(TObject *Sender)
 {
-  MerchentId = GetData(MerchentId,"Enter Wallet Account Merchent Id",25);
+  MerchentId = GetData(MerchentId,"Enter Wallet Account Merchant Id",25);
   lbeMechentId->Caption = MerchentId;
 }
 //---------------------------------------------------------------------------

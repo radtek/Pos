@@ -2695,23 +2695,43 @@ void TfrmPaymentType::ProcessWalletTransaction(TPayment *Payment)
 {
     if(ValidateWalletAccount(Payment))
     {
-        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
-        frmTouchKeyboard->MaxLength = 50;
-        frmTouchKeyboard->AllowCarriageReturn = false;
-        frmTouchKeyboard->StartWithShiftDown = false;
-        frmTouchKeyboard->MustHaveValue = true;
-        frmTouchKeyboard->KeyboardText = "";
-        frmTouchKeyboard->Caption = "Enter/Scan QrCode";
-        if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
-        {
-          Payment->WalletQrCode = frmTouchKeyboard->KeyboardText.Trim();
-          Payment->SetPay(wrkPayAmount);
-        }
-        else
-        {
-           Payment->WalletQrCode = "";
-           Payment->SetPay(0);
-        }
+/*
+            std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
+            frmTouchKeyboard->MaxLength = 50;
+            frmTouchKeyboard->AllowCarriageReturn = false;
+            frmTouchKeyboard->StartWithShiftDown = false;
+            frmTouchKeyboard->MustHaveValue = true;
+            frmTouchKeyboard->KeyboardText = "";
+            frmTouchKeyboard->Caption = "Enter/Scan QrCode";
+            frmTouchKeyboard->pnlKeyboard->Enabled = false;
+            if (frmTouchKeyboard->ShowModal() == mrOk && frmTouchKeyboard->KeyboardText.Trim() != "")
+            {
+                Payment->WalletQrCode = frmTouchKeyboard->KeyboardText.Trim();
+                Payment->SetPay(wrkPayAmount);
+            }
+            else
+            {
+                Payment->WalletQrCode = "";
+                Payment->SetPay(0);
+            }
+
+*/
+             UnicodeString barCodeValue = "";
+             std::auto_ptr <TfrmCardSwipe> frmCardSwipe(TfrmCardSwipe::Create <TfrmCardSwipe> (this));
+             frmCardSwipe->tbOtherOpt->Visible = false;
+             frmCardSwipe->Label1->Caption = "Scan QR Code";
+             frmCardSwipe->ShowModal();
+             if (frmCardSwipe->ModalResult == mrOk)
+               {
+                  barCodeValue = frmCardSwipe->SwipeString.Trim();
+                  Payment->WalletQrCode =  barCodeValue;
+                  Payment->SetPay(wrkPayAmount);
+               }
+             else
+                {
+               Payment->WalletQrCode = "";
+               Payment->SetPay(0);
+                }
     }
     else
     {

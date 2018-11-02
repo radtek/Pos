@@ -1241,11 +1241,17 @@ void __fastcall TfrmNewPaymentType::tbGLCodeMouseClick(TObject *Sender)
 void __fastcall TfrmNewPaymentType::btnWalletConfigMouseClick(TObject *Sender)
 {
    TfrmWalletConfiguration *frmWalletConfiguration = new TfrmWalletConfiguration(this);
-   frmWalletConfiguration->MerchentId = Payment.MerchentId;
-   frmWalletConfiguration->TerminalId = Payment.TerminalId;
    frmWalletConfiguration->WalletUserName = Payment.WalletUserName;
    frmWalletConfiguration->WalletPassword = Payment.WalletPassword;
    frmWalletConfiguration->WalletSecurityToken = Payment.WalletSecurityToken;
+   if(Payment.WalletType == eJioWallet)
+   {
+        frmWalletConfiguration->btnMerchentId->Enabled = true;
+        frmWalletConfiguration->btnTerminalId->Enabled = true;
+        frmWalletConfiguration->MerchentId = Payment.MerchentId;
+        frmWalletConfiguration->TerminalId = Payment.TerminalId;
+   }
+
    if(frmWalletConfiguration->ShowModal() == mrOk)
    {
        Payment.MerchentId = frmWalletConfiguration->MerchentId;
