@@ -5084,7 +5084,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                 Left = 456
                 Top = 44
                 Width = 387
-                Height = 580
+                Height = 636
                 BevelOuter = bvNone
                 BorderWidth = 4
                 Color = 14342874
@@ -5100,7 +5100,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                   Left = 0
                   Top = 0
                   Width = 379
-                  Height = 580
+                  Height = 636
                   Margins.Left = 0
                   Margins.Top = 0
                   Margins.Right = 0
@@ -5122,7 +5122,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                       Left = 0
                       Top = 0
                       Width = 371
-                      Height = 570
+                      Height = 626
                       Align = alClient
                       Font.Charset = DEFAULT_CHARSET
                       Font.Color = clWindow
@@ -5138,13 +5138,13 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 518
+                        Height = 574
                         Caption = 'Receipt General Info'
                         object PanelGeneralInfo: TPanel
                           Left = 0
                           Top = 0
                           Width = 387
-                          Height = 625
+                          Height = 670
                           BevelOuter = bvNone
                           BorderWidth = 4
                           Color = 14342874
@@ -5160,7 +5160,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             Left = 4
                             Top = 0
                             Width = 359
-                            Height = 625
+                            Height = 670
                             Caption = 'Receipt Information'
                             Color = 14342874
                             Ctl3D = True
@@ -5431,7 +5431,7 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                             end
                             object cbPrintZeroTaxes: TCheckBox
                               Left = 11
-                              Top = 515
+                              Top = 504
                               Width = 318
                               Height = 20
                               Caption = 'Print Taxes On Receipt When Zero'
@@ -5445,8 +5445,8 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                               OnClick = cbPrintZeroTaxesClick
                             end
                             object cbPrintTipAndSignature: TCheckBox
-                              Left = 12
-                              Top = 495
+                              Left = 11
+                              Top = 532
                               Width = 315
                               Height = 20
                               Caption = 'Print Tip And Signature on Final Receipt'
@@ -5465,13 +5465,13 @@ object frmPrinterMaintenance: TfrmPrinterMaintenance
                         Left = 2
                         Top = 50
                         Width = 367
-                        Height = 518
+                        Height = 574
                         Caption = 'Receipt Custom Info'
                         object PanelCustomInfo: TPanel
                           Left = 0
                           Top = 0
                           Width = 387
-                          Height = 520
+                          Height = 575
                           BevelOuter = bvNone
                           BorderWidth = 4
                           Color = 14342874
