@@ -505,7 +505,8 @@ namespace WalletPayments.Controller.Impl
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
 
-                string location = Path.Combine(path, "logs");
+                string location = path;
+                //Path.Combine(path, "logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");
