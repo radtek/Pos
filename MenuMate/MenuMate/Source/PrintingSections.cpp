@@ -9350,6 +9350,7 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Text  = "Tip :__________________________________________________";
+        pPrinter->NewLine();
         pPrinter->AddLine();
         pPrinter->NewLine();
         pPrinter->Line->Columns[0]->Width = pPrinter->Width ;

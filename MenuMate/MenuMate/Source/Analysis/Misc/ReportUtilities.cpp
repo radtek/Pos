@@ -879,7 +879,14 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
 
 
             bool IsCashOut = false;
-            if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
+
+             if(qrXArcPay->FieldByName("PAY_TYPE")->AsString == "Tip" && qrXArcPay->FieldByName("PAY_TYPE_DETAILS")->AsString != ""
+                && qrXArcPay->FieldByName("PROPERTIES")->AsString == "7")
+            {
+                CurrentPayment.TipAmount += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                 CurrentPayment.TipQty++;
+            }
+            else if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
             {
                    CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
             }
@@ -888,16 +895,10 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
                 CurrentPayment.CashOut += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
                 IsCashOut = true;
             }
+
             if(qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency != 0 )
             {
                  CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
-                 CurrentPayment.TipQty++;
-            }
-
-            if(qrXArcPay->FieldByName("PAY_TYPE")->AsString == "Tip" && qrXArcPay->FieldByName("PAY_TYPE_DETAILS")->AsString != ""
-                && qrXArcPay->FieldByName("PROPERTIES")->AsString == "7")
-            {
-                CurrentPayment.TipAmount += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
                  CurrentPayment.TipQty++;
             }
 
