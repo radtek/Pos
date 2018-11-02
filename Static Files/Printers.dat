@@ -214,3 +214,11 @@ NormalFontCPL=48
 BoldFontCPL=48
 CutterGap=3
 AlwaysUseFullCut=0
+
+[Epson TM-T20II Thermal]
+PrinterModel=220
+KanjiPrinter=1
+NormalFontCPL=48
+BoldFontCPL=48
+CutterGap=3
+AlwaysUseFullCut=0
