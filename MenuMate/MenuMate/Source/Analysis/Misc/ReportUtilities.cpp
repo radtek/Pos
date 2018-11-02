@@ -1051,8 +1051,21 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcSurcharge, 
             CurrentPayment = PaymentValues[paymentName];
             CurrentPayment.Name = paymentName;
             CurrentPayment.Qty++;
-
-            CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+            if(qXArcSurcharge->FieldByName("PROPERTIES")->AsString.Pos("-7-") != 0)
+            {
+                if(qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency>0)
+                {
+                    CurrentPayment.Tips += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+                    CurrentPayment.TipsQty++;
+                }
+                else
+                {
+                    CurrentPayment.TipsRefunded += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+                    CurrentPayment.TipsRefundedQty++;
+                }
+            }
+            else
+                CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
             CurrentPayment.Rounding -= qXArcSurcharge->FieldByName("ROUNDING")->AsCurrency;
             //CurrentPayment.Properties = qXArcSurcharge->FieldByName("PROPERTIES")->AsInteger;
             CurrentPayment.ExtractPaymentAttributes(qXArcSurcharge->FieldByName("PROPERTIES")->AsString);

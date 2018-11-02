@@ -23,10 +23,14 @@ TSumPayments::TSumPayments()
  CashOut = 0;
  Rounding = 0;
  Surcharge = 0;
+ TipsRefunded = 0;
+ Tips = 0;
  Properties.clear();
  Qty = 0;
  TipAmount = 0;
  TipQty = 0;
+ TipsQty = 0;
+ TipsRefundedQty = 0;
 }
 
 bool TSumPayments::IsLoyaltyVoucher()

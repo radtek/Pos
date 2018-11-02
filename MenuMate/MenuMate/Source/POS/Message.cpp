@@ -69,7 +69,7 @@ void __fastcall TfrmMessage::FormShow(TObject *Sender)
        TopButton->Parent = this->sbMessages;
        TopButton->Font->Color = clWhite;
 
-       if (MessageType == ePaymentTypeDisplay || MessageType == eDiscountReason || MessageType == eThorDiscountReason)
+       if (MessageType == ePaymentTypeDisplay || MessageType == eDiscountReason)
        {
           TopButton->Title = "Clear";
           TopButton->Tag = -1;
@@ -169,41 +169,6 @@ void __fastcall TfrmMessage::FormShow(TObject *Sender)
 			   NewButton->Caption = NewButton->Title;
 			   NewButton->Font->Name = "Tahoma";
 			   NewButton->Font->Size = 14;
-			   NewButton->Font->Style = TFontStyles() << fsBold;
-
-			   NewButton->Left = x;
-			   NewButton->Top = y;
-			   NewButton->Height = sbMessages->ClientHeight / NUMBER_OF_MSG_IN_VIEW;
-			   NewButton->Width = ButtonWidth;
-			   NewButton->OnMouseClick = BtnMesasgeClick;
-			   y += NewButton->Height + PixelGap;
-			}
-		 }
-		 __finally
-		 {
-			delete List;
-		 }
-	  }
-      else if (MessageType == eThorDiscountReason)
-	  {
-		 TStringList *List = new TStringList;
-		 try
-		 {
-            ManagerDiscount->GetVoucherListThor(DBTransaction,List,ShowPointsAsDiscount);
-
-			for (int i = 0; i < List->Count; i++)
-			{
-			   TMessageBtn *NewButton = new TMessageBtn(this);
-			   NewButton->Parent = sbMessages;
-			   NewButton->Visible = true;
-			   NewButton->Font->Color = clWhite;
-			   NewButton->Title = List->Strings[i];
-			   NewButton->Tag = (int)List->Objects[i];
-			   NewButton->TextResult = ManagerDiscount->GetDiscountDescription(DBTransaction, NewButton->Tag);
-			   NewButton->ButtonColor = clNavy;
-			   NewButton->Caption = NewButton->Title;
-			   NewButton->Font->Name = "Tahoma";
-			   NewButton->Font->Size = 10;
 			   NewButton->Font->Style = TFontStyles() << fsBold;
 
 			   NewButton->Left = x;
@@ -380,11 +345,7 @@ void __fastcall TfrmMessage::BtnMesasgeClick(TObject *Sender)
    {
 	  frmTouchKeyboard->Caption = Button->Title + " Enter Discount Reason";
    }
-   if (MessageType == eThorDiscountReason)
-   {
-	  frmTouchKeyboard->Caption = Button->Title + " Enter Discount Reason";
-   }
-   else if (MessageType == eRunProgram)
+   if (MessageType == eRunProgram)
    {
 	  frmTouchKeyboard->Caption = Button->Title + " Enter Command Line to run or Hit Ok";
    }

@@ -437,10 +437,6 @@ int TDBContacts::GetOrCreateContact(Database::TDBTransaction &DBTransaction, int
 			CreateContact = false;
 		 }
 	  }
-      if(inContactType == eThorMember && Info.ExternalKey == 0)
-      {
-         CreateContact = false;
-      }
 
 	  if (CreateContact)
 	  {

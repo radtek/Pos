@@ -121,7 +121,6 @@
 #include "ManagerLoyaltyVoucher.h"
 #include "MessageManager.h"
 #include "ManagerEJournal.h"
-//#include "ManagerClippIntegration.h"
 #include "ManagerHappyHour.h"
 #include "ManagerDelayedPayment.h"
 #include "MallExportManager.h"
@@ -900,7 +899,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 			DataType = eDiscountCard;
 		}
 		else if(TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted &&
-                !TGlobalSettings::Instance().IsThorlinkSelected && !TGlobalSettings::Instance().LoyaltyMateEnabled)
+                !TGlobalSettings::Instance().LoyaltyMateEnabled)
 		{
 			LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
 			if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
@@ -1310,25 +1309,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 				}
 			}
 		}
-
-        if(!ItemFound && TGlobalSettings::Instance().IsThorlinkSelected)
-        {
-            DBTransaction.StartTransaction();
-            if(TDeviceRealTerminal::Instance().ManagerMembership->IsCard(DBTransaction, TempUserInfo) == lsAccepted)
-            {
-                LoginResult = TDeviceRealTerminal::Instance().ManagerMembership->FindMember(DBTransaction, TempUserInfo);
-                if (LoginResult == lsAccepted || LoginResult == lsAccountBlocked)
-                {
-                    DataType = eMemberCard;
-                    TabKey = TDBTab::GetTabByOwner(DBTransaction, TempUserInfo.ContactKey);
-                    ApplyMembership(DBTransaction, TempUserInfo);
-                    ItemFound = true;
-                }
-            }
-            DBTransaction.Commit();
-        }
-
-		if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected) && IsChitPromptFormActive)
+        if(!ItemFound && !(TGlobalSettings::Instance().IsThorlinkSelected) && IsChitPromptFormActive)
 		{     
               if(!TGlobalSettings::Instance().LoyaltyMateEnabled)
               {
@@ -5532,10 +5513,6 @@ void TfrmSelectDish::RemoveItem(Database::TDBTransaction &DBTransaction)
 		}
 		else if (ListItem->ItemType.Contains(itDiscountDisplay))
 		{
-            if(TGlobalSettings::Instance().IsThorlinkSelected)
-            {
-                ManagerDiscount->ClearThorVouchersDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-            }
 			ManagerDiscount->ClearDiscounts(SeatOrders[SelectedSeat]->Orders->List);
 			/* Clear any points that were to be redeemed though discounts */
 			SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.ClearBySource(pasDiscount);
@@ -6097,7 +6074,7 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		}
 
         if ((ButtonsSet.Contains(eBTDThorVouchers))
-          && (TGlobalSettings::Instance().IsThorlinkSelected || TGlobalSettings::Instance().LoyaltyMateEnabled))
+          && (TGlobalSettings::Instance().LoyaltyMateEnabled))
 		{
 			btngridModify->RowCount++;
 			AnsiString Caption = "Vouchers";
@@ -6565,7 +6542,6 @@ void TfrmSelectDish::pcItemModifyDisplayMember(eBtnToDisplay ButtonID)
                     TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberInfoRestricted(DBTransaction, Member, Report.get());
                 }
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetReportMemberStop(DBTransaction, Member, Report.get());
-                GetThorVouchers();
             }
         }
 
@@ -7167,6 +7143,7 @@ void __fastcall TfrmSelectDish::tbtnToggleMenusMouseUp(TObject *Sender, TMouseBu
 	bool SelectionRequired = false;
 	if (tbtnToggleMenus->Tag == 0) // Toggle
 	{
+
 		if (TDeviceRealTerminal::Instance().Menus->Current->Count <= 2)
 		{
 			TDeviceRealTerminal::Instance().Menus->ToggleMenus();
@@ -7215,6 +7192,9 @@ void TfrmSelectDish::SelectNewMenus()
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
     TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckMenuEditor);
+
+    if(SelectedTable)
+        TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 
         bool AskForLogin = false;
 	if ((!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))&&(Result == lsAccepted))
@@ -8298,11 +8278,6 @@ void __fastcall TfrmSelectDish::tbtnParkSalesMouseClick(TObject *Sender)
 		DBTransaction.StartTransaction();
 
 		TParkedSale *Sale = new TParkedSale;
-
-        if(TGlobalSettings::Instance().IsThorlinkSelected)
-        {
-           RemoveMembership(DBTransaction);
-        }
 		// Only store the membership if we not using smart cards.
 		if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->Enabled)
 		{
@@ -8712,14 +8687,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 		DBTransaction.StartTransaction();
 
 		bool Proceed = GetOrderContainer(DBTransaction, OrderContainer) == mrOk;
-
-        // check whether table is linked to clipp tab
-        TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, OrderContainer.Location["TabKey"] );
-
-        if(TGlobalSettings::Instance().IsThorlinkSelected)
-        {
-           RemoveMembership(DBTransaction);
-        }
         // Commits any newly created Tabs.
         DBTransaction.Commit();
 
@@ -8754,8 +8721,8 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 
 			bool DoProcessOrders = true;
 
-			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember || OrderContainer.Location["TMMTabType"] == TabClipp
-                || type == TabClipp)
+			if (OrderContainer.Location["TMMTabType"] == TabNormal || OrderContainer.Location["TMMTabType"] == TabStaff || OrderContainer.Location["TMMTabType"] == TabMember
+                )
 			{
 			   	DBTransaction.StartTransaction();
 
@@ -8845,13 +8812,6 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 					DBTransaction.Commit();
                     logList->Add("Trabsaction commit of tbtnSaveMouseClick().");
                     TSaveLogs::RecordFiscalLogs(logList);
-
-                    if((OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp)
-                            && (!OrderContainer.Location["BillOff"]))
-                    {   //send clipp tab details
-//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-//                        sendClippTabKey->SendTabDetails(OrderContainer.Location["TabKey"]);
-                     }
 					ResetPOS();
 
 				}
@@ -8868,14 +8828,7 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 
 			if (!OrdersPending() && IsChitPromptFormActive) // All Orders Posted No Exceptions
 			{
-                if( (OrderContainer.Location["BillOff"] ) && (OrderContainer.Location["TMMTabType"] == TabClipp || type == TabClipp ))
-                {
-                        //close clipp tab
-//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-//                        sendClippTabKey->CloseTab(OrderContainer.Location["TabKey"]);
-                }
-
-                else if (OrderContainer.Location["BillOff"])
+                if (OrderContainer.Location["BillOff"])
 				{
 					frmProcessing->Close();
 				    TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
@@ -9102,6 +9055,8 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
+            //Set the table status as availabale.
+            TDBTables::UpdateTableStatus(DBTransaction, frmBillGroup->CurrentTable, false);
 
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
@@ -9225,11 +9180,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 {
                     //Set the table status as availabale.
                     TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
-
-                   if(TGlobalSettings::Instance().IsThorlinkSelected)
-                    {
-                       RemoveMembership(DBTransaction);
-                    }
                    SelectedParty = SetPartyNameOnChitSettings(DBTransaction, SelectedParty, SelectedTable, true);
 
                    if(OrderContainer.Location["PrintPreLimReceipt"])
@@ -9283,52 +9233,16 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 TDBTab::SetDelayedPatronCount(DBTransaction,delayedTabKey,patronsStore);
             }
-             // check whether table's guest is linked to clipp tab
-            TMMTabType type = TDBTab::GetLinkedTableAndClipTab(DBTransaction, TabKey );
-
             bool Proceed = GetOrderContainerForTab(DBTransaction, OrderContainer) == mrOk;
 
 			DBTransaction.Commit();
-
-            if(Proceed && TabKey > 0 && type == TabClipp)
-            {
-                DBTransaction.StartTransaction();
-                bool TabisLocked = TDBTab::GetTabLocked(DBTransaction, TabKey);
-                AnsiString CreditMessage1 = "Reason :" + TDBTab::GetTabLockedReason(DBTransaction, TabKey);
-                DBTransaction.Commit();
-
-                if (TabisLocked)
-                {
-                    OrderConfimOk = ShowTabLockedMessage(CreditMessage1);
-                }
-                else
-                {
-                    DBTransaction.StartTransaction();
-                    OrderConfimOk = CheckTabIsInUse(DBTransaction, TabKey);
-                    DBTransaction.Commit();
-                }
-            }
-
 			if (OrderConfimOk)
 			{
-                if(TGlobalSettings::Instance().IsThorlinkSelected)
-                {
-                  RemoveMembership(DBTransaction);
-                }
 				std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(this));
 				frmProcessing->Message = "Posting Orders";
 				frmProcessing->Show();
 
                 bool DoProcessOrders = true;
-
-                // if table's guest  is linked to clipp tab
-                if (type == TabClipp)
-                {
-                    DBTransaction.StartTransaction();
-                    DoProcessOrders = CheckCreditLimitForTable(DBTransaction, TabKey, InitialMoney.GrandTotal);
-                    DBTransaction.Commit();
-                }
-
              	if (DoProcessOrders)
 			    {
                     DBTransaction.StartTransaction();
@@ -9371,12 +9285,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                         logList->Add("Payment not completed for tbtnSelectTable(().");
                         TSaveLogs::RecordFiscalLogs(logList);
                     }
-//                    if(type == TabClipp)
-//                    {
-//                        //send clipp tab details
-//                        TManagerClippIntegration* sendClippTabKey = TManagerClippIntegration::Instance();
-//                        sendClippTabKey->SendTabDetails(TabKey);
-//                    }
                     delete logList;
                     logList = NULL;
 
@@ -9984,7 +9892,7 @@ void __fastcall TfrmSelectDish::tbtnFlashReportsClick()
 
 				frmShowPrintout->btnCancel->Caption = "Close";
 				frmShowPrintout->btnClosePrint->Caption = "Print";
-                frmShowPrintout->Execute();
+				frmShowPrintout->Execute();
 
 			}break;
 		case 8: // Tabs and Tables
@@ -10126,7 +10034,6 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                        case TabDelayedPayment:
 	                        case TabNormal:
 	                        case TabStaff:
-	                        case TabClipp:
 	                        {
 	                            bool allowed = false;
 	                            OrderContainer.Location["SelectedTable"] = 0;
@@ -10511,26 +10418,6 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
 					SelectionForm->Items.push_back(Item);
 				}
 			}break;
-            case TabClipp:
-			{
-                CurrentTabType = TabClipp;
-                TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
-                IBInternalQuery->SQL->Text = "SELECT " "TAB.TAB_KEY, " "TAB.TAB_NAME NAME " "FROM " "TAB "
-                "INNER JOIN CLIPP_TAB on tab.TAB_KEY = CLIPP_TAB.CLIPP_TAB_TAB_KEY " "WHERE "
-                "CLIPP_TAB.IS_TAB_CLOSED = 'F' " /*"AND " "TAB.TAB_KEY NOT IN (SELECT SEAT.TAB_KEY FROM SEAT WHERE SEAT.TAB_KEY IS NOT NULL)" " AND ( TAB.TAB_TYPE = " + IntToStr
-                (CurrentTabType) + " OR TAB.TAB_TYPE = " + IntToStr(TabCashAccount) + " ) " +*/ " ORDER BY " "TAB.TAB_KEY DESC";
-                IBInternalQuery->ExecQuery();
-
-                for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
-				{
-					Item.Title = IBInternalQuery->FieldByName("NAME")->AsString;
-					Item.Properties["TabKey"] = IBInternalQuery->FieldByName("TAB_KEY")->AsInteger;
-					Item.Properties["Color"] = clInfoBk;
-					Item.CloseSelection = true;
-					SelectionForm->Items.push_back(Item);
-				}
-			}break;
      		}
 
                 bool isItemSelected = false;
@@ -10734,10 +10621,6 @@ TModalResult TfrmSelectDish::GetTabContainer(Database::TDBTransaction &DBTransac
                             else
                             {
                                 IsOrderinProgress = false;
-                                if(TGlobalSettings::Instance().IsThorlinkSelected)
-                                {
-                                   RemoveMembership(DBTransaction);
-                                }
                             }
                             delete frmConfirmOrder;
                             frmConfirmOrder = NULL;
@@ -11420,11 +11303,6 @@ void __fastcall TfrmSelectDish::refreshSelectedSeat()
 	DBTransaction.StartTransaction();
 	TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
 	TDBOrder::GetPrevOrders(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, SelectedTable, 0, SeatOrders);
-
-    if(TGlobalSettings::Instance().IsThorlinkSelected)
-    {
-       RemoveMembership(DBTransaction);
-    }
 	DBTransaction.Commit();
 	SetSelectedSeat(true);
 	RedrawSeatOrders();
@@ -14460,77 +14338,6 @@ void TfrmSelectDish::ApplyMemberDiscounts(Database::TDBTransaction &DBTransactio
     OpenDiscountAmount.clear();
 }
 // ---------------------------------------------------------------------------
-void TfrmSelectDish::GetThorVouchers()
-{
-   if(TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected)
-   {
-        TGlobalSettings::Instance().IsThorVoucherSelected = true;
-        std::auto_ptr<TfrmMessage> frmMessage(TfrmMessage::Create<TfrmMessage>(this, TDeviceRealTerminal::Instance().DBControl));
-		frmMessage->MessageType = eThorDiscountReason;
-
-        if(ManagerDiscount->IsVouchersAvailable())
-        {
-            if (frmMessage->ShowModal() == mrOk)
-            {
-               int voucherCode = frmMessage->Key;
-               if (frmMessage->Key == -1)
-                {
-                    ManagerDiscount->ClearThorVouchersDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-                    RedrawSeatOrders();
-                    TotalCosts();
-                    UpdateExternalDevices();
-                }
-                else
-                {
-                  TDiscount CurrentDiscount;
-                  CurrentDiscount.DiscountKey = ManagerDiscount->GetDiscountKeyForVoucher(frmMessage->Key);
-                  if(CurrentDiscount.DiscountKey > 0)
-                   {
-                        RemoveMembershipDiscounts();
-                        SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.clear();
-                        TSCDPWDChecker SCDChecker;
-                        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-                        DBTransaction.StartTransaction();
-                        std::auto_ptr<TList> allOrders(new TList());
-                        GetAllOrders(allOrders.get());
-                        ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-
-                        if(CurrentDiscount.IsComplimentaryDiscount())
-                        {
-                          TypeOfSale = ComplimentarySale;
-                        }
-                        else if( CurrentDiscount.IsNonChargableDiscount())
-                        {
-                          TypeOfSale = NonChargableSale;
-                        }
-
-//                        if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-                        if((SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
-                            && (SCDChecker.PWDCheck(CurrentDiscount, allOrders.get())))
-                        {
-                          SeatOrders[SelectedSeat]->Orders->AppliedMembership.AutoAppliedDiscounts.insert(CurrentDiscount.DiscountKey);
-                          ApplyDiscount(DBTransaction, CurrentDiscount.DiscountKey, SeatOrders[SelectedSeat]->Orders->List,dsMMMembership);
-                        }
-                        RedrawSeatOrders();
-                        TotalCosts();
-                        UpdateExternalDevices();
-                        TGlobalSettings::Instance().IsThorVoucherSelected = true;
-                        DBTransaction.Commit();
-                        if( TypeOfSale == ComplimentarySale ||  TypeOfSale == NonChargableSale)
-                        {
-                          tbtnTenderClick(tbtnTender);
-                        }
-                   }
-                   else
-                     {
-                        MessageBox("No discount for this voucher has been setup in Menumate.", "Warning", MB_ICONWARNING + MB_OK);
-                     }
-                }
-            }
-        }
-   }
-}
-// ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 {
 	TMMContactInfo TempUserInfo;
@@ -14910,11 +14717,7 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
     bool ProcessDiscount = true;
     if(DiscountSource == dsMMMembership)
     {
-       CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
-       if(CurrentDiscount.IsThorBill)
-       {
-            ManagerDiscount->GetThorlinkDiscount(DBTransaction,CurrentDiscount);
-       }
+       CurrentDiscount.IsThorBill = false;
     }
 
     if(CurrentDiscount.Source == dsMMUser || CurrentDiscount.Source == dsMMMembership)
@@ -14966,27 +14769,8 @@ bool TfrmSelectDish::ApplyDiscount(Database::TDBTransaction &DBTransaction, TDis
           TItemMinorComplete * order = reinterpret_cast<TItemMinorComplete *>(Orders->Items[x]);
           order->DiscountByTypeRemove(DiscModeDeal);
         }
-
-        for(int i = 0 ; i < Orders->Count ; i++)
-        {
-            TItemComplete *ic = (TItemComplete*)Orders->Items[i];
-            for(int j = 0 ; j < ic->Discounts.size() ; j++)
-            {
-                 TDiscount DiscountItem = ic->Discounts[j];
-                 if(DiscountItem.DiscountKey == CurrentDiscount.DiscountKey)
-                 {
-                     ManagerDiscount->ClearThorVouchersDiscounts(Orders);
-                 }
-            }
-        }
-        ///////////////////////////////////////////////////////////////////////
-//        RestructureBillForSplit();
         ApplyDiscountWithRestructure(Orders, CurrentDiscount);
-        ///////////////////////////////////////////////////////////////////////
-        //ManagerDiscount->AddDiscount(Orders, CurrentDiscount);
-
         CheckDeals(DBTransaction);
-
         if( CurrentDiscount.Source == dsMMMebersPoints && SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey != 0)
         {
             TMMContactInfo &Member = SeatOrders[SelectedSeat]->Orders->AppliedMembership;
@@ -15288,10 +15072,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		{
 			// Clear the Member Discounts from the orders.
 			ManagerDiscount->ClearMemberDiscounts(SeatOrders[SeatsToApply[iSeat]]->Orders->List);
-            ManagerDiscount->ClearThorVouchersDiscounts(SeatOrders[SelectedSeat]->Orders->List);
-
 			SeatOrders[SeatsToApply[iSeat]]->Orders->AppliedMembership = Member;
-
 			for (int i = 0; i < SeatOrders[SeatsToApply[iSeat]]->Orders->Count; i++)
 			{
 				TItemComplete *Order = SeatOrders[SeatsToApply[iSeat]]->Orders->Items[i];
@@ -15386,7 +15167,6 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		TDeviceRealTerminal::Instance().SecurityPort->SetData("Points:" + ShowPoints);
         if(!TGlobalSettings::Instance().IsThorlinkTender)
         {
-            GetThorVouchers();
             TGlobalSettings::Instance().IsThorlinkTender = false;
             TGlobalSettings::Instance().IsThorVoucherSelected = false;
         }
@@ -15435,7 +15215,7 @@ void TfrmSelectDish::GetLoyaltyMember(Database::TDBTransaction &DBTransaction, T
 
             if(memberExist)
              {
-             if (Info.Valid())
+             if (Info.Valid() &&  Info.ValidEmail())
              {
                 TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
                 ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,Info);

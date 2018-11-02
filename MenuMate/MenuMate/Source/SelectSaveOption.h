@@ -31,7 +31,6 @@ __published:	// IDE-managed Components
     TTouchBtn *tbMembersTab;
     TTouchBtn *tbNewInvoice;
     TTouchBtn *tbWebOrders;
-    TTouchBtn *tbClippTabs;
     void __fastcall FormShow(TObject *Sender);
     void __fastcall FormResize(TObject *Sender);
     void __fastcall tbTabsMouseClick(TObject *Sender);
@@ -43,8 +42,6 @@ __published:	// IDE-managed Components
     void __fastcall tbNewInvoiceMouseClick(TObject *Sender);
     void __fastcall btnOkMouseClick(TObject *Sender);
     void __fastcall tbWebOrdersMouseClick(TObject *Sender);
-    void __fastcall tbClippTabsMouseClick(TObject *Sender);
-
 private:	// User declarations
       void ShowTransferSection();
       void HideForTransferSection();

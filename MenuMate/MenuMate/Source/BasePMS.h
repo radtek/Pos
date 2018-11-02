@@ -21,7 +21,6 @@ class TBasePMS
         bool Enabled;
         AnsiString LastTransactionRef;
         AnsiString GetRefNumber();
-
         AnsiString DefaultPaymentCategory;
         AnsiString DefaultItemCategory;
         AnsiString CreditCategory;
@@ -37,17 +36,13 @@ class TBasePMS
         AnsiString RoundingAccountNumber;
         AnsiString RevenueCentre;
         AnsiString ApiKey;
-
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
-//        std::map<int, TPMSPaymentType> PMSPaymentTypeMap;
         public :
         bool Registered;
-        bool nabled;
         TPhoenixHM(Database::TDBControl &inDBControl);
         std::auto_ptr<TPhoenixNetTCPManager>	fPhoenixNet;
-
         AnsiString virtual GetLastTransactionRef();
         void virtual Initialise();
         bool virtual TestCode(AnsiString CodeToTest);

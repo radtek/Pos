@@ -20,6 +20,8 @@ object frmMaintain: TfrmMaintain
   Scaled = False
   OnResize = FormResize
   OnShow = FormShow
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -126,6 +128,10 @@ object frmMaintain: TfrmMaintain
     object tsMaintenance: TTabSheet
       Caption = 'Maintenance.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -490,6 +496,10 @@ object frmMaintain: TfrmMaintain
       Caption = 'Quick Messages.'
       ImageIndex = 2
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -672,6 +682,10 @@ object frmMaintain: TfrmMaintain
       Caption = 'Interfaces.'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -685,7 +699,7 @@ object frmMaintain: TfrmMaintain
           Left = 8
           Top = 48
           Width = 465
-          Height = 594
+          Height = 515
           Caption = 'Interfaces '
           Font.Charset = ANSI_CHARSET
           Font.Color = clBlack
@@ -696,7 +710,7 @@ object frmMaintain: TfrmMaintain
           TabOrder = 1
           object tbPHSInterface: TTouchBtn
             Left = 28
-            Top = 100
+            Top = 23
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -713,7 +727,7 @@ object frmMaintain: TfrmMaintain
           end
           object tbtnPrinterMaintenance: TTouchBtn
             Left = 28
-            Top = 172
+            Top = 90
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -730,7 +744,7 @@ object frmMaintain: TfrmMaintain
           end
           object tbtnSmartCards: TTouchBtn
             Left = 28
-            Top = 240
+            Top = 160
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -745,26 +759,9 @@ object frmMaintain: TfrmMaintain
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnSmartCardsMouseClick
           end
-          object tbIntaMate: TTouchBtn
-            Left = 28
-            Top = 34
-            Font.Charset = THAI_CHARSET
-            Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ParentColor = True
-            Caption = 'Intermate Interface'
-            ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
-            LatchingProperties = [lkLatchColor, lkStayDown]
-            OnMouseClick = tbIntaMateMouseClick
-          end
           object tbtnPocketVouchers: TTouchBtn
             Left = 28
-            Top = 310
+            Top = 230
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -779,26 +776,9 @@ object frmMaintain: TfrmMaintain
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbtnPocketVouchersMouseClick
           end
-          object tbtnEBet: TTouchBtn
-            Left = 247
-            Top = 30
-            Font.Charset = THAI_CHARSET
-            Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ParentColor = True
-            Caption = 'eBet'
-            ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
-            LatchingProperties = [lkLatchColor, lkStayDown]
-            OnMouseClick = tbtnEBetMouseClick
-          end
           object tchbtnWebMate: TTouchBtn
             Left = 247
-            Top = 100
+            Top = 23
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -815,7 +795,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnReservations: TTouchBtn
             Left = 247
-            Top = 170
+            Top = 90
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -832,7 +812,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnLoyaltyMate: TTouchBtn
             Left = 247
-            Top = 240
+            Top = 160
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -849,7 +829,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnBarExchange: TTouchBtn
             Left = 28
-            Top = 380
+            Top = 300
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -866,7 +846,7 @@ object frmMaintain: TfrmMaintain
           end
           object btnAccountingInterface: TTouchBtn
             Left = 247
-            Top = 310
+            Top = 230
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -883,7 +863,7 @@ object frmMaintain: TfrmMaintain
           end
           object tchbtnDrinkCommand: TTouchBtn
             Left = 247
-            Top = 380
+            Top = 300
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -898,27 +878,9 @@ object frmMaintain: TfrmMaintain
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tchbtnDrinkCommandMouseClick
           end
-          object TouchBtnClipInterface: TTouchBtn
-            Left = 28
-            Top = 450
-            Font.Charset = THAI_CHARSET
-            Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ParentColor = True
-            Visible = False
-            Caption = 'Clipp Interface'
-            ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
-            Enabled = False
-            LatchingProperties = [lkLatchColor, lkStayDown]
-          end
           object TouchBtnRunRateBoard: TTouchBtn
             Left = 28
-            Top = 450
+            Top = 370
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -933,27 +895,9 @@ object frmMaintain: TfrmMaintain
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = TouchBtnRunRateBoardMouseClick
           end
-          object TouchBtnThorlink: TTouchBtn
-            Left = 247
-            Top = 450
-            Font.Charset = THAI_CHARSET
-            Font.Color = clWhite
-            Font.Height = -16
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ParentColor = True
-            Visible = False
-            Caption = 'Thorlink'
-            ButtonColor = 6052441
-            LatchedColor = clBtnFace
-            DisabledButtonColor = clBtnFace
-            Enabled = False
-            LatchingProperties = [lkLatchColor, lkStayDown]
-          end
           object TouchBtnSecurity: TTouchBtn
             Left = 247
-            Top = 450
+            Top = 370
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16
@@ -970,7 +914,7 @@ object frmMaintain: TfrmMaintain
           end
           object TouchBtnFiscalStorage: TTouchBtn
             Left = 28
-            Top = 521
+            Top = 440
             Font.Charset = THAI_CHARSET
             Font.Color = clWhite
             Font.Height = -16

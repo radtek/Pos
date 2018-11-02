@@ -33,7 +33,6 @@
 #include "FreebieManager.h"
 #include "ManagerPatron.h"
 #include "Membership.h"
-#include "IMManager.h"
 #include "OrderUtils.h"
 #include "Comms.h"
 #include "ListSecurityRefContainer.h"
@@ -74,6 +73,7 @@
 #include "FiscalPrinterAdapter.h"
 #include "ManagerPMSCodes.h"
 #include "SaveLogs.h"
+#include "ManagerMews.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -521,10 +521,6 @@ void TListPaymentSystem::PaymentsLoadTypes(TPaymentTransaction &PaymentTransacti
 	{
           LoadMemberPaymentTypes(PaymentTransaction);
 	}
-//    if(TGlobalSettings::Instance().IsClippIntegrationEnabled)
-//    {
-//        LoadClippPaymentTypes(PaymentTransaction);
-//    }
 	IBInternalQuery->Close();
 	IBInternalQuery->SQL->Text = " SELECT * FROM PAYMENTTYPES ORDER BY PAYMENTTYPES.DISPLAY_ORDER";
 	IBInternalQuery->ExecQuery();
@@ -783,7 +779,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		RequestEFTPOSReceipt = false;
 		bool reprintEftposReceipt = false;
 		bool isRecovering = false;
-		State = _createProcessingStateMessage();
+		State = _createProcessingStateMessage(PaymentTransaction);
 
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
@@ -1333,8 +1329,26 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
 
 					// set recovery information for current transaction
 					transactionRecovery.SaveRecoveryInformation( PaymentTransaction, Security );
-					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
+                    AnsiString stateMessageOld = "";
+                    AnsiString stateTitleOld   = "";
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                    {
+                        stateMessageOld = State.Message;
+                        stateTitleOld   = State.Title;
 
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        State.Message = "Waiting For Adyen EFTPOS...";
+                        State.Title = "Processing Bill";
+                        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+                    }
+					EftPos->ProcessEftPos(TransType, Pay, CashOut, Payment->ReferenceNumber, PanSource, CardString, ExpiryMonth, ExpiryYear);
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                    {
+                        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+                        State.Message = stateMessageOld;
+                        State.Title = stateTitleOld;
+                        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+                    }
 					if (EftPos->WaitOnEftPosEvent(Payment->ReferenceNumber))
 					{
 						TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(Payment->ReferenceNumber);
@@ -1488,6 +1502,20 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
         {
             OpenCashDrawer(PaymentTransaction);
         }
+        AnsiString stateMessageOld = State.Message;
+        AnsiString stateTitleOld   = State.Title;
+
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(TGlobalSettings::Instance().PMSType == Mews)
+            State.Message = "Waiting for Mews to process Bill...";
+        else if(TGlobalSettings::Instance().PMSType == SiHot)
+            State.Message = "Waiting for Sihot to process Bill...";
+        else if(TGlobalSettings::Instance().PMSType == Oracle)
+            State.Message = "Waiting for Oracle to process Bill...";
+        else
+            State.Message = "Waiting for PMS to process Bill...";
+        State.Title = "Processing Bill";
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 		if (!TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey))
 		{
 			RetVal = false;
@@ -1507,15 +1535,13 @@ bool TListPaymentSystem::TransRetrivePhoenixResult(TPaymentTransaction &PaymentT
 			ManagerReference->GetReferenceByType(PaymentTransaction.DBTransaction, REFTYPE_PMS)));
             RetVal = true;
 		}
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        State.Message = stateMessageOld;
+        State.Title = stateTitleOld;
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 	}
 	return RetVal;
 }
-
-bool TListPaymentSystem::BuildXMLTransaction(TPaymentTransaction &PaymentTransaction)
-{
-	TDeviceRealTerminal::Instance().IMManager->Export(PaymentTransaction);
-}
-
 void TListPaymentSystem::GetChequeVerifyResult(TPayment *Payment)
 {
 	if (Payment->GetPaymentAttribute(ePayTypeChequeVerify))
@@ -2180,19 +2206,8 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                         }
                     }
                 }
-
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
-
-					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
-
-
-                //checking clipp paytype
-                if( payTypeName == "Clipp")
-                    {
-                         isClippGroup = true;
-                    }
-             
-
+				IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
                 if (!PaymentTransaction.CreditTransaction)
                 {
                     IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
@@ -2207,7 +2222,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                     0.01,
                     TGlobalSettings::Instance().MidPointRoundsDown);
                 }
-
                 IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = SubPayment->TipAmount;
 				IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = SubPayment->GetPayRounding();
 				IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
@@ -2219,7 +2233,6 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				{
 					IBInternalQuery->ParamByName("TAX_FREE")->AsString = "F";
 				}
-
 				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
 				IBInternalQuery->ParamByName("PROPERTIES")->AsString = SubPayment->GetPropertyString();
 				IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
@@ -2396,14 +2409,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 
 				IBInternalQuery->ParamByName("NOTE")->AsString = SubPayment->Note.SubString(1, 50);
 				IBInternalQuery->ParamByName("PROPERTIES")->AsString = SubPayment->GetPropertyString();
-                if(isClippGroup)
-                {
-                     IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = -999;
-                }
-                else
-                {
-				    IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
-                }
+                IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = SubPayment->GroupNumber;
 				IBInternalQuery->ExecQuery();
 			}
 
@@ -2602,12 +2608,10 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
                 ":ONLINE_CHIT_TYPE, "
                 ":ORDER_GUID "
 				");";
-
                 IBInternalQuery->ParamByName("CHIT_NAME")->AsString = Order->ChitNumber.Name;
                 IBInternalQuery->ParamByName("CHIT_NAME")->IsNull = Order->ChitNumber.ChitNumberKey == 0 || Order->ChitNumber.Name.Length() == 0;
                 IBInternalQuery->ParamByName("CHIT_OPTION")->AsString = Order->ChitNumber.ActiveOption();
                 IBInternalQuery->ParamByName("CHIT_OPTION")->IsNull = Order->ChitNumber.HasAnOption() == false;
-
 				IBInternalQuery->ParamByName("ARCHIVE_KEY")->AsInteger = MasterArchiveKey;
 				IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillLK;
 				IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
@@ -2621,7 +2625,6 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				case TabHandheldCashAccount:
 				case TabCashAccount:
 				case TabNone:
-                case TabClipp:
 				case TabTableSeat:
 					IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 					IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
@@ -2790,7 +2793,6 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 					case TabHandheldCashAccount:
 					case TabCashAccount:
 					case TabNone:
-                    case TabClipp:
 					case TabTableSeat:
 						IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = Order->TableNo;
 						IBInternalQuery->ParamByName("TABLE_NAME")->AsString = Order->TabContainerName;
@@ -3486,17 +3488,6 @@ void TListPaymentSystem::PreparePayments(TPaymentTransaction &PaymentTransaction
 
         if( ( PaymentTransaction.Type == eTransQuickSale ) && ( PaymentTransaction.SalesType == eTab ) )
         {
-            TPayment *ClippPayment = PaymentTransaction.PaymentFind(CLIPP);
-            if (ClippPayment == NULL)
-            {
-                TPayment *NewPayment = new TPayment;
-                NewPayment->Name = CLIPP;
-                NewPayment->SetPaymentAttribute(ePayTypeClipp,true);
-                NewPayment->DisplayOrder = -1;
-                NewPayment->Colour = clGreen;
-                PaymentTransaction.PaymentAdd(NewPayment);
-            }
-
             TPayment *TipPayment = PaymentTransaction.PaymentFind(TIPS);
             if (TipPayment == NULL)
             {
@@ -3827,6 +3818,26 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
                   ResetPayments(PaymentTransaction);
                 }
             }
+        }
+    }
+    else if(IsMewsConfigured())
+    {
+            /*
+               mews could be enabled but is not. Hence we need to try making it
+               enabled if possible.
+            */
+        bool mewsEnabled = TryToEnableMews();
+        if(mewsEnabled)
+            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+        else
+        {
+          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+              PhoenixHSOk = true;
+          else
+          {
+              PhoenixHSOk = false;
+              ResetPayments(PaymentTransaction);
+          }
         }
     }
 	if(!PhoenixHSOk)
@@ -4856,13 +4867,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
   			    PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                /***Send Requests to Thor*****/
-                /////////////////////////////////////////////////
-//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                {
-//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                }
-
 				if (PaymentComplete)
 				{
 					if (PaymentTransaction.CreditTransaction)
@@ -4891,8 +4895,6 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					{
 						exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
 					}
-
-					BuildXMLTransaction(PaymentTransaction);
                     if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                       !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                     {
@@ -4991,14 +4993,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                         PaymentTransaction.ProcessPoints();
                         TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
                         PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                        /////////////////////////////////////////////////
-                        /***Send Requests to Thor*****/
-                        /////////////////////////////////////////////////
-//                        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                        {
-//                            PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                        }
-
                         if (PaymentComplete)
                         {
                             if (Screen->ActiveForm != NULL)
@@ -5023,7 +5017,6 @@ void TListPaymentSystem::_processSplitPaymentTransaction( TPaymentTransaction &P
                              {
                                exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                              }
-                            BuildXMLTransaction(PaymentTransaction);
                             if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                               !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                             {
@@ -5153,15 +5146,7 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
 					PaymentTransaction.ProcessPoints();
 					TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 					PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                    /////////////////////////////////////////////////
-                    /***Send Requests to Thor*****/
-                    /////////////////////////////////////////////////
-//                    if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                    {
-//                        PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                    }
-
-					if (PaymentComplete)
+                    if (PaymentComplete)
 					{
 						if (Screen->ActiveForm != NULL)
 						   Screen->ActiveForm->Repaint();
@@ -5186,7 +5171,6 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                          {
 						   exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
                          }
-						BuildXMLTransaction(PaymentTransaction);
                         if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                           !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                         {
@@ -5265,15 +5249,6 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
         }
         PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-        /////////////////////////////////////////////////
-        /***Send Requests to Thor*****/
-        /////////////////////////////////////////////////
-//        if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//        {
-//            PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//        }
-
-         //if payment complete is true then check whether transaction has SCD or PWD Discount
         if(PaymentComplete)
         {
             if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
@@ -5302,8 +5277,6 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             {
                 exportTransactionInformation( PaymentTransaction );     // update export tables on cash sales
             }
-
-            BuildXMLTransaction(PaymentTransaction);
             if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
               !TDeviceRealTerminal::Instance().BasePMS->Enabled)
             {
@@ -5335,15 +5308,7 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                /////////////////////////////////////////////////
-                /***Send Requests to Thor*****/
-                /////////////////////////////////////////////////
-//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                {
-//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                }
-
-				if (PaymentComplete)
+                if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
 					Screen->ActiveForm->Repaint();
@@ -5360,7 +5325,6 @@ void TListPaymentSystem::_processCreditTransaction( TPaymentTransaction &Payment
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-					BuildXMLTransaction(PaymentTransaction);
                     if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                       !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                     {
@@ -5414,15 +5378,7 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                /////////////////////////////////////////////////
-                /***Send Requests to Thor*****/
-                /////////////////////////////////////////////////
-//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                {
-//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                }
-
-				if (PaymentComplete)
+                if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
 					Screen->ActiveForm->Repaint();
@@ -5439,7 +5395,6 @@ void TListPaymentSystem::_processEftposRecoveryTransaction( TPaymentTransaction 
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
-					BuildXMLTransaction(PaymentTransaction);
                     if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                       !TDeviceRealTerminal::Instance().BasePMS->Enabled)
                     {
@@ -5502,15 +5457,7 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 				PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
-                /////////////////////////////////////////////////
-                /***Send Requests to Thor*****/
-                /////////////////////////////////////////////////
-//                if(PaymentComplete && TGlobalSettings::Instance().IsThorlinkEnabled)
-//                {
-//                    PaymentComplete = PrepareThorRequest(PaymentTransaction);
-//                }
-
-				if (PaymentComplete)
+                if (PaymentComplete)
 				{
 					if (Screen->ActiveForm != NULL)
 					{
@@ -5526,7 +5473,6 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
-					BuildXMLTransaction(PaymentTransaction);
 					ArchiveTransaction(PaymentTransaction);
                     if((TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType != SiHot) ||
                       !TDeviceRealTerminal::Instance().BasePMS->Enabled)
@@ -5560,10 +5506,10 @@ void TListPaymentSystem::_processRewardsRecoveryTransaction( TPaymentTransaction
 	}
 }
 //------------------------------------------------------------------------------
-TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
+TMMProcessingState TListPaymentSystem::_createProcessingStateMessage(TPaymentTransaction &_paymentTransaction)
 {
     UnicodeString message = "Processing Bill";
-    if(TGlobalSettings::Instance().EnableEftPosAdyen && !_isSmartCardPresent())
+    if(IsPaidByAdyen(_paymentTransaction) && !_isSmartCardPresent())
     {
         message = "Waiting For Adyen EFTPOS";
     }
@@ -5576,6 +5522,34 @@ TMMProcessingState TListPaymentSystem::_createProcessingStateMessage()
 	}
 
 	return State;
+}
+//------------------------------------------------------------------------------
+bool TListPaymentSystem::IsPaidByAdyen(TPaymentTransaction &_paymentTransaction)
+{
+    bool retValue = false;
+    try
+    {
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for(int i = 0; i < _paymentTransaction.PaymentsCount(); i++)
+            {
+                TPayment *payment = _paymentTransaction.PaymentGet(i);
+                if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+                {
+                    double amount = (double)payment->GetPayTendered();
+                    if(amount != 0)
+                    {
+                         retValue = true;
+                    }
+                }
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
 }
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::_isSmartCardPresent()
@@ -5778,210 +5752,6 @@ void TListPaymentSystem::DelayAllPayments(TPaymentTransaction &PaymentTransactio
 
   }
 }
-
-//void TListPaymentSystem::LoadClippPaymentTypes(TPaymentTransaction &paymentTransaction)
-//{
-//    //Creating New Payment Type Clipp
-//    TPayment* clippPayment = new TPayment;
-//    clippPayment->Name = "Clipp";
-//    clippPayment->SysNameOveride = "Clipp";
-//    clippPayment->SetPaymentAttribute(ePayTypeClipp);
-//    clippPayment->DisplayOrder = 1;
-//    clippPayment->GroupNumber = -999;
-//    clippPayment->Colour = clTeal;
-//    clippPayment->PaymentThirdPartyID = "10007243";
-//    clippPayment->Visible = false;
-//    paymentTransaction.PaymentAdd(clippPayment);
-//}
-
-//bool TListPaymentSystem::PrepareThorRequest(TPaymentTransaction &paymentTransaction)
-//{
-//    bool retValue = false;
-//    if(paymentTransaction.Money.Total > 0)
-//        retValue = PrepareThorPurchaseRequest(paymentTransaction);
-//    else
-//        if(paymentTransaction.Membership.Member.Name.Length() != 0)
-//            retValue = PrepareThorRefundRequest(paymentTransaction);
-//        else
-//            retValue = true;
-//    return retValue;
-//}
-
-//bool TListPaymentSystem::PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction)
-//{
-//    bool returnValue = true;
-//    TItemDetailsThor itemThor ;
-//    TTenderDetails tenderDetails;
-//    tenderDetails.sendTransactionValue = true;
-//    tenderDetailsList.erase(tenderDetailsList.begin(),tenderDetailsList.end());
-//    itemsList.erase(itemsList.begin(),itemsList.end());
-//
-//    for(int i = 0 ; i < paymentTransaction.Orders->Count ; i++)
-//    {
-//        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[i];
-//        itemThor.thirdPartyCode = itemComplete->ThirdPartyCode;
-//        double price = itemComplete->BillCalcResult.FinalPrice/itemComplete->GetQty();
-//        itemThor.unitPrice = price;
-//        itemThor.qty = itemComplete->GetQty();
-//        itemsList.push_back(itemThor);
-//        if(itemComplete->DiscountReason.Length() != 0)
-//        {
-//            tenderDetails.tenderType = eThorVoucher;
-//            tenderDetails.tenderIdentifier = "0";
-//            for(std::vector<TDiscount>::iterator i = itemComplete->Discounts.begin() ; i != itemComplete->Discounts.end() ; ++i)
-//            {
-//                if(i->VoucherCode.Length() != 0)
-//                {
-//                    tenderDetails.tenderIdentifier = i->VoucherCode;
-//                }
-//            }
-//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//            tenderDetails.tenderValue = 0;
-//        }
-//        if(itemComplete->SubOrders->Count > 0)
-//        {
-//            for(int subOrdersCount = 0 ; subOrdersCount < itemComplete->SubOrders->Count; subOrdersCount++)
-//            {
-//                TItemComplete *subItem = (TItemComplete*)itemComplete->SubOrders->Items[subOrdersCount];
-//                itemThor.thirdPartyCode = subItem->ThirdPartyCode;
-//                double price = subItem->BillCalcResult.FinalPrice/subItem->GetQty();
-//                itemThor.unitPrice = price;
-//                itemThor.qty = subItem->GetQty();
-//                itemsList.push_back(itemThor);
-//                if(subItem->DiscountReason.Length() != 0)
-//                {
-//                    tenderDetails.tenderType = eThorVoucher;
-//                    tenderDetails.tenderIdentifier = "0";
-//                    for(std::vector<TDiscount>::iterator i = subItem->Discounts.begin() ; i != subItem->Discounts.end() ; ++i)
-//                    {
-//                        if(i->VoucherCode.Length() != 0)
-//                        {
-//                              tenderDetails.tenderIdentifier = i->VoucherCode;
-//                        }
-//                    }
-//                    tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//                    tenderDetails.tenderValue = 0;
-//                }
-//            }
-//        }
-//    }
-//    if((tenderDetails.tenderType == eThorVoucher) && (tenderDetails.tenderIdentifier != "0"))
-//    {
-//        tenderDetailsList.push_back(tenderDetails);
-//    }
-//    for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
-//    {
-//        TPayment *payment = paymentTransaction.PaymentGet(i);
-//        if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered()>0)))
-//        {
-//            tenderDetails.tenderValue =0;
-//            tenderDetails.tenderType = eThorCash;
-//            tenderDetails.tenderIdentifier = "0";
-//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//            double price = payment->GetPayTendered();
-//            tenderDetails.tenderValue = price;
-//            tenderDetailsList.push_back(tenderDetails);
-//        }
-//        if((payment->GetPaymentAttribute(ePayTypeElectronicTransaction)) && (payment->GetPayTendered()>0))
-//        {
-//            tenderDetails.tenderValue =0;
-//            tenderDetails.tenderType = eThorDebitCard;
-//            tenderDetails.tenderIdentifier = "0";
-//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//            double price = payment->GetPayTendered();
-//            tenderDetails.tenderValue = price;
-//            tenderDetailsList.push_back(tenderDetails);
-//        }
-//        if((payment->GetPaymentAttribute(ePayTypeChequeVerify)) && (payment->GetPayTendered()>0))
-//        {
-//            tenderDetails.tenderValue =0;
-//            tenderDetails.tenderType = eThorCheque;
-//            tenderDetails.tenderIdentifier = "0";
-//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//            double price = payment->GetPayTendered();
-//            tenderDetails.tenderValue = price;
-//            tenderDetailsList.push_back(tenderDetails);
-//        }
-//    }
-//    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed() > 0)
-//    {
-//            tenderDetails.tenderValue = 0;
-//            tenderDetails.tenderType = eThorPoints;
-//            tenderDetails.tenderIdentifier = "0";
-//            tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//            double price = paymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed();
-//            tenderDetails.tenderValue = price;
-//            if(!TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints))
-//            {
-//                tenderDetails.sendTransactionValue = false;
-//            }
-//            tenderDetailsList.push_back(tenderDetails);
-//    }
-//    if(tenderDetailsList.size() == 0)
-//    {
-//        tenderDetails.tenderValue =0;
-//        tenderDetails.tenderType = eThorCash;
-//        tenderDetails.tenderIdentifier = "0";
-//        tenderDetails.cardNo = paymentTransaction.Membership.Member.CardStr;
-//        tenderDetails.tenderValue = 0;
-//        tenderDetailsList.push_back(tenderDetails);
-//    }
-//    AnsiString message = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForPay(tenderDetailsList,itemsList);
-//    if(message.Length() != 0)
-//    {
-//        MessageBox(message, "Transaction Error",MB_OK + MB_ICONERROR);
-//        returnValue = false;
-//    }
-//    return returnValue;
-//}
-//
-//bool TListPaymentSystem::PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction)
-//{
-//    bool retValue = true;
-//    TRefundTransaction refundTransaction;
-//    refundTransaction.cardNumber = paymentTransaction.Membership.Member.CardStr;
-//    refundTransaction.creditValue = 0.0;
-//    double transactionValue = 0;
-//    double loyaltyValue = 0;
-//
-//    if(paymentTransaction.Money.Total > 0)
-//        transactionValue = paymentTransaction.Money.Total;
-//    else
-//        transactionValue = -paymentTransaction.Money.Total;
-//
-//    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() > 0)
-//        loyaltyValue = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
-//    else
-//        loyaltyValue = -paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
-//
-//    if(transactionValue != 0)
-//        refundTransaction.transactionValue = transactionValue;
-//    else
-//        refundTransaction.transactionValue = loyaltyValue;
-//
-//    if(paymentTransaction.Orders->Count > 0)
-//        refundTransaction.loyaltyValue = loyaltyValue;
-//    else
-//    {
-//        refundTransaction.loyaltyValue = loyaltyValue;
-//        for(int i = 0 ; i < paymentTransaction.PaymentsCount() ; i++)
-//        {
-//            TPayment *payment = paymentTransaction.PaymentGet(i);
-//            if((payment->GetPaymentAttribute(ePayTypeCash)) && ((payment->GetPayTendered() != 0)))
-//            {
-//                refundTransaction.loyaltyValue = 0;
-//            }
-//        }
-//    }
-//
-//    AnsiString errorMessage = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->SendRequestForRefund(refundTransaction);
-//    if(errorMessage.Length() != 0)
-//    {
-//        MessageBox(errorMessage, "Transaction Error", MB_OK + MB_ICONERROR);
-//        retValue = false;
-//    }
-//    return retValue;
-//}
 /**********************DLF MALL START****************************************/
 
 /************************DLF_MALL_CMD_CODE=1**START********************************************/
@@ -6714,6 +6484,59 @@ bool TListPaymentSystem::IsOracleConfigured()
         (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
         (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
         (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL));
+}
+//--------------------------------------------------------------------------
+bool TListPaymentSystem::IsMewsConfigured()
+{
+    try
+    {
+        return (TGlobalSettings::Instance().PMSType == Mews &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != 0  &&
+        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" &&
+        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != 0 &&
+        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" &&
+        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0 &&
+        TDeviceRealTerminal::Instance().BasePMS->TipAccount.Trim() != "");
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+    }
+    return false;
+}
+//---------------------------------------------------------------------------
+bool TListPaymentSystem::TryToEnableMews()
+{
+    bool retValue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eSelf);
+        TDeviceRealTerminal::Instance().BasePMS->Initialise();
+        retValue = TDeviceRealTerminal::Instance().BasePMS->Enabled;
+        DBTransaction.Commit();
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
 }
 //---------------------------------------------------------------------------
 void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)

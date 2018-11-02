@@ -466,9 +466,6 @@ void TMMInvoicePaymentSystem::_performPostInvoiceTransactionOperations( TPayment
 	// store the transaction in database
 	ArchiveTransaction(paymentTransaction);
 
-	// stores transaction in xml format
-	BuildXMLTransaction(paymentTransaction);
-
 	// clears orders in this transaction from memory
 	RemoveOrders(paymentTransaction);
 

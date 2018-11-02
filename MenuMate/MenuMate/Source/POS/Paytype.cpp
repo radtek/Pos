@@ -105,6 +105,8 @@ void __fastcall TfrmPaymentType::FormShow(TObject *Sender)
 
 	tbCredit->Visible = (CurrentTransaction.SalesType == eCash) || (TDeviceRealTerminal::Instance().BasePMS->Enabled &&
                         TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney && !CurrentTransaction.WasSavedSales);
+    if(TGlobalSettings::Instance().PMSType == Mews)
+       tbCredit->Visible = true;
     CalculatePatrons(CurrentTransaction);
 	int TotalCount = 0;
 	std::vector <TPatronType> ::iterator ptrPatronTypes = CurrentTransaction.Patrons.begin();
@@ -648,33 +650,7 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
 	if (CurrentTransaction.Membership.Member.ContactKey != 0)
 	{
 		lbeMembership->Visible = true;
-        if((TGlobalSettings::Instance().MembershipType==MembershipTypeThor) && (TGlobalSettings::Instance().IsThorlinkSelected))
-        {
-            if(CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
-            {
-                lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
-                ")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance(pasDatabase) + CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
-            }
-            else
-            {
-                lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "
-                + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance());
-            }
-            if((!IsVoucher) && (!TGlobalSettings::Instance().IsThorPay))
-            {
-               if((!index_Thor))
-               {
-
-               ProcessThorVouchers();
-               TGlobalSettings::Instance().IsThorPay = true;
-               }
-               TGlobalSettings::Instance().IsThorVoucherSelected = false;
-            }
-        }
-        else
-        {
-
-            double points = GetAvailableRedeemPoints(CurrentTransaction);
+        double points = GetAvailableRedeemPoints(CurrentTransaction);
             if(CurrentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
             {
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
@@ -685,7 +661,6 @@ void TfrmPaymentType::ShowPaymentTotals(bool MembersDiscount)
                 lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "+CurrentTransaction.Membership.Member.Surname + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
                 ")" + " Points:" + FormatFloat("0.00", points);
             }
-         }
          memberNumber = CurrentTransaction.Membership.Member.MembershipNumber;
 	}
 	else
@@ -1404,14 +1379,6 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
             // Set the System name in case it has been set by a Voucher Purchase attempt.
             Payment->SysNameOveride = Payment->Name;
         }
-        if (Payment->GetPaymentAttribute(ePayTypePoints))
-        {
-            if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
-            {
-                MessageBox(AnsiString("You cannot refund points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
-                return;
-            }
-        }
         if (Payment->GetPaymentAttribute(ePayTypeCSV))
         {
             if(Payment->GetPaymentAttribute(ePayTypeReservationMasterPay))
@@ -1542,8 +1509,16 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 								RoomNumber = atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								CurrentTransaction.Phoenix.RoomNumber =
 									atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
-							}							
-                            if(TGlobalSettings::Instance().PMSType != SiHot)
+							}
+                            else if(TGlobalSettings::Instance().PMSType == Mews)
+                            {
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                            }
+                            else if(TGlobalSettings::Instance().PMSType != SiHot)
                             {
                                 CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
                                 TabName = frmPhoenixRoom->SelectedRoom.AccountNumber;
@@ -1792,12 +1767,6 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
         if (Payment->GetPaymentAttribute(ePayTypePoints))
         {
-
-            if(TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
-            {
-                MessageBox(AnsiString("You cannot redeem points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
-                return;
-            }
 
             if(TGlobalSettings::Instance().ShowScreenToSelectItemForPoint && !TGlobalSettings::Instance().UseTierLevels &&
                !CurrentTransaction.Membership.Member.Points.PointsRules.Contains(eprNoPointsRedemption))
@@ -2102,6 +2071,14 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 									CurrentTransaction.Phoenix.RoomNumber =
 										atoi(frmPhoenixRoom->roomResult.RoomInquiryItem[frmPhoenixRoom->SelectedRoom.FolderNumber-1].RoomNumber.c_str());
 								}
+                                else if(TGlobalSettings::Instance().PMSType == Mews)
+                                {
+                                    CurrentTransaction.Customer.RoomNumberStr = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                    CurrentTransaction.Phoenix.FirstName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].FirstName;
+                                    CurrentTransaction.Phoenix.LastName =  frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].LastName;
+                                    CurrentTransaction.Phoenix.AccountNumber = frmPhoenixRoom->CustomersMews[frmPhoenixRoom->SelectedRoom.FolderNumber-1].Id;
+                                    TabName = frmPhoenixRoom->SelectedRoom.SiHotRoom;
+                                }
                                 else if(TGlobalSettings::Instance().PMSType != SiHot)
                                 {
                                     CurrentTransaction.Customer.RoomNumber = atoi(frmPhoenixRoom->SelectedRoom.AccountNumber.c_str());
@@ -2800,11 +2777,6 @@ void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 		}
         else if(Payment->GetPaymentAttribute(ePayTypePoints) && Payment->RefundPoints)
 		{
-            if( TGlobalSettings::Instance().IsThorlinkSelected && ThorMemberIsUnregistered())
-            {
-                MessageBox(AnsiString("You cannot refund points for unregistered Thor member.").c_str(), "Error", MB_OK + MB_ICONINFORMATION);
-                return;
-            }
             if(TDeviceRealTerminal::Instance().ManagerMembership->Authorise(CurrentTransaction.Membership.Member, wrkPayAmount) == lsAccepted)
             {
                 double RoundedPoints;
@@ -4163,26 +4135,8 @@ void TfrmPaymentType::ShowWebOrderMembersPayment()
 	if (CurrentTransaction.Membership.Member.ContactKey != 0)
 	{
 		lbeMembership->Visible = true;
-        if((TGlobalSettings::Instance().MembershipType==MembershipTypeThor) && (TGlobalSettings::Instance().IsThorlinkSelected))
-        {
-        lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " "
-        + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance());
-        if((!IsVoucher) && (!TGlobalSettings::Instance().IsThorPay))
-        {
-           if((!index_Thor))
-           {
-
-           ProcessThorVouchers();
-           TGlobalSettings::Instance().IsThorPay = true;
-           }
-           TGlobalSettings::Instance().IsThorVoucherSelected = false;
-        }
-        }
-        else
-        {
-		lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
+        lbeMembership->Caption = CurrentTransaction.Membership.Member.Name + " (" + CurrentTransaction.Membership.Member.MembershipNumber +
 		")" + " Points:" + FormatFloat("0.00", CurrentTransaction.Membership.Member.Points.getPointsBalance());
-        }
         memberNumber = CurrentTransaction.Membership.Member.MembershipNumber;
 	}
 	else
@@ -4276,98 +4230,6 @@ void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction
 	}
 
 }
-// ---------------------------------------------------------------------------
-void TfrmPaymentType::ProcessThorVouchers()
- {
-
-    TMMContactInfo TempUserInfo;
-	TempUserInfo = TDeviceRealTerminal::Instance().User;
-	bool AllowDiscount = false;
-	AnsiString DiscountMenu = "";
-	// Secutriy access changes fix when Implementing full security access levbels.
-	// If not, prompt for a login.
-	if (!AllowDiscount && ManagerDiscount->IsVouchersAvailable())
-	{
-            TempUserInfo.Clear();
-            std::auto_ptr <TContactStaff> Staff(new TContactStaff(CurrentTransaction.DBTransaction));
-            TLoginSuccess Result = Staff->Login(this, CurrentTransaction.DBTransaction, TempUserInfo, CheckDiscountBill);
-
-            if (Result == lsAccepted)
-            {
-                AllowDiscount = true;
-            }
-            else if (Result == lsDenied)
-            {
-                MessageBox("You do not have access rights to Discounts / Surcharges.", "Error", MB_OK + MB_ICONERROR);
-            }
-            else if (Result == lsPINIncorrect)
-            {
-                MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-            }
-	}
-
-	if (AllowDiscount)
-	{
-		TDiscount Discount;
-        TGlobalSettings::Instance().IsThorVoucherSelected = true;
-        ManagerDiscount->ClearThorVouchersDiscounts(CurrentTransaction.Orders);
-		std::auto_ptr <TfrmMessage> frmMessage(TfrmMessage::Create <TfrmMessage> (this, TDeviceRealTerminal::Instance().DBControl));
-		frmMessage->MessageType = eThorDiscountReason;
-        if(ManagerDiscount->IsVouchersAvailable())
-        {
-            if (frmMessage->ShowModal() == mrOk)
-            {
-                IsVoucher=true;
-                if (frmMessage->Key == -1)
-                {
-                    CurrentTransaction.Discounts.clear();
-                    TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityDelete
-                    (TDeviceRealTerminal::Instance().PaymentSystem->Security->SecurityGetType(secDiscountedBy));
-                    ManagerDiscount->ClearThorVouchersDiscounts(CurrentTransaction.Orders);
-                    CurrentTransaction.IgnoreLoyaltyKey = false;
-                    CurrentTransaction.Recalc();
-                    CurrentTransaction.ProcessPoints();
-                    ShowPaymentTotals();
-                }
-                else
-                {
-                    ManagerDiscount->ClearThorVouchersDiscounts(CurrentTransaction.Orders);
-                    TDiscount CurrentDiscount;
-                    CurrentDiscount.DiscountKey = ManagerDiscount->GetDiscountKeyForVoucher(frmMessage->Key);
-                    if(CurrentDiscount.DiscountKey > 0)
-                    {
-                       ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                       ApplyDiscount(CurrentDiscount.DiscountKey, TempUserInfo.ContactKey,dsMMMembership);
-
-                       if(CurrentDiscount.IsComplimentaryDiscount())
-                        {
-                            CurrentTransaction.TypeOfSale = ComplimentarySale;
-                        }
-                        else if(CurrentDiscount.IsNonChargableDiscount())
-                        {
-                            CurrentTransaction.TypeOfSale = NonChargableSale;
-                        }
-                      if(CurrentDiscount.IsNonChargableDiscount() || CurrentDiscount.IsComplimentaryDiscount())
-                        {
-                          if(CheckDiscountPointsPaytype)               //MM-3908
-                          {
-                              CheckDiscountPointsPaytype = false;      //MM-3908
-                          }
-                          else
-                          {
-                            TPayment *Payment = CurrentTransaction.PaymentGet(0);              //MM-3908
-                            BtnPayment(Payment);
-                          }
-                        }
-                    }
-
-
-                 }
-              }
-            }
-       }
-}
-// ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 {
     TGlobalSettings::Instance().IsDiscountSelected = true;
@@ -4436,18 +4298,6 @@ void __fastcall TfrmPaymentType::lbeDiscountClick(TObject *Sender)
 					CurrentTransaction.TypeOfSale = NonChargableSale;
 				}
                 // check if the same discount is present as Thor in order
-                for(int i = 0 ; i < CurrentTransaction.Orders->Count ; i++)
-                {
-                    TItemComplete *ic = (TItemComplete*)CurrentTransaction.Orders->Items[i];
-                    for(int j = 0 ; j < ic->Discounts.size() ; j++)
-                    {
-                         TDiscount DiscountItem = ic->Discounts[j];
-                         if(DiscountItem.DiscountKey == CurrentDiscount.DiscountKey)
-                         {
-                             ManagerDiscount->ClearThorVouchersDiscounts(CurrentTransaction.Orders);
-                         }
-                    }
-                }
 				ApplyDiscount(frmMessage->Key, TempUserInfo.ContactKey);
 				if(CurrentDiscount.IsNonChargableDiscount() || CurrentDiscount.IsComplimentaryDiscount())
 				{
@@ -4537,11 +4387,7 @@ void __fastcall TfrmPaymentType::ApplyDiscount(int DiscountKey, int ContactKey, 
     }
     if(DiscountSource == dsMMMembership)
     {
-       CurrentDiscount.IsThorBill = TGlobalSettings::Instance().MembershipType == MembershipTypeThor && TGlobalSettings::Instance().IsThorlinkSelected;
-       if(CurrentDiscount.IsThorBill)
-       {
-            ManagerDiscount->GetThorlinkDiscount(CurrentTransaction.DBTransaction,CurrentDiscount);
-       }
+       CurrentDiscount.IsThorBill = false;
     }
     CurrentDiscount.Source = DiscountSource;
 	if(CurrentDiscount.Source == dsMMMebersPoints)
@@ -4764,20 +4610,6 @@ void TfrmPaymentType::OnSmartCardRemoved(TSystemEvents *Sender)
 		RemoveMembership();
 		TDeviceRealTerminal::Instance().ManagerMembership->EndMemberTransaction();
 	}
-}
-// ---------------------------------------------------------------------------
-bool TfrmPaymentType::ThorMemberIsUnregistered()
-{
-    bool retValue = false;
-    if(CurrentTransaction.Membership.Member.Name.Length()>11)
-    {
-        UnicodeString MemberName = CurrentTransaction.Membership.Member.Name.SubString(1,10);
-        if(MemberName.UpperCase() == "CARDHOLDER")
-        {
-            retValue = true;
-        }
-    }
-    return retValue;
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::makeLogFile(UnicodeString str)

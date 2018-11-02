@@ -183,25 +183,6 @@ object frmSelectSaveOption: TfrmSelectSaveOption
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbWebOrdersMouseClick
     end
-    object tbClippTabs: TTouchBtn
-      Left = 328
-      Top = 168
-      Width = 145
-      Height = 65
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      ParentColor = True
-      Caption = 'Clipp Tabs'
-      ButtonColor = 6052441
-      LatchedColor = clBtnFace
-      DisabledButtonColor = clBtnFace
-      LatchingProperties = [lkLatchColor, lkStayDown]
-      OnMouseClick = tbClippTabsMouseClick
-    end
   end
   object Panel1: TPanel
     Left = 494

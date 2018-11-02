@@ -143,11 +143,9 @@ class TItemMinorComplete : public TItemMinor
 
     void DiscountsClear();
     void DiscountsClearByFilter(std::vector<TDiscountMode> exemptFilter);
-    void ThorVouchersDiscountsClear();
     void DiscountByTypeRemove(TDiscountSource DiscountSource);
     void DiscountByTypeRemove(TDiscountMode DiscountMode);
     void DiscountByTypeLevelRemove(TDiscountSource DiscountSource);
-    void ThorlinkDiscountByTypeLevelRemove(TDiscountSource DiscountSource);
     void DiscountCredit();
     int DiscountSize();
     bool DiscountApplied(int DiscountKey);

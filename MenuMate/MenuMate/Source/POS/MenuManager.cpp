@@ -549,42 +549,6 @@ void __fastcall TfrmMenuManager::tbtnAddMenuClick(TObject *Sender)
                  {
                     frmSelectDish->SyncSiteMenus();
                  }
-
-				if(TDeviceRealTerminal::Instance().IMManager->Registered)
-				{
-				   std::auto_ptr<TfrmProcessing>(frmProcessing)(TfrmProcessing::Create<TfrmProcessing>(Screen->ActiveForm));
-				   frmProcessing->CanCancel = false;
-				   frmProcessing->Message = "Exporting Products...";
-				   frmProcessing->ShowProgress = false;
-				   frmProcessing->Show();
-
-				   // Update IntaMate.
-				   TPOS_XMLBase POSXML("Product Export");
-				   TDeviceRealTerminal::Instance().Menus->BuildXMLMenu(TDeviceRealTerminal::Instance().DBControl,POSXML,TGlobalSettings::Instance().SiteID);
-				   TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				   POSXML.SaveToFile();
-				   frmProcessing->Close();
-
-				   frmProcessing->CanCancel = false;
-				   frmProcessing->Message = "Exporting Categories and Groups...";
-				   frmProcessing->ShowProgress = false;
-				   frmProcessing->Show();
-
-				   POSXML.Reset("Categories Export");
-				   DBTransaction.StartTransaction();
-				   TDeviceRealTerminal::Instance().Menus->BuildXMLListCategories(DBTransaction,POSXML,TGlobalSettings::Instance().SiteID);
-				   DBTransaction.Commit();
-				   TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				   POSXML.SaveToFile();
-
-				   POSXML.Reset("List Category Groups Export");
-				   DBTransaction.StartTransaction();
-				   TDeviceRealTerminal::Instance().Menus->BuildXMLListGroup(DBTransaction,POSXML,TGlobalSettings::Instance().SiteID);
-				   DBTransaction.Commit();
-				   TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-				   POSXML.SaveToFile();
-				   frmProcessing->Close();
-				}
 			}
 		}
 	}

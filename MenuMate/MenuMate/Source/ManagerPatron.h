@@ -2,17 +2,13 @@
 
 #ifndef ManagerPatronH
 #define ManagerPatronH
-
-
 #include <Grids.hpp>
 #include <system.hpp>
 #include <IBDatabase.hpp>
 #include <IBQuery.hpp>
 #include <memory>
 #include <vector>
-
 #include "MM_DBCore.h"
-#include "POS_XMLBase.h"
 #include "PatronType.h"
 //---------------------------------------------------------------------------
 
@@ -36,7 +32,6 @@ class TManagerPatron
 	int GetTotalPatrons(std::vector<TPatronType> &PatronTypes);	
 	void Delete(Database::TDBTransaction &DBTransaction,int Key);
 	void ClearDefault(Database::TDBTransaction &DBTransaction);
-   void BuildXMLListPatronCounts(Database::TDBTransaction &DBTransaction,TPOS_XMLBase &Data);
 };
 
 #endif

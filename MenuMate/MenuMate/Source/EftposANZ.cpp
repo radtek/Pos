@@ -158,6 +158,7 @@ void __fastcall TEftPosANZ::TransactionEvent(TObject *Sender)
 			{
 				EftTrans->SuppressReceipt = true;
 			}
+            EftTrans->CardType = OcxEftPos->CardType;
 		}
 		else
 		{
@@ -193,6 +194,7 @@ void __fastcall TEftPosANZ::GetLastTransactionEvent(TObject *Sender)
 					EftTrans->SuppressReceipt = true;
 				}
 			}
+            EftTrans->CardType = OcxEftPos->CardType;
 			EftTrans->EventCompleted = true;
 		}
 		else
