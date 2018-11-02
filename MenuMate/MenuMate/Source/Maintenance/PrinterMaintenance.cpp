@@ -4208,12 +4208,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
-               Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
-			   Instruction->GroupNo = 1;
-			   Instruction->DrawLineAbove = true;
-			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
-
-
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
@@ -4327,12 +4321,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
                Instruction = new TPSectionInstruction(epofiPrintSignatureSection);
-			   Instruction->GroupNo = 1;
-			   Instruction->DrawLineAbove = true;
-			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
-
-
-               Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
 			   Instruction->GroupNo = 1;
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
@@ -4461,10 +4449,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptTemplatesMouseClick(TObject *
 			   Instruction->DrawLineAbove = true;
 			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 
-                Instruction = new TPSectionInstruction(epofiPrinttipAndSignatureSection);
-			   Instruction->GroupNo = 1;
-			   Instruction->DrawLineAbove = true;
-			   lbReceiptPrintConfig->Items->AddObject(Instruction->Caption, (TObject*)Instruction);
 			   ReceiptTemplateModified = true;
 			   DrawReceiptDocket();
 			}break;
