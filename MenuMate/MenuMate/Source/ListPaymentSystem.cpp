@@ -3671,7 +3671,8 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
 																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
             || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
-                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
+                TGlobalSettings::Instance().PrintSignatureWithRoomSales &&
+                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))))
         {
             PrintReceipt(RequestEFTPOSReceipt);
             logList->Add("Print to normal receipt printer has been sent.");
@@ -3710,24 +3711,28 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
     }
     else
     {
+        bool duplicateReceipt = false;
+        if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+            duplicateReceipt = IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeIntegratedEFTPOS);
+
         if (PaymentTransaction.Type == eTransQuickSale)
         {
             if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
             {
-                PrintReceipt(RequestEFTPOSReceipt);
+                PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
         }
         else
         {
             if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
             {
-                PrintReceipt(RequestEFTPOSReceipt);
+                PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
             else
             {
                 if (CloseAndPrint || IsRoomReceiptSettingEnable())
                 {
-                    PrintReceipt(RequestEFTPOSReceipt);
+                    PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
                 }
                 else
                 {
@@ -6603,7 +6608,7 @@ void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
     }
 }
 //------------------------------------------------------------------------------------------
-void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
+void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt)
 {
     if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
     {
@@ -6619,7 +6624,7 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         TGlobalSettings::Instance().PrintCardHolderReceipt )
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
-      if((TGlobalSettings::Instance().DuplicateReceipts || TGlobalSettings::Instance().EnableEftPosPreAuthorisation) ||
+      if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||
         (TGlobalSettings::Instance().PrintSignatureReceiptsTwice && TGlobalSettings::Instance().AutoPrintRoomReceipts
       && TDeviceRealTerminal::Instance().BasePMS->Enabled) )
       {
@@ -6692,18 +6697,13 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
-bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
+bool TListPaymentSystem::IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex)
 {
     bool retVal = false;
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
-		{
-            retVal = true;
-            break;
-        }
-        else if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
+        if(payment->GetPaymentAttribute(attributeIndex) && payment->GetPayTendered() != 0)
 		{
             retVal = true;
             break;

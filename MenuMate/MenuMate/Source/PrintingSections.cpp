@@ -9344,11 +9344,10 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
 void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
 {
     if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature &&
-            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS) && PrintJob->PaymentType != ptPreliminary)
+            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS) )
     {
-        pPrinter->NewLine();
         pPrinter->Line->ColCount = 1;
-        pPrinter->Line->Columns[0]->Width = pPrinter->Width / 2;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Text  = "Tip :__________________________________________________";
         pPrinter->AddLine();

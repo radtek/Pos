@@ -218,13 +218,13 @@ protected:
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
-     void PrintReceipt(bool RequestEFTPOSReceipt);
+     void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
      char* Formatdateseparator( UnicodeString date) ;
 
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
-     bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
+     bool IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);
