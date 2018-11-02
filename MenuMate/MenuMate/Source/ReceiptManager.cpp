@@ -1030,7 +1030,7 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                 AnsiString proptoSearch = IntToStr(ePayTypeAllowTips) + ",";
 
                 if((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()) ||
-                    (TStringTools::Instance()->HasAllProperties(properties,proptoSearch)))
+                    (TStringTools::Instance()->HasAllProperties(properties,proptoSearch) && !TGlobalSettings::Instance().EnableEftPosAdyen))
                     retVal = true;
              }
 
