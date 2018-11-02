@@ -1027,10 +1027,19 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                 outOriginalVisaPaymentAmount = IBInternalQuery->Fields[1]->AsDouble;
                 outArcbillKey = Array[ArrayIndex].second;
                 AnsiString properties = IBInternalQuery->Fields[4]->AsString;
-                AnsiString proptoSearch = IntToStr(ePayTypeAllowTips) + ",";
+                AnsiString proptoSearch = "";
+                if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                {
+                    proptoSearch = IntToStr(ePayTypeIntegratedEFTPOS) + ",";
+                }
+                else
+                {
+                    proptoSearch = IntToStr(ePayTypeAllowTips) + ",";
+                }
 
-                if((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()) ||
-                    (TStringTools::Instance()->HasAllProperties(properties,proptoSearch) && !TGlobalSettings::Instance().EnableEftPosAdyen))
+
+                if(((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions())
+                        || !TGlobalSettings::Instance().EnableEftPosAdyen )&& (TStringTools::Instance()->HasAllProperties(properties,proptoSearch)))
                     retVal = true;
              }
 
