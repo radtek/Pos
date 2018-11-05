@@ -336,6 +336,8 @@ __published:	// IDE-managed Components
         TCheckBox *cbCompanyDetailOnReprintReceipt;
         TCheckBox *cbIntegratedEftposPaymentSense;
         TCheckBox *cbRestartService;
+        TCheckBox *cbIntegratedEftposPreAuthorisaton;
+        TCheckBox *cbIntegratedAuthorisationOnCards;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -578,6 +580,8 @@ __published:	// IDE-managed Components
         void __fastcall cbCompanyDetailOnReprintReceiptClick(TObject *Sender);
         void __fastcall cbIntegratedEftposPaymentSenseClick(TObject *Sender);
         void __fastcall cbRestartServiceAtZedClick(TObject *Sender);
+        void __fastcall cbPreAuthorisatonClick(TObject *Sender);
+         void __fastcall cbIntegratedAuthorisationOnCardsClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

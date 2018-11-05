@@ -11,119 +11,186 @@ using WalletPayments.Controller.Interface;
 using WalletPayments.Model;
 using WalletPaymets.Model;
 using System.IO;
+using System.Diagnostics;
+using System.Threading;
 
 namespace WalletPayments.Controller.Impl
 {
     public class WeChatWalletController : IWalletController
     {
+        private bool _waitflag;
+        private List<string> logsList;
+        public WeChatWalletController()
+        {
+            logsList = new List<string>();
+            _waitflag = false;
+        }
         public WalletResponse Login(WalletAccountInfo inWalletAccountInfo)
         {
+            logsList.Add("Inside Login at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
             var walletResponse = new WalletResponse();
-            var requestUrl = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "account", "login"));
-            var timestamp = ConvertDateTimeInt(DateTime.Now);
-            string crypt = string.Empty;
-            if (inWalletAccountInfo.Password.Length > 30)
+            try
             {
-                crypt = "sha1";
-            }
-            var hash = Base64Encode(JsonConvert.SerializeObject(new
-            {
-                username = inWalletAccountInfo.UserName,
-                password = inWalletAccountInfo.Password,
-                time = timestamp,
-                crypt = crypt
-            }));
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("hashinfo", hash);
-            parameters.Add("pnzuid", Base64Encode(inWalletAccountInfo.UserName));
-            parameters.Add("ts", timestamp.ToString());
-            string sign = MakeSign(parameters, inWalletAccountInfo.SignKey);
-            parameters.Add("sign", sign);
-            string postData = GetPostDate(parameters);
-            string response = PostResponse(requestUrl, postData);
-
-            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
-            if (jo["errno"] != null)
-            {
-                if (int.Parse(jo["errno"].ToString()) == 0)
+                var requestUrl = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "account", "login"));
+                logsList.Add("Request Url is                      " + requestUrl);
+                var timestamp = ConvertDateTimeInt(DateTime.Now);
+                string crypt = string.Empty;
+                if (inWalletAccountInfo.Password.Length > 30)
                 {
-                    var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
-                    if (info != null)
+                    crypt = "sha1";
+                }
+                var hash = Base64Encode(JsonConvert.SerializeObject(new
+                {
+                    username = inWalletAccountInfo.UserName,
+                    password = inWalletAccountInfo.Password,
+                    time = timestamp,
+                    crypt = crypt
+                }));
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("hashinfo", hash);
+                parameters.Add("pnzuid", Base64Encode(inWalletAccountInfo.UserName));
+                parameters.Add("ts", timestamp.ToString());
+                string sign = MakeSign(parameters, inWalletAccountInfo.SignKey);
+                parameters.Add("sign", sign);
+                string postData = GetPostDate(parameters);
+                logsList.Add("Data to be posted                   " + postData);
+                string response = PostResponse(requestUrl, postData);
+                logsList.Add("Response is                         " + response);
+                logsList.Add("Returned at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+                if (jo["errno"] != null)
+                {
+                    if (int.Parse(jo["errno"].ToString()) == 0)
                     {
-                        var acoountInformation = new AccountInformation();
-                        acoountInformation.UserId = int.Parse(info["uid"].ToString());
-                        acoountInformation.UserName = inWalletAccountInfo.UserName;
-                        acoountInformation.Password = inWalletAccountInfo.Password;
-                        acoountInformation.ShopId = int.Parse(info["shopid"].ToString());
-                        acoountInformation.ShopName = info["shopname"].ToString();
-                        acoountInformation.Token = info["token"].ToString();
-                        acoountInformation.ExpiresIn = GetTimeStamp() + int.Parse(info["expires_in"].ToString());
-                        acoountInformation.RefreshToken = info["refresh_token"].ToString();
-                        acoountInformation.CompanyId = int.Parse(info["companyid"].ToString());
-                        acoountInformation.MerchantName = acoountInformation.CompanyName = info["cname"].ToString();
-                        acoountInformation.MerchentId = int.Parse(info["mid"].ToString());
-                        acoountInformation.AccountId = int.Parse(info["acid"].ToString());
-                        acoountInformation.IsRefunds = int.Parse(info["is_refunds"].ToString());
-                        acoountInformation.SignKey = inWalletAccountInfo.SignKey;
-                        SaveAccountInfo(acoountInformation);
-                        walletResponse.ResponseSuccessful = true;
+                        var info = (JObject)JsonConvert.DeserializeObject(jo["results"].ToString());
+                        if (info != null)
+                        {
+                            var acoountInformation = new AccountInformation();
+                            acoountInformation.UserId = int.Parse(info["uid"].ToString());
+                            acoountInformation.UserName = inWalletAccountInfo.UserName;
+                            acoountInformation.Password = inWalletAccountInfo.Password;
+                            acoountInformation.ShopId = int.Parse(info["shopid"].ToString());
+                            acoountInformation.ShopName = info["shopname"].ToString();
+                            acoountInformation.Token = info["token"].ToString();
+                            acoountInformation.ExpiresIn = GetTimeStamp() + int.Parse(info["expires_in"].ToString());
+                            acoountInformation.RefreshToken = info["refresh_token"].ToString();
+                            acoountInformation.CompanyId = int.Parse(info["companyid"].ToString());
+                            acoountInformation.MerchantName = acoountInformation.CompanyName = info["cname"].ToString();
+                            acoountInformation.MerchentId = int.Parse(info["mid"].ToString());
+                            acoountInformation.AccountId = int.Parse(info["acid"].ToString());
+                            acoountInformation.IsRefunds = int.Parse(info["is_refunds"].ToString());
+                            acoountInformation.SignKey = inWalletAccountInfo.SignKey;
+                            SaveAccountInfo(acoountInformation);
+                            walletResponse.ResponseSuccessful = true;
+                            logsList.Add("Response is                         " + "Successful");
+                            logsList.Add("Response received at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        }
                     }
-                }
-                else
-                {
-                    walletResponse.ResponseSuccessful = false;
-                    walletResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                }
+                    else
+                    {
+                        walletResponse.ResponseSuccessful = false;
+                        walletResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
+                        logsList.Add("Response is                         " + walletResponse.ResponseMessage);
+                        logsList.Add("Response received at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    }
 
+                }
+                WriteToFile();
+            }
+            catch (Exception ex)
+            {
+                logsList.Add("Exception is                        " + ex.Message);
+                logsList.Add("Exception received at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                WriteToFile();
+                throw;
             }
             return walletResponse; ;
         }
 
         public WalletResponse DoPurchaseTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
+            logsList.Add("Inside DoPurchaseTransaction at     " + DateTime.Now.ToString("hh:mm:ss tt"));
             var walletResponse = new WalletResponse();
-            CheckToken(inWalletTransactionInfo);
-            var accountInfo = LoadAccountInfo();
-            string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "quick_pay"));
-            var timestamp = ConvertDateTimeInt(DateTime.Now);
-            var hash = Base64Encode(JsonConvert.SerializeObject(new
+            try
             {
-                mid = accountInfo.MerchentId,
-                uniacid = accountInfo.AccountId,
-                companyid = accountInfo.CompanyId,
-                store_id = accountInfo.ShopId,
-                user_id = accountInfo.UserId,
-                tname = accountInfo.ShopName,
-                tprice = inWalletTransactionInfo.Amount,
-                auth_code = inWalletTransactionInfo.ScannedCode,
-                platform = accountInfo.Platform
-            }));
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("hashinfo", hash);
-            parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
-            parameters.Add("ts", timestamp.ToString());
-            parameters.Add("access_token", Base64Encode(accountInfo.Token));
-            string sign = MakeSign(parameters, accountInfo.SignKey);
-            parameters.Add("sign", sign);
-            string postData = GetPostDate(parameters);
-            string response = PostResponse(url, postData);
-            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+                CheckToken(inWalletTransactionInfo);
+                var accountInfo = LoadAccountInfo();
+                string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "quick_pay"));
+                var timestamp = ConvertDateTimeInt(DateTime.Now);
+                var hash = Base64Encode(JsonConvert.SerializeObject(new
+                {
+                    mid = accountInfo.MerchentId,
+                    uniacid = accountInfo.AccountId,
+                    companyid = accountInfo.CompanyId,
+                    store_id = accountInfo.ShopId,
+                    user_id = accountInfo.UserId,
+                    tname = accountInfo.ShopName,
+                    tprice = inWalletTransactionInfo.Amount,
+                    auth_code = inWalletTransactionInfo.ScannedCode,
+                    platform = accountInfo.Platform
+                }));
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("hashinfo", hash);
+                parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
+                parameters.Add("ts", timestamp.ToString());
+                parameters.Add("access_token", Base64Encode(accountInfo.Token));
+                string sign = MakeSign(parameters, accountInfo.SignKey);
+                parameters.Add("sign", sign);
+                string postData = GetPostDate(parameters);
+                logsList.Add("Data to be posted                   " + postData);
+                string response = PostResponse(url, postData);
+                logsList.Add("Response is                         " + response);
+                logsList.Add("Returned at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                JObject jo = (JObject)JsonConvert.DeserializeObject(response);
 
-            if (jo["errno"] != null)
+                if (jo["errno"] != null)
+                {
+                    if (int.Parse(jo["errno"].ToString()) == 0)
+                    {
+                        walletResponse.ResponseSuccessful = true;
+                        var results = jo["results"].ToString();
+                        var info = (JObject)JsonConvert.DeserializeObject(results);
+                        walletResponse.OrderId = info["order_no"].ToString();
+                        logsList.Add("Response is                         " + "Successful");
+                        logsList.Add("Response received at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    }
+                    else if (int.Parse(jo["errno"].ToString()) == 3005)
+                    {
+                        logsList.Add("Need to Wait and keep Polling");
+                        JObject joResult = WaitForResponse(jo["results"].ToString());
+                        if (joResult["errno"] != null && int.Parse(joResult["errno"].ToString()) == 0)
+                        {
+                            var results = joResult["results"].ToString();
+                            var info = (JObject)JsonConvert.DeserializeObject(results);
+                            walletResponse.OrderId = info["order_no"].ToString();
+                            logsList.Add("Response is                         " + "Successful after Polling");
+                        }
+                        else
+                        {
+                            if (joResult["errno"] != null && joResult["message"] != null)
+                                walletResponse.ResponseMessage = "Errcode: " + joResult["errno"].ToString() + " " + joResult["message"].ToString();
+                            else
+                                walletResponse.ResponseMessage = "No Response received from WeChat";
+                            walletResponse.ResponseSuccessful = false;
+                            logsList.Add("Response is                         " + walletResponse.ResponseMessage + " after Polling");
+                        }
+                    }
+                    else
+                    {
+                        //
+                        walletResponse.ResponseSuccessful = false;
+                        walletResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
+                        logsList.Add("Response is                         " + walletResponse.ResponseMessage);
+                    }
+                }
+                WriteToFile();
+            }
+            catch (Exception ex)
             {
-                if (int.Parse(jo["errno"].ToString()) == 0)
-                {
-                    walletResponse.ResponseSuccessful = true;
-                    var results = jo["results"].ToString();
-                    var info = (JObject)JsonConvert.DeserializeObject(results);
-                    walletResponse.OrderId = info["order_no"].ToString();
-                }
-                else
-                {
-                    walletResponse.ResponseSuccessful = false;
-                    walletResponse.ResponseMessage = "Errcode: " + jo["errno"].ToString() + " " + jo["message"].ToString();
-                }
-
+                logsList.Add("Exception is                        " + ex.Message);
+                logsList.Add("Exception received at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                WriteToFile();
+                throw;
             }
             return walletResponse;
         }
@@ -131,51 +198,66 @@ namespace WalletPayments.Controller.Impl
         public WalletResponse DoRefundTransaction(WalletTransactionInfo inWalletTransactionInfo)
         {
             var walletResponse = new WalletResponse();
-            CheckToken(inWalletTransactionInfo);
-            var accountInfo = LoadAccountInfo();
-            string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "apply_refund"));
-            var timestamp = ConvertDateTimeInt(DateTime.Now);
-            var hash = Base64Encode(JsonConvert.SerializeObject(new
+            logsList.Add("Inside DoRefundTransaction at       " + DateTime.Now.ToString("hh:mm:ss tt"));
+            try
             {
-                mid = accountInfo.MerchentId,
-                order_id = inWalletTransactionInfo.OrderRefernce,
-                refund_fee = inWalletTransactionInfo.RefundFee,
-                companyid = accountInfo.CompanyId,
-                user_id = accountInfo.UserId,
-                platform = accountInfo.Platform,
-                ts = timestamp
-            }));
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
-            parameters.Add("hashinfo", hash);
-            parameters.Add("access_token", Base64Encode(accountInfo.Token));
-            parameters.Add("ts", timestamp.ToString());
-            string sign = MakeSign(parameters, accountInfo.SignKey);
-            parameters.Add("sign", sign);
-            string postData = GetPostDate(parameters);
-            string response = PostResponse(url, postData);
-            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
-
-            if (jo["errno"] != null)
+                CheckToken(inWalletTransactionInfo);
+                var accountInfo = LoadAccountInfo();
+                string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "apply_refund"));
+                var timestamp = ConvertDateTimeInt(DateTime.Now);
+                var hash = Base64Encode(JsonConvert.SerializeObject(new
+                {
+                    mid = accountInfo.MerchentId,
+                    order_id = inWalletTransactionInfo.OrderRefernce,
+                    refund_fee = inWalletTransactionInfo.RefundFee,
+                    companyid = accountInfo.CompanyId,
+                    user_id = accountInfo.UserId,
+                    platform = accountInfo.Platform,
+                    ts = timestamp
+                }));
+                IDictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
+                parameters.Add("hashinfo", hash);
+                parameters.Add("access_token", Base64Encode(accountInfo.Token));
+                parameters.Add("ts", timestamp.ToString());
+                string sign = MakeSign(parameters, accountInfo.SignKey);
+                parameters.Add("sign", sign);
+                string postData = GetPostDate(parameters);
+                logsList.Add("Data to be posted                   " + postData);
+                string response = PostResponse(url, postData);
+                JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+                logsList.Add("Response is                         " + response);
+                logsList.Add("Returned at                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                if (jo["errno"] != null)
+                {
+                    if (int.Parse(jo["errno"].ToString()) == 0)
+                    {
+                        walletResponse.ResponseSuccessful = true;
+                        var results = jo["results"].ToString();
+                        var info = (JObject)JsonConvert.DeserializeObject(results);
+                        walletResponse.RefundTransactionId = info["transaction_id"].ToString();
+                        walletResponse.OrderNo = info["order_no"].ToString();
+                        walletResponse.RefundFee = info["refund_fee"].ToString();
+                        walletResponse.ApplyTime = info["apply_time"].ToString();
+                        walletResponse.OutRefundNo = info["out_refund_no"].ToString();
+                        walletResponse.RefundStatus = info["status"].ToString();
+                        logsList.Add("Response is                         " + "Successful");
+                    }
+                    else
+                    {
+                        walletResponse.ResponseSuccessful = false;
+                        walletResponse.ResponseMessage = jo["message"].ToString();
+                        logsList.Add("Response is                         " + walletResponse.ResponseMessage);
+                    }
+                }
+                WriteToFile();
+            }
+            catch (Exception ex)
             {
-                if (int.Parse(jo["errno"].ToString()) == 0)
-                {
-                    walletResponse.ResponseSuccessful = true;
-                    var results = jo["results"].ToString();
-                    var info = (JObject)JsonConvert.DeserializeObject(results);
-                    walletResponse.RefundTransactionId = info["transaction_id"].ToString();
-                    walletResponse.OrderNo = info["order_no"].ToString();
-                    walletResponse.RefundFee = info["refund_fee"].ToString();
-                    walletResponse.ApplyTime = info["apply_time"].ToString();
-                    walletResponse.OutRefundNo = info["out_refund_no"].ToString();
-                    walletResponse.RefundStatus = info["status"].ToString();
-                }
-                else
-                {
-                    walletResponse.ResponseSuccessful = false;
-                    walletResponse.ResponseMessage = jo["message"].ToString();
-                }
-
+                logsList.Add("Exception is                        " + ex.Message);
+                logsList.Add("Exception received at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                WriteToFile();
+                throw;
             }
             return walletResponse;
         }
@@ -336,6 +418,144 @@ namespace WalletPayments.Controller.Impl
                 }
                 return null;
             }
+        }
+
+        private void Reset()
+        {
+            _waitflag = true;
+        }
+
+        private JObject WaitForResponse(string ord_no)
+        {
+            JObject joResult = new JObject();
+            logsList.Add("Going for Polling at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+            try
+            {
+                Reset();
+                Stopwatch watch = new Stopwatch();
+                watch.Reset();
+                watch.Start();
+                int i = 1;
+                while (_waitflag)
+                {
+                    Thread.Sleep(1000);
+                    joResult = QueryOrder(ord_no);
+                    if (joResult["errno"] != null && int.Parse(joResult["errno"].ToString()) == 0)
+                    {
+                        _waitflag = false;
+                        logsList.Add("Response received at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        logsList.Add("Response received after count       " + i);
+                        break;
+                    }
+                    if (joResult["errno"] != null && int.Parse(joResult["errno"].ToString()) != 3005)
+                    {
+                        _waitflag = false;
+                        logsList.Add("Response received at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        logsList.Add("Response received after count       " + i);
+                    }
+                    else if(watch.Elapsed.TotalMinutes > 1.00)
+                    {
+                        _waitflag = false;
+                        logsList.Add("Timed out                           " + "after 1 minute");
+                        logsList.Add("Response received after count       " + i);
+                    }
+                    i++;
+                }
+                WriteToFile();
+            }
+            catch (Exception ex)
+            {
+                logsList.Add("Exception is                        " + ex.Message);
+                logsList.Add("Exception received at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                WriteToFile();
+                throw;
+            }
+            return joResult;
+        }
+
+        public JObject QueryOrder(string ord_no)
+        {
+            var accountInfo = LoadAccountInfo();
+            string url = ApiUrl(string.Format("?c={0}&a={1}&do={2}", "cashier", "payment", "query_order"));
+            var timestamp = ConvertDateTimeInt(DateTime.Now);
+            var hash = Base64Encode(JsonConvert.SerializeObject(new
+            {
+                mid = accountInfo.MerchentId,
+                user_id = accountInfo.UserId,
+                ut_trade_no = ord_no
+            }));
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("hashinfo", hash);
+            parameters.Add("pnzuid", Base64Encode(accountInfo.UserName));
+            parameters.Add("ts", timestamp.ToString());
+            parameters.Add("access_token", Base64Encode(accountInfo.Token));
+            string sign = MakeSign(parameters, accountInfo.SignKey);
+            parameters.Add("sign", sign);
+            string postData = GetPostDate(parameters);
+            string response = PostResponse(url, postData);
+            JObject jo = (JObject)JsonConvert.DeserializeObject(response);
+            return jo;
+        }
+
+        private void WriteToFile()
+        {
+            try
+            {
+                logsList.Add("=================================================================================");
+                string path = System.IO.Path.GetDirectoryName(
+                          System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+                string location = path;
+                //Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                location = Path.Combine(location, "WeChat Post Logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string name2 = "WeChatPosts " + DateTime.Now.ToString("ddMMMyyyy") + ".txt";
+                string fileName = Path.Combine(location, name2);
+
+                if (fileName.Contains(@"file:\"))
+                {
+                    fileName = fileName.Replace(@"file:\", "");
+                }
+                if (!File.Exists(fileName))
+                {
+
+                    using (StreamWriter sw = File.CreateText(fileName))
+                    {
+                        for (int i = 0; i < logsList.Count; i++)
+                        {
+                            sw.WriteLine(logsList[i]);
+                        }
+                    }
+                }
+                else
+                {
+                    using (var sw = File.AppendText(fileName))
+                    {
+                        for (int i = 0; i < logsList.Count; i++)
+                        {
+                            sw.WriteLine(logsList[i]);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //ServiceLogger.Log("Exception in Making File" + ex.Message);
+            }
+            logsList.Clear();
         }
         #endregion
     }

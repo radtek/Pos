@@ -74,6 +74,7 @@
 #include "ManagerPMSCodes.h"
 #include "SaveLogs.h"
 #include "ManagerMews.h"
+#include "DBAdyen.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -1377,6 +1378,8 @@ void TListPaymentSystem::TransRetriveElectronicResult(TPaymentTransaction &Payme
                                 AnsiString cardtype = EftTrans->CardType;
 								Payment->CardType = TStringTools::Instance()->UpperCaseWithNoSpace(cardtype); // set the card type returned from eftpos transaction for future reference (tips)
 								Payment->EftposTransactionID = EftTrans->EftposTransactionID; // eftpos transaction id
+                                Payment->MerchantAccount = EftTrans->MerchantAccount;
+
                                 if(EftTrans->FinalAmount != "")
                                 {
                                    Currency FinalAmount = StrToCurr(EftTrans->FinalAmount);
@@ -2456,6 +2459,38 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 				IBInternalQuery->ExecQuery();
 			}
 		}
+
+        if(TGlobalSettings::Instance().EnableEftPosAdyen)
+        {
+            for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
+            {
+                TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
+                if(SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+                {
+                    if(SubPayment->GetPayTendered() != 0)
+                    {
+                        IBInternalQuery2->Close();
+                        IBInternalQuery2->SQL->Text = "SELECT GEN_ID(GEN_EFTPOSREFERENCE_ID, 1) FROM RDB$DATABASE";
+                        IBInternalQuery2->ExecQuery();
+                        int eftposreferenceId = IBInternalQuery2->Fields[0]->AsInteger;
+
+                        IBInternalQuery->Close();
+                        IBInternalQuery->SQL->Text =
+                        "INSERT INTO EFTPOSREFRENECE (EFTPOSREFRENCE_ID, INVOICE_NO, PSPREFERENCE, MM_PSPREFERENCE, UPDATED_REFERENCE, IS_SETTLED, MERCHANT_ID) "
+                        "VALUES (:EFTPOSREFRENCE_ID, :INVOICE_NO, :PSPREFERENCE, :MM_PSPREFERENCE, :UPDATED_REFERENCE, :IS_SETTLED, :MERCHANT_ID) ";
+
+                        IBInternalQuery->ParamByName("EFTPOSREFRENCE_ID")->AsInteger = eftposreferenceId;
+                        IBInternalQuery->ParamByName("INVOICE_NO")->AsString = PaymentTransaction.InvoiceNumber;;
+                        IBInternalQuery->ParamByName("PSPREFERENCE")->AsString = SubPayment->EftposTransactionID;
+                        IBInternalQuery->ParamByName("MM_PSPREFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("UPDATED_REFERENCE")->AsString = "";
+                        IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
+                        IBInternalQuery->ParamByName("MERCHANT_ID")->AsString = SubPayment->MerchantAccount;
+                        IBInternalQuery->ExecQuery();
+                    }
+                }
+            }
+        }
 
 	}
 	catch(Exception & E)
@@ -3636,7 +3671,8 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
 																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
             || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
-                        TGlobalSettings::Instance().PrintSignatureWithRoomSales && IsRoomOrRMSPayment(PaymentTransaction)))
+                TGlobalSettings::Instance().PrintSignatureWithRoomSales &&
+                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))))
         {
             PrintReceipt(RequestEFTPOSReceipt);
             logList->Add("Print to normal receipt printer has been sent.");
@@ -3675,24 +3711,28 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
     }
     else
     {
+        bool duplicateReceipt = false;
+        if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+            duplicateReceipt = IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeIntegratedEFTPOS);
+
         if (PaymentTransaction.Type == eTransQuickSale)
         {
             if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
             {
-                PrintReceipt(RequestEFTPOSReceipt);
+                PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
         }
         else
         {
             if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
             {
-                PrintReceipt(RequestEFTPOSReceipt);
+                PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
             else
             {
                 if (CloseAndPrint || IsRoomReceiptSettingEnable())
                 {
-                    PrintReceipt(RequestEFTPOSReceipt);
+                    PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
                 }
                 else
                 {
@@ -4062,16 +4102,23 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
 {
     bool paymentComplete = true;
     TWalletPaymentsInterface* WalletPaymentsInterface = new TWalletPaymentsInterface();
+    AnsiString oldMessage = State.Message;
+    bool changeMessage = false;
 	for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *Payment = PaymentTransaction.PaymentGet(i);
 		if (Payment->GetPaymentAttribute(ePayTypeWallet) && Payment->GetPay() != 0 && Payment->Result != eAccepted)
 		{
+           TDeviceRealTerminal::Instance().ProcessingController.Pop();
+           State.Message = "Waiting for Wallet Payment to approve....";
+           TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+           changeMessage = true;
            TWalletTransactionResponse response = WalletPaymentsInterface->DoTransaction(*Payment);
            if(!response.IsSuccessful)
            {
               MessageBox(response.ResponseMessage, "Error", MB_OK + MB_ICONINFORMATION);
               paymentComplete = false;
+              ResetPayments(PaymentTransaction);
               break;
            }
            else
@@ -4080,6 +4127,12 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
            }
 		}
 	}
+    if(changeMessage)
+    {
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        State.Message = oldMessage;
+        TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
+    }
     delete WalletPaymentsInterface;
     return paymentComplete;
 }
@@ -4721,39 +4774,65 @@ bool TListPaymentSystem::ProcessTipOnVisaTransaction(int arcBillKey, WideString 
 {
 	bool retVal = false;
 
-	if (EftPos->Enabled)
+    try
+    {
+        if (EftPos->Enabled)
+        {
+            eEFTTransactionType TransType = TransactionType_TIP;
+            EftPos->SetTransactionEvent(paymentRefNumber,TransType );
+
+            // TODO: set the recovery information
+
+            if(TGlobalSettings::Instance().EnableEftPosAdyen)
+            {
+                UnicodeString InvoiceNumber = TDBAdyen::GetInvoiceNumber(arcBillKey);
+                UnicodeString MerchantAccount = TDBAdyen::GetMerchantAccount(InvoiceNumber);
+                retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, MerchantAccount);
+
+                if(retVal)
+                {
+                    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                    DBTransaction.StartTransaction();
+                    InsertOrUpdateTipTransactionRecordToDB(DBTransaction, arcBillKey,tipAmount, paymentRefNumber);
+                    TDBAdyen::UpdateEFTPOSSettleField(DBTransaction, InvoiceNumber);
+                    DBTransaction.Commit();
+                }
+            }
+            else
+            {
+                EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
+                if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
+                {
+                    TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
+                    if (EftTrans != NULL && EftTrans->Result == eAccepted)
+                    {
+                        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                        DBTransaction.StartTransaction();
+                        InsertOrUpdateTipTransactionRecordToDB(DBTransaction, arcBillKey,tipAmount, paymentRefNumber);
+                        DBTransaction.Commit();
+                        retVal = true;
+                    }
+                }
+            }
+
+            // TODO: clear recovery information
+        }
+    }
+    catch(Exception &err)
 	{
-		eEFTTransactionType TransType = TransactionType_TIP;
-		EftPos->SetTransactionEvent(paymentRefNumber,TransType );
-
-		// TODO: set the recovery information
-
-		EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, "");
-
-		if (EftPos->WaitOnEftPosEvent(paymentRefNumber))
-		{
-			TEftPosTransaction *EftTrans = EftPos->GetTransactionEvent(paymentRefNumber);
-			if (EftTrans != NULL && EftTrans->Result == eAccepted)
-			{
-				InsertOrUpdateTipTransactionRecordToDB(arcBillKey,tipAmount, paymentRefNumber);
-				retVal = true;
-			}
-		}
-
-		// TODO: clear recovery information
-	}
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = false;
+    }
 
 	return retVal;
 }
 
 // adds a record to database for tip transaction, this can be used in reports
-void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, Currency tipAmount, WideString originalPaymentRef)
+void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTransaction &DBTransaction, int arcBillKey, Currency tipAmount,
+                                                        WideString originalPaymentRef)
 {
 	try
 	{
-		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-		DBTransaction.StartTransaction();
-
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 		IBInternalQuery->Close();
 
@@ -4787,18 +4866,18 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, 
 			IBInternalQuery->ParamByName("CASH_OUT")->AsString = "F";
 			IBInternalQuery->ParamByName("TAX_FREE")->AsString = "T";
 			IBInternalQuery->ParamByName("NOTE")->AsString = "";
-			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = 0;
+			IBInternalQuery->ParamByName("PROPERTIES")->AsInteger = ePayTypeCustomSurcharge;
 			IBInternalQuery->ParamByName("GROUP_NUMBER")->AsInteger = 0;
 			IBInternalQuery->ParamByName("PAY_TYPE_DETAILS")->AsString = originalPaymentRef;
 			IBInternalQuery->ParamByName("PAYMENT_CARD_TYPE")->AsString = "";
 			IBInternalQuery->ExecQuery();
 		}
-		DBTransaction.Commit();
 	}
 	catch(Exception &err)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
-		//MessageBox(Err.Message, "There was an error ", MB_OK + MB_ICONERROR);
+        DBTransaction.Rollback();
+        throw;
 	}
 }
 
@@ -5497,8 +5576,9 @@ TMMProcessingState TListPaymentSystem::_createProcessingStateMessage(TPaymentTra
 {
     UnicodeString message = "Processing Bill";
     if(IsPaidByAdyen(_paymentTransaction) && !_isSmartCardPresent())
+    {
         message = "Waiting For Adyen EFTPOS";
-
+    }
 	TMMProcessingState State(Screen->ActiveForm, message, "Processing Bill");
 
 	if (_isSmartCardPresent())
@@ -6542,7 +6622,7 @@ void TListPaymentSystem::ResetPayments(TPaymentTransaction &paymentTransaction)
     }
 }
 //------------------------------------------------------------------------------------------
-void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
+void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt)
 {
     if (RequestEFTPOSReceipt && TGlobalSettings::Instance().DuplicateEftPosReceipt)
     {
@@ -6558,7 +6638,8 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt)
         TGlobalSettings::Instance().PrintCardHolderReceipt )
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
-      if(TGlobalSettings::Instance().DuplicateReceipts || (TGlobalSettings::Instance().PrintSignatureReceiptsTwice && TGlobalSettings::Instance().AutoPrintRoomReceipts
+      if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||
+        (TGlobalSettings::Instance().PrintSignatureReceiptsTwice && TGlobalSettings::Instance().AutoPrintRoomReceipts
       && TDeviceRealTerminal::Instance().BasePMS->Enabled) )
       {
 
@@ -6630,18 +6711,13 @@ bool TListPaymentSystem::TryToEnableOracle()
     return retValue;
 }
 //----------------------------------------------------------------------------
-bool TListPaymentSystem::IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction)
+bool TListPaymentSystem::IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex)
 {
     bool retVal = false;
     for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
 	{
 		TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
-		{
-            retVal = true;
-            break;
-        }
-        else if(payment->GetPaymentAttribute(ePayTypeRMSInterface) && payment->GetPayTendered() != 0)
+        if(payment->GetPaymentAttribute(attributeIndex) && payment->GetPayTendered() != 0)
 		{
             retVal = true;
             break;
@@ -7016,3 +7092,26 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
   return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
 
  }
+ //-------------------------------------------------------------
+ bool TListPaymentSystem::ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount)
+{
+	bool retVal = false;
+
+    try
+    {
+        if (TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->Enabled)
+        {
+            eEFTTransactionType TransType = TransactionType_TIP;
+            EftPos->SetTransactionEvent(paymentRefNumber,TransType );
+            UnicodeString MerchantAccount = TDBAdyen::GetMerchantAccount(invoiceNumber);
+            retVal = EftPos->ProcessTip(paymentRefNumber, OriginalAmount, tipAmount, MerchantAccount);
+        }
+    }
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = false;
+    }
+
+	return retVal;
+}

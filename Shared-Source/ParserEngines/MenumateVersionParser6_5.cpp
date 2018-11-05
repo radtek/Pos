@@ -37,6 +37,16 @@ void TApplyParser::upgrade6_54Tables()
 {
     update6_54Tables();
 }
+//----------------------------------------------------------------------------------
+void TApplyParser::upgrade6_55Tables()
+{
+    update6_55Tables();
+}
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_56Tables()
+{
+    update6_56Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -77,6 +87,17 @@ void TApplyParser::update6_54Tables()
   AlterTableTab6_54(_dbControl);
   AlterTableOrders6_54(_dbControl);
   AlterTableArchives6_54(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_55Tables()
+{
+    Create6_55Tables(_dbControl );
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_56Tables()
+{
+    Create6_56Generator(_dbControl );
+    Create6_56Table(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -673,16 +694,6 @@ void TApplyParser::AlterTableArchives6_54(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
 	}
 }
-
-void TApplyParser::upgrade6_55Tables()
-{
-    update6_55Tables();
-}
-void TApplyParser::update6_55Tables()
-{
-    Create6_55Generators(_dbControl );
-    Create6_55Tables(_dbControl);
-}
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_55Tables(TDBControl* const inDBControl)
 {
@@ -693,6 +704,7 @@ void TApplyParser::Create6_55Tables(TDBControl* const inDBControl)
     AlterTable6_55RevenueCodeDetails(_dbControl);
     Create6_55TablePMSAccountingCategories(_dbControl);
 }
+
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_55Generators(TDBControl* const inDBControl)
 {
@@ -848,5 +860,32 @@ void TApplyParser::Create6_55TablePMSAccountingCategories(TDBControl* const inDB
     }
 }
 //------------------------------------------------------------------------------
+void TApplyParser::Create6_56Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSREFRENECE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSREFRENECE "
+        "( "
+        "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  INVOICE_NO VARCHAR(50),                       "
+        "  PSPREFERENCE VARCHAR(50),                            "
+        "  MM_PSPREFERENCE VARCHAR(50),              "
+        "  UPDATED_REFERENCE VARCHAR(50),              "
+        "  IS_SETTLED CHAR(1) DEFAULT 'F',                "
+        "  MERCHANT_ID VARCHAR(50)                "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_56Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_EFTPOSREFERENCE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSREFERENCE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSREFERENCE_ID TO 0;", inDBControl);
+	}
+}
 }
 //------------------------------------------------------------------------------

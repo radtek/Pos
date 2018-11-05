@@ -2373,13 +2373,13 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 75
           Width = 505
-          Height = 324
+          Height = 366
           Anchors = [akLeft]
           Caption = 'Integrated EFTPOS'
           TabOrder = 0
           DesignSize = (
             505
-            324)
+            366)
           object cbIntegratedEftposANZ: TCheckBox
             Left = 8
             Top = 23
@@ -2497,8 +2497,28 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS Payment Sense'
-            TabOrder = 6
+            TabOrder = 12
             OnClick = cbIntegratedEftposPaymentSenseClick
+          end
+          object cbIntegratedEftposPreAuthorisaton: TCheckBox
+            Left = 8
+            Top = 310
+            Width = 257
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'Enable Pre-Authorisation'
+            TabOrder = 11
+            OnClick = cbPreAuthorisatonClick
+          end
+          object cbIntegratedAuthorisationOnCards: TCheckBox
+            Left = 8
+            Top = 334
+            Width = 257
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'Adjust Authorisation on All Cards'
+            TabOrder = 12
+            OnClick = cbIntegratedAuthorisationOnCardsClick
           end
         end
         object Panel11: TPanel
@@ -2657,6 +2677,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Logging'
       ImageIndex = 5
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -2872,6 +2896,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Magic Memories'
       ImageIndex = 6
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel3: TPanel
         Left = 5
         Top = -8
@@ -3574,6 +3602,10 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsCustomerDisplay: TTabSheet
       Caption = 'Customer Display.'
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel16: TPanel
         Left = 0
         Top = 0

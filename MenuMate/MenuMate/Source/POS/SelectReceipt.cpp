@@ -10,6 +10,7 @@
 #include "ReferenceManager.h"
 #include "DeviceRealTerminal.h"
 #include "MMTouchKeyboard.h"
+#include "DBAdyen.h"
 
 
 #define RECEIPT_DELIMITER "#####"
@@ -451,9 +452,10 @@ void TfrmSelectReceipt::toggleAvailabilityOfTippingButton()
 	WideString paymentRefNumber = "";
 	Currency originalVisaPaymentAmount;
 	int arcBillKey = -1;
+    bool canTipBeApplied = ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey);
 
-	if(ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey)
-		&& TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions())
+	if(((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()
+            && !TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)) || (!TGlobalSettings::Instance().EnableEftPosAdyen)) && canTipBeApplied)
 	{
 		btnAddTip->Enabled = true;
 	}
@@ -468,7 +470,7 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
 	Currency originalVisaPaymentAmount;
 	int arcBillKey = -1;
 
-	ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey);
+	bool isMasterOrVisaCard = ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey);
 
 	if(paymentRefNumber.Length() == 0 )
 	{
@@ -476,7 +478,6 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
 						"Cannot add a tip", MB_ICONINFORMATION + MB_OK);
 		return;
 	}
-
 
     if (MessageBox("Are you sure you wish to add a tip on this transaction ?" ,"Add a tip to transaction", MB_OKCANCEL + MB_ICONQUESTION) == IDOK)
 	{
@@ -494,23 +495,31 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
             if(tipAmount.Val > 0)
             {
                 double percentageOfIncrement = (tipAmount / originalVisaPaymentAmount) * 100;
-                if(percentageOfIncrement > 50)
+                int maxPercentageOfIncrement = 50;
+                bool isAnyTipLimitExist = true;
+
+                if(TGlobalSettings::Instance().EnableEftPosAdyen)
                 {
-                    MessageBox("You cannot add a tip more than 50% of original payment.",
-                            "Failed to add a tip", MB_ICONERROR + MB_OK);
+                    if(TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards || isMasterOrVisaCard)
+                        isAnyTipLimitExist = false;
+                    else
+                        maxPercentageOfIncrement = 100;
+                }
+
+                if(percentageOfIncrement > maxPercentageOfIncrement && isAnyTipLimitExist)
+                {
+                    MessageBox("You cannot add a tip more than " + IntToStr(maxPercentageOfIncrement) + "% of original payment.",
+                                    "Failed to add a tip", MB_ICONERROR + MB_OK);
                 }
                 else if( !TDeviceRealTerminal::Instance().PaymentSystem->ProcessTipOnVisaTransaction( arcBillKey, paymentRefNumber, originalVisaPaymentAmount, tipAmount ))
                 {
-                    MessageBox("Failed to add a tip on this transaction",
-                            "Failed to add a tip", MB_ICONERROR + MB_OK);
+                    MessageBox("Failed to add a tip on this transaction", "Failed to add a tip", MB_ICONERROR + MB_OK);
                 }
                 else
-                    MessageBox("Tip applied successfully",
-                            "Tip Applied", MB_ICONINFORMATION + MB_OK);
+                    MessageBox("Tip applied successfully", "Tip Applied", MB_ICONINFORMATION + MB_OK);
             }
         }
-
-
+        toggleAvailabilityOfTippingButton();
 	}
 }
 //---------------------------------------------------------------------------

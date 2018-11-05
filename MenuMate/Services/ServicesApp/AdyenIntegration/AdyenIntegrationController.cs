@@ -12,11 +12,11 @@ using AdyenIntegration.Domain.ResponseEnvelop;
 using System.Net;
 using System.IO;
 using AdyenIntegration.Tools;
-
+using AdyenIntegration.Domain.AdjustAuthorisation;
 
 namespace AdyenIntegration
 {
-    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund, eLoginToSystem, eLogoutSystem };
+    public enum RequestType { ePingTerminal, eTransactionStatus, eProcessSale, eProcessRefund, eLoginToSystem, eLogoutSystem,eAdjustAuthorisation, eCaptureModifiedAmount };
 
     public class AdyenIntegrationController
     {
@@ -214,6 +214,76 @@ namespace AdyenIntegration
                 stringList.Add("Exception Occured  at  :-                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Exception is :-                                                  " + ex.Message);
                 ServiceLogger.Log("Exception in PostRequest   " +  ex.Message);
+                throw;
+            }
+        }
+
+        private AdjustAndCaptureResponse PostAdjustAndCaptureRequest(string requestData, HttpWebRequest httpWebRequest, RequestType requestType)
+        {
+            try
+            {
+                AdjustAndCaptureResponse responseEnvelop = new AdjustAndCaptureResponse();
+                // LogDetailsOfRequest(envelop, requestType);
+                stringList.Add("JSon Data prepared at:-                                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("");
+                stringList.Add("JSon Data for Request is :-                                     " + requestData);
+                stringList.Add("");
+                using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+                {
+                    streamWriter.Write(requestData);
+                    streamWriter.Flush();
+                    streamWriter.Close();
+                }
+                stringList.Add("Data written to connection stream at :-                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                var encoding = Encoding.ASCII;
+                stringList.Add("Asking for response at :-                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                var webResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                stringList.Add("Response received at :-                                         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                using (var reader = new StreamReader(webResponse.GetResponseStream(), encoding))
+                {
+                    var responseText = reader.ReadToEnd();
+                    stringList.Add("");
+                    stringList.Add("Response received is :-                                         " + responseText);
+                    stringList.Add("");
+                    responseEnvelop = JSonUtility.Deserialize<AdjustAndCaptureResponse>(responseText);
+                    stringList.Add("Response deserialized at :-                                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    if (responseEnvelop != null)
+                    {
+                        //if (requestType != RequestType.eTransactionStatus)
+                        //{
+                        //    if (CanReceiptsBePresent(requestType, responseEnvelop))
+                        //    {
+                        //        LogResponseFromAdyen(responseEnvelop, requestType);
+                        //        stringList.Add("Receipts Found & count is                                       " +
+                        //                       responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt.Count());
+                        //        ArrangeAndAssignReceipts(responseEnvelop,
+                        //            responseEnvelop.SaleToPOIResponse.PaymentResponse.PaymentReceipt, false);
+
+                        //    }
+                        //    else
+                        //        stringList.Add("No Receipt received for the transaction in response");
+                        //}
+                        //else if (requestType == RequestType.eTransactionStatus)
+                        //{
+                        //    if (CanReceiptsBePresentInEnquiry(requestType, responseEnvelop))
+                        //    {
+                        //        LogResponseFromAdyen(responseEnvelop, requestType);
+                        //        stringList.Add("Receipts Found & count is                                        " + responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt.Count());
+                        //        ArrangeAndAssignReceipts(responseEnvelop, responseEnvelop.SaleToPOIResponse.TransactionStatusResponse.RepeatedMessageResponse.RepeatedResponseMessageBody.PaymentResponse.PaymentReceipt, true);
+
+                        //    }
+                        //    else
+                        //        stringList.Add("No Receipt received for the transaction in response");
+                        //}
+                    }
+                }
+                return responseEnvelop;
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception Occured  at  :-                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Exception is :-                                                  " + ex.Message);
+                ServiceLogger.Log("Exception in PostRequest   " + ex.Message);
                 throw;
             }
         }
@@ -455,6 +525,45 @@ namespace AdyenIntegration
                 }  
             }
             return retValue;
+        }
+
+        public AdjustAndCaptureResponse AdjustAuthorisation(AdjustAuthorisation authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                stringList.Add("********Request to AdjustAuthorisation********");
+                var webRequest = CreateWebRequest(details);
+                //  envelop.SaleToPOIRequest.PaymentRequest.SaleData.SaleTransactionID.TimeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:sszzz");                
+                var requestData = JSonUtility.Serialize<AdjustAuthorisation>(authRequest);
+                response = PostAdjustAndCaptureRequest(requestData, webRequest, RequestType.eAdjustAuthorisation);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in AdjustAuthorisation " + ex.Message);
+                stringList.Add("Exception in AdjustAuthorisation at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            WriteToFile(stringList);
+            return response;
+        }
+
+        public AdjustAndCaptureResponse CaptureModifiedAmount(CaptureModifiedAmount authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                stringList.Add("********Request to CaptureModifiedAmount********");
+                var webRequest = CreateWebRequest(details);
+                var requestData = JSonUtility.Serialize<CaptureModifiedAmount>(authRequest);
+                response = PostAdjustAndCaptureRequest(requestData, webRequest, RequestType.eCaptureModifiedAmount);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in CaptureModifiedAmount " + ex.Message);
+                stringList.Add("Exception in CaptureModifiedAmount at:-                                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            WriteToFile(stringList);
+            return response;
         }
         private void WriteToFile(List<string> list)
         {

@@ -117,6 +117,8 @@ class TListPaymentSystem : public TMMPaymentSystem
     void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
     bool IsOracleConfigured();
     bool IsSiHotConfigured();
+     //settle th eeftpos bills after zed performed..
+    bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
 
 protected:
 
@@ -166,7 +168,7 @@ protected:
     bool ProcessCSVRoomExport( TPaymentTransaction &inPaymentTransaction );
 
    // tip related functions
-    void InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
+    void InsertOrUpdateTipTransactionRecordToDB(Database::TDBTransaction &DBTransaction, int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
 
     // loads up the payment groups for a given payment with its db key
     void loadPaymentTypeGroupsForPaymentType( int paymentDbKey, TPayment &payment );
@@ -216,13 +218,13 @@ protected:
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
-     void PrintReceipt(bool RequestEFTPOSReceipt);
+     void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
      char* Formatdateseparator( UnicodeString date) ;
 
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
-     bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
+     bool IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);

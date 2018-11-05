@@ -133,6 +133,7 @@ public:
     UnicodeString CSVString;
     Currency EFTPOSSurcharge;  //this is the surcharge like tip that will be applied from eftpos machine ex: smart connect
     Currency ExternalCashOut;  //this is for cashout amount that will be added from eftpos machine not from POS.
+    UnicodeString MerchantAccount; // MerchantAccount returned from the eftpos machine
     void Reset();
     void Failed();
     void SetAssignedGroups( std::vector<TPaymentTypeGroup> groups );

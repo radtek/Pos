@@ -199,11 +199,14 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->FinalAmount = response->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                               EftTrans->TipAmount = response->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
                               EftTrans->CardType = response->PaymentResponse->PaymentResult->PaymentInstrumentData->CardData->PaymentBrand;
+                              EftTrans->EftposTransactionID = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                              EftTrans->MerchantAccount = response->PaymentResponse->PaymentResult->PaymentAcquirerData->MerchantID;
+
                               // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
-                              if(TGlobalSettings::Instance().PrintCardHolderReceipt)
+                              if(TGlobalSettings::Instance().PrintCardHolderReceipt )
                                     LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
 
-                              if(TGlobalSettings::Instance().PrintMerchantReceipt)
+                              if(TGlobalSettings::Instance().PrintMerchantReceipt )
                                     LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
                            }
                       }
@@ -225,11 +228,15 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->AuthorizedAmount;
                                       EftTrans->TipAmount =
                                             response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentResult->AmountsResp->TipAmount;
+
+                                      EftTrans->EftposTransactionID = response->PaymentResponse->PaymentResult->PaymentAcquirerData->AcquirerTransactionID->TransactionID;
+                                      EftTrans->MerchantAccount = response->PaymentResponse->PaymentResult->PaymentAcquirerData->MerchantID;
+
                                       // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
-                                      if(TGlobalSettings::Instance().PrintCardHolderReceipt)
+                                      if(TGlobalSettings::Instance().PrintCardHolderReceipt )
                                             LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
 
-                                      if(TGlobalSettings::Instance().PrintMerchantReceipt)
+                                      if(TGlobalSettings::Instance().PrintMerchantReceipt )
                                             LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
                                    }
                               }
@@ -521,9 +528,14 @@ Envelop* TEftposAdyen::GetSaleEnvelop(Currency AmtPurchase, AdyenRequestType req
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleTransactionID->TimeStamp = "";
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleReferenceID = saleRefId;
         envelop->SaleToPOIRequest->PaymentRequest->SaleData->TokenRequestedType = "Customer";
+
         if(requestType == eAdyenNormalSale && TGlobalSettings::Instance().EnableDPSTipping )
         {
-            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "tenderOption=AskGratuity";
+            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "tenderOption=AskGratuity&authorisationType=PreAuth";
+        }
+        else
+        {
+            envelop->SaleToPOIRequest->PaymentRequest->SaleData->SaleToAcquirerData = "authorisationType=PreAuth";
         }
 
         envelop->SaleToPOIRequest->PaymentRequest->PaymentTransaction = new PaymentTransaction();
@@ -819,3 +831,84 @@ void TEftposAdyen::UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber)
     }
 }
 //------------------------------------------------------------------------------
+bool TEftposAdyen::AllowsTipsOnTransactions()
+{
+    return TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
+}
+//------------------------------------------------------------------------------bool TEftposAdyen::ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef)
+{
+    bool retVal = false;
+    try
+    {
+        int val = (OriginalAmount + TipAmount)*100;
+        AdjustAuthorisation *adjustAuthorisation =  new AdjustAuthorisation();
+        adjustAuthorisation->merchantAccount = MerchantRef;
+        adjustAuthorisation->modificationAmount = new ModificationAmount();
+        adjustAuthorisation->modificationAmount->currency = CurrencyString;
+
+        adjustAuthorisation->modificationAmount->value = val;
+        adjustAuthorisation->originalReference = OriginalDpsTxnRef;
+        adjustAuthorisation->reference = (OriginalDpsTxnRef + "_1");
+
+        if(TipAmount > OriginalAmount)
+        {
+            adjustAuthorisation->additionalData = new AdditionalData();
+            adjustAuthorisation->additionalData->industryUsage = "DelayedCharge";
+
+            ResourceDetails *details = GetResourceDetails();
+            details->URL =  TGlobalSettings::Instance().EftPosTerminalId + "/adjustAuthorisation";
+
+            CoInitialize(NULL);
+            AdjustAndCaptureResponse* response = AdyenClient->AdjustAuthorisation(adjustAuthorisation,details);
+
+            if(response->response.Pos("[adjustAuthorisation-received]") != 0)
+            {
+                retVal = CaptureAmount(adjustAuthorisation);
+            }
+        }
+        else
+        {
+            retVal = CaptureAmount(adjustAuthorisation);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retVal = false;
+    }
+    return retVal;
+}
+//--------------------------------------------------------------------------
+bool TEftposAdyen::CaptureAmount(AdjustAuthorisation* adjustAuthorisation )
+{
+    bool retVal = false;
+    try
+    {
+        CaptureModifiedAmount *captureModifiedAmount =  new CaptureModifiedAmount();
+        captureModifiedAmount->merchantAccount = adjustAuthorisation->merchantAccount;
+        captureModifiedAmount->modificationAmount = new ModificationAmount();
+        captureModifiedAmount->modificationAmount->currency = CurrencyString;
+        captureModifiedAmount->modificationAmount->value = adjustAuthorisation->modificationAmount->value;
+        captureModifiedAmount->originalReference = adjustAuthorisation->originalReference;
+        captureModifiedAmount->reference = adjustAuthorisation->reference;
+
+        ResourceDetails *details = GetResourceDetails();
+        details->URL =  TGlobalSettings::Instance().EftPosTerminalId + "/capture";
+
+        CoInitialize(NULL);
+        AdjustAndCaptureResponse* response = AdyenClient->CaptureModifiedAmount(captureModifiedAmount, details);
+
+        if(response->response.Pos("[capture-received]") != 0)
+        {
+            TDBAdyen::UpdateEFTPOSReference(adjustAuthorisation->originalReference, adjustAuthorisation->reference, response->pspReference);
+            retVal = true;
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+        retVal = false;
+    }
+    return retVal;
+}
+

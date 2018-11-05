@@ -327,6 +327,7 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
       tbtnReceiptNumber->Caption = TGlobalSettings::Instance().ReceiptDigits;
       cbPrintVoid->Checked = TGlobalSettings::Instance().ShowVoidOrRefund;
       cbShowVoidNumber->Checked = TGlobalSettings::Instance().ShowVoidNumber;
+      cbPrintTipAndSignature->Checked = TGlobalSettings::Instance().PrintTipAndSignature;
       CheckVoidFooterSetting();
       CheckSubHeaderSetting();
    }
@@ -5314,10 +5315,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnReceiptNumberAutoRepeat(TObject *Sen
 	}
 }
 //---------------------------------------------------------------------------
-
-
-
-
 void __fastcall TfrmPrinterMaintenance::cbPrintVoidClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5353,9 +5350,6 @@ void __fastcall TfrmPrinterMaintenance::tbtnRefundReferenceLabelMouseClick(TObje
    }
 }
 //---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-
 void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
 {
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5369,7 +5363,8 @@ void __fastcall TfrmPrinterMaintenance::cbSetSubHeaderClick(TObject *Sender)
 
 void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
-{
+{    int a = X;
+    a = Y;
    TDeviceRealTerminal::Instance().LoadHdrFtr();
    memCustomizeSubHeader->Lines = TGlobalSettings::Instance().SubHeader.get();
    Database::TDBTransaction DBTransaction(DBControl);
@@ -5389,6 +5384,15 @@ void __fastcall TfrmPrinterMaintenance::memSubHeaderMouseUp(TObject *Sender, TMo
    }
    DBTransaction.Commit();
 }
+//-------------------------------------------------------------------------------------
+
+void __fastcall TfrmPrinterMaintenance::cbPrintTipAndSignatureClick(TObject *Sender){
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+   TGlobalSettings::Instance().PrintTipAndSignature = cbPrintTipAndSignature->Checked;
+   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintTipAndSignature, TGlobalSettings::Instance().PrintTipAndSignature);
+   DBTransaction.Commit();
+}
 //---------------------------------------------------------------------------
 void TfrmPrinterMaintenance::CheckSubHeaderSetting()
 {
@@ -5397,4 +5401,6 @@ void TfrmPrinterMaintenance::CheckSubHeaderSetting()
    else
       memCustomizeSubHeader->Enabled = false;
 }
-//-------------------------------------------------------------------------------------
+
+
+

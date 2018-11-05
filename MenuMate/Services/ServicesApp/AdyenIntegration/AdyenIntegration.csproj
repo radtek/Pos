@@ -52,6 +52,12 @@
   <ItemGroup>
     <Compile Include="AdyenIntegrationController.cs" />
     <Compile Include="Domain\AcquirerTransactionID.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\AdditionalData.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\AdjustAuthorisation.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\CaptureModifiedAmount.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\AdjustAndCaptureResponse.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\ModificationAmount.cs" />
+    <Compile Include="Domain\AdjustAuthorisation\ResultNotifications.cs" />
     <Compile Include="Domain\AllowedProduct.cs" />
     <Compile Include="Domain\AmountsReq.cs" />
     <Compile Include="Domain\AmountsResp.cs" />

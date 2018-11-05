@@ -54,6 +54,7 @@
 #include "MallFactory.h"
 #include "FiscalPrinterAdapter.h"
 #include "DbMegaworldMall.h"
+#include "DBAdyen.h"
 
 #include <string>
 #include <cassert>
@@ -3220,6 +3221,12 @@ Zed:
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
                     delete mallExport;
+                }
+
+                //Settle th adyen eftpos bills
+                if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                {
+                    SettleEFTPOSBills();
                 }
             }
       }
@@ -9139,7 +9146,6 @@ bool TfrmAnalysis::RestartFireBirdService()
     return retValue;
 }
 // ------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
 int TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
 {
     int ZedKey = 0;
@@ -9186,8 +9192,37 @@ int TfrmAnalysis::UpdateZKeyInArcMallExportForMegaWorld()
 
 
 }
-
 //-------------------------------------------------------------------------------
+void TfrmAnalysis::SettleEFTPOSBills()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.INVOICE_NO, a.PSPREFERENCE FROM EFTPOSREFRENECE a "
+                                     "WHERE a.IS_SETTLED = :IS_SETTLED ";
+        IBInternalQuery->ParamByName("IS_SETTLED")->AsString = "F";
+        IBInternalQuery->ExecQuery();
+
+        for(;!IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            UnicodeString invoiceNumber = IBInternalQuery->FieldByName("INVOICE_NO")->AsString;
+            UnicodeString originalReference = IBInternalQuery->FieldByName("PSPREFERENCE")->AsString;
+            TDBAdyen::ProcessTipForSelectedRecord(DBTransaction, invoiceNumber, originalReference);
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
 
 
 

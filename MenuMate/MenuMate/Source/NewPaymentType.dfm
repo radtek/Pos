@@ -1319,7 +1319,6 @@ object frmNewPaymentType: TfrmNewPaymentType
           ParentBackground = False
           ParentFont = False
           TabOrder = 9
-          Visible = False
           object cbWalletPayments: TCheckBox
             Left = 10
             Top = 24
@@ -1368,7 +1367,7 @@ object frmNewPaymentType: TfrmNewPaymentType
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'Merchent Details'
+            Caption = 'Merchant Details'
             ButtonColor = clNavy
             LatchedColor = clBtnFace
             DisabledButtonColor = 14342874

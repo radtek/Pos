@@ -32,7 +32,7 @@ namespace MenumateVersionParser
             pv6_11,pv6_12,pv6_13,pv6_14,pv6_15,pv6_16,pv6_17,pv6_18,pv6_19,pv6_20,
             pv6_21,pv6_22,pv6_23,pv6_24,pv6_25,pv6_26,pv6_27,pv6_28,pv6_29,pv6_30,
             pv6_31,pv6_32,pv6_33,pv6_34,pv6_35,pv6_36,pv6_37,pv6_38,pv6_39,pv6_40,pv6_41, pv6_42, pv6_43,pv6_44,
-            pv6_45,pv6_46,pv6_47,pv6_48,pv6_49,pv6_50,pv6_51,pv6_52, pv6_53, pv6_54, pv6_55 };
+            pv6_45,pv6_46,pv6_47,pv6_48,pv6_49,pv6_50,pv6_51,pv6_52, pv6_53, pv6_54, pv6_55, pv6_56  };
     class TApplyParser
     {
     public:
@@ -131,6 +131,7 @@ namespace MenumateVersionParser
         PARSER_ERROR apply6_53( TDBControl* const inDBControl );
         PARSER_ERROR apply6_54( TDBControl* const inDBControl );
         PARSER_ERROR apply6_55( TDBControl* const inDBControl );
+        PARSER_ERROR apply6_56( TDBControl* const inDBControl );
         TDBControl* _dbControl;
 
         //:::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -969,6 +970,11 @@ namespace MenumateVersionParser
         void Create6_55TableSpaces(TDBControl* const inDBControl);
         void AlterTable6_55RevenueCodeDetails(TDBControl* const inDBControl);
         void Create6_55TablePMSAccountingCategories(TDBControl* const inDBControl);
+        void upgrade6_56Tables();
+        void update6_56Tables();
+        void Create6_56Table(TDBControl* const inDBControl);
+        void Create6_56Generator(TDBControl* const inDBControl);
+
     };// class
 } // namespace
 

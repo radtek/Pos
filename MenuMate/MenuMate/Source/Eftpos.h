@@ -61,6 +61,7 @@ public:
     AnsiString TipAmount;
     AnsiString SurchargeAmount;
     AnsiString CashOutAmount;
+    AnsiString MerchantAccount;
 };
 
 class TListEftPosTransContainer : public TList
@@ -140,7 +141,7 @@ class TEftPos
 
 	// checks whether en eftpos supports tip transactions. default is false
 	virtual bool AllowsTipsOnTransactions();
-	virtual void ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
+	virtual bool ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef );
 
 	std::vector<AnsiString> GetTippableCardTypes();
     virtual bool IsCashOutSupported();

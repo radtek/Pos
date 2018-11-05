@@ -7,7 +7,8 @@
 #include "DropDown.h"
 #include "DropDownVar.h"
 //---------------------------------------------------------------------------
-enum AdyenRequestType {eAdyenNormalSale = 1, eAdyenRefundSale, eAdyenPingRequest, eAdyenLoginRequest, eAdyenLogOutRequest, eAdyenTransactionStatus};
+enum AdyenRequestType {eAdyenNormalSale = 1, eAdyenRefundSale, eAdyenPingRequest, eAdyenLoginRequest, eAdyenLogOutRequest, eAdyenTransactionStatus,
+                       eAdjustAuthorisation};
 class TEftposAdyen : public TEftPos
 {
    protected :
@@ -31,6 +32,7 @@ class TEftposAdyen : public TEftPos
         SaleToPOIResponse* TriggerEnquiry(Currency AmtPurchase, UnicodeString TxnRef);
         Envelop* GetEnquiryEnvelop(Currency AmtPurchase, AdyenRequestType requestType, UnicodeString TxnRef);
         void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
+        bool CaptureAmount(AdjustAuthorisation* adjustAuthorisation );
 public:
         TEftposAdyen();
         ~TEftposAdyen();
@@ -61,5 +63,7 @@ public:
         void UpdateEFTPOSLogs(bool status);
         AnsiString GetLogFileName();
         void UpdateEFTPOSLogsForInvoiceNumber(AnsiString invoiceNumber);
+        bool AllowsTipsOnTransactions();
+        bool ProcessTip(WideString OriginalDpsTxnRef, Currency OriginalAmount, Currency TipAmount, UnicodeString MerchantRef);
 };
 #endif

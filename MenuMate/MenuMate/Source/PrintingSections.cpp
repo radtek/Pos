@@ -324,6 +324,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
     Instructions[i++] = InstructionPair(epofiPrintPatronsSection, "Patron Count Section");
 	DefaultCaption[epofiPrintPatronsSection] = "Patron Count Section";
 
+    Instructions[i++] = InstructionPair(epofiPrinttipAndSignatureSection, "Tip & Signature Section");
+	DefaultCaption[epofiPrinttipAndSignatureSection] =  "Tip & Signature Section";
+
 }
 
 
@@ -656,6 +659,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintLoyaltyReceiptMemberName:
 	case epofiPrintLoyaltyReceiptActivationCode:
 	case epofiPrintLoyaltyReceiptActivationInstructions:
+    case epofiPrinttipAndSignatureSection:
 	case epofiPrintCurrencySymbol:
 		{
 			FormatAndProcessNoChildren(PrintJob);
@@ -703,6 +707,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 				FormatAndProcessNoChildren(PrintJob);
 			}
 		}break;
+
 	}
 }
 
@@ -1035,6 +1040,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
         case epofiPrintPatronsSection:
             PrintPatronSection(PrintJob);
             break;
+       case epofiPrinttipAndSignatureSection:
+            PrintTipAndSignature(PrintJob);
+           break;
 		default:
 			break;
 		}
@@ -9332,3 +9340,33 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
     return retVal;
 }
 
+//-----------------------------------------
+void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
+{
+    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature &&
+            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS) )
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Tip :__________________________________________________";
+        pPrinter->NewLine();
+        pPrinter->AddLine();
+        pPrinter->NewLine();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width ;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Total :________________________________________________";
+        pPrinter->AddLine();
+
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->NewLine();
+        pPrinter->NewLine();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width ;
+
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Signature :____________________________________________";
+        pPrinter->AddLine();
+    }
+}
+//--------------------------------------------------------------------------------------
