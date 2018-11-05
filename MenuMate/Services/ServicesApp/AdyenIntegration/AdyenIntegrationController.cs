@@ -463,9 +463,16 @@ namespace AdyenIntegration
                 list.Add("=================================================================================");
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
 
+                location = Path.Combine(location, "Adyen Post Logs");
 
-                string location = Path.Combine(path, "Adyen Post Logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");

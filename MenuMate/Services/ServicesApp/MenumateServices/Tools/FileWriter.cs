@@ -14,9 +14,16 @@ namespace MenumateServices.Tools
             {
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
 
+                location = Path.Combine(location, "Online Ordering Logs");
 
-                string location = Path.Combine(path, "Online Ordering Logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");
