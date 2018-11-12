@@ -369,18 +369,22 @@ AnsiString TMewsDataProcessor::GetMewsName(Database::TDBTransaction &DBTransacti
 {
     AnsiString name = "";
     AnsiString tableName = "";
+    AnsiString orderByClause = "";
     if(identifier == 1)
         tableName = "OUTLETS";
     else if(identifier == 2)
         tableName = "SERVICES";
     else if(identifier == 3)
-        tableName = "REVENUECODEDETAILS";
+    {
+        tableName = "REVENUECODEDETAILS ";
+        orderByClause = " ORDER BY REVENUECODE_DESCRIPTION ";
+    }
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     try
     {
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
-          "SELECT * FROM " + tableName + " WHERE UNIQUEID = :UNIQUEID";
+          "SELECT * FROM " + tableName + " WHERE UNIQUEID = :UNIQUEID " + orderByClause;
         IBInternalQuery->ParamByName("UNIQUEID")->AsString =  code;
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount > 0)
@@ -408,7 +412,9 @@ std::map<AnsiString,AnsiString> TMewsDataProcessor::GetAllMewsDetailsFromDB(Data
     else if(identifier == 2)
         tableName = "SERVICES";
     else if(identifier == 3)
-        tableName = "REVENUECODEDETAILS";
+    {
+        tableName = "REVENUECODEDETAILS ORDER BY REVENUECODE_DESCRIPTION ASC";
+    }
     std::map<AnsiString,AnsiString> mapDetails;
     mapDetails.clear();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -418,15 +424,22 @@ std::map<AnsiString,AnsiString> TMewsDataProcessor::GetAllMewsDetailsFromDB(Data
         IBInternalQuery->SQL->Text =
           "SELECT * FROM " + tableName;
         IBInternalQuery->ExecQuery();
+        AnsiString codeForRevenue = "";
         for( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             AnsiString code = "";
             AnsiString name = "";
             if(identifier == 3)
+            {
                 name = IBInternalQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
+                codeForRevenue += "a";
+                code = codeForRevenue;
+            }
             else
+            {
                 name = IBInternalQuery->FieldByName("NAME")->AsString;
-            code = IBInternalQuery->FieldByName("UNIQUEID")->AsString;
+                code = IBInternalQuery->FieldByName("UNIQUEID")->AsString;
+            }
             mapDetails[code] = name;
         }
     }
