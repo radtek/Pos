@@ -454,8 +454,8 @@ void TfrmSelectReceipt::toggleAvailabilityOfTippingButton()
 	int arcBillKey = -1;
     bool canTipBeApplied = ManagerReceipt->CanApplyTipOnThisReceiptsTransaction(paymentRefNumber,originalVisaPaymentAmount,arcBillKey);
 
-	if(((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()
-            && !TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)) || (!TGlobalSettings::Instance().EnableEftPosAdyen)) && canTipBeApplied)
+	if(((TGlobalSettings::Instance().EnableEftPosAdyen && !TDBAdyen::IsTipFromReceiptAlreadyAdded(arcBillKey)) ||
+            (!TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions())) && canTipBeApplied)
 	{
 		btnAddTip->Enabled = true;
 	}
