@@ -833,7 +833,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                 TItemComplete* itemCompleteDiscount = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
                 TItemMews itemMewsDiscount;
                 itemMewsDiscount.Type = "Revenue";
-                itemMewsDiscount.Name = itemCompleteDiscount->Item;
+                itemMewsDiscount.Name = itemCompleteDiscount->Item + " (" + itemCompleteDiscount->Size + ")";;
                 itemMewsDiscount.UnitCount = -1*1;
                 itemMewsDiscount.UnitCost.Amount = RoundTo((discountValue + (varianceAdditive*discountValue))/portion,-2);
                 itemMewsDiscount.UnitCost.Currency = CurrencyString;
@@ -969,7 +969,7 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
         unitAmount = unitAmount * portion;
         unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion);
         unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.TaxValue * portion);
-        if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
+        if(!TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)     //ReCalculateTaxPostDiscount
         {
             unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
             discountValue = fabs((double)itemComplete->BillCalcResult.TotalDiscount);
