@@ -47,6 +47,11 @@ void TApplyParser::upgrade6_56Tables()
 {
     update6_56Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_57Tables()
+{
+    update6_57Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -98,6 +103,11 @@ void TApplyParser::update6_56Tables()
 {
     Create6_56Generator(_dbControl );
     Create6_56Table(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_57Tables()
+{
+    AlterTableArcBill6_57(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -885,6 +895,18 @@ void TApplyParser::Create6_56Generator(TDBControl* const inDBControl)
 	{
 		executeQuery("CREATE GENERATOR GEN_EFTPOSREFERENCE_ID;", inDBControl);
 		executeQuery("SET GENERATOR GEN_EFTPOSREFERENCE_ID TO 0;", inDBControl);
+	}
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DAYARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE DAYARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
+	}
+    if (fieldExists( "ARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
 	}
 }
 }
