@@ -3224,7 +3224,8 @@ Zed:
                 }
 
                 //Settle th adyen eftpos bills
-                if(TGlobalSettings::Instance().EnableEftPosAdyen)
+                if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation
+                        && TGlobalSettings::Instance().EftPosTerminalId.Trim() != "")
                 {
                     SettleEFTPOSBills();
                 }
