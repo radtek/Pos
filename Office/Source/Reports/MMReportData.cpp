@@ -5125,6 +5125,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
 {
+
 	qrInvoiceDetailed->Close();
     qrInvoiceDetailed->SQL->Text =
         "select "
@@ -5187,7 +5188,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
 											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
-	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +   
+	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
             "union all "
         "select "
@@ -5251,8 +5252,60 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
+     "UNION ALL  "
+
+      "SELECT "
+      "a.STAFF_NAME, "
+       "a.TIME_STAMP, "
+        "CAST(0.0 AS NUMERIC(17,4)) TOTAL_INC, "
+         "CAST( CASE WHEN(p.ADJUSTMENT_TYPE = '1') THEN  Cast('Point Purchase' As VarChar(50))  WHEN (p.ADJUSTMENT_TYPE = '7') THEN  Cast('Refund Point' As VarChar(50))  ELSE 'Reedeem Point' END AS VARCHAR(50)) ITEM_NAME, "
+                "p.ADJUSTMENT as PRICE, "
+                "Cast('1' As NUMERIC(17,4)) Qty  , "
+                 "i.INVOICE_NUMBER, "
+                "i.CONTACTS_KEY, "
+                "c.MEMBER_NUMBER,(c.Name ||'  '|| c.LAST_NAME) name, "
+                "i.CLOSED "
+                "from POINTSTRANSACTIONS p "
+				"left join dayARCBILL a on p.INVOICE_NUMBER= a.INVOICE_NUMBER "
+                "left join INVOICES  i on a.INVOICE_KEY = i.INVOICE_KEY "
+                "left join CONTACTS  c on i.CONTACTS_KEY = c.CONTACTS_KEY "
+				"left join DAYARCBILLPAY d on d.ARCBILL_KEY = a.ARCBILL_KEY "
+				"where (d.PROPERTIES  LIKE :PAYMENT_PROPERTIES OR d.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and "
+                "a.time_stamp >= :StartTime and "
+                "a.time_stamp < :EndTime  ";
+
+
+
+     if (Members->Count)
+	 {
+		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
+											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
+    	}
+	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
+         "UNION ALL "
+
+        "SELECT "
+            "a.STAFF_NAME, "
+            "a.TIME_STAMP, "
+            "CAST(0.0 AS NUMERIC(17,4)) TOTAL_INC, "
+            "CAST( CASE WHEN(p.ADJUSTMENT_TYPE = '1') THEN  Cast('Point Purchase' As VarChar(50))  WHEN (p.ADJUSTMENT_TYPE = '7') THEN  Cast('Refund Point' As VarChar(50))  ELSE 'Reedeem Point' END AS VARCHAR(50)) ITEM_NAME, "
+            "p.ADJUSTMENT as PRICE, "
+            "Cast('1' As NUMERIC(17,4)) Qty , "
+            "i.INVOICE_NUMBER, "
+            "i.CONTACTS_KEY, "
+            "c.MEMBER_NUMBER,(c.Name ||'  '|| c.LAST_NAME) name, "
+            "i.CLOSED "
+        "FROM POINTSTRANSACTIONS p "
+        "LEFT JOIN ARCBILL a on p.INVOICE_NUMBER= a.INVOICE_NUMBER "
+        "LEFT JOIN INVOICES  i on a.INVOICE_KEY = i.INVOICE_KEY "
+        "LEFT JOIN CONTACTS  c on i.CONTACTS_KEY = c.CONTACTS_KEY "
+        "LEFT JOIN ARCBILLPAY d on d.ARCBILL_KEY = a.ARCBILL_KEY "
+        "WHERE (d.PROPERTIES  LIKE :PAYMENT_PROPERTIES OR d.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and "
+        "a.time_stamp >= :StartTime and "
+        "a.time_stamp < :EndTime  ";
+
 		"Order By "
-			"8, 6";
+		"10, 9,7,6";
 
 	for (int i=0; i<Members->Count; i++)
 	{
