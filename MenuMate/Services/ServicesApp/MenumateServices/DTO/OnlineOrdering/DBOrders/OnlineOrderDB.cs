@@ -197,6 +197,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderRow.Email = siteOrderViewModel.UserEmailId;
                         orderRow.SiteId = siteOrderViewModel.SiteId;
                         orderRow.OnlinerderId = siteOrderViewModel.OrderId;
+                        //to do happy hour implementation
 
                         //generate tab key if tab not exist..
                         orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
