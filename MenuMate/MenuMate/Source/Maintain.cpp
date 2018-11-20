@@ -1422,19 +1422,19 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
-//    TVerticalSelection Item3;
-//	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
-//	Item3.Properties["Action"] = IntToStr(3);
-//    if( TGlobalSettings::Instance().EnableOnlineOrdering )
-//	{
-//		Item3.Properties["Color"] = IntToStr(clGreen);
-//	}
-//	else
-//	{
-//		Item3.Properties["Color"] = IntToStr(clRed);
-//	}
-//    Item3.CloseSelection = true;
-//    SelectionForm->Items.push_back(Item3);
+    TVerticalSelection Item3;
+	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
+	Item3.Properties["Action"] = IntToStr(3);
+    if( TGlobalSettings::Instance().EnableOnlineOrdering )
+	{
+		Item3.Properties["Color"] = IntToStr(clGreen);
+	}
+	else
+	{
+		Item3.Properties["Color"] = IntToStr(clRed);
+	}
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
 
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
@@ -1509,7 +1509,7 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
             }  break;
             case 3 :
 			{
-               //EnableOnlineOrdering(DBTransaction);
+               EnableOnlineOrdering(DBTransaction);
             }  break;
 		}
 	}

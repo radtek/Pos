@@ -166,7 +166,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             {
                                 if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
                                 {
-                                    isTabOrder = true;                                    
+                                    isTabOrder = true;
                                 }
                                 else
                                 {
@@ -204,7 +204,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                             : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
 
                         //Generate Security ref..
-                        orderRow.SecurityRef = GetNextSecurityRef();                        
+                        orderRow.SecurityRef = GetNextSecurityRef();
 
                         foreach (var item in siteOrderViewModel.OrderItems)
                         {
@@ -256,10 +256,12 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             }
                         }
                         siteOrderViewModel.IsConfirmed = true;
+                        siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
                     }
                     catch (Exception ex)
                     {
                         siteOrderViewModel.IsConfirmed = false;
+                        siteOrderViewModel.IsHappyHourApplied = false;
                         //addDetailsTransaction.Rollback();
                         ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
                         throw;
@@ -941,6 +943,158 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
             return isTableExist;
+        }
+
+        private bool CanHappyHourBeApplied()
+        {
+            bool isHappyHourRunning = false;
+            try
+            {
+                FbCommand command = dbQueries.IsOnlineOrderingEnabled(connection, transaction); //Check online ordering is enabled..
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        int profileKey = Convert.ToInt32(getReaderColumnValue(reader, "PROFILE_KEY", 0));
+                        command = dbQueries.IsTerminalExemptFromHappyHour(connection, transaction, 4129, profileKey);
+                        using (FbDataReader reader1 = command.ExecuteReader())
+                        {
+                            if (!reader1.Read())
+                            {
+                                isHappyHourRunning = IsHappyHourRunning(profileKey);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSideParentOrderKey " + e.Message, e);
+                throw;
+            }
+            return isHappyHourRunning;
+        }
+
+        private bool IsHappyHourRunning(int profileKey)
+        {
+            bool isHHInCurrentTimeSpan = false;
+            try
+            {
+
+                FbCommand command = dbQueries.GetTerminalHHProfiles(connection, transaction, profileKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        isHHInCurrentTimeSpan = LoadHHProfileInfo(Convert.ToInt32(getReaderColumnValue(reader, "HAPPYHOURPROFILES_KEY", 0)));
+                        if (isHHInCurrentTimeSpan)
+                            break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsHappyHourRunning " + e.Message, e);
+                throw;
+            }
+            return isHHInCurrentTimeSpan;
+
+        }
+
+        private bool LoadHHProfileInfo(int hhProfileKey)
+        {
+            bool retVal = false;
+            bool isProfileDay = false;
+            try
+            {
+                FbCommand command = dbQueries.LoadHHProfileInfo(connection, transaction, hhProfileKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        isProfileDay = false;
+                        DateTime profileDate = Convert.ToDateTime(getReaderColumnValue(reader, "HAPPYHOURDAY_PROFILEDATE", 0));
+                        DateTime startTime = Convert.ToDateTime(getReaderColumnValue(reader, "HAPPYHOURDAY_STARTTIME", 0));
+                        DateTime endTime = Convert.ToDateTime(getReaderColumnValue(reader, "HAPPYHOURDAY_ENDTIME", 0));
+
+                        List<int> hhProfileDays = LoadDaysInfoForSelectedProfile(Convert.ToInt32(getReaderColumnValue(reader, "HAPPYHOURPROFILES_KEY", 0)), profileDate);
+                        DateTime currentTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second, 000);
+
+
+                        bool inTime = false;
+                        bool isValidProfile = false;
+
+                        //check whether any profile fall under the current time stamp
+
+                        if (profileDate.Year != 1899)   // if date is set
+                        {
+                            //Dateutils::CompareDateTime(hhProfile->StartTime,Now()) == GreaterThanValue
+                            if ((!(startTime > DateTime.Now)) && (!(endTime < DateTime.Now)))
+                            {
+                                isValidProfile = true;
+                            }
+                        }
+                        else   //  if No Date is Set
+                        {
+                            //check if current day is present  in profile day settings
+                            for (int day = 0; day < hhProfileDays.Count; day++)
+                            {
+                                if (hhProfileDays[day] == 0)
+                                    hhProfileDays[day] = 7;
+                                int dayOfWeek = (int)currentTime.DayOfWeek;
+
+                                if (dayOfWeek == hhProfileDays[day])
+                                {
+                                    isProfileDay = true;
+                                }
+                            }
+
+                            if (isProfileDay)  //if current day is profile day then check the time
+                            {
+                                if (currentTime.Second >= startTime.Second && currentTime.Second <= endTime.Second)
+                                {
+                                    isValidProfile = true;
+                                }
+                            }
+                        }
+                        if (isValidProfile)
+                        {
+                            retVal = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadHHProfileInfo " + e.Message, e);
+                throw;
+            }
+            return retVal;
+
+        }
+
+        private List<int> LoadDaysInfoForSelectedProfile(int hhProfileKey, DateTime profileDate)
+        {
+            List<int> hhProfileDays = new List<int>();
+            try
+            {
+                FbCommand command = dbQueries.LoadDaysInfoForSelectedProfile(connection, transaction, hhProfileKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        hhProfileDays.Add(Convert.ToInt32(getReaderColumnValue(reader, "HAPPYHOURDAYS_KEY", 0)));
+                        //DateTime currentTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second, 000);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadDaysInfoForSelectedProfile " + e.Message, e);
+                throw;
+            }
+            return hhProfileDays;
         }
         #endregion
     }

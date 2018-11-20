@@ -996,6 +996,135 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
+        public FbCommand IsOnlineOrderingEnabled(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT  VARSPROFILE.VARSPROFILE_KEY, VARSPROFILE.PROFILE_KEY FROM VARSPROFILE 
+                                        WHERE VARIABLES_KEY = @VARIABLES_KEY AND INTEGER_VAL = @INTEGER_VAL ";
+
+                command.Parameters.AddWithValue("@VARIABLES_KEY", 9637);
+                command.Parameters.AddWithValue("@INTEGER_VAL", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsOnlineOrderingEnabled " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand IsTerminalExemptFromHappyHour(FbConnection connection, FbTransaction transaction, int variableKey, int profileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT  VARSPROFILE.VARSPROFILE_KEY, VARSPROFILE.PROFILE_KEY FROM VARSPROFILE 
+                                        WHERE VARIABLES_KEY = @VARIABLES_KEY AND INTEGER_VAL = @INTEGER_VAL AND PROFILE_KEY = @PROFILE_KEY ";
+
+                command.Parameters.AddWithValue("@VARIABLES_KEY", variableKey);
+                command.Parameters.AddWithValue("@INTEGER_VAL", 1);
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTerminalExemptFromHappyHour " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand GetDeviceKey(FbConnection connection, FbTransaction transaction, int profileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT a.DEVICE_KEY FROM DEVICES a WHERE a.PROFILE_KEY = @PROFILE_KEY ";
+
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetDeviceKey " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand GetTerminalHHProfiles(FbConnection connection, FbTransaction transaction, int profileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT  HAPPYHOURPROFILES_KEY  FROM TERMINALHAPPYHOURPROFILES THH
+                                        INNER JOIN DEVICES ON THH.TERMINALS_KEY = DEVICES.DEVICE_KEY
+                                        WHERE DEVICES.PROFILE_KEY = @PROFILE_KEY 
+                                        ORDER BY HAPPYHOURPROFILES_KEY ASC ";
+
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetTerminalHHProfiles " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand LoadHHProfileInfo(FbConnection connection, FbTransaction transaction, int hhProfileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @" SELECT a.HAPPYHOURPROFILES_KEY, a.HAPPYHOURPROFILE_NAME, a.HAPPYHOURDAY_STARTTIME, a.HAPPYHOURDAY_ENDTIME, 
+                                            a.HAPPYHOURDAY_PROFILEDATE,a.PRICELEVEL_KEY,  coalesce(hprior.HAPPYHOUR_PRIORITY_VAL,0) HAPPYHOUR_PRIORITY_VAL  
+                                        FROM HAPPYHOURPROFILES a 
+                                        LEFT JOIN HAPPYHOUR_PRIORITY hprior on hprior.HAPPYHOURPROFILES_KEY =a.HAPPYHOURPROFILES_KEY  
+                                        WHERE a.HAPPYHOURPROFILES_KEY = :HAPPYHOURPROFILES_KEY and a.ISACTIVE= :ISACTIVE ";
+
+                command.Parameters.AddWithValue("@HAPPYHOURPROFILES_KEY", hhProfileKey);
+                command.Parameters.AddWithValue("@ISACTIVE", "T");
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadHHProfileInfo " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand LoadDaysInfoForSelectedProfile(FbConnection connection, FbTransaction transaction, int hhProfileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @" SELECT  HAPPYHOURDAYS_KEY  FROM HAPPYHOURDAYS 
+                                        WHERE HAPPYHOURPROFILES_KEY = :HAPPYHOURPROFILES_KEY 
+                                        ORDER BY HAPPYHOURDAYS_KEY ASC ";
+
+                command.Parameters.AddWithValue("@HAPPYHOURPROFILES_KEY", hhProfileKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadDaysInfoForSelectedProfile " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
         #endregion
     }
 
