@@ -36,6 +36,7 @@ __published:	// IDE-managed Components
     void __fastcall tbtnTerminalIdMouseClick(TObject *Sender);
 private:	// User declarations
     UnicodeString ShowKeyBoard(int maxLength,UnicodeString value,UnicodeString caption);
+    bool AreDetailsProvidedForAustria();
 public:		// User declarations
     __fastcall TfrmSetUpPosPlus(TComponent* Owner);
     void __fastcall FormShow(TObject *Sender);

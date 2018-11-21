@@ -65,12 +65,13 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
         else if(StorageType == AustriaFiscal)
         {
             UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalUrl,"Enter Url for Fiscal Austria");
-            if(result.Trim() != "")
+            if((TGlobalSettings::Instance().AustriaFiscalUrl != result) || TGlobalSettings::Instance().AustriaFiscalUrl.Trim() == "")
             {
-                TGlobalSettings::Instance().AustriaFiscalUrl = result.Trim();
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalUrl,TGlobalSettings::Instance().AustriaFiscalUrl);
-                tbtnPortNumber->Caption = TGlobalSettings::Instance().AustriaFiscalUrl;
+                TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
             }
+            TGlobalSettings::Instance().AustriaFiscalUrl = result.Trim();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalUrl,TGlobalSettings::Instance().AustriaFiscalUrl);
+            tbtnPortNumber->Caption = TGlobalSettings::Instance().AustriaFiscalUrl;
             DBTransaction.Commit();
         }
     }
@@ -129,13 +130,14 @@ void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
         DBTransaction1.StartTransaction();
         try
         {
-            UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalCashBoxId,"Enter Cash Box Id for FIscal Austria");
-            if(result.Trim() != "")
+            UnicodeString result = ShowKeyBoard(100,"","Enter Cash Box Id for Fiscal Austria");
+            if((TGlobalSettings::Instance().AustriaFiscalCashBoxId != result) || TGlobalSettings::Instance().AustriaFiscalCashBoxId.Trim() == "")
             {
-                TGlobalSettings::Instance().AustriaFiscalCashBoxId = result.Trim();
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAustriaFiscalCashBoxId,TGlobalSettings::Instance().AustriaFiscalCashBoxId);
-                tbtnConfigure->Caption = TGlobalSettings::Instance().AustriaFiscalCashBoxId != "" ? "*****" : "";
+                TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
             }
+            TGlobalSettings::Instance().AustriaFiscalCashBoxId = result.Trim();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAustriaFiscalCashBoxId,TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+            tbtnConfigure->Caption = TGlobalSettings::Instance().AustriaFiscalCashBoxId != "" ? "*****" : "";
             DBTransaction1.Commit();
         }
         catch(Exception &E)
@@ -146,35 +148,57 @@ void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
         }
     }
 }//---------------------------------------------------------------------------
-
 void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
 {
     Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
     DBTransaction1.StartTransaction();
-    TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+
     try
     {
-        if(!TDeviceRealTerminal::Instance().FiscalPort->Open(TDeviceRealTerminal::Instance().FiscalPort->PortNumber))
+        if(StorageType == PosPlus)
         {
-            MessageBox("Unable to open Port for PosPlus. Please check details.", "Error",MB_OK + MB_ICONERROR);
-        }
-        else
-        {
-            AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData("ver 0000", eFiscalValidate);
-            std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
-            bool isSuccessful = dataUtility->AnalyzeResponse(response, eFiscalVerNumber);
-            if(isSuccessful)
+            TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+            if(!TDeviceRealTerminal::Instance().FiscalPort->Open(TDeviceRealTerminal::Instance().FiscalPort->PortNumber))
             {
-                TGlobalSettings::Instance().IsFiscalStorageEnabled = true;
-                tbtnConfigure->ButtonColor = clGreen;
-                TGlobalSettings::Instance().CaptureRefundRefNo = false;
-                TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmCaptureRefundRefNo, TGlobalSettings::Instance().CaptureRefundRefNo);
+                MessageBox("Unable to open Port for PosPlus. Please check details.", "Error",MB_OK + MB_ICONERROR);
             }
             else
-                MessageBox("Details are not correct for successful PosPlus communication. Please Check.","Error",MB_OK + MB_ICONERROR);
+            {
+                AnsiString response = TDeviceRealTerminal::Instance().FiscalPort->SetFiscalData("ver 0000", eFiscalValidate);
+                std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
+                bool isSuccessful = dataUtility->AnalyzeResponse(response, eFiscalVerNumber);
+                if(isSuccessful)
+                {
+                    TGlobalSettings::Instance().IsFiscalStorageEnabled = true;
+                    TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
+                    tbtnConfigure->ButtonColor = clGreen;
+                    TGlobalSettings::Instance().CaptureRefundRefNo = false;
+                    TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmCaptureRefundRefNo, TGlobalSettings::Instance().CaptureRefundRefNo);
+                    MessageBox("Pos Plus details are validated.\rOther Fiscal integrations are disabled now.","Info",MB_OK+MB_ICONINFORMATION);
+                }
+                else
+                    MessageBox("Details are not correct for successful PosPlus communication. Please Check.","Error",MB_OK + MB_ICONERROR);
+            }
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
         }
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+        else if(StorageType == AustriaFiscal)
+        {
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
+            if(AreDetailsProvidedForAustria())
+            {
+                // Call Services to Validate details
+                if(true)
+                {
+                     TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = true;
+                     TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+                     MessageBox("Fiscal Austria details are validated.\rOther Fiscal integrations are disabled now.","Info",MB_OK+MB_ICONINFORMATION);
+                }
+            }
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
+        }
         DBTransaction1.Commit();
     }
     catch(Exception &Exc)
@@ -187,15 +211,30 @@ void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
 void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
 {
 //    tbtnValidateMouseClick(NULL);
-    if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
+    if(StorageType == PosPlus)
     {
-        if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
-            MessageBox("Please validate the settings to enable PosPlus communication or set Port Number to 0 to exit.","Information",MB_OK + MB_ICONINFORMATION);
+        if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
+        {
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                MessageBox("Please validate the settings to enable PosPlus communication or set Port Number to 0 to exit.","Information",MB_OK + MB_ICONINFORMATION);
+            else
+                Close();
+        }
         else
             Close();
     }
-    else
-        Close();
+    else if(StorageType == AustriaFiscal)
+    {
+        if(TGlobalSettings::Instance().AustriaFiscalUrl != "")
+        {
+            if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+                MessageBox("Please validate the settings to enable Fiscal Austria or set URL to blank to exit.","Information",MB_OK + MB_ICONINFORMATION);
+            else
+                Close();
+        }
+        else
+            Close();
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Sender)
@@ -251,13 +290,14 @@ void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Send
         DBTransaction.StartTransaction();
         try
         {
-            UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalAccessToken,"Enter Access Token for Fiscal Austria");
-            if(result.Trim() != "")
+            UnicodeString result = ShowKeyBoard(100,"","Enter Access Token for Fiscal Austria");
+            if((TGlobalSettings::Instance().AustriaFiscalAccessToken != result) || TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() == "")
             {
-                TGlobalSettings::Instance().AustriaFiscalAccessToken = result.Trim();
-                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalAccessToken,TGlobalSettings::Instance().AustriaFiscalAccessToken);
-                tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken != "" ? "*****" : "";
+                TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
             }
+            TGlobalSettings::Instance().AustriaFiscalAccessToken = result.Trim();
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalAccessToken,TGlobalSettings::Instance().AustriaFiscalAccessToken);
+            tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken != "" ? "*****" : "";
             DBTransaction.Commit();
         }
         catch(Exception &Exc)
@@ -300,7 +340,7 @@ void TfrmSetUpPosPlus::ConfigureForMode()
 //-----------------------------------------------------------------------------
 UnicodeString TfrmSetUpPosPlus::ShowKeyBoard(int maxLength,UnicodeString value,UnicodeString caption)
 {
-    UnicodeString retValue = value;
+    UnicodeString retValue = "";
     std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
     frmTouchKeyboard->MaxLength = maxLength;
     frmTouchKeyboard->AllowCarriageReturn = false;
@@ -322,12 +362,13 @@ void __fastcall TfrmSetUpPosPlus::tbtnTerminalIdMouseClick(TObject *Sender)
     try
     {
         UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalTerminalId,"Enter Terminal Id for Fiscal Austria");
-        if(result.Trim() != "")
+        if((TGlobalSettings::Instance().AustriaFiscalTerminalId != result) || TGlobalSettings::Instance().AustriaFiscalTerminalId.Trim() == "")
         {
-            TGlobalSettings::Instance().AustriaFiscalTerminalId = result;
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalCashBoxId,TGlobalSettings::Instance().AustriaFiscalTerminalId);
-            tbtnTerminalId->Caption = TGlobalSettings::Instance().AustriaFiscalTerminalId;
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
         }
+        TGlobalSettings::Instance().AustriaFiscalTerminalId = result;
+        TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalTerminalId,TGlobalSettings::Instance().AustriaFiscalTerminalId);
+        tbtnTerminalId->Caption = TGlobalSettings::Instance().AustriaFiscalTerminalId;
         DBTransaction.Commit();
     }
     catch(Exception &Exc)
@@ -337,4 +378,29 @@ void __fastcall TfrmSetUpPosPlus::tbtnTerminalIdMouseClick(TObject *Sender)
     }
 }
 //---------------------------------------------------------------------------
+bool TfrmSetUpPosPlus::AreDetailsProvidedForAustria()
+{
+    bool allProvided = false;
+    UnicodeString errorString = "";
+    if(TGlobalSettings::Instance().AustriaFiscalUrl.Trim() != "")
+        if(TGlobalSettings::Instance().AustriaFiscalCashBoxId.Trim() != "")
+            if(TGlobalSettings::Instance().AustriaFiscalTerminalId.Trim() != "")
+                if(TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "")
+                    allProvided = true;
+                else
+                    errorString = "Please provide Access Token for Fiscal Austria.\r";
+            else
+                errorString = "Please provide Terminal Id for Fiscal Austria.\r";
+        else
+            errorString = "Please provide Cash Box Id for Fiscal Austria.\r";
+    else
+        errorString = "Please provide URL for Fiscal Austria.\r";
+    if(errorString != "")
+    {
+        errorString += "Fiscal Austria can not be enabled.";
+        MessageBox(errorString,"Error,",MB_OK+MB_ICONERROR);
+    }
+    return allProvided;
 
+}
+//---------------------------------------------------------------------------
