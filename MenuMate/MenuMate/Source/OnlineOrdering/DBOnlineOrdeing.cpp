@@ -543,12 +543,13 @@ void TDBOnlineOrdering::UpdateHappyHourPriceForItem(Database::TDBTransaction &db
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text = " UPDATE ORDERS a SET a.PRICE_LEVEL1 = :PRICE_LEVEL1 , a.HAPPYHOUR = :HAPPYHOUR "
+        ibInternalQuery->SQL->Text = " UPDATE ORDERS a SET a.PRICE_LEVEL1 = :PRICE_LEVEL1 , a.HAPPYHOUR = :HAPPYHOUR, a.PRICE = :PRICE  "
                                      " WHERE a.ITEM_ID = :ITEM_ID AND a.SIZE_NAME = :SIZE_NAME AND a.ORDER_GUID = :ORDER_GUID ";
         ibInternalQuery->ParamByName("ITEM_ID")->AsInteger = itemKey;
         ibInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
         ibInternalQuery->ParamByName("ORDER_GUID")->AsString = onlineOrderId;
         ibInternalQuery->ParamByName("PRICE_LEVEL1")->AsCurrency = hhPrice;
+        ibInternalQuery->ParamByName("PRICE")->AsCurrency = hhPrice;
         ibInternalQuery->ParamByName("HAPPYHOUR")->AsString = "T";
         ibInternalQuery->ExecQuery();
     }

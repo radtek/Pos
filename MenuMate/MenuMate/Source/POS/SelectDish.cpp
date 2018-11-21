@@ -9664,6 +9664,7 @@ void __fastcall TfrmSelectDish::ForceHappyHourClick()
         Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmForceHappyHour, TGlobalSettings::Instance().ForceHappyHour);
+        TGlobalSettings::Instance().HHPriceLevelKey = stHappyHour->Tag;
         DBTransaction.Commit();
     }
     else

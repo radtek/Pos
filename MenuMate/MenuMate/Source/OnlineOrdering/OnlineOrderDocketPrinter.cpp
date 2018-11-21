@@ -420,8 +420,15 @@ void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTr
 
         //Check whether current time fall under any hh profile..
         bool happyHour = isHappyHour->IsCurrentTimeHappyHour(TDeviceRealTerminal::Instance().ID.DeviceKey,priceLevel);
+
+        if(TGlobalSettings::Instance().ForceHappyHour)
+        {         
+            happyHour = true;
+            priceLevel = TGlobalSettings::Instance().HHPriceLevelKey;
+        }
+
         if(happyHour)
-        {
+        {   
             //TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
 
             for (int i = 0; i < paymentTransaction.Orders->Count; i++)
