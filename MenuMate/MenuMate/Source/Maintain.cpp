@@ -168,6 +168,11 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
         TouchBtnFiscalStorage->ButtonColor = clGreen;
         TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
     }
+    else if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        TouchBtnFiscalStorage->ButtonColor = clGreen;
+        TouchBtnFiscalStorage->Caption = "Austria Fiscal\r[Enabled]";
+    }
     else
     {
         TouchBtnFiscalStorage->ButtonColor = clRed;
@@ -3303,6 +3308,11 @@ void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
         {
             TouchBtnFiscalStorage->ButtonColor = clGreen;
             TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+        }
+        else if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            TouchBtnFiscalStorage->ButtonColor = clGreen;
+            TouchBtnFiscalStorage->Caption = "Austria Fiscal\r[Enabled]";
         }
         else
         {
