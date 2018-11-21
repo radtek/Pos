@@ -24,19 +24,6 @@ __fastcall TfrmSetUpPosPlus::TfrmSetUpPosPlus(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::FormShow(TObject *Sender)
 {
-    if(StorageType == PosPlus)
-    {
-        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
-            tbtnConfigure->ButtonColor = clGreen;
-        else
-            tbtnConfigure->ButtonColor = clRed;
-
-        tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
-    }
-    else if(StorageType == AustriaFiscal)
-    {
-        MessageBox("Austria Fiscal Selected","",MB_OK);
-    }
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
@@ -46,31 +33,44 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
 	DBTransaction.StartTransaction();
     try
     {
-        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-        frmTouchNumpad->Caption = "Enter Port Number for POSPlus.";
-        frmTouchNumpad->btnSurcharge->Caption = "Ok";
-        frmTouchNumpad->btnSurcharge->Visible = true;
-        frmTouchNumpad->btnDiscount->Visible = false;
-        frmTouchNumpad->Mode = pmNumber;
-        frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().FiscalPort->PortNumber;
-        if (frmTouchNumpad->ShowModal() == mrOk)
+        if(StorageType == PosPlus)
         {
-            if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != frmTouchNumpad->INTResult)
+            std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+            frmTouchNumpad->Caption = "Enter Port Number for POSPlus.";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->Mode = pmNumber;
+            frmTouchNumpad->INTInitial = TDeviceRealTerminal::Instance().FiscalPort->PortNumber;
+            if (frmTouchNumpad->ShowModal() == mrOk)
             {
-                TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
-                tbtnConfigure->ButtonColor = clRed;
+                if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != frmTouchNumpad->INTResult)
+                {
+                    TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+                    tbtnConfigure->ButtonColor = clRed;
+                }
+                TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,frmTouchNumpad->INTResult);
+                if(frmTouchNumpad->INTResult == 0)
+                {
+                   TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+                   tbtnConfigure->ButtonColor = clRed;
+                   TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+                }
+                DBTransaction.Commit();
+                DBTransaction.StartTransaction();
+                TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction);
+                DBTransaction.Commit();
             }
-//            TGlobalSettings::Instance().FiscalServerPortNumber = frmTouchNumpad->INTResult;
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmFiscalServerPortNumber,frmTouchNumpad->INTResult);//TGlobalSettings::Instance().FiscalServerPortNumber);
-            if(frmTouchNumpad->INTResult == 0)
+        }
+        else if(StorageType == AustriaFiscal)
+        {
+            UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalUrl,"Enter Url for Fiscal Austria");
+            if(result.Trim() != "")
             {
-               TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
-               tbtnConfigure->ButtonColor = clRed;
-               TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+                TGlobalSettings::Instance().AustriaFiscalUrl = result.Trim();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalUrl,TGlobalSettings::Instance().AustriaFiscalUrl);
+                tbtnPortNumber->Caption = TGlobalSettings::Instance().AustriaFiscalUrl;
             }
-            DBTransaction.Commit();
-            DBTransaction.StartTransaction();
-            TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction);
             DBTransaction.Commit();
         }
     }
@@ -82,33 +82,61 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
-    if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
+    if(StorageType == PosPlus)
+    {
+        if(TDeviceRealTerminal::Instance().FiscalPort->PortNumber != 0)
+        {
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+            DBTransaction1.StartTransaction();
+            TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+            try
+            {
+                std::auto_ptr<TfrmSerialConfig> frmSerialConfig(TfrmSerialConfig::Create<TfrmSerialConfig>(this));
+                frmSerialConfig->Caption = "POS Plus Port Configuration";
+                TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
+                frmSerialConfig->LoadSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
+                frmSerialConfig->cbAsync->Enabled = false;
+                if(frmSerialConfig->ShowModal() == mrOk)
+                {
+                    DBTransaction1.Commit();
+                    DBTransaction1.StartTransaction();
+                    TDeviceRealTerminal::Instance().FiscalPort->Close();
+                    frmSerialConfig->AssignSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
+                    TDeviceRealTerminal::Instance().FiscalPort->SaveSettings(DBTransaction1);
+                    DBTransaction1.Commit();
+                    DBTransaction1.StartTransaction();
+                    TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
+                    DBTransaction1.Commit();
+                    tbtnConfigure->ButtonColor = clRed;
+                    MessageBox("Please validate the settings to enable PosPlus communication.","Information",MB_OK + MB_ICONINFORMATION);
+                }
+            }
+            catch(Exception &E)
+            {
+                DBTransaction1.Rollback();
+                MessageBox(E.Message, "Error",MB_OK + MB_ICONERROR);
+                TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+            }
+        }
+        else
+            MessageBox("Please set Port Number First.","Information", MB_OK + MB_ICONINFORMATION);
+    }
+    else if(StorageType == AustriaFiscal)
     {
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
         DBTransaction1.StartTransaction();
-        TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
         try
         {
-            std::auto_ptr<TfrmSerialConfig> frmSerialConfig(TfrmSerialConfig::Create<TfrmSerialConfig>(this));
-            frmSerialConfig->Caption = "POS Plus Port Configuration";
-            TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
-            frmSerialConfig->LoadSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
-            frmSerialConfig->cbAsync->Enabled = false;
-            if(frmSerialConfig->ShowModal() == mrOk)
+            UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalCashBoxId,"Enter Cash Box Id for FIscal Austria");
+            if(result.Trim() != "")
             {
-                DBTransaction1.Commit();
-                DBTransaction1.StartTransaction();
-                TDeviceRealTerminal::Instance().FiscalPort->Close();
-                frmSerialConfig->AssignSettings(TDeviceRealTerminal::Instance().FiscalPort->GetTComPort(),TDeviceRealTerminal::Instance().FiscalPort->AsyncMode);
-                TDeviceRealTerminal::Instance().FiscalPort->SaveSettings(DBTransaction1);
-                DBTransaction1.Commit();
-                DBTransaction1.StartTransaction();
-                TDeviceRealTerminal::Instance().FiscalPort->Initialise(DBTransaction1);
-                DBTransaction1.Commit();
-                tbtnConfigure->ButtonColor = clRed;
-                MessageBox("Please validate the settings to enable PosPlus communication.","Information",MB_OK + MB_ICONINFORMATION);
+                TGlobalSettings::Instance().AustriaFiscalCashBoxId = result.Trim();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction1,vmAustriaFiscalCashBoxId,TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+                tbtnConfigure->Caption = TGlobalSettings::Instance().AustriaFiscalCashBoxId != "" ? "*****" : "";
             }
+            DBTransaction1.Commit();
         }
         catch(Exception &E)
         {
@@ -117,8 +145,6 @@ void __fastcall TfrmSetUpPosPlus::tbtnConfigureMouseClick(TObject *Sender){
             TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
         }
     }
-    else
-        MessageBox("Please set Port Number First.","Information", MB_OK + MB_ICONINFORMATION);
 }//---------------------------------------------------------------------------
 
 void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
@@ -174,46 +200,141 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnOrganizationNumberMouseClick(TObject *Sender)
 {
+    if(StorageType == PosPlus)
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+        try
+        {
+            std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+            frmTouchNumpad->Caption = "Enter Organization Number.";
+            frmTouchNumpad->btnSurcharge->Caption = "Ok";
+            frmTouchNumpad->btnSurcharge->Visible = true;
+            frmTouchNumpad->btnDiscount->Visible = false;
+            frmTouchNumpad->Mode = pmNumber;
+            double intialValue = 0;
+            TryStrToFloat(TGlobalSettings::Instance().OrganizationNumber,intialValue);
+            frmTouchNumpad->INTInitialLong = intialValue;
+            frmTouchNumpad->MaxLength = 10;
+            if (frmTouchNumpad->ShowModal() == mrOk)
+            {
+                TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResultLong;
+                int offset = 10 -TGlobalSettings::Instance().OrganizationNumber.Length();
+                UnicodeString value = "";
+                if(offset > 0)
+                {
+                    for(int i = 1; i <= offset; i++)
+                    {
+                       value += "0";
+                    }
+                    MessageBox("0 will be added in front of Organization Number","Information",MB_OK);
+                }
+                TGlobalSettings::Instance().OrganizationNumber = value;
+                AnsiString strValue = frmTouchNumpad->INTResultLong;
+                TGlobalSettings::Instance().OrganizationNumber += strValue;
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,  vmOrganizationNumber, TGlobalSettings::Instance().OrganizationNumber);
+                DBTransaction.Commit();
+                tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            }
+        }
+        catch(Exception &Exc)
+        {
+            DBTransaction.Rollback();
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+        }
+    }
+    else if(StorageType == AustriaFiscal)
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+        DBTransaction.StartTransaction();
+        try
+        {
+            UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalAccessToken,"Enter Access Token for Fiscal Austria");
+            if(result.Trim() != "")
+            {
+                TGlobalSettings::Instance().AustriaFiscalAccessToken = result.Trim();
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalAccessToken,TGlobalSettings::Instance().AustriaFiscalAccessToken);
+                tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken != "" ? "*****" : "";
+            }
+            DBTransaction.Commit();
+        }
+        catch(Exception &Exc)
+        {
+            DBTransaction.Rollback();
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+        }
+    }
+}
+void TfrmSetUpPosPlus::ConfigureForMode()
+{
+    try
+    {
+        if(StorageType == PosPlus)
+        {
+            tbtnTerminalId->Enabled         = false;
+            tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            tbtnPortNumber->Caption         = "Port Number";
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                tbtnConfigure->ButtonColor  = clRed;
+        }
+        else if(StorageType == AustriaFiscal)
+        {
+            labelPortNumber->Caption        = "Fiscal Autria Url";
+            tbtnPortNumber->Caption         = TGlobalSettings::Instance().AustriaFiscalUrl;
+            labelConfigure->Caption         = "Cash Box Id";
+            tbtnConfigure->Caption          = TGlobalSettings::Instance().AustriaFiscalCashBoxId.Trim() != "" ? "*****" : "";
+            tbtnConfigure->ButtonColor      = clNavy;
+            tbtnTerminalId->Enabled         = true;
+            tbtnTerminalId->Caption         = TGlobalSettings::Instance().AustriaFiscalTerminalId;
+            labelOrganization->Caption      = "Access Token";
+            tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "" ? "*****" : "";
+        }
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+UnicodeString TfrmSetUpPosPlus::ShowKeyBoard(int maxLength,UnicodeString value,UnicodeString caption)
+{
+    UnicodeString retValue = value;
+    std::auto_ptr<TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+    frmTouchKeyboard->MaxLength = maxLength;
+    frmTouchKeyboard->AllowCarriageReturn = false;
+    frmTouchKeyboard->StartWithShiftDown = false;
+    frmTouchKeyboard->KeyboardText = value;
+    frmTouchKeyboard->Caption = caption;
+    if (frmTouchKeyboard->ShowModal() == mrOk)
+    {
+        retValue = frmTouchKeyboard->KeyboardText;
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetUpPosPlus::tbtnTerminalIdMouseClick(TObject *Sender)
+{
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 	DBTransaction.StartTransaction();
     try
     {
-        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-        frmTouchNumpad->Caption = "Enter Organization Number.";
-        frmTouchNumpad->btnSurcharge->Caption = "Ok";
-        frmTouchNumpad->btnSurcharge->Visible = true;
-        frmTouchNumpad->btnDiscount->Visible = false;
-        frmTouchNumpad->Mode = pmNumber;
-        double intialValue = 0;
-        TryStrToFloat(TGlobalSettings::Instance().OrganizationNumber,intialValue);
-        frmTouchNumpad->INTInitialLong = intialValue;
-        frmTouchNumpad->MaxLength = 10;
-        if (frmTouchNumpad->ShowModal() == mrOk)
+        UnicodeString result = ShowKeyBoard(100,TGlobalSettings::Instance().AustriaFiscalTerminalId,"Enter Terminal Id for Fiscal Austria");
+        if(result.Trim() != "")
         {
-            TGlobalSettings::Instance().OrganizationNumber = frmTouchNumpad->INTResultLong;
-            int offset = 10 -TGlobalSettings::Instance().OrganizationNumber.Length();
-            UnicodeString value = "";
-            if(offset > 0)
-            {
-                for(int i = 1; i <= offset; i++)
-                {
-                   value += "0";
-                }
-                MessageBox("0 will be added in front of Organization Number","Information",MB_OK);
-            }
-            TGlobalSettings::Instance().OrganizationNumber = value;
-            AnsiString strValue = frmTouchNumpad->INTResultLong;
-            TGlobalSettings::Instance().OrganizationNumber += strValue;
-            TManagerVariable::Instance().SetDeviceStr(DBTransaction,  vmOrganizationNumber, TGlobalSettings::Instance().OrganizationNumber);
-            DBTransaction.Commit();
-            tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            TGlobalSettings::Instance().AustriaFiscalTerminalId = result;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmAustriaFiscalCashBoxId,TGlobalSettings::Instance().AustriaFiscalTerminalId);
+            tbtnTerminalId->Caption = TGlobalSettings::Instance().AustriaFiscalTerminalId;
         }
-
+        DBTransaction.Commit();
     }
     catch(Exception &Exc)
     {
-        DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Exc.Message);
+        DBTransaction.Rollback();
     }
 }
+//---------------------------------------------------------------------------
+

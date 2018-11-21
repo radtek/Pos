@@ -3554,11 +3554,8 @@ void TfrmMaintain::SetUpPosPlus()
             std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
             frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
             frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
-            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
-            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
             frmsetUpPosPlus->StorageType = PosPlus;
-            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
-                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
+            frmsetUpPosPlus->ConfigureForMode();
             frmsetUpPosPlus->ShowModal();
         }
         else if (Result == lsDenied)
@@ -3594,11 +3591,8 @@ void TfrmMaintain::SetUpAustriaFiscal()
             std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
             frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
             frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
-            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
-            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
             frmsetUpPosPlus->StorageType = AustriaFiscal;
-            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
-                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
+            frmsetUpPosPlus->ConfigureForMode();
             frmsetUpPosPlus->ShowModal();
         }
         else if (Result == lsDenied)

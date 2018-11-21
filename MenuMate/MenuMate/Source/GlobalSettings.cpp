@@ -449,5 +449,9 @@ TGlobalSettings::TGlobalSettings()
     PrintTipAndSignature = false;
     EnableAdjustAuthorisationOnCards = false;
     IsAustriaFiscalStorageEnabled = false;
+    AustriaFiscalUrl = "";
+    AustriaFiscalCashBoxId = "";
+    AustriaFiscalTerminalId = "";
+    AustriaFiscalAccessToken = "";
 }
 
