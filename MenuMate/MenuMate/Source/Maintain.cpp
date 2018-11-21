@@ -171,7 +171,7 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
     else
     {
         TouchBtnFiscalStorage->ButtonColor = clRed;
-        TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
+        TouchBtnFiscalStorage->Caption = "Fiscal Reporting\r[Disabled]";
     }
 }
 //---------------------------------------------------------------------------
@@ -3254,51 +3254,70 @@ bool TfrmMaintain::SetUpPhoenix()
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
 {
-     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-     DBTransaction.StartTransaction();
-     try
-     {
-    	TMMContactInfo TempUserInfo;
-    	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-    	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-    	DBTransaction.Commit();
-    	if (Result == lsAccepted)
-    	{
-            DBTransaction.StartTransaction();
-            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
-            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
-            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
-            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
-            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
-            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
-                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
-            frmsetUpPosPlus->ShowModal();
-            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    TLoginSuccess Result = VerifyUserAuthorization();
+	if (Result == lsAccepted)
+	{
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "POS Plus";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+
+
+        TVerticalSelection Item2;
+        Item2.Title = "Austria Fiscal";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clNavy);
+        Item2.CloseSelection = true;
+        SelectionForm->Items.push_back(Item2);
+
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            switch(Action)
             {
-                TouchBtnFiscalStorage->ButtonColor = clGreen;
-                TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+                case 1 :
+                {
+                   SetUpPosPlus();
+                   break;
+                }
+                case 2 :
+                {
+                   SetUpAustriaFiscal();
+                   break;
+                }
             }
-            else
-            {
-                TouchBtnFiscalStorage->ButtonColor = clRed;
-                TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
-            }
-    	}
-    	else if (Result == lsDenied)
-    	{
-    		MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
-    	}
-    	else if (Result == lsPINIncorrect)
-    	{
-    		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-    	}
-     }
-     catch (Exception &Exc)
-     {
-         DBTransaction.Rollback();
-         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
-     }
+        }
+        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+        {
+            TouchBtnFiscalStorage->ButtonColor = clGreen;
+            TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+        }
+        else
+        {
+            TouchBtnFiscalStorage->ButtonColor = clRed;
+            TouchBtnFiscalStorage->Caption = "Fiscal Reporting\r[Disabled]";
+        }
+	}
+	else if (Result == lsDenied)
+	{
+		MessageBox("You do not have access to the Fiscal Interface settings.", "Error", MB_OK + MB_ICONERROR);
+	}
+	else if (Result == lsPINIncorrect)
+	{
+		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+	}
 }
 //---------------------------------------------------------------------------
 bool TfrmMaintain::SetUpOracle()
@@ -3506,5 +3525,85 @@ bool TfrmMaintain::SyncOnlineOrderingDetails()
     TManagerCloudSync ManagerCloudSync;
     result = ManagerCloudSync.SyncOnlineOrderingDetails();
     return result;
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::SetUpPosPlus()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo TempUserInfo;
+        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+        TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+        DBTransaction.Commit();
+        if (Result == lsAccepted)
+        {
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
+            frmsetUpPosPlus->StorageType = PosPlus;
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
+            frmsetUpPosPlus->ShowModal();
+        }
+        else if (Result == lsDenied)
+        {
+            MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if (Result == lsPINIncorrect)
+        {
+            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+        }
+    }
+    catch (Exception &Exc)
+    {
+     DBTransaction.Rollback();
+     TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::SetUpAustriaFiscal()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo TempUserInfo;
+        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+        TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+        DBTransaction.Commit();
+        if (Result == lsAccepted)
+        {
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
+            frmsetUpPosPlus->StorageType = AustriaFiscal;
+            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
+                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
+            frmsetUpPosPlus->ShowModal();
+        }
+        else if (Result == lsDenied)
+        {
+            MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if (Result == lsPINIncorrect)
+        {
+            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+        }
+    }
+    catch (Exception &Exc)
+    {
+     DBTransaction.Rollback();
+     TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+    }
 }
 //-----------------------------------------------------------------------------

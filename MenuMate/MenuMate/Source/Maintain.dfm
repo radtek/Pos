@@ -20,8 +20,6 @@ object frmMaintain: TfrmMaintain
   Scaled = False
   OnResize = FormResize
   OnShow = FormShow
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   DesignSize = (
     1009
     768)
@@ -128,10 +126,6 @@ object frmMaintain: TfrmMaintain
     object tsMaintenance: TTabSheet
       Caption = 'Maintenance.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel1: TPanel
         Left = 0
         Top = 0
@@ -496,10 +490,6 @@ object frmMaintain: TfrmMaintain
       Caption = 'Quick Messages.'
       ImageIndex = 2
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel2: TPanel
         Left = 0
         Top = 0
@@ -682,10 +672,6 @@ object frmMaintain: TfrmMaintain
       Caption = 'Interfaces.'
       ImageIndex = 3
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -922,7 +908,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'POS Plus'
+            Caption = 'Fiscal Reporting'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace

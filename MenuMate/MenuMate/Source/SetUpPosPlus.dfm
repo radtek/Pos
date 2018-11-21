@@ -65,8 +65,8 @@ object frmSetUpPosPlus: TfrmSetUpPosPlus
     object labelOrganization: TLabel
       Left = 16
       Top = 259
-      Width = 170
-      Height = 38
+      Width = 160
+      Height = 36
       Caption = 'Click to Enter Organization Number'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText

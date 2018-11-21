@@ -24,12 +24,19 @@ __fastcall TfrmSetUpPosPlus::TfrmSetUpPosPlus(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::FormShow(TObject *Sender)
 {
-    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
-        tbtnConfigure->ButtonColor = clGreen;
-    else
-        tbtnConfigure->ButtonColor = clRed;
+    if(StorageType == PosPlus)
+    {
+        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+            tbtnConfigure->ButtonColor = clGreen;
+        else
+            tbtnConfigure->ButtonColor = clRed;
 
-    tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+        tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
+    }
+    else if(StorageType == AustriaFiscal)
+    {
+        MessageBox("Austria Fiscal Selected","",MB_OK);
+    }
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)

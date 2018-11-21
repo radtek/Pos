@@ -491,6 +491,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
        }
        WriteDBPathAndIPToFile();
+       if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+          SetUpAustriaFiscal();
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -1893,3 +1895,8 @@ void TfrmMain::WriteDBPathAndIPToFile()
     logList->SaveToFile(fileName );
 }
 ////------------------------------------------------------------------------------------------
+void TfrmMain::SetUpAustriaFiscal()
+{
+    // Call for Setting up Austria Fiscal
+}
+//------------------------------------------------------------------------------

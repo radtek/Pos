@@ -11,6 +11,7 @@
 #include "ZForm.h"
 #include <ExtCtrls.hpp>
 //---------------------------------------------------------------------------
+enum eFiscalStorage { PosPlus = 1, AustriaFiscal};
 class TfrmSetUpPosPlus : public TZForm
 {
 __published:	// IDE-managed Components
@@ -34,6 +35,7 @@ private:	// User declarations
 public:		// User declarations
     __fastcall TfrmSetUpPosPlus(TComponent* Owner);
     void __fastcall FormShow(TObject *Sender);
+    eFiscalStorage StorageType;
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmSetUpPosPlus *frmSetUpPosPlus;
