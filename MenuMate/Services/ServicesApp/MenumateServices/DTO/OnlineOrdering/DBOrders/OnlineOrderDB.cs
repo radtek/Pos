@@ -956,7 +956,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                     if (reader.Read())
                     {
                         int profileKey = Convert.ToInt32(getReaderColumnValue(reader, "PROFILE_KEY", 0));
-                        command = dbQueries.IsTerminalExemptFromHappyHour(connection, transaction, 4129, profileKey);
+                        command = dbQueries.IsVariableKeyExist(connection, transaction, 4129, profileKey);
                         using (FbDataReader reader1 = command.ExecuteReader())
                         {
                             if (!reader1.Read())
@@ -976,6 +976,34 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         }
 
         private bool IsHappyHourRunning(int profileKey)
+        {
+            bool isHHInCurrentTimeSpan = false;
+            try
+            {
+
+                FbCommand command = dbQueries.IsVariableKeyExist(connection, transaction, 5015, profileKey);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        isHHInCurrentTimeSpan = true;
+                    }
+                    else
+                    {
+                        isHHInCurrentTimeSpan = GetTerminalHHProfiles(profileKey);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsHappyHourRunning " + e.Message, e);
+                throw;
+            }
+            return isHHInCurrentTimeSpan;
+
+        }
+
+        private bool GetTerminalHHProfiles(int profileKey)
         {
             bool isHHInCurrentTimeSpan = false;
             try
@@ -1051,7 +1079,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                             if (isProfileDay)  //if current day is profile day then check the time
                             {
-                                if (currentTime.Second >= startTime.Second && currentTime.Second <= endTime.Second)
+                                if (currentTime >= startTime && currentTime <= endTime)
                                 {
                                     isValidProfile = true;
                                 }

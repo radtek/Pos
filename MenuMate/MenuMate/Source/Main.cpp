@@ -486,6 +486,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmUpdateMenu, TGlobalSettings::Instance().UpdateMenu);
+       TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmForceHappyHour, false);
        if(TGlobalSettings::Instance().ItemPriceIncludeTax)
        {
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);

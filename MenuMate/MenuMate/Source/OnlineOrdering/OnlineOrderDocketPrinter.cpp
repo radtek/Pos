@@ -13,6 +13,7 @@
 #include "DBTab.h"
 #include "DocketManager.h"
 #include "ChefmateClientManager.h"
+#include "ManagerHappyHour.h"
 #include "Comms.h"
 //---------------------------------------------------------------------------
 
@@ -148,21 +149,21 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 {
 	try
 	{
-//        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-//        TDeviceRealTerminal::Instance().RegisterTransaction(dBTransaction);
-//        dBTransaction.StartTransaction();
-
         UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderGUID(dBTransaction);
         if(orderUniqueId.Trim() == "")
             return;
+
 		// Load the Order.
 		TPaymentTransaction PaymentTransaction(dBTransaction);
 		PaymentTransaction.SalesType = eWeb;
-//		PaymentTransaction.TimeKey = WebOrder.TimeKey;
 
-	 //	std::set<__int64>ItemsTabs;
-	  //	ItemsTabs.insert(WebOrder.TabKey);
-		TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
+		TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(PaymentTransaction.DBTransaction, PaymentTransaction.Orders, orderUniqueId);
+
+         //Process happy hour for every order if it fall in HH time zone.
+        if(TGlobalSettings::Instance().ForceHappyHour || !TGlobalSettings::Instance().TerminalExemptFromHappyHour)
+        {
+            ProcessHappyHour(PaymentTransaction, orderUniqueId);
+        }
 
 		TMMContactInfo Member;
 	  //	TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->GetContactDetails(DBTransaction, WebOrder.ContactKey, Member);
@@ -205,87 +206,7 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
         PaymentTransaction.IgnoreLoyaltyKey = false;
 		PaymentTransaction.Recalc();
 
-//	    ProcessChitNumbers(inDisplayOwner, PaymentTransaction);   //UI Distortion
-//		ProcessPatrons(PaymentTransaction, PaymentTransaction.SalesType, 1);
 		ProcessSecurity(PaymentTransaction);
-
-		// Time Tracking
- //		ProcessTimeTracking(PaymentTransaction);
-		// Stock
-//		ProcessStock(PaymentTransaction);
-
-  //      PaymentTransaction.ChitNumber.DeliveryTime = WebOrder.DateExpected;
-
-     //   int WebKey = TDBWebUtil::GetWebOrderKeyByTabKey(DBTransaction, WebOrder.TabKey);
-       // std::auto_ptr<TStringList>WebDeliveryDetials(new TStringList);
-        //TDBWebUtil::getWebOrderExtraData(DBTransaction, WebKey, "DELIVERY", WebDeliveryDetials.get());
-
-//        std::auto_ptr<TStringList>WebDetials(new TStringList);
-//        TDBWebUtil::getWebOrderDetials(DBTransaction, WebKey, *WebDetials.get());
-//        TMMContactInfo webMember;
-//
-//        if(WebOrderChitNumber.Valid())
-//        {
-//            for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
-//            {
-//                TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
-//                Order->ChitNumber = WebOrderChitNumber;
-//                if (Order->ChitNumber.ChitNumberKey != 0)
-//                {
-//                    int activeChitKey = TDBActiveChit::GetOrCreateActiveChit(DBTransaction, Order->ChitNumber);
-//                    Order->SetActiveChitNumberKey(activeChitKey);
-//                }
-//                TDBOrder::UpdateOrderTableForWebOrders(DBTransaction, Order);
-//            }
-//
-//        }
-
-//        if(TGlobalSettings::Instance().CaptureCustomerName)
-//        {
-//            webMember.Clear();
-//            if(!WebOrderChitNumber.Valid())
-//            {
-//               WebDeliveryDetials->Clear();
-//            }
-//        }
-//        if(WebOrderChitNumber.Valid())
-//        {
-//           if(WebOrderChitNumber.OnlineDeliveryOrder)
-//           {
-//               webMember = TDBWebUtil::autoAddWebMembers(DBTransaction, WebDetials.get(), WebDeliveryDetials.get(), WebKey);
-//               if(Member.ContactKey > 0)
-//               {
-//                  webMember = TDBWebUtil::checkAppliedChit(WebOrderChitNumber, Member, WebDeliveryDetials.get());
-//               }
-//               else
-//               {
-//                   webMember = TDBWebUtil::checkAppliedChit(WebOrderChitNumber, webMember, WebDeliveryDetials.get());
-//               }
-//           }
-//           else
-//           {
-//              webMember.Clear();
-//              WebDeliveryDetials->Clear();
-//           }
-//           if(WebOrderChitNumber.PromptForPickUpDeliveryTime)
-//           {
-//                if((double)WebOrderChitNumber.DeliveryTime > 0)
-//                {
-//                   PaymentTransaction.ChitNumber.DeliveryTime = WebOrderChitNumber.DeliveryTime;
-//                }
-//                else
-//                {
-//                   WebOrderChitNumber.DeliveryTime = WebOrder.DateExpected;
-//                }
-//           }
-//           else
-//           {
-//               WebOrderChitNumber.DeliveryTime = WebOrder.DateExpected;
-//           }
-//           PaymentTransaction.ChitNumber = WebOrderChitNumber;
-//        }
-//        PaymentTransaction.Membership.Assign(webMember, emsManual);
-//        PaymentTransaction.WebOrderKey =  WebOrder.WebKey;
 
 		// Print the Order to the Kitchen.
 		PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"OnlineOrder");   //tab key to be changed
@@ -488,4 +409,61 @@ void TOnlineDocketPrinterThread::SendOnlineOrderToChefmate(TPaymentTransaction* 
     {
        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Menumate Online Ordering failed to Open Chefmate Interface");
     }
+}
+//-------------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTransaction, UnicodeString orderUniqueId)
+{
+    try
+    {
+        TManagerHappyHour* isHappyHour = new TManagerHappyHour();
+        int priceLevel;
+
+        //Check whether current time fall under any hh profile..
+        bool happyHour = isHappyHour->IsCurrentTimeHappyHour(TDeviceRealTerminal::Instance().ID.DeviceKey,priceLevel);
+        if(happyHour)
+        {
+            //TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
+
+            for (int i = 0; i < paymentTransaction.Orders->Count; i++)
+		    {
+                TItemComplete *Order = (TItemComplete*)paymentTransaction.Orders->Items[i];
+
+                UpdateHappyHourPrices(paymentTransaction.DBTransaction, Order->ItemKey, Order->Size, orderUniqueId, priceLevel);
+
+                for (int j = 0; j < Order->SubOrders->Count; j++)
+                {
+                    TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
+
+                    if (SubOrder)
+                        UpdateHappyHourPrices(paymentTransaction.DBTransaction, SubOrder->ItemKey, SubOrder->Size, orderUniqueId, priceLevel);
+                }
+            }
+        }
+    }
+    catch(EAbort &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
+}
+//-------------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::UpdateHappyHourPrices(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
+                                    UnicodeString orderUniqueId, int priceLevel)
+{
+//    try
+//    {
+         //get ItemSize Key corresponding to item and size.
+        int itemSizeKey = TDBOnlineOrdering::GetItemSizeKey(dbTransaction, itemKey, sizeName);
+
+        //Get HH Price as per item size and pricelevels
+        Currency happyHourPrice = TDBOnlineOrdering::GetHappyHourPrice(dbTransaction, itemSizeKey, priceLevel);
+
+        //Update Happy Hour Price Corresponding to item key and item size.
+        TDBOnlineOrdering::UpdateHappyHourPriceForItem(dbTransaction,itemKey, sizeName, orderUniqueId, happyHourPrice);
+//    }
+//    catch(EAbort &E)
+//	{
+////		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+////		throw;
+//	}
 }

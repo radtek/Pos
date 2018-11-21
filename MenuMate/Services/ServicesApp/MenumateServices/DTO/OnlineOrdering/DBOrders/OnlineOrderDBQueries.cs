@@ -1017,7 +1017,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand IsTerminalExemptFromHappyHour(FbConnection connection, FbTransaction transaction, int variableKey, int profileKey)
+        public FbCommand IsVariableKeyExist(FbConnection connection, FbTransaction transaction, int variableKey, int profileKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1090,7 +1090,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                             a.HAPPYHOURDAY_PROFILEDATE,a.PRICELEVEL_KEY,  coalesce(hprior.HAPPYHOUR_PRIORITY_VAL,0) HAPPYHOUR_PRIORITY_VAL  
                                         FROM HAPPYHOURPROFILES a 
                                         LEFT JOIN HAPPYHOUR_PRIORITY hprior on hprior.HAPPYHOURPROFILES_KEY =a.HAPPYHOURPROFILES_KEY  
-                                        WHERE a.HAPPYHOURPROFILES_KEY = :HAPPYHOURPROFILES_KEY and a.ISACTIVE= :ISACTIVE ";
+                                        WHERE a.HAPPYHOURPROFILES_KEY = @HAPPYHOURPROFILES_KEY and a.ISACTIVE= @ISACTIVE ";
 
                 command.Parameters.AddWithValue("@HAPPYHOURPROFILES_KEY", hhProfileKey);
                 command.Parameters.AddWithValue("@ISACTIVE", "T");
@@ -1111,7 +1111,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             try
             {
                 command.CommandText = @" SELECT  HAPPYHOURDAYS_KEY  FROM HAPPYHOURDAYS 
-                                        WHERE HAPPYHOURPROFILES_KEY = :HAPPYHOURPROFILES_KEY 
+                                        WHERE HAPPYHOURPROFILES_KEY = @HAPPYHOURPROFILES_KEY 
                                         ORDER BY HAPPYHOURDAYS_KEY ASC ";
 
                 command.Parameters.AddWithValue("@HAPPYHOURPROFILES_KEY", hhProfileKey);

@@ -9601,17 +9601,14 @@ void __fastcall TfrmSelectDish::ForceHappyHourClick()
 
    if (UserForceHappyHourRight)
 	{
-
-
         if (TGlobalSettings::Instance().ForceHappyHour)
      	{
 	    	TGlobalSettings::Instance().ForceHappyHour = false;
             stHappyHour->Tag= 1;
 	    }
-	   else
+	    else
 	    {
            if (TGlobalSettings::Instance().HappyHourExempt)return;
-
 
             std::vector<THappyHour> HappyHourProfiles;
             //get the available profiles  in list
@@ -9661,14 +9658,13 @@ void __fastcall TfrmSelectDish::ForceHappyHourClick()
                                 break;
                         }
                     }
-
               }
-
             }
-
-
-
      	}
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+		DBTransaction.StartTransaction();
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmForceHappyHour, TGlobalSettings::Instance().ForceHappyHour);
+        DBTransaction.Commit();
     }
     else
     {
