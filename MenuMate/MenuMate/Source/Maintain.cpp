@@ -3384,23 +3384,19 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
         }
 
 
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
-
-        if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TManagerLocations locationManager;
+        if(locationManager.FindLocation(DBTransaction,"Loyalty") == 0)
         {
-           TManagerLocations locationManager;
-            int Key = 0;
-           if(locationManager.FindLocation(DBTransaction,"Loyalty") == 0)
-           {
+             int Key = 0;
+            locationManager.SetLocation(DBTransaction,Key,"Loyalty",3);
+        }
 
-           locationManager.SetLocation(DBTransaction,Key,"Loyalty",3);
-           }
-
-       }
+    }
         DBTransaction.Commit();
-        
-
 
     }
 }
