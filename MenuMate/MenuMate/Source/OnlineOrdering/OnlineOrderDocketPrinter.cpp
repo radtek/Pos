@@ -428,21 +428,41 @@ void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTr
         }
 
         if(happyHour)
-        {   
-            //TDBOnlineOrdering::GetOrdersByOnlineOrderGUID(dBTransaction, PaymentTransaction.Orders, orderUniqueId);
-
+        {
             for (int i = 0; i < paymentTransaction.Orders->Count; i++)
 		    {
                 TItemComplete *Order = (TItemComplete*)paymentTransaction.Orders->Items[i];
 
-                UpdateHappyHourPrices(paymentTransaction.DBTransaction, Order->ItemKey, Order->Size, orderUniqueId, priceLevel);
+                int itemSizeKey = TDBOnlineOrdering::GetItemSizeKey(paymentTransaction.DBTransaction, Order->ItemKey, Order->Size);
+
+                //Get HH Price as per item size and pricelevels
+                Currency happyHourPrice = TDBOnlineOrdering::GetHappyHourPrice(paymentTransaction.DBTransaction, itemSizeKey, priceLevel);
+
+                Order->SetPriceLevelCustom(happyHourPrice);
+                Order->RunBillCalculator();
+
+                //Update Happy Hour Price Corresponding to item key and item size.
+                TDBOnlineOrdering::UpdateHappyHourPriceForItem(paymentTransaction.DBTransaction,Order->ItemKey, Order->Size, orderUniqueId, happyHourPrice,
+                                Order->BillCalcResult.BasePrice);
 
                 for (int j = 0; j < Order->SubOrders->Count; j++)
                 {
                     TItemCompleteSub *SubOrder = Order->SubOrders->SubOrderGet(j);
 
                     if (SubOrder)
-                        UpdateHappyHourPrices(paymentTransaction.DBTransaction, SubOrder->ItemKey, SubOrder->Size, orderUniqueId, priceLevel);
+                    {
+                        itemSizeKey = TDBOnlineOrdering::GetItemSizeKey(paymentTransaction.DBTransaction, SubOrder->ItemKey, SubOrder->Size);
+
+                        //Get HH Price as per item size and pricelevels
+                        happyHourPrice = TDBOnlineOrdering::GetHappyHourPrice(paymentTransaction.DBTransaction, itemSizeKey, priceLevel);
+
+                        SubOrder->SetPriceLevelCustom(happyHourPrice);
+                        SubOrder->RunBillCalculator();
+
+                        //Update Happy Hour Price Corresponding to item key and item size.
+                        TDBOnlineOrdering::UpdateHappyHourPriceForItem(paymentTransaction.DBTransaction,SubOrder->ItemKey, SubOrder->Size, orderUniqueId,
+                                            happyHourPrice, SubOrder->BillCalcResult.BasePrice);
+                    }
                 }
             }
         }
@@ -454,23 +474,3 @@ void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTr
 	}
 }
 //-------------------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::UpdateHappyHourPrices(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
-                                    UnicodeString orderUniqueId, int priceLevel)
-{
-//    try
-//    {
-         //get ItemSize Key corresponding to item and size.
-        int itemSizeKey = TDBOnlineOrdering::GetItemSizeKey(dbTransaction, itemKey, sizeName);
-
-        //Get HH Price as per item size and pricelevels
-        Currency happyHourPrice = TDBOnlineOrdering::GetHappyHourPrice(dbTransaction, itemSizeKey, priceLevel);
-
-        //Update Happy Hour Price Corresponding to item key and item size.
-        TDBOnlineOrdering::UpdateHappyHourPriceForItem(dbTransaction,itemKey, sizeName, orderUniqueId, happyHourPrice);
-//    }
-//    catch(EAbort &E)
-//	{
-////		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-////		throw;
-//	}
-}

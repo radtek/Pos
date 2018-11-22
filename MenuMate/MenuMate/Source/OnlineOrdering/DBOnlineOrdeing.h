@@ -21,7 +21,7 @@ public:
     static int GetItemSizeKey(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName);
     static Currency GetHappyHourPrice(Database::TDBTransaction &dbTransaction, int itemsizeKey, int priceLevelKey);
     static void UpdateHappyHourPriceForItem(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
-                    UnicodeString onlineOrderId, Currency hhPrice);
+                    UnicodeString onlineOrderId, Currency hhPrice, Currency basePrice);
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);
