@@ -242,14 +242,17 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                     orderRow.MasterContainer = orderRow.SizeName;
                                 }
 
-                                //load And insert breakdown category into orderscategory..
-                                GetAndInsertBreakDownCategories(ref orderRow);
+                                //load ItemSize info..
+                                GetAndLoadItemSizeInfo(ref orderRow);
 
                                 //LoadTaxProfileKeys
                                 LoadItemSizeTaxProfileOrders(ref orderRow);
 
                                 //Insert records to orders..
                                 ExecuteOrderQuery(orderRow);
+
+                                //load And insert breakdown category into orderscategory..
+                                LoadAndInsertItemSizeBreakDownCategories(orderRow.OrderId, orderRow.ItemSizeKey);
 
                                 //Insert Order tax profile info..
                                 ExecuteTaxProfileOrders(orderRow);
@@ -656,7 +659,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 return reader[ordinal];
         }
 
-        private void GetAndInsertBreakDownCategories(ref OrderAttributes orderInfo)
+        private void GetAndLoadItemSizeInfo(ref OrderAttributes orderInfo)
         {
             try
             {
@@ -679,7 +682,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         orderInfo.SizeName = reader.GetString(reader.GetOrdinal("SIZE_NAME"));
                         orderInfo.SizeKitchenName = reader.GetString(reader.GetOrdinal("SIZE_KITCHEN_NAME"));
                         orderInfo.SizeKitchenName = orderInfo.SizeKitchenName.Trim() == "" ? orderInfo.SizeName : orderInfo.SizeKitchenName;
-                        LoadItemSizeBreakDownCategories(orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
+                        //LoadItemSizeBreakDownCategories(orderInfo.OrderId, reader.GetInt32(reader.GetOrdinal("ITEMSIZE_KEY")));
                     }
                 }
             }
@@ -691,7 +694,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
         }
 
-        private void LoadItemSizeBreakDownCategories(long orderKey, int itemSizeId)
+        private void LoadAndInsertItemSizeBreakDownCategories(long orderKey, int itemSizeId)
         {
             try
             {
@@ -701,9 +704,23 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 {
                     while (reader.Read())
                     {
-                        FbCommand brkdcategoryInsertCmd = dbQueries.InsertBreakDownCategoryToDB(connection, transaction, orderKey, reader.GetInt32(reader.GetOrdinal("Category_Key")));
+                        InsertBreakDownCategoryToDB(orderKey, reader.GetInt32(reader.GetOrdinal("Category_Key")));
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in loadBaseOrderBreakdownCategories " + e.Message, e);
+                throw;
+            }
+        }
+
+        private void InsertBreakDownCategoryToDB(long orderKey, int categoryKey)
+        {
+            try
+            {
+                FbCommand command = dbQueries.InsertBreakDownCategoryToDB(connection, transaction, orderKey, categoryKey);
+                command.ExecuteNonQuery();
             }
             catch (Exception e)
             {
