@@ -5302,7 +5302,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
         "LEFT JOIN ARCBILLPAY d on d.ARCBILL_KEY = a.ARCBILL_KEY "
         "WHERE (d.PROPERTIES  LIKE :PAYMENT_PROPERTIES OR d.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and "
         "a.time_stamp >= :StartTime and "
-        "a.time_stamp < :EndTime  ";
+        "a.time_stamp < :EndTime  "
 
 		"Order By "
 		"10, 9,7,6";
