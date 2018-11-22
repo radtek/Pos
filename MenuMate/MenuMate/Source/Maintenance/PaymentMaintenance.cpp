@@ -11,7 +11,7 @@
 #include "MMTouchKeyboard.h"
 #include "GlobalSettings.h"
 #include "StringTools.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPMSCodes.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)

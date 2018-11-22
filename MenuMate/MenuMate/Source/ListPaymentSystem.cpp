@@ -64,7 +64,7 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "MallFactory.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
@@ -75,6 +75,8 @@
 #include "SaveLogs.h"
 #include "ManagerMews.h"
 #include "DBAdyen.h"
+#include "AustriaFiscalDataObjects.h"
+#include "ManagerAustriaFiscal.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -502,9 +504,9 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
 		}
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
-            std::vector <UnicodeString> PayTypes;
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-            InsertPaymentTypeInPanasonicDB(PayTypes);
+//            std::vector <UnicodeString> PayTypes;
+//            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+//            InsertPaymentTypeInPanasonicDB(PayTypes);
         }
 	}
 	catch(Exception & E)
@@ -1013,7 +1015,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
     {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
     }
     TStringList* logList = new TStringList();
     logList->Add("ProcessTransaction() Executed.");
@@ -6360,14 +6362,14 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
 //-------------------------------------------------------------------------------------
 void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
 {
-    TDBPanasonic* dbPanasonic = new TDBPanasonic();
-    dbPanasonic->UniDataBaseConnection->Open();
-    dbPanasonic->UniDataBaseConnection->StartTransaction();
-
-    dbPanasonic->InsertTenderTypes(PayTypes);
-
-    dbPanasonic->UniDataBaseConnection->Commit();
-    dbPanasonic->UniDataBaseConnection->Close();
+//    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+//    dbPanasonic->UniDataBaseConnection->Open();
+//    dbPanasonic->UniDataBaseConnection->StartTransaction();
+//
+//    dbPanasonic->InsertTenderTypes(PayTypes);
+//
+//    dbPanasonic->UniDataBaseConnection->Commit();
+//    dbPanasonic->UniDataBaseConnection->Close();
 }
 //-----------------------------------------------------------------------------------
 void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)

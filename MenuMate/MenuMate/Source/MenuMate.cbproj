@@ -40,7 +40,7 @@
 			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
 			<ILINK_SelectedWarnings>false</ILINK_SelectedWarnings>
 			<ILINK_AllWarnings>true</ILINK_AllWarnings>
-			<LinkPackageStatics>rtl.lib;vcl.lib;dbrtl.lib;vcldb.lib;bdertl.lib;vclx.lib;vclsmp.lib;bcbsmp.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dbexpress.lib;CPortLibCB6.lib;vcldbx.lib;dbxcds.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;inet.lib;inetdb.lib;xmlrtl.lib;DPSEftpos.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;Eft2000_Syncro.lib;PC_Eftpos_Ingenico_CSDEFT.lib;CadmusCronos.lib;vclimg.lib;PC_Eftpos_ANZ.lib;vclactnband.lib;unidac140.lib;dac140.lib</LinkPackageStatics>
+			<LinkPackageStatics>rtl.lib;vcl.lib;dbrtl.lib;vcldb.lib;bdertl.lib;vclx.lib;vclsmp.lib;bcbsmp.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dbexpress.lib;CPortLibCB6.lib;vcldbx.lib;dbxcds.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;inet.lib;inetdb.lib;xmlrtl.lib;DPSEftpos.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;Eft2000_Syncro.lib;PC_Eftpos_Ingenico_CSDEFT.lib;CadmusCronos.lib;vclimg.lib;PC_Eftpos_ANZ.lib;vclactnband.lib</LinkPackageStatics>
 			<IncludePath>OnlineOrdering\;C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\;FiscalPrinter\;ReportExport\;HavanaReport\;PanasonicIntegration\;CSV Export\;ProductSearch\;Analysis\;..\..\..\Shared-Source\ClippIntegration\;C:\Documents and Settings\Administrator\Desktop\;Casino Security Screen\;Cashdraw\;Analysis\ReportSectionStrategies\;Analysis\ReportSections\;Analysis\ReportSectionDisplayTraits\;Analysis\Reports\;Analysis\ReportBuilders\;Analysis\Factories\;Analysis\Misc\;Customer Display\Server\;C:\Documents and Settings\Administrator\Desktop\Accumulated Zed\Current COde\;BillCalculator\;..\..\..\Office\Source\TaxProfile\;..\..\..\Shared-Source\Managers\Database\TaxProfile\;..\..\..\Shared-Source\Managers\Database\Generator\;..\..\..\Shared-Source\Managers\Database\PaymentTypes\;Deals\;..\..\..\Shared-Source\Loyalty_Mate\;..\..\..\Shared-Source\System\Utilities\Strings\;product-count-down\;Micros\;Chefmate\;..\..\..\Shared-Source\;item_management\;ProxyMate\Server\SMInterProcessComm\;ProxyMate\Server\SharedMemory\;ProxyMate\Server\ProxyMateManager\;ProxyMate\Server\MMProxy\;ProxyMate\Server\MessageReceiver\;ProxyMate\Server\Connectors\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\ProxyMateManager\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MessageReceiver\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SharedMemory\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SMInterProcessComm\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\Connectors\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MMProxy\;..\..\..\..\5.7_Trunk\MenuMate\MenuMate\Source\SmartCards\;..\..\..\..\5.2\MenuMate\MenuMate\Source\;..\;..\..\;Test\;..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;POS\;..\..\Registration\Source\;DeskTop\;..\..\..\Shared-Source\Registry\;SmartCards\;Maintenance\;..\..\..\Shared-Source\Touch Utils\;..\..\..\Shared-Source\System\Core\;..\..\Version\;Comms\;..\..\Components BCB6\Eftpos\;IBLogs\;..\..\..\Shared-Source\Stock\;..\..\Components BCB6\porttalk\;Security\;..\..\ChefMate\Source\;..\..\..\Shared-Source\tinyXML\;..\..\SimpleTCP\;..\..\..\Shared-Source\TZForm\;..\..\..\Shared-Source\System\;..\..\..\Shared-Source;..\..\..\Shared-Source\Registry;..\..\..\Shared-Source\Touch Utils;..\..\..\Shared-Source\System\Core;..\..\..\Shared-Source\System;Comms;..\..\Version;..\..\SimpleTCP;..\..\..\Shared-Source\TZForm;..\..\Components BCB6\porttalk;Security;SmartCards;..\..\..\Shared-Source\tinyXML;..\..\ChefMate\Source;POS;..\..\Registration\Source;DeskTop;Maintenance;..\..\Components BCB6\Eftpos;IBLogs;..\..\..\Shared-Source\TouchButtons;..\..\..\Shared-Source\Stock;$(IncludePath)</IncludePath>
 			<PackageImports>bdertl.bpi;vcldbx.bpi;TouchButtonsR.bpi;vcl.bpi;rtl.bpi;dbrtl.bpi;vcldb.bpi;vclib.bpi;ibxpress.bpi;vclie.bpi;vclimg.bpi;xmlrtl.bpi;inet.bpi;inetdbbde.bpi;inetdbxpress.bpi;vclx.bpi;VclSmp.bpi;vclactnband.bpi;bcbsmp.bpi;soaprtl.bpi;dsnap.bpi;NumericEditPkg.bpi;CPortLibCB6.bpi</PackageImports>
 			<ILINK_AppType>Windows</ILINK_AppType>
@@ -60,7 +60,7 @@
 			<FinalOutputDir>..\..\..\Runtime\</FinalOutputDir>
 			<TASM_AdditionalSwitches> /w2 /x /n /c </TASM_AdditionalSwitches>
 			<TASM_Debugging>None</TASM_Debugging>
-			<AllPackageLibs>rtl.lib;vcl.lib;dbrtl.lib;vcldb.lib;bdertl.lib;vclx.lib;vclsmp.lib;bcbsmp.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dsnap.lib;dbexpress.lib;CPortLibCB6.lib;vcldbx.lib;dbxcds.lib;dsnapcon.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;inet.lib;inetdb.lib;xmlrtl.lib;DPSEftpos.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;Eft2000_Syncro.lib;PC_Eftpos_Ingenico_CSDEFT.lib;CadmusCronos.lib;vclimg.lib;PC_Eftpos_ANZ.lib;vclactnband.lib;unidac140.lib;dac140.lib</AllPackageLibs>
+			<AllPackageLibs>rtl.lib;vcl.lib;dbrtl.lib;vcldb.lib;bdertl.lib;vclx.lib;vclsmp.lib;bcbsmp.lib;ibxpress.lib;dsnap.lib;dsnapcon.lib;dsnap.lib;dbexpress.lib;CPortLibCB6.lib;vcldbx.lib;dbxcds.lib;dsnapcon.lib;bcbie.lib;adortl.lib;inetdbbde.lib;inetdbxpress.lib;soaprtl.lib;vclie.lib;inet.lib;inetdb.lib;xmlrtl.lib;DPSEftpos.lib;IndyCore.lib;IndySystem.lib;IndyProtocols.lib;Eft2000_Syncro.lib;PC_Eftpos_Ingenico_CSDEFT.lib;CadmusCronos.lib;vclimg.lib;PC_Eftpos_ANZ.lib;vclactnband.lib</AllPackageLibs>
 			<ILINK_StackReserveSize>0x00600000</ILINK_StackReserveSize>
 			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
 			<ILINK_LibraryPath>OnlineOrdering\;C:\Documents and Settings\Administrator\My Documents\RAD Studio\7.0\Imports\;FiscalPrinter\;ReportExport\;HavanaReport\;PanasonicIntegration\;CSV Export\;ProductSearch\;Analysis\;..\..\..\Shared-Source\ClippIntegration\;C:\Documents and Settings\Administrator\Desktop\;Casino Security Screen\;Cashdraw\;Analysis\ReportSectionStrategies\;Analysis\ReportSections\;Analysis\ReportSectionDisplayTraits\;Analysis\Reports\;Analysis\ReportBuilders\;Analysis\Factories\;Analysis\Misc\;Customer Display\Server\;C:\Documents and Settings\Administrator\Desktop\Accumulated Zed\Current COde\;BillCalculator\;..\..\..\Office\Source\TaxProfile\;..\..\..\Shared-Source\Managers\Database\TaxProfile\;..\..\..\Shared-Source\Managers\Database\Generator\;..\..\..\Shared-Source\Managers\Database\PaymentTypes\;Deals\;..\..\..\Shared-Source\Loyalty_Mate\;..\..\..\Shared-Source\System\Utilities\Strings\;product-count-down\;Micros\;Chefmate\;..\..\..\Shared-Source\;item_management\;ProxyMate\Server\SMInterProcessComm\;ProxyMate\Server\SharedMemory\;ProxyMate\Server\ProxyMateManager\;ProxyMate\Server\MMProxy\;ProxyMate\Server\MessageReceiver\;ProxyMate\Server\Connectors\;$(BDS)\lib\psdk\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\ProxyMateManager\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MessageReceiver\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SharedMemory\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\SMInterProcessComm\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\Connectors\;..\..\..\..\5.7_trunk_loyaltymerge\MenuMate\MenuMate\Source\ProxyMate\Server\MMProxy\;..\..\..\..\5.7_Trunk\MenuMate\MenuMate\Source\SmartCards\;..\..\..\..\5.2\MenuMate\MenuMate\Source\;..\;..\..\;Test\;..\..\..\..\5.Printing\MenuMate\MenuMate\Source\;POS\;..\..\Registration\Source\;DeskTop\;..\..\..\Shared-Source\Registry\;SmartCards\;Maintenance\;..\..\..\Shared-Source\Touch Utils\;..\..\..\Shared-Source\System\Core\;..\..\Version\;Comms\;..\..\Components BCB6\Eftpos\;IBLogs\;..\..\..\Shared-Source\Stock\;..\..\Components BCB6\porttalk\;Security\;..\..\ChefMate\Source\;..\..\..\Shared-Source\tinyXML\;..\..\SimpleTCP\;..\..\..\Shared-Source\TZForm\;..\..\..\Shared-Source\System\;..\..\..\libs\;..\..\..\Shared-Source;..\..\..\Shared-Source\Registry;..\..\..\Shared-Source\Stock;..\..\..\libs;..\..\..\Shared-Source\Touch Utils;..\..\..\Shared-Source\System\Core;..\..\..\Shared-Source\System;..\..\Version;..\..\components bcb6\pngimage;..\..\..\Shared-Source\tinyXML;SmartCards;..\..\Components BCB6\porttalk;..\..\..\Shared-Source\TZForm;DeskTop;..\..\ChefMate\Source;Comms;..\..\Registration\Source;..\..\ChefMate;..\..\SimpleTCP;IBLogs;Maintenance;Security;POS;$(BDS)\Bin;$(BDS)\lib\obj;$(BDS)\Imports;..\..\components bcb6\CPort264\Sources;..\..\Components BCB6\tntunicodecontrols;..\..\Components BCB6\Eftpos;$(ILINK_LibraryPath)</ILINK_LibraryPath>
@@ -928,10 +928,6 @@
 				<DependentOn>SmartCards\SmartCardAPI.h</DependentOn>
 				<BuildOrder>402</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PanasonicIntegration\ManagerPanasonic.cpp">
-				<DependentOn>PanasonicIntegration\ManagerPanasonic.h</DependentOn>
-				<BuildOrder>746</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="POS\GUIDiscount.cpp">
 				<BuildOrder>79</BuildOrder>
 				<Form>frmDiscount</Form>
@@ -947,18 +943,10 @@
 				<DependentOn>Analysis\ReportSections\XReprintReceiptDetailsSection.h</DependentOn>
 				<BuildOrder>775</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="PanasonicIntegration\DBPanasonic.cpp">
-				<DependentOn>PanasonicIntegration\DBPanasonic.h</DependentOn>
-				<BuildOrder>748</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="NetMessageKillProc.cpp">
 				<BuildOrder>467</BuildOrder>
 				<DependentOn>NetMessageKillProc.h</DependentOn>
 				<BuildOrder>22</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="PanasonicIntegration\PanasonicModels.cpp">
-				<DependentOn>PanasonicIntegration\PanasonicModels.h</DependentOn>
-				<BuildOrder>747</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="ChitNumberController.cpp">
 				<DependentOn>ChitNumberController.h</DependentOn>
@@ -3439,6 +3427,18 @@
 			<CppCompile Include="AdyenWSDL.cpp">
 				<DependentOn>AdyenWSDL.h</DependentOn>
 				<BuildOrder>784</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ManagerAustriaFiscal.cpp">
+				<DependentOn>ManagerAustriaFiscal.h</DependentOn>
+				<BuildOrder>805</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AustriaFiscalDataObjects.cpp">
+				<DependentOn>AustriaFiscalDataObjects.h</DependentOn>
+				<BuildOrder>806</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AustriaFiscalInterface.cpp">
+				<DependentOn>AustriaFiscalInterface.h</DependentOn>
+				<BuildOrder>807</BuildOrder>
 			</CppCompile>
 			<FormResources Include="TierLevels.dfm"/>
 			<FormResources Include="POS\PosMain.dfm"/>

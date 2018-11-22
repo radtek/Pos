@@ -88,7 +88,7 @@
 #include "MMCustomerDisplayManager.h"
 #include "ManagerCloudSync.h"
 #include "CSVExportReceiver.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPMS.h"
 #include "EftposSmartConnect.h"
 #include "EftposAdyen.h"
@@ -478,9 +478,9 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		openCustomerDisplayServer();
         if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
         {
-            TManagerPanasonic::Instance();
-            TManagerPanasonic::Instance()->PrepareTenderTypes();
-            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//            TManagerPanasonic::Instance();
+//            TManagerPanasonic::Instance()->PrepareTenderTypes();
+//            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
         }
         SyncCompanyDetails();
        //initialize this variable when application starts..

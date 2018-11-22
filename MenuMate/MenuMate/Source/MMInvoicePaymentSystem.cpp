@@ -4,13 +4,13 @@
 #pragma hdrstop
 
 #include "MMInvoicePaymentSystem.h"
-//#include "DeviceRealTerminal.h"
+#include "DeviceRealTerminal.h"
 #include "DBOrder.h"
 #include "DBSecurity.h"
 #include "ManagerPatron.h"
 #include "Invoice.h"
 #include "ReceiptManager.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 
 //---------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 
     if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && PaymentComplete)
     {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
     }
 }
 //---------------------------------------------------------------------------
