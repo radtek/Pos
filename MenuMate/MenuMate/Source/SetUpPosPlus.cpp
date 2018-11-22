@@ -195,6 +195,10 @@ void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
                      TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
                      MessageBox("Fiscal Austria details are validated.\rOther Fiscal integrations are disabled now.","Info",MB_OK+MB_ICONINFORMATION);
                 }
+                else
+                {
+                    MessageBox("Fiscal Austria details are not validated.\rFiscal integrations is disabled.","Info",MB_OK+MB_ICONINFORMATION);
+                }
             }
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
