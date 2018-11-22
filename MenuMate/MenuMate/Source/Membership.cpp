@@ -1316,9 +1316,9 @@ void TMembership::GetReportMemberPointsInfo(Database::TDBTransaction &DBTransact
 		 TempRow = AnsiReplaceStr(TempRow, "%COL4%", "Redeemed First Visit");
 		 break;
 	  case pttSync:
-		 TempRow = AnsiReplaceStr(TempRow, "%COL4%", "Purchased");
-       
-		 break;
+	  	 TempRow = AnsiReplaceStr(TempRow, "%COL4%", "Sync with Server");
+
+	  	 break;
           case pttBirthdayBonus:
 		 TempRow = AnsiReplaceStr(TempRow, "%COL4%", "Birthday Rewards");
 		 break;
