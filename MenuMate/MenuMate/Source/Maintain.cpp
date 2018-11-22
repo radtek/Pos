@@ -62,6 +62,8 @@
 #include "SetUpPosPlus.h"
 #include "ManagerCloudSync.h"
 #include "SignalRUtility.h"
+#include "ManagerLocations.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -3380,9 +3382,22 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
                 UnloadSignalR();
                 break;
         }
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+
+
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TManagerLocations locationManager;
+        if(locationManager.FindLocation(DBTransaction,"Loyalty") == 0)
+        {
+             int Key = 0;
+            locationManager.SetLocation(DBTransaction,Key,"Loyalty",3);
+        }
+
+    }
         DBTransaction.Commit();
+
     }
 }
 //-----------------------------------------------------------------------------------------------
