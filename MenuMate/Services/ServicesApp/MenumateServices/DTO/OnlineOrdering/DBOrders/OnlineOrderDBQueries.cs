@@ -475,7 +475,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 		                                ORDER_TYPE_MESSAGE,
 			                            CONTACTS_KEY,
 			                            ACTIVECHITNUMBER_KEY, 
-                                        PATRON_COUNT,
+                                        PATRON_COUNT,                                        
+                                        BASE_PRICE,                                        
+                                        PRICE_INCL,
                                         ONLINE_CHIT_TYPE,
                                         IS_DOCKET_PRINTED,
                                         SITE_ID,
@@ -548,6 +550,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 			                            @CONTACTS_KEY,
 			                            @ACTIVECHITNUMBER_KEY, 
                                         @PATRON_COUNT, 
+                                        @BASE_PRICE,                                        
+                                        @PRICE_INCL,
                                         @ONLINE_CHIT_TYPE,
                                         @IS_DOCKET_PRINTED,
                                         @SITE_ID,
@@ -619,6 +623,8 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@CONTACTS_KEY", orderDbItem.MembershipProfileId);
                 command.Parameters.AddWithValue("@ACTIVECHITNUMBER_KEY", DBNull.Value);
                 command.Parameters.AddWithValue("@PATRON_COUNT", orderDbItem.PatronCount);
+                command.Parameters.AddWithValue("@BASE_PRICE", orderDbItem.BasePrice);
+                command.Parameters.AddWithValue("@PRICE_INCL", orderDbItem.PriceInclusive);
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType);
                 command.Parameters.AddWithValue("@IS_DOCKET_PRINTED", "F");
 				command.Parameters.AddWithValue("@SITE_ID", orderDbItem.SiteId);
