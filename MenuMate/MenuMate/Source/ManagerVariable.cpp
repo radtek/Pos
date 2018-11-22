@@ -3410,7 +3410,14 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		false);
         SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt","Show  Tip And Signature.\r""Default is False",vmgPrinting, false);
         SetVarBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, "Enable Adjust Authorisation on all cards","Card will follow Master or Visa  card process \r""Default is False",vmg3rdPartyInterface, false);
-
+        SetVarBool(DBTransaction,vmIsAustriaFiscalStorageEnabled,"Austria Fiscal Storage Enabling",
+        "When this is enabled, bill details will get stored to Austria Fiscal Cloud.\r"
+        "Default is false",
+        vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmAustriaFiscalUrl, "Austria Fiscal URL", "Austria Fiscal URL", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalCashBoxId, "Austria Fiscal Cash Box Id", "Austria Fiscal Cash Box Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalTerminalId, "Austria Fiscal Terminal Id", "Austria Fiscal Terminal Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalAccessToken, "Austria Fiscal Access Token", "Austria Fiscal Access Token", vmg3rdPartyInterface, "");
 	}
 	catch(Exception &E)
 	{

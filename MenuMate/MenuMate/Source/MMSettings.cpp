@@ -439,7 +439,11 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EnableEftPosPreAuthorisation = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPreAuthorisation, false);
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
-
+        TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAustriaFiscalStorageEnabled, false);
+        TGlobalSettings::Instance().AustriaFiscalUrl = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalUrl, "");
+        TGlobalSettings::Instance().AustriaFiscalCashBoxId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalCashBoxId, "");
+        TGlobalSettings::Instance().AustriaFiscalTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalTerminalId, "");
+        TGlobalSettings::Instance().AustriaFiscalAccessToken = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalAccessToken, "");
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

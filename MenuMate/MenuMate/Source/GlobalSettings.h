@@ -543,6 +543,11 @@ public:
     bool EnableEftPosPreAuthorisation;
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
+    bool IsAustriaFiscalStorageEnabled;
+    UnicodeString AustriaFiscalUrl;
+    UnicodeString AustriaFiscalCashBoxId;
+    UnicodeString AustriaFiscalTerminalId;
+    UnicodeString AustriaFiscalAccessToken;
 };
 
 #endif

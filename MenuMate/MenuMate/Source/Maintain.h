@@ -222,6 +222,8 @@ private:
     void UnloadSignalR();
     bool SyncOnlineOrderingDetails();
     bool SetUpMews();
+    void SetUpAustriaFiscal();
+    void SetUpPosPlus();
 public: // User declarations
 };
 #endif
