@@ -2570,6 +2570,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
             DisableToggleGSTButton(DBTransaction);
         }
         UpdateContainerListColourDisplay();
+        HasOnlineOrders = TDBTab::HasOnlineOrders(CurrentSelectedTab);
         UpdateTableForOnlineOrdering();
 //        MessageBox(CurrentSelectedTab,"CurrentSelectedTab in tgridClick",MB_OK);
         UpdateTabForOnlineOrdering();
