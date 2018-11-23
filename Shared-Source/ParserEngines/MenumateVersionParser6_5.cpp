@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_57Tables()
 {
     update6_57Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_58Tables()
+{
+    update6_58Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -108,6 +113,11 @@ void TApplyParser::update6_56Tables()
 void TApplyParser::update6_57Tables()
 {
     AlterTableArcBill6_57(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_58Tables()
+{
+    AlterTableLoyaltyPendingTrans6_58(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -908,6 +918,17 @@ void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
 	{
         executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
 	}
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::AlterTableLoyaltyPendingTrans6_58(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "LOYALTYPENDINGTRANSACTIONS ", "IS_AVAILABLE_FOR_POSTING", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE LOYALTYPENDINGTRANSACTIONS "
+        "ADD IS_AVAILABLE_FOR_POSTING T_TRUEFALSE DEFAULT 'T' ; ",
+        inDBControl);
+    }
 }
 }
 //------------------------------------------------------------------------------
