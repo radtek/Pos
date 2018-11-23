@@ -1038,8 +1038,8 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                 }
 
 
-                if(((TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions())
-                        || !TGlobalSettings::Instance().EnableEftPosAdyen )&& (TStringTools::Instance()->HasAllProperties(properties,proptoSearch)))
+                if(((TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation && TGlobalSettings::Instance().EftPosTerminalId.Trim() != "")
+                        || (!TGlobalSettings::Instance().EnableEftPosAdyen && TDeviceRealTerminal::Instance().PaymentSystem->AllowsTipsOnTransactions()))&& (TStringTools::Instance()->HasAllProperties(properties,proptoSearch)))
                     retVal = true;
              }
 

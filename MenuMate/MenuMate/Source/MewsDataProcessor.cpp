@@ -52,7 +52,7 @@ std::vector<TAccountingCategory> TMewsDataProcessor::GetCategoriesFromDB(Databas
     {
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
-          "SELECT * FROM REVENUECODEDETAILS";
+          "SELECT * FROM REVENUECODEDETAILS ORDER BY REVENUECODE_DESCRIPTION";
         IBInternalQuery->ExecQuery();
         for( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
@@ -77,6 +77,7 @@ std::vector<TAccountingCategoriesMapping> TMewsDataProcessor::GetMewsCategoriesL
 {
     std::vector<TAccountingCategoriesMapping> categoriesMMMews;
     categoriesMMMews.clear();
+    InitializeMewsCategories(DBTransaction);
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     try
     {
@@ -123,7 +124,7 @@ void TMewsDataProcessor::UpdateOutlets(std::vector<TOutlet> outlets,Database::TD
           " VALUES "
           " (:UNIQUEID, :NAME, :ISACTIVE)";
       IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
-      IBInternalQuery->ParamByName("NAME")->AsString = it->Name.Trim();
+      IBInternalQuery->ParamByName("NAME")->AsString = it->Name;//it->Name.Trim();
       if(it->IsActive)
           IBInternalQuery->ParamByName("ISACTIVE")->AsString = "T";
       else
@@ -150,7 +151,7 @@ void TMewsDataProcessor::UpdateServices(std::vector<TServiceMews> services,Datab
           " VALUES "
           " (:UNIQUEID, :NAME, :ISACTIVE, :STARTTIME, :ENDTIME)";
         IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
-        IBInternalQuery->ParamByName("NAME")->AsString = it->Name.Trim();
+        IBInternalQuery->ParamByName("NAME")->AsString = it->Name;//it->Name.Trim();
         if(it->IsActive)
           IBInternalQuery->ParamByName("ISACTIVE")->AsString = "T";
         else
@@ -191,12 +192,12 @@ void TMewsDataProcessor::UpdateSpaces(TSpaceDetails spaces,Database::TDBTransact
 
       // to be changed to actual values
       IBInternalQuery->ParamByName("PARENTSPACEID")->AsString = it->ParentSpaceId;
-      IBInternalQuery->ParamByName("CATEGORYID")->AsString = it->CategoryId.Trim();
-      IBInternalQuery->ParamByName("TYPE")->AsString = it->Type.Trim();
-      IBInternalQuery->ParamByName("NUMBER")->AsString = it->Number.Trim();
-      IBInternalQuery->ParamByName("FLOORNUMBER")->AsString = it->FloorNumber.Trim();
-      IBInternalQuery->ParamByName("BUILDINGNUMBER")->AsString = it->BuildingNumber.Trim();
-      IBInternalQuery->ParamByName("STATE")->AsString = it->State.Trim();
+      IBInternalQuery->ParamByName("CATEGORYID")->AsString = it->CategoryId;//.Trim();
+      IBInternalQuery->ParamByName("TYPE")->AsString = it->Type;//.Trim();
+      IBInternalQuery->ParamByName("NUMBER")->AsString = it->Number;//.Trim();
+      IBInternalQuery->ParamByName("FLOORNUMBER")->AsString = it->FloorNumber;//.Trim();
+      IBInternalQuery->ParamByName("BUILDINGNUMBER")->AsString = it->BuildingNumber;//.Trim();
+      IBInternalQuery->ParamByName("STATE")->AsString = it->State;//.Trim();
 
       IBInternalQuery->ExecQuery();
     }
@@ -227,7 +228,7 @@ void TMewsDataProcessor::UpdateCategories(std::vector<TAccountingCategory> categ
           IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
 
           IBInternalQuery->ParamByName("REVENUECODE")->AsInteger = i;
-          IBInternalQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->Name.Trim();
+          IBInternalQuery->ParamByName("REVENUECODE_DESCRIPTION")->AsString = it->Name;//.Trim();
           IBInternalQuery->ParamByName("ISDEFAULT_REVENUECODE")->AsString = "F";
           IBInternalQuery->ParamByName("UNIQUEID")->AsString = it->Id;
           if(it->IsActive)
@@ -235,10 +236,10 @@ void TMewsDataProcessor::UpdateCategories(std::vector<TAccountingCategory> categ
           else
               IBInternalQuery->ParamByName("ISACTIVE")->AsString = "F";
           IBInternalQuery->ParamByName("CODE")->AsString = it->Code;
-          IBInternalQuery->ParamByName("EXTERNALCODE")->AsString = it->ExternalCode.Trim();
-          IBInternalQuery->ParamByName("LEDGERACCOUNTCODE")->AsString = it->LedgerAccountCode.Trim();
-          IBInternalQuery->ParamByName("POSTINGACCOUNTCODE")->AsString = it->PostingAccountCode.Trim();
-          IBInternalQuery->ParamByName("CLASSIFICATION")->AsString = it->Classification.Trim();
+          IBInternalQuery->ParamByName("EXTERNALCODE")->AsString = it->ExternalCode;//.Trim();
+          IBInternalQuery->ParamByName("LEDGERACCOUNTCODE")->AsString = it->LedgerAccountCode;//.Trim();
+          IBInternalQuery->ParamByName("POSTINGACCOUNTCODE")->AsString = it->PostingAccountCode;//.Trim();
+          IBInternalQuery->ParamByName("CLASSIFICATION")->AsString = it->Classification;//.Trim();
 
           IBInternalQuery->ExecQuery();
           i++;
@@ -368,18 +369,22 @@ AnsiString TMewsDataProcessor::GetMewsName(Database::TDBTransaction &DBTransacti
 {
     AnsiString name = "";
     AnsiString tableName = "";
+    AnsiString orderByClause = "";
     if(identifier == 1)
         tableName = "OUTLETS";
     else if(identifier == 2)
         tableName = "SERVICES";
     else if(identifier == 3)
-        tableName = "REVENUECODEDETAILS";
+    {
+        tableName = "REVENUECODEDETAILS ";
+        orderByClause = " ORDER BY REVENUECODE_DESCRIPTION ";
+    }
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
     try
     {
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text =
-          "SELECT * FROM " + tableName + " WHERE UNIQUEID = :UNIQUEID";
+          "SELECT * FROM " + tableName + " WHERE UNIQUEID = :UNIQUEID " + orderByClause;
         IBInternalQuery->ParamByName("UNIQUEID")->AsString =  code;
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount > 0)
@@ -407,7 +412,9 @@ std::map<AnsiString,AnsiString> TMewsDataProcessor::GetAllMewsDetailsFromDB(Data
     else if(identifier == 2)
         tableName = "SERVICES";
     else if(identifier == 3)
-        tableName = "REVENUECODEDETAILS";
+    {
+        tableName = "REVENUECODEDETAILS ORDER BY REVENUECODE_DESCRIPTION ASC";
+    }
     std::map<AnsiString,AnsiString> mapDetails;
     mapDetails.clear();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
@@ -417,15 +424,22 @@ std::map<AnsiString,AnsiString> TMewsDataProcessor::GetAllMewsDetailsFromDB(Data
         IBInternalQuery->SQL->Text =
           "SELECT * FROM " + tableName;
         IBInternalQuery->ExecQuery();
+        AnsiString codeForRevenue = "";
         for( ; !IBInternalQuery->Eof; IBInternalQuery->Next())
         {
             AnsiString code = "";
             AnsiString name = "";
             if(identifier == 3)
+            {
                 name = IBInternalQuery->FieldByName("REVENUECODE_DESCRIPTION")->AsString;
+                codeForRevenue += "a";
+                code = codeForRevenue;
+            }
             else
+            {
                 name = IBInternalQuery->FieldByName("NAME")->AsString;
-            code = IBInternalQuery->FieldByName("UNIQUEID")->AsString;
+                code = IBInternalQuery->FieldByName("UNIQUEID")->AsString;
+            }
             mapDetails[code] = name;
         }
     }

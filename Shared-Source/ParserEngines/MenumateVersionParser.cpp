@@ -116,6 +116,7 @@ PARSER_ERROR TApplyParser::Apply(
         case pv6_54 : return apply6_54( inDBControl );
         case pv6_55 : return apply6_55( inDBControl );
         case pv6_56 : return apply6_56( inDBControl );
+        case pv6_57 : return apply6_57( inDBControl );
 	default: return PE_UNKNOWN_VERSION;
     }
 }

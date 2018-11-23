@@ -2079,19 +2079,15 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		Retval = IBInternalQuery->Fields[0]->AsInteger;
 		IBInternalQuery->Close();
 
-        int AdyenServiceId = 0;
+        UnicodeString AdyenServiceId = "";
         if(TGlobalSettings::Instance().EnableEftPosAdyen)
         {
             for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-		    {
+            {
                 TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
-                if (SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && SubPayment->GetPay() != 0)
+                if(SubPayment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS) && SubPayment->GetPay() != 0)
                 {
-                    IBInternalQuery->Close();
-                    IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ADYENSERVICEID, 0) FROM RDB$DATABASE";
-                    IBInternalQuery->ExecQuery();
-                    AdyenServiceId = IBInternalQuery->Fields[0]->AsInteger;
-                    IBInternalQuery->Close();
+                    AdyenServiceId = SubPayment->EftposTransactionID;
                     break;
                 }
             }
@@ -2143,7 +2139,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("BILLED_LOCATION")->AsString = TDeviceRealTerminal::Instance().ID.Location;
 		IBInternalQuery->ParamByName("INVOICE_KEY")->AsInteger = PaymentTransaction.InvoiceKey;
 		IBInternalQuery->ParamByName("REFUND_REFRECEIPT")->AsString = PaymentTransaction.RefundRefReceipt;
-        IBInternalQuery->ParamByName("EFTPOS_SERVICE_ID")->AsInteger = AdyenServiceId;
+        IBInternalQuery->ParamByName("EFTPOS_SERVICE_ID")->AsString = AdyenServiceId;
 
 		// set the receipt information if available, else insert null
 

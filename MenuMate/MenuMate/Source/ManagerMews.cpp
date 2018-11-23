@@ -832,10 +832,25 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             {
                 TItemComplete* itemCompleteDiscount = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
                 TItemMews itemMewsDiscount;
+                double discountAux = discountValue;
+                discountValue = fabs(discountValue);
                 itemMewsDiscount.Type = "Revenue";
-                itemMewsDiscount.Name = itemCompleteDiscount->Item;
-                itemMewsDiscount.UnitCount = -1*1;
+                itemMewsDiscount.Name = itemCompleteDiscount->Item + " (" + itemCompleteDiscount->Size + ")";
                 itemMewsDiscount.UnitCost.Amount = RoundTo((discountValue + (varianceAdditive*discountValue))/portion,-2);
+                if(!paymentTransaction.CreditTransaction)
+                {
+                    if(discountAux < 0)
+                        itemMewsDiscount.UnitCount = -1;
+                    else
+                        itemMewsDiscount.UnitCount = 1;
+                }
+                else
+                {
+                    if(discountAux > 0)
+                        itemMewsDiscount.UnitCount = 1;
+                    else
+                        itemMewsDiscount.UnitCount = -1;
+                }
                 itemMewsDiscount.UnitCost.Currency = CurrencyString;
                 itemMewsDiscount.UnitCost.Tax = 0;
                 itemMewsDiscount.Category.Name = "";
@@ -853,7 +868,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                 TItemComplete* itemCompleteSub = ((TItemComplete*)itemComplete->SubOrders->Items[j]);
                 TItemMews itemMewsSub;
                 itemMewsSub.Type = "Revenue";
-                itemMewsSub.Name = itemCompleteSub->Item;
+                itemMewsSub.Name = itemCompleteSub->Item + " (" + itemCompleteSub->Size + ")";
 
 
                 int qtyItemSub = 0;
@@ -882,9 +897,24 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                     TItemComplete* itemCompleteDiscountSub = ((TItemComplete*)itemComplete->SubOrders->Items[j]);
                     TItemMews itemMewsDiscountSub;
                     itemMewsDiscountSub.Type = "Revenue";
-                    itemMewsDiscountSub.Name = itemCompleteDiscountSub->Item;
-                    itemMewsDiscountSub.UnitCount = -1*1;
+                    double discountValueSubAux = discountValueSub;
+                    discountValueSub = fabs(discountValueSub);
+                    itemMewsDiscountSub.Name = itemCompleteDiscountSub->Item + " (" + itemCompleteDiscountSub->Size + ")";
                     itemMewsDiscountSub.UnitCost.Amount = RoundTo((discountValueSub + (varianceAdditiveSub*discountValueSub))/portion,-2);
+                    if(!paymentTransaction.CreditTransaction)
+                    {
+                        if(discountValueSubAux < 0)
+                            itemMewsDiscountSub.UnitCount = -1;
+                        else
+                            itemMewsDiscountSub.UnitCount = 1;
+                    }
+                    else
+                    {
+                        if(discountValueSubAux > 0)
+                            itemMewsDiscountSub.UnitCount = 1;
+                        else
+                            itemMewsDiscountSub.UnitCount = -1;
+                    }
                     itemMewsDiscountSub.UnitCost.Currency = CurrencyString;
                     itemMewsDiscountSub.UnitCost.Tax = 0;
                     itemMewsDiscountSub.Category.Name = "";
@@ -969,10 +999,23 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
         unitAmount = unitAmount * portion;
         unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion);
         unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.TaxValue * portion);
-        if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
+        if(!TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)     //ReCalculateTaxPostDiscount
         {
-            unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
-            discountValue = fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+            if(itemComplete->GetQty() >= 0)
+            {
+                if((double)itemComplete->BillCalcResult.TotalDiscount < 0)
+                    unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                else
+                    unitAmount -= fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+            }
+            else
+            {
+                if((double)itemComplete->BillCalcResult.TotalDiscount < 0)
+                    unitAmount -= fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                else
+                    unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+            }
+            discountValue = ((double)itemComplete->BillCalcResult.TotalDiscount);
             discountValue = discountValue * portion;
             if(fabs((double)itemComplete->BillCalcResult.TotalDiscount) > 0)
                 seperateDiscount = true;
