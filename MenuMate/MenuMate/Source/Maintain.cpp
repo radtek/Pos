@@ -3503,8 +3503,8 @@ void TfrmMaintain::DeactivateLoyaltymate()
     TGlobalSettings::Instance().LoyaltyMateEnabled = false;
     if(TGlobalSettings::Instance().EnableOnlineOrdering)
     {
-        //UnloadSignalR();
-        //MessageBox("Online ordering module is deactivated since Loyaltymate is disabled.","Info",MB_OK+MB_ICONINFORMATION);
+        UnloadSignalR();
+        MessageBox("Online ordering module is deactivated since Loyaltymate is disabled.","Info",MB_OK+MB_ICONINFORMATION);
     }
 }
 //-----------------------------------------------------------------------------
