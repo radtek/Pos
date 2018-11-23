@@ -976,9 +976,13 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         command = dbQueries.IsVariableKeyExist(connection, transaction, 4129, profileKey);
                         using (FbDataReader reader1 = command.ExecuteReader())
                         {
-                            if (!reader1.Read())
+                            if (reader1.Read())
                             {
-                                isHappyHourRunning = IsHappyHourRunning(profileKey);
+                                isHappyHourRunning = IsForceHappyHourEnabled(profileKey); 
+                            }
+                            else
+                            {
+                                isHappyHourRunning = IsHappyHourRunning(profileKey);    
                             }
                         }
                     }
@@ -992,9 +996,9 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             return isHappyHourRunning;
         }
 
-        private bool IsHappyHourRunning(int profileKey)
+        private bool IsForceHappyHourEnabled(int profileKey)
         {
-            bool isHHInCurrentTimeSpan = false;
+            bool isForceHappyHourEnabled = false;
             try
             {
 
@@ -1003,12 +1007,32 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 {
                     if (reader.Read())
                     {
-                        isHHInCurrentTimeSpan = true;
+                        isForceHappyHourEnabled = true;
                     }
-                    else
-                    {
-                        isHHInCurrentTimeSpan = GetTerminalHHProfiles(profileKey);
-                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsForceHappyHourEnabled " + e.Message, e);
+                throw;
+            }
+            return isForceHappyHourEnabled;
+
+        }
+
+        private bool IsHappyHourRunning(int profileKey)
+        {
+            bool isHHInCurrentTimeSpan = false;
+            try
+            {
+
+                if (IsForceHappyHourEnabled(profileKey))
+                {
+                    isHHInCurrentTimeSpan = true;
+                }
+                else
+                {
+                    isHHInCurrentTimeSpan = GetTerminalHHProfiles(profileKey);
                 }
             }
             catch (Exception e)
