@@ -173,9 +173,10 @@ private:	// User declarations
     bool ArePatronsChanged(std::vector<TPatronType> patronsOld,std::vector<TPatronType> patronsNew);
     void ApplyDiscount(TDiscount Discount);
     AnsiString voucherNumber;
-    bool IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int CategoryKey);
+    bool IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction,TItemComplete *item);
     bool IsCourseAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int coursekey);
     int GettingCourseKey(Database::TDBTransaction &DBTransaction, int Itemkey);
+    bool IsCategoryKeyExistInDB(Database::TDBTransaction &DBTransaction, int CategoryKey);
 protected:
 	void __fastcall WMDisplayChange(TWMDisplayChange& Message);
 	void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message);
