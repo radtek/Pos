@@ -191,7 +191,13 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                                                                                 transaction.PointsType,
                                                                                 transaction.InvoiceNumber);
             if(!postTransactionResponse.IsSuccesful)
+            {    
+                Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	            DBTransaction.StartTransaction();
+                TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                DBTransaction.Commit();
                 throw new Exception(postTransactionResponse.Message);
+            }
             else
                 result = true;
         }
@@ -423,7 +429,7 @@ void __fastcall TLoyaltyMateDownloadMemberThread::Execute()
 {
     if(DownLoadFromUUID)
     {
-      DownloadMemberFromCloudUsingUUID();
+       DownloadMemberFromCloudUsingUUID();
     }
     else if(DownLoadFromCode)
     {

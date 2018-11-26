@@ -82,7 +82,9 @@ std::vector<int> TLoyaltyMateUtilities::GetAllContactsWithPendingTransactions()
                         "   DISTINCT(LPT.CONTACT_KEY) "
                         "FROM "
                         "   LOYALTYPENDINGTRANSACTIONS LPT"
-                        "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY ";
+                        "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY "
+                        "   WHERE LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING ";
+    query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = "T";
     query->ExecQuery();
     while(!query->Eof)
     {
@@ -401,9 +403,6 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
 
 
 //------------------------------------------------------------------------------------
-
-
-
 bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
     bool result = true;
@@ -415,6 +414,25 @@ bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBT
     result = !query->Eof;
     return result;
 }
+//------------------------------------------------------------------------------------
+void TLoyaltyMateUtilities::UpdatePendingTransactions(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString paramValue)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS LPT SET LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING "
+                            "WHERE LPT.CONTACT_KEY = :CONTACT_KEY  ";
+        query->ParamByName("CONTACT_KEY")->AsInteger = inContactKey;
+        query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = paramValue;
+        query->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//------------------------------------------------------------------------------------
 
 
 

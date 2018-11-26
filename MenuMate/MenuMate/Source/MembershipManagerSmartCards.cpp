@@ -1166,9 +1166,11 @@ void TManagerMembershipSmartCards::LoyaltymateCardInsertedHandler(TSystemEvents 
     SmartCardContact.ContactKey = TDBContacts::GetContactByMemberNumberSiteID(DBTransaction, SmartCardContact.MembershipNumber,SmartCardContact.SiteID);
     bool existInLocalDb = SmartCardContact.ContactKey != 0;
     if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,SmartCardContact.ContactKey))
-     {
+     {       
+        TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, SmartCardContact.ContactKey, "T");
         MessageBox("There are pending transaction to be sync. Please try again.", "Information", MB_OK + MB_ICONINFORMATION);
         DBTransaction.Commit();
+        TManagerLoyaltyMate::Instance()->TriggerPointSync();
         return;
      }
 
@@ -2701,7 +2703,8 @@ bool TManagerMembershipSmartCards::LoyaltyMemberSelected(Database::TDBTransactio
    }
 
    if(existInLocalDb && TLoyaltyMateUtilities::HasPendingTransactions(DBTransaction,localContactInfo.ContactKey))
-     {
+   {      
+        TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, localContactInfo.ContactKey, "T");
         MessageBox("There are pending transaction to be sync. Please try again.", "Information", MB_OK + MB_ICONINFORMATION);
         TManagerLoyaltyMate::Instance()->TriggerPointSync();
         return false;
