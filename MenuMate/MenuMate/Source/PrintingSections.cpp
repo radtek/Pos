@@ -7662,7 +7662,10 @@ TDocketFormat &inFormat)
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
-           && PrintJob->JobType == pjReceiptReceipt) && ((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach())>0)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+           && PrintJob->JobType == pjReceiptReceipt)
+           && !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+           && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+           || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
            && PrintJob->JobType == pjKitchen))
             {
                UnicodeString ItemName = "";
@@ -8834,7 +8837,10 @@ TDocketFormat &inFormat)
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
             if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
-            && PrintJob->JobType == pjReceiptReceipt) && ((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach())>0)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+            && PrintJob->JobType == pjReceiptReceipt)
+            &&!((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+            && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+            || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
             && PrintJob->JobType == pjKitchen))
             {
                 UnicodeString ItemName = "";

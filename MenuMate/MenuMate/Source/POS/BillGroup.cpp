@@ -2888,6 +2888,7 @@ void TfrmBillGroup::SplitItemOnClick(int itemSelected)
         SplitItem(DBTransaction,itemSelected,qtyLeft);
         if(frmTouchNumpad->splitValue < SelectedItems[itemSelected].Qty)
            RefreshItemStatus(frmTouchNumpad->CURResult,itemSelected,DBTransaction);
+        UpdateItemListDisplay(DBTransaction);
         DBTransaction.Commit();
     }
 }
@@ -3057,7 +3058,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
         int sideCount = 0;
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
 		{
-            if(!(itItem->second.Price == 0 && itItem->second.IsSide == true))  //Added condition to exclude Side which has Cost equal to 0
+            if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))  //Added condition to exclude Side which has Cost equal to 0
 			  SortingList->Add(&itItem->second);
             else
               sideCount++;
@@ -3617,7 +3618,7 @@ void TfrmBillGroup::ShowReceipt()
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
-                if(!(itItem->second.Price == 0 && itItem->second.IsSide == true))     //Added condition to exclude Side which has Cost equal to 0
+                if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))     //Added condition to exclude Side which has Cost equal to 0
 				    ReceiptItemKeys.insert(itItem->first);
 			}
 
@@ -5588,7 +5589,7 @@ void TfrmBillGroup:: MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64
     std::set <__int64> ZeroPriceSideKeys;
     for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
     {
-        if(itItem->second.Price == 0 && itItem->second.IsSide == true)
+        if(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false)
           ZeroPriceSideKeys.insert(itItem->first);
     }
     SelectedItemKeys.insert(ZeroPriceSideKeys.begin(),ZeroPriceSideKeys.end());    //Merging the Item keys of Zero Price Sides with Selected Item Keys

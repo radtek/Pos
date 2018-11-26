@@ -1079,6 +1079,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			"TIME_KEY,"
 			"GST_PERCENT,"
 			"COST_GST_PERCENT,"
+            "SIDE_ORDER_KEY,"
 			"QTY,"
 			"DISCOUNT,"
 			"DISCOUNT_REASON,"
@@ -1167,6 +1168,7 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			":TIME_KEY,"
 			":GST_PERCENT,"
 			":COST_GST_PERCENT,"
+            ":SIDE_ORDER_KEY,"
 			":QTY,"
 			":DISCOUNT,"
 			":DISCOUNT_REASON,"
@@ -1283,7 +1285,8 @@ void TDBOrder::SetOrder(Database::TDBTransaction &DBTransaction,TItemComplete * 
 			IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = Order->TimeKey;
 			//IBInternalQuery->ParamByName("GST_PERCENT")->AsFloat = Order->GSTPercent;
 			IBInternalQuery->ParamByName("COST_GST_PERCENT")->AsFloat = Order->CostGSTPercent;
-			//IBInternalQuery->ParamByName("SIDE_ORDER_KEY")->AsInteger = 0;
+            if(Order->IsSide)
+			IBInternalQuery->ParamByName("SIDE_ORDER_KEY")->AsInteger = Order->SideOrderKey;
 			IBInternalQuery->ParamByName("QTY")->AsCurrency = Order->GetQty();
 			IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Order->TotalAdjustment();
 			IBInternalQuery->ParamByName("DISCOUNT_REASON")->AsString = Order->DiscountReason.SubString(1,40);
@@ -2470,7 +2473,10 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,int Ta
 			{
 				Order.Name = 	IBInternalQuery->FieldByName("ITEM_NAME")->AsString;
 			}
-
+            if(Order.Price == 0 && (IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency != 0) && (IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0))        // Added condition to check if the 100% discount is applied on item
+            {
+                Order.IsItemFree = true;
+            }
             if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
             {
                 Order.IsSide = true;
@@ -2586,7 +2592,10 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 
 				Order.Price = IBInternalQuery->FieldByName("PRICE")->AsCurrency +
 				IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency;
-
+                if(Order.Price == 0 && (IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency != 0) && (IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0))     // Added condition to check if the 100% discount is applied on item
+                {
+                    Order.IsItemFree = true;
+                }
                 if(IBInternalQuery->FieldByName("SIZE_NAME")->AsString.UpperCase() != "DEFAULT")
                 {
                     Order.Name = IBInternalQuery->FieldByName("SIZE_NAME")->AsString + " " +
@@ -2734,7 +2743,10 @@ void TDBOrder::LoadPickNMixOrders(Database::TDBTransaction &DBTransaction,std::s
 				}
 				Order.Qty		= 	IBInternalQuery->FieldByName("QTY")->AsFloat;
                 Order.PatronCount = IBInternalQuery->FieldByName("patron_count")->AsInteger;
-
+                if(Order.Price == 0 && (IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency != 0) && (IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0))     // Added condition to check if the 100% discount is applied on item
+                {
+                    Order.IsItemFree = true;
+                }
                 if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
                 {
                     Order.IsSide = true;
@@ -2798,7 +2810,10 @@ void TDBOrder::LoadPickNMixOrder(Database::TDBTransaction &DBTransaction,int Ord
 			Order->PatronCount =
 			IBInternalQuery->FieldByName(
 			"patron_count")->AsInteger;
-
+            if(Order->Price == 0 && (IBInternalQuery->FieldByName("DISCOUNT")->AsCurrency != 0) && (IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0))           // Added condition to check if the 100% discount is applied on item
+            {
+                Order->IsItemFree = true;
+            }
             if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
             {
                 Order->IsSide = true;
@@ -4237,6 +4252,7 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
         Order->ContactsKey = OrderTable->FieldByName("CONTACTS_KEY")->AsInteger;
         Order->OnlineChitType = OrderTable->FieldByName("ONLINE_CHIT_TYPE")->AsInteger;
         Order->OnlineOrderId = OrderTable->FieldByName("ONLINE_ORDER_ID")->AsInteger;
+        Order->SideOrderKey = OrderTable->FieldByName("SIDE_ORDER_KEY")->AsInteger;
  	}
 }
 
