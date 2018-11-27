@@ -30,7 +30,8 @@ public:
         RoomNumber(""),
         AccNumber(""),
         FirstName(""),
-        LastName("")
+        LastName(""),
+        IsItemFree(false)
         {
 	}
 
@@ -61,6 +62,7 @@ public:
     UnicodeString AccNumber;
     UnicodeString FirstName;
     UnicodeString LastName;
+    bool IsItemFree;                 // Used for those items on whoch 100% discount is applied
 
 
 	// Selected for billing therefore not shown in orders list
