@@ -1,12 +1,9 @@
 //---------------------------------------------------------------------------
-
 #include <vcl.h>
 #pragma hdrstop
-
 #include "SelectSaveOption.h"
 #include "DeviceRealTerminal.h"
 #include "DBTab.h"
-
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -152,16 +149,6 @@ void __fastcall TfrmSelectSaveOption::tbWebOrdersMouseClick(TObject *Sender)
   Title = "Web Orders";
   ModalResult = mrOk;
 }
-
-//---------------------------------------------------------------------------
-
-void __fastcall TfrmSelectSaveOption::tbClippTabsMouseClick(TObject *Sender)
-{
-  SelectedTabType = TabClipp;
-  DisplayMode = eTab;
-  Title = "Clipp Tabs";
-  ModalResult = mrOk;
-}
 //---------------------------------------------------------------------------
 void TfrmSelectSaveOption::ShowTransferSection()
 {
@@ -170,7 +157,6 @@ void TfrmSelectSaveOption::ShowTransferSection()
    tbStafftabs->Visible = TGlobalSettings::Instance().TabsEnabled;
    tbRooms->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"];
    tbMembersTab->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
-   tbClippTabs->Visible =  TGlobalSettings::Instance().IsClippIntegrationEnabled;
 }
 
 //---------------------------------------------------------------------------

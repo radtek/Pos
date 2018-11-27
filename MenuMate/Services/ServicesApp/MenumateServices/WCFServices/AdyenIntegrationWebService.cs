@@ -9,6 +9,7 @@ using AdyenIntegration.Domain.ResponseEnvelop;
 using AdyenIntegration.Domain.Constants;
 using System.Net;
 using AdyenIntegration;
+using AdyenIntegration.Domain.AdjustAuthorisation;
 
 namespace MenumateServices.WCFServices
 {
@@ -111,5 +112,34 @@ namespace MenumateServices.WCFServices
             }
             return response; 
         }
+
+        public AdjustAndCaptureResponse CaptureModifiedAmount(CaptureModifiedAmount authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                AdyenIntegrationController controller = new AdyenIntegrationController();
+                response = controller.CaptureModifiedAmount(authRequest, details);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in CaptureModifiedAmount        " + ex.Message);
+            }
+            return response;
+        }
+        public AdjustAndCaptureResponse AdjustAuthorisation(AdjustAuthorisation authRequest, ResourceDetails details)
+        {
+            AdjustAndCaptureResponse response = null;
+            try
+            {
+                AdyenIntegrationController controller = new AdyenIntegrationController();
+                response = controller.AdjustAuthorisation(authRequest, details);
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in AdjustAuthorisation        " + ex.Message);
+            }
+            return response;
+        }       
     }
 }

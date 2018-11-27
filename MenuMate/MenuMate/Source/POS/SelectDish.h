@@ -46,7 +46,6 @@
 #include "MMTablePickerConnectorServer.h"
 #include "ChefmateClientManager.h"
 #include "ManagerChitNumber.h"
-#include "ManagerThorVoucher.h"
 #include "ManagerParkedSales.h"
 #include "ChitNumberController.h"
 #include "DrinkCommandManager.h"
@@ -653,7 +652,6 @@ public: // User declarations
    void OnSmartCardRemoved(TSystemEvents *Sender);
    void TransactionComplete(TSystemEvents *Sender);
    void RemoveItem(Database::TDBTransaction &DBTransaction);
-   void GetThorVouchers();
    void SetSelectedServingCourse(int SelectedServingCourse);
    int GetServingCourse();
    void ChangeItemsServingCourse();

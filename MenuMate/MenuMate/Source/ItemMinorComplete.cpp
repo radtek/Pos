@@ -235,6 +235,7 @@ TItemMinorComplete::TItemMinorComplete() {
     ReferenceOrderItemSizeId = 0;
     Email = "";
     OrderGuid = "";
+    SideOrderKey = 0;
 }
 
 __fastcall TItemMinorComplete::~TItemMinorComplete() {
@@ -305,6 +306,7 @@ TItemMinorComplete::TItemMinorComplete(
     ReferenceOrderItemSizeId = initializer.ReferenceOrderItemSizeId;
     Email = initializer.Email;
     OrderGuid = initializer.OrderGuid;
+    SideOrderKey = initializer.SideOrderKey;
 }
 
 TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
@@ -365,6 +367,7 @@ TItemMinorComplete &TItemMinorComplete::operator=(const TItemMinorComplete &rhs)
     ReferenceOrderItemSizeId = rhs.ReferenceOrderItemSizeId;
     Email = rhs.Email;
     OrderGuid = rhs.OrderGuid;
+    SideOrderKey = rhs.SideOrderKey;
 }
 
 void TItemMinorComplete::Assign(TItemMinor * BaseItem)
@@ -426,6 +429,7 @@ void TItemMinorComplete::Assign(TItemMinor * BaseItem)
         RetItem->ReferenceOrderItemSizeId = ReferenceOrderItemSizeId;
         RetItem->Email = Email;
         RetItem->OrderGuid = OrderGuid;
+        RetItem->SideOrderKey = SideOrderKey;
     }
 }
 
@@ -1218,18 +1222,6 @@ Currency TItemMinorComplete::DiscountValue(TDiscount Discount)
 
 	return RetVal;
 }
-
-void TItemMinorComplete::ThorVouchersDiscountsClear()
-{
-
-	ThorlinkDiscountByTypeLevelRemove(dsMMSystem);
-	for (int j = 0; j < SubOrders->Count; j++)
-    {
-		TItemMinorComplete *SubOrder = (TItemMinorComplete*)SubOrders->Items[j];
-		SubOrder->ThorlinkDiscountByTypeLevelRemove(dsMMSystem);
-	}
-}
-
 void TItemMinorComplete::ClearAllDiscounts()
 {
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
@@ -1302,29 +1294,6 @@ void TItemMinorComplete::DiscountsClearByFilter(std::vector<TDiscountMode> exemp
     RunBillCalculator();
    }
 }
-
-
-void TItemMinorComplete::ThorlinkDiscountByTypeLevelRemove(TDiscountSource DiscountSource)
-{
-	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )
-	{
-		TDiscount CurrentDiscount = *ptrDiscount;
-		if (CurrentDiscount.IsThorBill)
-		{
-			Discounts.erase(ptrDiscount);
-			ptrDiscount = Discounts.begin();
-			SelectedItems = 0;
-			PrevSelectedItems = 0;
-		}
-		else
-		{
-			ptrDiscount++;
-		}
-	}
-
-    RunBillCalculator();
-}
-
 void TItemMinorComplete::DiscountByTypeLevelRemove (TDiscountSource DiscountSource)
 {
 	for (std::vector<TDiscount>::iterator ptrDiscount = Discounts.begin(); ptrDiscount != Discounts.end(); )

@@ -324,6 +324,9 @@ TPrintOutFormatInstructions::TPrintOutFormatInstructions()
     Instructions[i++] = InstructionPair(epofiPrintPatronsSection, "Patron Count Section");
 	DefaultCaption[epofiPrintPatronsSection] = "Patron Count Section";
 
+    Instructions[i++] = InstructionPair(epofiPrinttipAndSignatureSection, "Tip & Signature Section");
+	DefaultCaption[epofiPrinttipAndSignatureSection] =  "Tip & Signature Section";
+
 }
 
 
@@ -656,6 +659,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 	case epofiPrintLoyaltyReceiptMemberName:
 	case epofiPrintLoyaltyReceiptActivationCode:
 	case epofiPrintLoyaltyReceiptActivationInstructions:
+    case epofiPrinttipAndSignatureSection:
 	case epofiPrintCurrencySymbol:
 		{
 			FormatAndProcessNoChildren(PrintJob);
@@ -703,6 +707,7 @@ void TPrintSection::ProcessSection(TReqPrintJob *PrintJob)
 				FormatAndProcessNoChildren(PrintJob);
 			}
 		}break;
+
 	}
 }
 
@@ -1035,6 +1040,9 @@ void TPrintSection::FormatSectionData(TReqPrintJob *PrintJob)
         case epofiPrintPatronsSection:
             PrintPatronSection(PrintJob);
             break;
+       case epofiPrinttipAndSignatureSection:
+            PrintTipAndSignature(PrintJob);
+           break;
 		default:
 			break;
 		}
@@ -1204,7 +1212,7 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	UnicodeString ItemName = ThisInstruction->Caption;
 /************MM-5048***************************/
 	if( PrintJob->Transaction->Customer.RoomNumber != 0 && TGlobalSettings::Instance().PMSType != SiHot &&
-        TGlobalSettings::Instance().PMSType != Oracle)
+        TGlobalSettings::Instance().PMSType != Oracle && TGlobalSettings::Instance().PMSType != Mews)
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumber;
@@ -1215,7 +1223,9 @@ void TPrintSection::PrintHotelRoomNumber(TReqPrintJob *PrintJob)
 	    pPrinter->Line->Columns[0]->Text =ItemName+ ": "  + RoomNumber;
 		pPrinter->AddLine();
 	}
-    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" && TGlobalSettings::Instance().PMSType == SiHot && IsRoomPayment(PrintJob))
+    else if(PrintJob->Transaction->Customer.RoomNumberStr != "" &&
+            (TGlobalSettings::Instance().PMSType == SiHot || TGlobalSettings::Instance().PMSType == Mews)
+             && IsRoomPayment(PrintJob))
 	{
         AnsiString RoomNumber = "";
 		    RoomNumber = PrintJob->Transaction->Customer.RoomNumberStr;
@@ -5042,10 +5052,10 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 	{
 		OrderBundle = new TList;
 		TDateTime TimeStamp = Now();
+
 		for (int i = 0; i < WorkingOrdersList->Count; )
 		{
 			TItemComplete *CurrentOrder = (TItemComplete*)WorkingOrdersList->Items[i];
-
 			if (TimeStamp > CurrentOrder->TimeStamp)
 			{
 				TimeStamp = CurrentOrder->TimeStamp;
@@ -5054,7 +5064,8 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 			TOrderBundle *TempBundle = new TOrderBundle();
 			TempBundle->BundleOrders(PrintJob, WorkingOrdersList.get(), i,Format);
 
-			OrderBundle->Add(TempBundle);
+            if(!(CurrentOrder->IsSide && CurrentOrder->PriceEach() == 0))    //Added condition to exclude Side which has Cost equal to 0
+    			OrderBundle->Add(TempBundle);
 		}
 
 		for (int j = 0; j < OrderBundle->Count; j++)
@@ -7650,52 +7661,56 @@ TDocketFormat &inFormat)
 
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt && PrintJob->JobType == pjReceiptReceipt)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen && PrintJob->JobType == pjKitchen))
-             {
-                UnicodeString ItemName = "";
-                UnicodeString SizeName = "";
-                if (PrintJob->JobType == pjKitchen)
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
-                }
-                else
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
-                }
-
-                if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
-                {
-                    TItemSubSection SubItem;
-                    SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + SizeName + Spacer1 + ItemName;
-                    SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
-                   if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                   {
-                       SubItem.isManuallyWeight=true;
-                   }
-                     else
-                   {
-                       SubItem.isManuallyWeight=false;
-                   }
-                   SubItems.push_back(SubItem);
-                }
-                else
-                {
-                    TItemSubSection SubItem;
-                    SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + ItemName;
-                    SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
+           if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+           && PrintJob->JobType == pjReceiptReceipt)
+           && !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+           && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+           || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+           && PrintJob->JobType == pjKitchen))
+            {
+               UnicodeString ItemName = "";
+               UnicodeString SizeName = "";
+               if (PrintJob->JobType == pjKitchen)
+               {
+                   ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
+                   SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
+               }
+               else
+               {
+                   ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
+                   SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
+               }
+               if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
+               {
+                   TItemSubSection SubItem;
+                   SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + SizeName + Spacer1 + ItemName;
+                   SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
                   if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                   {
-                       SubItem.isManuallyWeight=true;
-                   }
-                   else
-                   {
-                       SubItem.isManuallyWeight=false;
-                   }
-                   SubItems.push_back(SubItem);
-                }
-            }
+                  {
+                      SubItem.isManuallyWeight=true;
+                  }
+                    else
+                  {
+                      SubItem.isManuallyWeight=false;
+                  }
+                  SubItems.push_back(SubItem);
+               }
+               else
+               {
+                   TItemSubSection SubItem;
+                   SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + ItemName;
+                   SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
+                 if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
+                  {
+                      SubItem.isManuallyWeight=true;
+                  }
+                  else
+                  {
+                      SubItem.isManuallyWeight=false;
+                  }
+                  SubItems.push_back(SubItem);
+               }
+           }
 		}
 	}
 }
@@ -8821,8 +8836,12 @@ TDocketFormat &inFormat)
 
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-
-            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt && PrintJob->JobType == pjReceiptReceipt)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen && PrintJob->JobType == pjKitchen))
+            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+            && PrintJob->JobType == pjReceiptReceipt)
+            &&!((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+            && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+            || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+            && PrintJob->JobType == pjKitchen))
             {
                 UnicodeString ItemName = "";
                 UnicodeString SizeName = "";
@@ -8889,7 +8908,7 @@ TDocketFormat &inFormat)
 
                 }
             }
-		}
+      }
 	}
 }
 // -----------------------------------------------------------------------------
@@ -9330,3 +9349,33 @@ bool TPrintSection::IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, eP
     return retVal;
 }
 
+//-----------------------------------------
+void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
+{
+    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().PrintTipAndSignature &&
+            IsPaymentDoneWithParamPaymentType(PrintJob, ePayTypeIntegratedEFTPOS) )
+    {
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Tip :__________________________________________________";
+        pPrinter->NewLine();
+        pPrinter->AddLine();
+        pPrinter->NewLine();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width ;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Total :________________________________________________";
+        pPrinter->AddLine();
+
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->NewLine();
+        pPrinter->NewLine();
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width ;
+
+        pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
+        pPrinter->Line->Columns[0]->Text  = "Signature :____________________________________________";
+        pPrinter->AddLine();
+    }
+}
+//--------------------------------------------------------------------------------------

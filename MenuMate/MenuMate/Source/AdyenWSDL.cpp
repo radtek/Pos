@@ -12,10 +12,11 @@
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd6
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd7
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd9
+//  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd10
 //  >Import : http://localhost:8745/MenumateServices/AdyenService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (11/05/2018 2:37:48 a.m. - - $Rev: 25127 $)
+// (2/11/2018 1:32:52 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -74,8 +75,6 @@ __fastcall PaymentTransaction::~PaymentTransaction()
 
 __fastcall SaleData::~SaleData()
 {
-  delete FSaleTerminalData;
-  delete FSaleToIssuerData;
   delete FSaleTransactionID;
 }
 
@@ -108,9 +107,6 @@ __fastcall PaymentResponse::~PaymentResponse()
 __fastcall PaymentResult::~PaymentResult()
 {
   delete FAmountsResp;
-  delete FCapturedSignature;
-  delete FCurrencyConversion;
-  delete FInstalment;
   delete FPaymentAcquirerData;
   delete FPaymentInstrumentData;
 }
@@ -122,20 +118,9 @@ __fastcall PaymentReceipt::~PaymentReceipt()
 
 __fastcall OutputContent::~OutputContent()
 {
-  delete FPredefinedContent;
   for(int i=0; i<FOutputText.Length; i++)
     if (FOutputText[i])
       delete FOutputText[i];
-}
-
-__fastcall CapturedSignature::~CapturedSignature()
-{
-  delete FAreaSize;
-}
-
-__fastcall CurrencyConversion::~CurrencyConversion()
-{
-  delete FConvertedAmount;
 }
 
 __fastcall PaymentAcquirerData::~PaymentAcquirerData()
@@ -146,20 +131,6 @@ __fastcall PaymentAcquirerData::~PaymentAcquirerData()
 __fastcall PaymentInstrumentData::~PaymentInstrumentData()
 {
   delete FCardData;
-  delete FCheckData;
-  delete FMobileData;
-  delete FStoredValueAccountID;
-}
-
-__fastcall CheckData::~CheckData()
-{
-  delete FTrackData;
-}
-
-__fastcall MobileData::~MobileData()
-{
-  delete FGeolocation;
-  delete FSensitiveMobileData;
 }
 
 __fastcall CardData::~CardData()
@@ -177,12 +148,6 @@ __fastcall CardData::~CardData()
 __fastcall SensitiveCardData::~SensitiveCardData()
 {
   delete FTrackData;
-}
-
-__fastcall Geolocation::~Geolocation()
-{
-  delete FGeographicCoordinates;
-  delete FUTMCoordinates;
 }
 
 __fastcall DiagnosisResponse::~DiagnosisResponse()
@@ -264,6 +229,17 @@ __fastcall SaleToPOIResponse::~SaleToPOIResponse()
   delete FTransactionStatusResponse;
 }
 
+__fastcall CaptureModifiedAmount::~CaptureModifiedAmount()
+{
+  delete FmodificationAmount;
+}
+
+__fastcall AdjustAuthorisation::~AdjustAuthorisation()
+{
+  delete FadditionalData;
+  delete FmodificationAmount;
+}
+
 // ************************************************************************ //
 // This routine registers the interfaces and types exposed by the WebService.
 // ************************************************************************ //
@@ -291,8 +267,6 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SaleData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleData");
   /* AmountsReq */
   RemClassRegistry()->RegisterXSClass(__classid(AmountsReq), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AmountsReq");
-  /* SaleToIssuerData */
-  RemClassRegistry()->RegisterXSClass(__classid(SaleToIssuerData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleToIssuerData");
   /* SaleTransactionID */
   RemClassRegistry()->RegisterXSClass(__classid(SaleTransactionID), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleTransactionID");
   /* ReversalRequest */
@@ -317,34 +291,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOutputText), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfOutputText");
   /* OutputContent */
   RemClassRegistry()->RegisterXSClass(__classid(OutputContent), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"OutputContent");
-  /* PredefinedContent */
-  RemClassRegistry()->RegisterXSClass(__classid(PredefinedContent), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PredefinedContent");
   /* OutputText */
   RemClassRegistry()->RegisterXSClass(__classid(OutputText), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"OutputText");
   /* AmountsResp */
   RemClassRegistry()->RegisterXSClass(__classid(AmountsResp), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AmountsResp");
-  /* CapturedSignature */
-  RemClassRegistry()->RegisterXSClass(__classid(CapturedSignature), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CapturedSignature");
-  /* CurrencyConversion */
-  RemClassRegistry()->RegisterXSClass(__classid(CurrencyConversion), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CurrencyConversion");
-  /* Instalment */
-  RemClassRegistry()->RegisterXSClass(__classid(Instalment), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"Instalment");
   /* PaymentAcquirerData */
   RemClassRegistry()->RegisterXSClass(__classid(PaymentAcquirerData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PaymentAcquirerData");
   /* PaymentInstrumentData */
   RemClassRegistry()->RegisterXSClass(__classid(PaymentInstrumentData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PaymentInstrumentData");
-  /* AreaSize */
-  RemClassRegistry()->RegisterXSClass(__classid(AreaSize), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AreaSize");
-  /* ConvertedAmount */
-  RemClassRegistry()->RegisterXSClass(__classid(ConvertedAmount), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ConvertedAmount");
   /* AcquirerTransactionID */
   RemClassRegistry()->RegisterXSClass(__classid(AcquirerTransactionID), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AcquirerTransactionID");
-  /* CheckData */
-  RemClassRegistry()->RegisterXSClass(__classid(CheckData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CheckData");
-  /* MobileData */
-  RemClassRegistry()->RegisterXSClass(__classid(MobileData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"MobileData");
-  /* StoredValueAccountID */
-  RemClassRegistry()->RegisterXSClass(__classid(StoredValueAccountID), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"StoredValueAccountID");
   /* ArrayOfAllowedProduct */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfAllowedProduct), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfAllowedProduct");
   /* ArrayOfCustomerOrder */
@@ -361,14 +317,6 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(CustomerOrder), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CustomerOrder");
   /* TrackData */
   RemClassRegistry()->RegisterXSClass(__classid(TrackData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"TrackData");
-  /* Geolocation */
-  RemClassRegistry()->RegisterXSClass(__classid(Geolocation), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"Geolocation");
-  /* SensitiveMobileData */
-  RemClassRegistry()->RegisterXSClass(__classid(SensitiveMobileData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SensitiveMobileData");
-  /* GeographicCoordinates */
-  RemClassRegistry()->RegisterXSClass(__classid(GeographicCoordinates), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"GeographicCoordinates");
-  /* UTMCoordinates */
-  RemClassRegistry()->RegisterXSClass(__classid(UTMCoordinates), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"UTMCoordinates");
   /* SaleSoftware */
   RemClassRegistry()->RegisterXSClass(__classid(SaleSoftware2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleSoftware2", L"SaleSoftware");
   /* SaleTerminalData */
@@ -385,8 +333,6 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(AmountsReq2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AmountsReq2", L"AmountsReq");
   /* SaleData */
   RemClassRegistry()->RegisterXSClass(__classid(SaleData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleData2", L"SaleData");
-  /* SaleToIssuerData */
-  RemClassRegistry()->RegisterXSClass(__classid(SaleToIssuerData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleToIssuerData2", L"SaleToIssuerData");
   /* SaleTransactionID */
   RemClassRegistry()->RegisterXSClass(__classid(SaleTransactionID2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SaleTransactionID2", L"SaleTransactionID");
   /* ReversalRequest */
@@ -407,22 +353,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(OutputContent2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"OutputContent2", L"OutputContent");
   /* OutputText */
   RemClassRegistry()->RegisterXSClass(__classid(OutputText2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"OutputText2", L"OutputText");
-  /* PredefinedContent */
-  RemClassRegistry()->RegisterXSClass(__classid(PredefinedContent2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PredefinedContent2", L"PredefinedContent");
   /* PaymentResult */
   RemClassRegistry()->RegisterXSClass(__classid(PaymentResult2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PaymentResult2", L"PaymentResult");
   /* AmountsResp */
   RemClassRegistry()->RegisterXSClass(__classid(AmountsResp2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AmountsResp2", L"AmountsResp");
-  /* CapturedSignature */
-  RemClassRegistry()->RegisterXSClass(__classid(CapturedSignature2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CapturedSignature2", L"CapturedSignature");
-  /* AreaSize */
-  RemClassRegistry()->RegisterXSClass(__classid(AreaSize2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"AreaSize2", L"AreaSize");
-  /* CurrencyConversion */
-  RemClassRegistry()->RegisterXSClass(__classid(CurrencyConversion2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CurrencyConversion2", L"CurrencyConversion");
-  /* ConvertedAmount */
-  RemClassRegistry()->RegisterXSClass(__classid(ConvertedAmount2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ConvertedAmount2", L"ConvertedAmount");
-  /* Instalment */
-  RemClassRegistry()->RegisterXSClass(__classid(Instalment2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"Instalment2", L"Instalment");
   /* PaymentAcquirerData */
   RemClassRegistry()->RegisterXSClass(__classid(PaymentAcquirerData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"PaymentAcquirerData2", L"PaymentAcquirerData");
   /* AcquirerTransactionID */
@@ -441,20 +375,6 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SensitiveCardData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SensitiveCardData2", L"SensitiveCardData");
   /* TrackData */
   RemClassRegistry()->RegisterXSClass(__classid(TrackData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"TrackData2", L"TrackData");
-  /* CheckData */
-  RemClassRegistry()->RegisterXSClass(__classid(CheckData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"CheckData2", L"CheckData");
-  /* MobileData */
-  RemClassRegistry()->RegisterXSClass(__classid(MobileData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"MobileData2", L"MobileData");
-  /* Geolocation */
-  RemClassRegistry()->RegisterXSClass(__classid(Geolocation2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"Geolocation2", L"Geolocation");
-  /* GeographicCoordinates */
-  RemClassRegistry()->RegisterXSClass(__classid(GeographicCoordinates2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"GeographicCoordinates2", L"GeographicCoordinates");
-  /* UTMCoordinates */
-  RemClassRegistry()->RegisterXSClass(__classid(UTMCoordinates2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"UTMCoordinates2", L"UTMCoordinates");
-  /* SensitiveMobileData */
-  RemClassRegistry()->RegisterXSClass(__classid(SensitiveMobileData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"SensitiveMobileData2", L"SensitiveMobileData");
-  /* StoredValueAccountID */
-  RemClassRegistry()->RegisterXSClass(__classid(StoredValueAccountID2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"StoredValueAccountID2", L"StoredValueAccountID");
   /* DiagnosisRequest */
   RemClassRegistry()->RegisterXSClass(__classid(DiagnosisRequest), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.Diagnosis", L"DiagnosisRequest");
   /* DiagnosisResponse */
@@ -535,6 +455,26 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse");
   /* SaleToPOIResponse */
   RemClassRegistry()->RegisterXSClass(__classid(SaleToPOIResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.ResponseEnvelop", L"SaleToPOIResponse2", L"SaleToPOIResponse");
+  /* CaptureModifiedAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(CaptureModifiedAmount), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"CaptureModifiedAmount");
+  /* ModificationAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(ModificationAmount), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"ModificationAmount");
+  /* AdjustAndCaptureResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAndCaptureResponse), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAndCaptureResponse");
+  /* AdjustAuthorisation */
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation");
+  /* AdditionalData */
+  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData");
+  /* CaptureModifiedAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(CaptureModifiedAmount2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"CaptureModifiedAmount2", L"CaptureModifiedAmount");
+  /* ModificationAmount */
+  RemClassRegistry()->RegisterXSClass(__classid(ModificationAmount2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"ModificationAmount2", L"ModificationAmount");
+  /* AdjustAndCaptureResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAndCaptureResponse2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAndCaptureResponse2", L"AdjustAndCaptureResponse");
+  /* AdjustAuthorisation */
+  RemClassRegistry()->RegisterXSClass(__classid(AdjustAuthorisation2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdjustAuthorisation2", L"AdjustAuthorisation");
+  /* AdditionalData */
+  RemClassRegistry()->RegisterXSClass(__classid(AdditionalData2), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain.AdjustAuthorisation", L"AdditionalData2", L"AdditionalData");
   /* ArrayOfPaymentReceipt */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfPaymentReceipt), L"http://schemas.datacontract.org/2004/07/AdyenIntegration.Domain", L"ArrayOfPaymentReceipt");
   /* ArrayOfAllowedProduct */

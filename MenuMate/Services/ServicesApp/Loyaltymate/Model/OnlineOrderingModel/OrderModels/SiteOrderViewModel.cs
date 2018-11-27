@@ -28,6 +28,7 @@ namespace Loyaltymate.Model.OnlineOrderingModel.OrderModels
         public string UserEmailId{get; set;}
         public Guid? MemberGuid { get; set; }
         public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
+        public bool IsHappyHourApplied { get; set; }
     }
 }
 

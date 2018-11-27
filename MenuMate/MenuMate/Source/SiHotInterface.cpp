@@ -45,6 +45,9 @@ TRoomResponse TSiHotInterface::SendRoomRequest(TRoomRequest _roomRequest, int ti
         AnsiString directoryName = ExtractFilePath(Application->ExeName) + "/Menumate Services";
         if (!DirectoryExists(directoryName))
             CreateDir(directoryName);
+        directoryName = directoryName + "\\logs";
+        if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
         directoryName = directoryName + "/Sihot Post Logs";
         if (!DirectoryExists(directoryName))
             CreateDir(directoryName);

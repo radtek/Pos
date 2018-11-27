@@ -50,6 +50,8 @@ namespace MenumateServices.DTO.OnlineOrdering.OrderModels
         public Guid? MemberGuid { get; set; }
         [DataMember]
         public OrderInvoiceTransactionModel OrderInvoiceTransaction { get; set; }
+        [DataMember]
+        public bool IsHappyHourApplied { get; set; }
 
     }
 }

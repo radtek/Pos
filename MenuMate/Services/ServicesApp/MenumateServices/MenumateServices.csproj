@@ -93,6 +93,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdyenIntegration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Ready for Distribution\AdyenIntegration.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
@@ -233,6 +237,7 @@
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
+    <Compile Include="MenumateRunners\MewsIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
@@ -241,6 +246,12 @@
     </Compile>
     <Compile Include="MenumateServiceAdyenIntegration.Designer.cs">
       <DependentUpon>MenumateServiceAdyenIntegration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MenumateServiceMewsIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceMewsIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceMewsIntegration.cs</DependentUpon>
     </Compile>
     <Compile Include="MenumateServiceSiHotIntegration.cs">
       <SubType>Component</SubType>
@@ -377,12 +388,14 @@
     <Compile Include="Tools\ServiceNameManager.cs" />
     <Compile Include="WCFServices\AdyenIntegrationWebService.cs" />
     <Compile Include="WCFServices\IAdyenIntegrationWebService.cs" />
+    <Compile Include="WCFServices\IMewsIntegrationWebService.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServicePaymentSense.cs" />
     <Compile Include="WCFServices\IWCFServiceWalletPayments.cs" />
     <Compile Include="WCFServices\IWCFSmartConnect.cs" />
+    <Compile Include="WCFServices\MewsIntegrationWebService.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
@@ -427,10 +440,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AdyenIntegration\AdyenIntegration.csproj">
-      <Project>{71986902-F877-4F9E-A692-15D2FC3DC65E}</Project>
-      <Name>AdyenIntegration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Loyaltymate\Loyaltymate.csproj">
       <Project>{5926EAF0-F930-4522-8EDE-E27F76E109C7}</Project>
       <Name>Loyaltymate</Name>
@@ -442,6 +451,10 @@
     <ProjectReference Include="..\MenumateUtils\MenumateUtils.csproj">
       <Project>{37B0F64A-677E-4AD0-8C04-252BF7A5D3AE}</Project>
       <Name>MenumateUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MewsIntegration\MewsIntegration.csproj">
+      <Project>{73b59aac-6830-49d9-86bd-6e9db74ae8e7}</Project>
+      <Name>MewsIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\PaymentSenseIntegration\PaymentSenseIntegration.csproj">
       <Project>{A623C2CE-7E9A-4A72-81DA-7DB377333670}</Project>
@@ -504,18 +517,20 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+  <!--  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  -->
+  <!--  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
     <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+  </Target> -->
+  <!--  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  -->
+  <!--  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
+  </Target> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

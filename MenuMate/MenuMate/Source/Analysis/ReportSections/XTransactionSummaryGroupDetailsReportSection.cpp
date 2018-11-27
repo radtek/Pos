@@ -211,7 +211,7 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                         {
                             printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name +
                                             " (" + IntToStr(ThisTransaction.Count) + ")";
-                            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total - itCurrentPayment->second.TipAmount);
+                            printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.Total);
                             printOut->PrintFormat->AddLine();
                         }
                         TCalculatedTotals Total(itCurrentPayment->second.Name, itCurrentPayment->second.Total,0,0, ThisTransaction.Count);
@@ -236,13 +236,13 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                             printOut->PrintFormat->AddLine();
                             total_payment += itCurrentPayment->second.TipQty;
                         }
-                        else
+                        /*else
                         {
                             printOut->PrintFormat->Line->Columns[0]->Text = itCurrentPayment->second.Name + " Tips" +
                                             " (" + IntToStr(itCurrentPayment->second.TipQty) + ")";
                             printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( itCurrentPayment->second.TipAmount );
                             printOut->PrintFormat->AddLine();
-                        }
+                        } */  // Merge TipAmount with Tip
                     }
                     if (itCurrentPayment->second.CashOut != 0)
                     {
@@ -372,8 +372,12 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                 Currency SpentLoyaltyPoints = 0;
                 Currency SpentEarntPoints = 0;
                 Currency RefundedPoints = 0;
+                Currency TotalTips = 0;
+                Currency TotalTipsRefunded = 0;
 
                 int SurchargeQty = 0;
+                int TipsQty = 0;
+                int TipsRefundedQty = 0;
 
                 PointsHeld = _memberShip->GetPointsHeldTotal(*_dbTransaction);
 
@@ -415,6 +419,16 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                     {
                         TotalSurcharges += itCurrentPayment->second.Surcharge;
                         SurchargeQty++;
+                    }
+                    if (itCurrentPayment->second.TipsRefunded != 0)
+                    {
+                        TotalTipsRefunded += itCurrentPayment->second.TipsRefunded;
+                        TipsRefundedQty += itCurrentPayment->second.TipsRefundedQty;
+                    }
+                    if (itCurrentPayment->second.Tips != 0 || itCurrentPayment->second.TipAmount != 0)
+                    {
+                        TotalTips += itCurrentPayment->second.Tips + itCurrentPayment->second.TipAmount;
+                        TipsQty += itCurrentPayment->second.TipsQty + itCurrentPayment->second.TipQty;
                     }
 
                     std::map<int, Currency> iPoints = itCurrentPayment->second.Points;
@@ -695,6 +709,28 @@ void XTransactionSummaryGroupDetailsReportSection::DisplayBankingSection(TPrinto
                     printOut->PrintFormat->Line->Columns[0]->Text = "Total Surcharges";
                     printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalSurcharges );
                     printOut->PrintFormat->AddLine();
+                }
+                if(TotalTips != 0 || TotalTipsRefunded != 0)
+                {
+                    AddSubTitle(printOut, "Tips ");
+                    if(reportSectionDisplayTraits)
+                    {
+                        reportSectionDisplayTraits->ApplyTraits(printOut);
+                    }
+                    printOut->PrintFormat->Line->Columns[0]->Text = "Tips Received ("+IntToStr(TipsQty)+ ")";
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalTips );
+                    printOut->PrintFormat->AddLine();
+                    printOut->PrintFormat->Line->Columns[0]->Text = "Tips Refunded ("+IntToStr(TipsRefundedQty)+")";
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalTipsRefunded );
+                    printOut->PrintFormat->AddLine();
+
+                    printOut->PrintFormat->Line->Columns[0]->Text = "";
+                    printOut->PrintFormat->Line->Columns[1]->Line();
+                    printOut->PrintFormat->AddLine();
+                    printOut->PrintFormat->Line->Columns[0]->Text = "Total Tips";
+                    printOut->PrintFormat->Line->Columns[1]->Text = dataFormatUtilities->FormatMMReportCurrency( TotalTips + TotalTipsRefunded);
+                    printOut->PrintFormat->AddLine();
+
                 }
 
                 TCalculatedTotals SurchargesTotal(etcTotalSurcharges, TotalSurcharges, 0, 0, SurchargeQty);

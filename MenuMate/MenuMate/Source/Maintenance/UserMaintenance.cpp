@@ -36,24 +36,6 @@ DBControl(inDBControl)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmUserMaintenance::imgExitClick(TObject *Sender)
 {
-   if (UserMode == umLoyalty && TDeviceRealTerminal::Instance().IMManager->Registered)
-   {
-	  std::auto_ptr <TfrmProcessing> (frmProcessing)(TfrmProcessing::Create <TfrmProcessing> (Screen->ActiveForm));
-	  frmProcessing->CanCancel = false;
-	  frmProcessing->Message = "Exporting Members...";
-	  frmProcessing->ShowProgress = false;
-	  frmProcessing->Show();
-
-	  TPOS_XMLBase POSXML("List Members Export");
-	  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	  DBTransaction.StartTransaction();
-	  TDeviceRealTerminal::Instance().ManagerMembership->BuildXMLListMembership(DBTransaction, POSXML);
-	  DBTransaction.Commit();
-	  TDeviceRealTerminal::Instance().IMManager->Export(POSXML);
-	  POSXML.SaveToFile();
-	  frmProcessing->Close();
-   }
-
    Close();
 }
 

@@ -9,7 +9,6 @@
 #include "MMMessageBox.h"
 #include "ContactStaff.h"
 #include "GUIScale.h"
-//#include "DBClippTab.h"
 #include "DBTab.h"
 #include "DeviceRealTerminal.h"
 #include "DBTab.h"
@@ -50,7 +49,6 @@ TfrmConfirmOrder *TfrmConfirmOrder::Create(TForm* Owner,TSaveOrdersTo &inOrderCo
 //---------------------------------------------------------------------------
 void __fastcall TfrmConfirmOrder::tbCancelClick(TObject *Sender)
 {
-    DeleteFile(applicationDirectory + "\\" + "clippImage.jpg");
 	ModalResult = mrCancel;
 }
 //---------------------------------------------------------------------------
@@ -70,58 +68,6 @@ void __fastcall TfrmConfirmOrder::FormClose(TObject *Sender,
 void __fastcall TfrmConfirmOrder::FormShow(TObject *Sender)
 {
 	FormResize(Sender);
-
-    //Register the database transaction..
-//    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-//    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-//    dbTransaction.StartTransaction();
-//
-//    //Check selected tab is clipp tab
-//    int tabType =  TDBClippTab::GetClippTabByTabKey(dbTransaction, OrderContainer.Location["TabKey"]);
-//
-//    if(tabType == 13)
-//    {
-//        //Get customerphotourl
-//        UnicodeString customerPhotoUrl = TDBClippTab::GetClippCustomerPhotoURl(dbTransaction, OrderContainer.Location["TabKey"]);
-//
-//        //Get customer name by tab key
-//         UnicodeString customerName = TDBClippTab::GetCustomerName(dbTransaction, OrderContainer.Location["TabKey"]);
-//
-//        //Get clipp tab Limit
-//        Currency creditLimit = TDBTab::GetTabCreditLimit(dbTransaction, OrderContainer.Location["TabKey"]);
-//
-//        lbTabLimit->Caption = customerName + "'s Tab Limit: " ;
-//        lbLimitBal->Caption = FloatToStrF(creditLimit, ffNumber, 15, 2);
-//
-//        if(customerPhotoUrl != "")
-//        {
-//            //loading clipp customer's image
-//            TMemoryStream *PicStream = new TMemoryStream();
-//
-//            // Creating path for storing image
-//            applicationDirectory = ExtractFilePath(Application->ExeName);
-//
-//            //Check if directory not exist than create it.
-//            if (!DirectoryExists(applicationDirectory))
-//            {
-//                CreateDir(applicationDirectory);
-//            }
-//
-//            //Name of Image will be  clippImage.jpg
-//            UnicodeString filename = applicationDirectory + "\\" + "clippImage.jpg";
-//            IdHTTP1->Get(customerPhotoUrl, PicStream );
-//
-//            //save image to specified path
-//            PicStream->SaveToFile(filename);
-//            //Loading image from file
-//            Image1->Picture->LoadFromFile(filename);
-//
-//            delete PicStream;
-//        }
-//    }
-//     // commit the transaction
-//     dbTransaction.Commit();
-
     lbTabLimit->Visible = (lbTabLimit->Caption == "") ? false : true;
     lbLimitBal->Visible = (lbLimitBal->Caption == "") ? false : true;
 
@@ -129,7 +75,6 @@ void __fastcall TfrmConfirmOrder::FormShow(TObject *Sender)
 	lbParty->Visible = (lbParty->Caption == "") ? false : true;
     tbtnPartyName->Caption = "Set Party Name\r" + OrderContainer.Location["PartyName"];
     OrderContainer.Location["OriginalPartyName"] = OrderContainer.Location["PartyName"];
-
 	Caption = "Save orders to " + OrderContainer.Location["ContainerName"];
 	lbTableNo->Caption = OrderContainer.Location["ContainerName"];
 	LabelSeat->Caption = OrderContainer.Location["TabName"];
@@ -150,21 +95,16 @@ void __fastcall TfrmConfirmOrder::FormShow(TObject *Sender)
 	{
 		tntReceipt->Lines->Add(ReceiptDisplay->Strings[i]);
 	}
-
    tbtnPartyName->Enabled = OrderContainer.AllowPartyNameChanged;
-
    sgTotals->DefaultColWidth = pnlInfo->Width / 2;
    sgTotals->RowCount = OrderContainer.Values.size();
-
    sgTotals->ColWidths[0] = sgTotals->ClientWidth * 3/5;
    sgTotals->ColWidths[1] = sgTotals->ClientWidth - sgTotals->ColWidths[0];
-
    for (int i = 0; i < sgTotals->RowCount ; i++)
    {
 		sgTotals->Cells[0][i] = "";
 		sgTotals->Cells[1][i] = "";
-	}
-
+   }
    std::vector<TSaveOrdersTo::StringValuePair>::iterator itValues;
    int i = 0;
    for (itValues = OrderContainer.Values.begin(); itValues != OrderContainer.Values.end();itValues++,i++)
@@ -181,9 +121,6 @@ void __fastcall TfrmConfirmOrder::FormShow(TObject *Sender)
         }
       }
    }
-
-
-   //btnSaveAndBill->Enabled = !TGlobalSettings::Instance().EnableWaiterStation;
 }
 //---------------------------------------------------------------------------
 
@@ -272,7 +209,6 @@ void __fastcall TfrmConfirmOrder::btnSaveClick(TObject *Sender)
 {
 	OrderContainer.Location["PrintPreLimReceipt"] = false;
 	OrderContainer.Location["BillOff"] = false;
-    DeleteFile(applicationDirectory + "\\" + "clippImage.jpg");
 	ModalResult = mrOk;
 	tntReceipt->Clear();
 }

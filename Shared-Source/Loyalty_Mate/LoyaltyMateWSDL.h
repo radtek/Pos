@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (21/09/2018 4:07:51 a.m. - - $Rev: 25127 $)
+// (19/11/2018 4:41:26 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -2514,12 +2514,14 @@ private:
   bool            FCompanyId_Specified;
   UnicodeString   FContainerName;
   bool            FContainerName_Specified;
-  int             FContainerNumber;
+  UnicodeString   FContainerNumber;
   bool            FContainerNumber_Specified;
   OrderContainerType FContainerType;
   bool            FContainerType_Specified;
   bool            FIsConfirmed;
   bool            FIsConfirmed_Specified;
+  bool            FIsHappyHourApplied;
+  bool            FIsHappyHourApplied_Specified;
   UnicodeString   FLocation;
   bool            FLocation_Specified;
   guid            FMemberGuid;
@@ -2558,7 +2560,7 @@ private:
   {  FContainerName = _prop_val; FContainerName_Specified = true;  }
   bool __fastcall ContainerName_Specified(int Index)
   {  return FContainerName_Specified;  } 
-  void __fastcall SetContainerNumber(int Index, int _prop_val)
+  void __fastcall SetContainerNumber(int Index, UnicodeString _prop_val)
   {  FContainerNumber = _prop_val; FContainerNumber_Specified = true;  }
   bool __fastcall ContainerNumber_Specified(int Index)
   {  return FContainerNumber_Specified;  } 
@@ -2570,6 +2572,10 @@ private:
   {  FIsConfirmed = _prop_val; FIsConfirmed_Specified = true;  }
   bool __fastcall IsConfirmed_Specified(int Index)
   {  return FIsConfirmed_Specified;  } 
+  void __fastcall SetIsHappyHourApplied(int Index, bool _prop_val)
+  {  FIsHappyHourApplied = _prop_val; FIsHappyHourApplied_Specified = true;  }
+  bool __fastcall IsHappyHourApplied_Specified(int Index)
+  {  return FIsHappyHourApplied_Specified;  } 
   void __fastcall SetLocation(int Index, UnicodeString _prop_val)
   {  FLocation = _prop_val; FLocation_Specified = true;  }
   bool __fastcall Location_Specified(int Index)
@@ -2636,9 +2642,10 @@ public:
 __published:
   __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
   __property UnicodeString ContainerName = { index=(IS_OPTN|IS_NLBL), read=FContainerName, write=SetContainerName, stored = ContainerName_Specified };
-  __property int        ContainerNumber = { index=(IS_OPTN), read=FContainerNumber, write=SetContainerNumber, stored = ContainerNumber_Specified };
+  __property UnicodeString ContainerNumber = { index=(IS_OPTN|IS_NLBL), read=FContainerNumber, write=SetContainerNumber, stored = ContainerNumber_Specified };
   __property OrderContainerType ContainerType = { index=(IS_OPTN), read=FContainerType, write=SetContainerType, stored = ContainerType_Specified };
   __property bool       IsConfirmed = { index=(IS_OPTN), read=FIsConfirmed, write=SetIsConfirmed, stored = IsConfirmed_Specified };
+  __property bool       IsHappyHourApplied = { index=(IS_OPTN), read=FIsHappyHourApplied, write=SetIsHappyHourApplied, stored = IsHappyHourApplied_Specified };
   __property UnicodeString   Location = { index=(IS_OPTN|IS_NLBL), read=FLocation, write=SetLocation, stored = Location_Specified };
   __property guid       MemberGuid = { index=(IS_OPTN|IS_NLBL), read=FMemberGuid, write=SetMemberGuid, stored = MemberGuid_Specified };
   __property UnicodeString  OrderGuid = { index=(IS_OPTN|IS_NLBL), read=FOrderGuid, write=SetOrderGuid, stored = OrderGuid_Specified };
@@ -3179,7 +3186,7 @@ public:
   virtual void            GetOrdersFromWeb(const UnicodeString inSyndicateCode, const UnicodeString orders) = 0; 
   virtual LoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
   virtual LoyaltyOnlineOrderingResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
-  virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0;
+  virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
 };
 typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 

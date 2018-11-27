@@ -90,7 +90,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixIPAddress: TTouchBtn
       Left = 16
-      Top = 88
+      Top = 32
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -109,7 +109,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixPortNumber: TTouchBtn
       Left = 310
-      Top = 87
+      Top = 32
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -128,7 +128,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbPhoenixID: TTouchBtn
       Left = 310
-      Top = 32
+      Top = 88
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -375,7 +375,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbRevenueCentre: TTouchBtn
       Left = 16
-      Top = 32
+      Top = 88
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET

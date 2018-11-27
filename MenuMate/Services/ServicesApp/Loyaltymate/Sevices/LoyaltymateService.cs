@@ -470,15 +470,15 @@ namespace Loyaltymate.Sevices
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                response = CreateOnlineOrderingResponse(webResponse.StatusCode,webResponse.StatusDescription);
+                response = CreateOnlineOrderingResponse(webResponse, webResponse.StatusDescription);
             }
             catch (WebException we)
             {
-                response = CreateOnlineOrderingResponse(HttpStatusCode.ExpectationFailed, we.Message);    
+                response = CreateOnlineOrderingResponse(webResponse, we.Message);
             }
             catch (Exception ex)
             {
-                response = CreateOnlineOrderingResponse(HttpStatusCode.ExpectationFailed, ex.Message);
+                response = CreateOnlineOrderingResponse(webResponse, ex.Message);
             }
             finally
             {
@@ -490,18 +490,39 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpStatusCode statusCode, string message)
+        private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpWebResponse webResponse, string message)
         {
             ApiOnlineOrderingResponse apiOnlineOrderingResponse = new ApiOnlineOrderingResponse();
-            apiOnlineOrderingResponse.IsSuccessful = statusCode == HttpStatusCode.OK ? true : false;
+            if (webResponse == null)
+            {
+                apiOnlineOrderingResponse.IsSuccessful = false;
+                apiOnlineOrderingResponse.Message = "Could not communicate with online ordering";
+                return apiOnlineOrderingResponse;
+            }
+            if (webResponse.StatusCode == HttpStatusCode.OK)
+            {
+                if (webResponse.ResponseUri != null)
+                {
+                    string localPath = webResponse.ResponseUri.LocalPath;
+                    if (localPath.Contains("Index") && localPath.Contains("Login"))
+                        apiOnlineOrderingResponse.IsSuccessful = false;
+                    else
+                    {
+                        apiOnlineOrderingResponse.IsSuccessful = true;
+                        apiOnlineOrderingResponse.Message = "";
+                    }
+                }
+            }
             if (apiOnlineOrderingResponse.IsSuccessful)
                 apiOnlineOrderingResponse.Message = "";
             else
             {
                 if (message.Contains("(406)"))
-                    apiOnlineOrderingResponse.Message = "Online Ordering is Disabled for the site in LoyaltyMate.\nPlease Enable it first in LoyaltyMate.";
+                    apiOnlineOrderingResponse.Message =
+                        "Online Ordering is Disabled for the site in LoyaltyMate.\nPlease Enable it first in LoyaltyMate.";
                 else
-                    apiOnlineOrderingResponse.Message = "Unsuccessful sync for online ordering.\nPlease check if syndicatecode and site id are correct.";
+                    apiOnlineOrderingResponse.Message =
+                        "Unsuccessful sync for online ordering.\nPlease check if syndicatecode and site id are correct.";
             }
             return apiOnlineOrderingResponse;
         }

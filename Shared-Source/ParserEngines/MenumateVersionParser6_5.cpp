@@ -37,6 +37,21 @@ void TApplyParser::upgrade6_54Tables()
 {
     update6_54Tables();
 }
+//----------------------------------------------------------------------------------
+void TApplyParser::upgrade6_55Tables()
+{
+    update6_55Tables();
+}
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_56Tables()
+{
+    update6_56Tables();
+}
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_57Tables()
+{
+    update6_57Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -77,6 +92,22 @@ void TApplyParser::update6_54Tables()
   AlterTableTab6_54(_dbControl);
   AlterTableOrders6_54(_dbControl);
   AlterTableArchives6_54(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_55Tables()
+{
+    Create6_55Tables(_dbControl );
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_56Tables()
+{
+    Create6_56Generator(_dbControl );
+    Create6_56Table(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_57Tables()
+{
+    AlterTableArcBill6_57(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -640,6 +671,7 @@ void TApplyParser::AlterTableTab6_54(TDBControl* const inDBControl)
 	}
 }
 
+
 void TApplyParser::AlterTableTables6_54(TDBControl* const inDBControl)
 {
 
@@ -650,6 +682,8 @@ void TApplyParser::AlterTableTables6_54(TDBControl* const inDBControl)
 		inDBControl);
     }
 }
+
+
 
 void TApplyParser::AlterTableOrders6_54(TDBControl* const inDBControl)
 {
@@ -670,9 +704,210 @@ void TApplyParser::AlterTableArchives6_54(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCHIVE ALTER TAB_NAME TYPE VARCHAR(80) ;", inDBControl);
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_55Tables(TDBControl* const inDBControl)
+{
+    Create6_55Generators(_dbControl);
+    Create6_55TableOutlets(_dbControl);
+    Create6_55TableServices(_dbControl);
+    Create6_55TableSpaces(_dbControl);
+    AlterTable6_55RevenueCodeDetails(_dbControl);
+    Create6_55TablePMSAccountingCategories(_dbControl);
+}
+
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_55Generators(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSACCOUNTINGCATEGORIESID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSACCOUNTINGCATEGORIESID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSACCOUNTINGCATEGORIESID TO 0;", inDBControl);
+	}
 }
 //------------------------------------------------------------------------------
-
-
-
-
+void TApplyParser::Create6_55TableOutlets(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "OUTLETS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE OUTLETS "
+        "( "
+        "  UNIQUEID VARCHAR(50),                  "
+        "  NAME VARCHAR(100),                     "
+        "  ISACTIVE CHAR(1) DEFAULT 'F'           "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_55TableServices(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SERVICES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SERVICES "
+        "( "
+        "  UNIQUEID VARCHAR(50),                   "
+        "  NAME VARCHAR(100),                      "
+        "  ISACTIVE CHAR(1) DEFAULT 'F',           "
+        "  STARTTIME TIMESTAMP,                    "
+        "  ENDTIME TIMESTAMP                       "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_55TableSpaces(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "SPACES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE SPACES "
+        "( "
+        "  UNIQUEID VARCHAR(50),                       "
+        "  ISACTIVE CHAR(1) DEFAULT 'F',               "
+        "  PARENTSPACEID VARCHAR(50),                  "
+        "  CATEGORYID VARCHAR(50),                     "
+        "  TYPE VARCHAR(50),                           "
+        "  NUMBER VARCHAR(50),                         "
+        "  FLOORNUMBER VARCHAR(50),                    "
+        "  BUILDINGNUMBER VARCHAR(50),                 "
+        "  STATE VARCHAR(50)                           "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::AlterTable6_55RevenueCodeDetails(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "REVENUECODEDETAILS ", "UNIQUEID", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD UNIQUEID VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "ISACTIVE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD ISACTIVE T_TRUEFALSE DEFAULT 'F' ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "CODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD CODE VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "EXTERNALCODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD EXTERNALCODE VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "LEDGERACCOUNTCODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD LEDGERACCOUNTCODE VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "POSTINGACCOUNTCODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD POSTINGACCOUNTCODE VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "COSTCENTRECODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD COSTCENTRECODE VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( !fieldExists( "REVENUECODEDETAILS ", "CLASSIFICATION", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ADD CLASSIFICATION VARCHAR(50) ; ",
+        inDBControl);
+    }
+    if ( fieldExists( "REVENUECODEDETAILS ", "REVENUECODE_DESCRIPTION", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE REVENUECODEDETAILS "
+        "ALTER REVENUECODE_DESCRIPTION TYPE VARCHAR(50);",
+        inDBControl);
+    }
+    if (fieldExists( "PMSPAYMENTSCONFIG ", "PMS_PAYTYPE_CODE", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE PMSPAYMENTSCONFIG "
+        "ALTER PMS_PAYTYPE_CODE TYPE VARCHAR(50) ; ",
+        inDBControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_55TablePMSAccountingCategories(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSACCOUNTINGCATEGORIES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSACCOUNTINGCATEGORIES "
+        "( "
+        "  CATEGORYMAPID INTEGER NOT NULL PRIMARY KEY, "
+        "  REVENUE_CENTRE VARCHAR(50),                 "
+        "  CATEGORY_KEY INTEGER,                       "
+        "  MM_CATEGORYNAME VARCHAR(50),                "
+        "  PMSACCOUNTINGID VARCHAR(50),                "
+        "  MEWS_CATEGORYNAME VARCHAR(50)               "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_56Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "EFTPOSREFRENECE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE EFTPOSREFRENECE "
+        "( "
+        "  EFTPOSREFRENCE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  INVOICE_NO VARCHAR(50),                       "
+        "  PSPREFERENCE VARCHAR(50),                            "
+        "  MM_PSPREFERENCE VARCHAR(50),              "
+        "  UPDATED_REFERENCE VARCHAR(50),              "
+        "  IS_SETTLED CHAR(1) DEFAULT 'F',                "
+        "  MERCHANT_ID VARCHAR(50)                "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_56Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_EFTPOSREFERENCE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_EFTPOSREFERENCE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_EFTPOSREFERENCE_ID TO 0;", inDBControl);
+	}
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
+{
+    if (fieldExists( "DAYARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE DAYARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
+	}
+    if (fieldExists( "ARCBILL", "EFTPOS_SERVICE_ID", _dbControl ) )
+	{
+        executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
+	}
+}
+}
+//------------------------------------------------------------------------------

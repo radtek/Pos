@@ -11,9 +11,6 @@
 #include "Enum.h"
 #include "Contact.h"
 #include "Access.h"
-
-#include "POS_XMLBase.h"
-
 class TContactStaff : public TContact
 {
    private :
@@ -27,17 +24,11 @@ class TContactStaff : public TContact
 	public:
 		TContactStaff(Database::TDBTransaction &DBTransaction);
 		bool DisableManualLogin;
-				
 		TDateTime GetLastUserReportTime(Database::TDBTransaction &DBTransaction,int inContactKey);
 		void SetLastUserReportTime(Database::TDBTransaction &DBTransaction,int inContactKey,TDateTime DateTime);
-
-
 		TLoginSuccess Login(TForm* LoginFormOwner,Database::TDBTransaction &DBTransaction,TMMContactInfo &UserInfo, SecurityCheck RequiredAccess);
 		bool TestAccessLevel(TMMContactInfo &UserInfo, SecurityCheck RequiredAccess);
-
       void AdminCreateAccount(Database::TDBTransaction &DBTransaction, UnicodeString PIN);
-      void BuildXMLListStaff(Database::TDBTransaction &DBTransaction,TPOS_XMLBase &Data);
-
       bool CheckUserAccessLogin(Database::TDBTransaction &DBTransaction, int contact_key, SecurityCheck Destination,
       UnicodeString &Description, TMMContactInfo &UserInfo);
 

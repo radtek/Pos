@@ -347,6 +347,7 @@ private:
     bool CheckToPrintPatronSection(TReqPrintJob *PrintJob);
     //generic method to check whether payment done by param payment type. Old method has not removed. in future itr can be used.
     bool IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, ePaymentAttribute attributeIndex);
+    void PrintTipAndSignature(TReqPrintJob *PrintJob);
 };
 
 // ------------------------------------------------------------------------------

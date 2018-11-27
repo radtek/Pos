@@ -19,11 +19,9 @@
 #include "PaymentTypeGroup.h"
 #include "DBContacts.h"
 #include "DrinkCommandData.h"
-//#include "ThorlinkDataObjects.h"
 #include "CaptureCustomerDetails.h"
 #include "PaySubsUtility.h"
 #include "OnlineOrderingAttributes.h"
-
 class TReqPrintJob;
 class TItemComplete;
 class TListSecurityRefContainer;
@@ -58,8 +56,6 @@ class TListPaymentSystem : public TMMPaymentSystem
     int positionPoints;
     int positionVoucher;
      TDateTime TrasactionDate;
-    //std::vector<TTenderDetails> tenderDetailsList;
-    //std::vector<TItemDetailsThor> itemsList;
     TListPaymentSystem();
     virtual __fastcall ~TListPaymentSystem();
 
@@ -107,24 +103,22 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool AllowsTipsOnTransactions();
     std::vector<AnsiString> GetTippableCardTypes();
     int GetPaymentTabName(Database::TDBTransaction &DBTransaction,AnsiString PAYMENT_NAME);
-//    void LoadClippPaymentTypes(TPaymentTransaction &PaymentTransaction);
-   // bool PrepareThorRequest(TPaymentTransaction &paymentTransaction);
     AnsiString CreateFilename(TDateTime date);
     UnicodeString CreateTextFile(AnsiString LocalPath,AnsiString value);
     void SaveIntVariable(vmVariables vmVar, int CompName);
     void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
-    //void GetDLFMallInfo(TItemComplete &ItemComplete);
     void GetDLFMallCMDCodeFirst(AnsiString invoiceNumber,AnsiString fileStatus) ;
     void GetDLFMallCMDCodeSec(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeThird(TItemComplete *ItemComplete,AnsiString catkey,Currency discount);
     void GetDLFMallCMDCodeSubOrderThird(TItemCompleteSub *ItemComplete,AnsiString catkey,Currency discount);
-
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
     void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
     bool IsOracleConfigured();
     bool IsSiHotConfigured();
+     //settle th eeftpos bills after zed performed..
+    bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
 
 protected:
 
@@ -138,13 +132,12 @@ protected:
     void _processEftposRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
     void _processRewardsRecoveryTransaction( TPaymentTransaction &PaymentTransaction );
 
-    TMMProcessingState _createProcessingStateMessage();
+    TMMProcessingState _createProcessingStateMessage(TPaymentTransaction &PaymentTransaction);
     bool _isSmartCardPresent();
 
 	void TransRetriveElectronicResult(TPaymentTransaction &PaymentTransaction,TPayment *Payment);
     void TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction,TPayment *Payment);
 	bool TransRetrivePhoenixResult(TPaymentTransaction &PaymentTransaction);
-	bool BuildXMLTransaction(TPaymentTransaction &PaymentTransaction);
 	void GetChequeVerifyResult(TPayment *Payment);
 
 	void PaymentsArchiveReceipt(TMoney *CurrentMoney,TReqPrintJob *Request,eTransactionType SalesType);
@@ -175,7 +168,7 @@ protected:
     bool ProcessCSVRoomExport( TPaymentTransaction &inPaymentTransaction );
 
    // tip related functions
-    void InsertOrUpdateTipTransactionRecordToDB(int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
+    void InsertOrUpdateTipTransactionRecordToDB(Database::TDBTransaction &DBTransaction, int arcBillKey, Currency tipAmount, WideString originalPaymentRef);
 
     // loads up the payment groups for a given payment with its db key
     void loadPaymentTypeGroupsForPaymentType( int paymentDbKey, TPayment &payment );
@@ -208,8 +201,6 @@ protected:
      void CheckPatronByOrderIdentification(TPaymentTransaction &inPaymentTransaction);
      bool CheckForCard(TPaymentTransaction &PaymentTransaction);
      bool ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction);
-//     bool PrepareThorPurchaseRequest(TPaymentTransaction &paymentTransaction);
-//     bool PrepareThorRefundRequest(TPaymentTransaction &paymentTransaction);
      void ExportReceipt(TStringList *StringReceipt,TPaymentTransaction &PaymentTransaction);
      bool IsSCDOrPWDApplied(TPaymentTransaction &PaymentTransaction);
      void PrepareSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction, long arcbillKey);
@@ -227,13 +218,13 @@ protected:
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
-     void PrintReceipt(bool RequestEFTPOSReceipt);
+     void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
      bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
      char* Formatdateseparator( UnicodeString date) ;
 
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
-     bool IsRoomOrRMSPayment(TPaymentTransaction &paymentTransaction);
+     bool IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);
@@ -245,6 +236,9 @@ protected:
      TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction);
      TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
      bool IsRoomReceiptSettingEnable();
+     bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
+     bool IsMewsConfigured();
+     bool TryToEnableMews();
 };
 
 #endif

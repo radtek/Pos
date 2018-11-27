@@ -30,7 +30,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     TabOrder = 0
     object lbeMechentId: TLabel
       Left = 190
-      Top = 44
+      Top = 254
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -42,7 +42,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     end
     object lbePassword: TLabel
       Left = 190
-      Top = 254
+      Top = 114
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -54,7 +54,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     end
     object lbeTerminalId: TLabel
       Left = 190
-      Top = 114
+      Top = 324
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -66,7 +66,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     end
     object lbeUserName: TLabel
       Left = 190
-      Top = 184
+      Top = 44
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -78,7 +78,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     end
     object lbeSecurityToken: TLabel
       Left = 192
-      Top = 324
+      Top = 184
       Width = 5
       Height = 22
       Font.Charset = DEFAULT_CHARSET
@@ -90,7 +90,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     end
     object btnMerchentId: TTouchBtn
       Left = 20
-      Top = 30
+      Top = 240
       Width = 150
       Height = 50
       Font.Charset = DEFAULT_CHARSET
@@ -100,17 +100,18 @@ object frmWalletConfiguration: TfrmWalletConfiguration
       Font.Style = []
       ParentFont = False
       ParentColor = True
-      Caption = 'Merchent Id'
+      Caption = 'Merchant Id'
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
+      Enabled = False
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnMerchentIdMouseClick
     end
     object btnUserName: TTouchBtn
       Tag = 2
       Left = 20
-      Top = 170
+      Top = 30
       Width = 150
       Height = 50
       Font.Charset = DEFAULT_CHARSET
@@ -130,7 +131,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     object btnWalletPassword: TTouchBtn
       Tag = 3
       Left = 20
-      Top = 240
+      Top = 100
       Width = 150
       Height = 50
       Font.Charset = DEFAULT_CHARSET
@@ -150,7 +151,7 @@ object frmWalletConfiguration: TfrmWalletConfiguration
     object btnTerminalId: TTouchBtn
       Tag = 1
       Left = 20
-      Top = 100
+      Top = 310
       Width = 150
       Height = 50
       Font.Charset = DEFAULT_CHARSET
@@ -164,13 +165,14 @@ object frmWalletConfiguration: TfrmWalletConfiguration
       ButtonColor = 6052441
       LatchedColor = clBtnFace
       DisabledButtonColor = clBtnFace
+      Enabled = False
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnTerminalIdMouseClick
     end
     object btnSecurityToken: TTouchBtn
       Tag = 3
       Left = 20
-      Top = 310
+      Top = 170
       Width = 150
       Height = 50
       Font.Charset = DEFAULT_CHARSET

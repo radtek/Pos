@@ -814,6 +814,8 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
 {
     try
     {
+        int oldArcBillKey = 0;
+        UnicodeString eftPOSPaymentName = "";
         for (; !qrXArcPay->Eof; qrXArcPay->Next())
         {
             TSumPayments CurrentPayment;
@@ -842,6 +844,24 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
             {
                 paymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString;
             }
+
+
+            if(TGlobalSettings::Instance().EnableEftPosAdyen || TGlobalSettings::Instance().EnableEftPosDPS)
+            {
+                if(oldArcBillKey != qrXArcPay->FieldByName("ARCBILL_KEY")->AsInteger &&
+                (TStringTools::Instance()->HasAllProperties(qrXArcPay->FieldByName("PROPERTIES")->AsString,"19,")))
+                {
+                    oldArcBillKey = qrXArcPay->FieldByName("ARCBILL_KEY")->AsInteger;
+                    eftPOSPaymentName = qrXArcPay->FieldByName("PAY_TYPE")->AsString;
+                }
+
+                if(qrXArcPay->FieldByName("PAY_TYPE")->AsString == "Tip" && qrXArcPay->FieldByName("PAY_TYPE_DETAILS")->AsString != ""
+                    && qrXArcPay->FieldByName("PROPERTIES")->AsString == "7")
+                {
+                    paymentName = eftPOSPaymentName;
+                }
+            }
+
 
             std::map <UnicodeString, TSumPayments> PaymentValues = TransactionInfo->Payments[groupNumber];
             CurrentPayment = PaymentValues[paymentName];
@@ -879,7 +899,17 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
 
 
             bool IsCashOut = false;
-            if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
+
+             if((TGlobalSettings::Instance().EnableEftPosAdyen || TGlobalSettings::Instance().EnableEftPosDPS) &&
+                (qrXArcPay->FieldByName("PAY_TYPE")->AsString == "Tip" && qrXArcPay->FieldByName("PAY_TYPE_DETAILS")->AsString != ""
+                && qrXArcPay->FieldByName("PROPERTIES")->AsString == "7"))
+            {
+                paymentName = eftPOSPaymentName;
+                CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                CurrentPayment.TipAmount += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
+                 CurrentPayment.TipQty++;
+            }
+            else if (qrXArcPay->FieldByName("CASH_OUT")->AsString == "F" || qrXArcPay->FieldByName("CASH_OUT")->AsString == "")
             {
                    CurrentPayment.Total += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
             }
@@ -888,11 +918,13 @@ void TTransactionInfoProcessor::LoadArcPayTransaction(TTransactionInfo* Transact
                 CurrentPayment.CashOut += qrXArcPay->FieldByName("SUBTOTAL")->AsCurrency;
                 IsCashOut = true;
             }
-            if(qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency != 0)
+
+            if(qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency != 0 )
             {
                  CurrentPayment.TipAmount += qrXArcPay->FieldByName("TIP_AMOUNT")->AsCurrency;
                  CurrentPayment.TipQty++;
             }
+
             CurrentPayment.Rounding -= qrXArcPay->FieldByName("ROUNDING")->AsCurrency;
             //CurrentPayment.Properties = qrXArcPay->FieldByName("PROPERTIES")->AsInteger;
             CurrentPayment.ExtractPaymentAttributes(qrXArcPay->FieldByName("PROPERTIES")->AsString);
@@ -941,8 +973,8 @@ void TTransactionInfoProcessor::GetArcPayForNormalZed(TIBSQL *qrXArcPay)
     try
     {
         qrXArcPay->SQL->Text = "select ARCBILL_KEY, PAY_TYPE, SUBTOTAL, CASH_OUT, VOUCHER_NUMBER,TAX_FREE,"
-                "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE from DAYARCBILLPAY "
-                "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0";
+                "GROUP_NUMBER, PROPERTIES,ROUNDING,TIP_AMOUNT,PAYMENT_CARD_TYPE,  PAY_TYPE_DETAILS from DAYARCBILLPAY "
+                "where ARCBILL_KEY = :ARCBILL_KEY AND SUBTOTAL != 0 ORDER BY DAYARCBILLPAY_KEY ";
     }
     catch(Exception &E)
     {
@@ -1051,8 +1083,21 @@ void TTransactionInfoProcessor::LoadArcPointTransaction(TIBSQL *qXArcSurcharge, 
             CurrentPayment = PaymentValues[paymentName];
             CurrentPayment.Name = paymentName;
             CurrentPayment.Qty++;
-
-            CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+            if(qXArcSurcharge->FieldByName("PROPERTIES")->AsString.Pos("-7-") != 0)
+            {
+                if(qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency>0)
+                {
+                    CurrentPayment.Tips += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+                    CurrentPayment.TipsQty++;
+                }
+                else
+                {
+                    CurrentPayment.TipsRefunded += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
+                    CurrentPayment.TipsRefundedQty++;
+                }
+            }
+            else
+                CurrentPayment.Surcharge += qXArcSurcharge->FieldByName("SUBTOTAL")->AsCurrency;
             CurrentPayment.Rounding -= qXArcSurcharge->FieldByName("ROUNDING")->AsCurrency;
             //CurrentPayment.Properties = qXArcSurcharge->FieldByName("PROPERTIES")->AsInteger;
             CurrentPayment.ExtractPaymentAttributes(qXArcSurcharge->FieldByName("PROPERTIES")->AsString);

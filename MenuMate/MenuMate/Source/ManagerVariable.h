@@ -53,7 +53,7 @@ enum vmVariables
    vmEnableAARewardsReminder,vmAutoAddWebMembers,vmAutoAcceptWebOrders,vmReservationsAddress,vmReservationsEnabled,
    vmFloorPlanTransparentTables,vmFloorPlanTableColour,vmFloorPlanTextColour,vmLastSelectedFloorPlanLocationID,
    vmExternalMembershipDiscountCode,vmExternalMembershipPointsCode,vmExternalMembershipSystemCode, vmEnableDPSTipping,vmEnableEftPosSmartPay,vmEftPosSmartPayIp,
-   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,vmIsSmartConnectQRTransaction, vmEnableEftPosPaymentSense, vmEftPosTerminalId,
+   vmEnableEftPosSmartConnect, vmSmartConnectPairingCode,vmIsSmartConnectQRTransaction, vmEnableEftPosPaymentSense, vmEftPosTerminalId,vmEnableEftPosPreAuthorisation,vmEnableAdjustAuthorisationOnCards,
    // Connections  ----------------------------------------------------------------
    vmPMSIPAddress = 2100, vmPMSTCPPort, vmPMSPOSID, vmPMSPaymentCategory, vmPMSItemCategory, vmPMSPointsCategory, vmPMSCreditCategory,
    vmPMSDefaultAccount, vmPMSDefaultSurchargeAccount, vmPMSDefaultRoundingAccount, vmIntaMateIPAddress, vmIntaMatePort,
@@ -128,6 +128,7 @@ enum vmVariables
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
+   vmForceHappyHour,// vmHHPriceLevelKey,
 	// Points Config ---------------------------------------------------------------
    vmEarnsPointsWhileRedeeming = 5200, vmMinMemberNumber, vmRecycleMemberNumber, vmOnlyEarnsPointsWhileRedeeming, vmSpendPtsOnlyFullProduct, vmMinRedemptionPoint,
    vmSpendPtsOnlySelectItems, vmPoleDisplayShowPoints, vmEarntPointsOnWeight,vmAllowPointPaymentByWeight,vmAllowPointPaymentByValue, vmAllowRefundPoints,
@@ -148,7 +149,7 @@ enum vmVariables
    vmAutoPrintWebReceipts,vmReceiptNumberLabel,vmReprintReceiptLabel, vmShowSessionDateInZed,vmPrintZeroTaxes,vmPrintNoticeOnTransfer, vmShowPriceAdjustment, vmRevenueFiguresAreDiscountInclusive,
    vmCaptureRefundRefNo, vmHideTaxInvoice, vmExportReprintReceipt, vmSetVoidFooter,
    vmReceiptDigits, vmShowVoidOrRefund, vmShowVoidNumber,vmRefundReferenceLabel,vmSetSubHeader,vmUseBIRFormatInXZReport,
-   vmAlwaysPrintReceiptDiscountSales, vmPrintSignatureWithDiscountSales, vmPrintSignatureWithRoomSales,
+   vmAlwaysPrintReceiptDiscountSales, vmPrintSignatureWithDiscountSales, vmPrintSignatureWithRoomSales, vmPrintTipAndSignature,
    // Printers   ------------------------------------------------------------------
    vmPrinterModel = 7000, vmPrinterEmulationMode, vmNormalCPL, vmNormalBoldCPL, vmCutterGap, vmTopMargin, vmKitchenTopMargin,
    vmAlwaysUseFullCut, vmKanjiPrinter, vmSingleLineChar, vmDoubleLineChar, vmGraphicPrinter, vmGraphicFontName, vmGraphicFontSize,

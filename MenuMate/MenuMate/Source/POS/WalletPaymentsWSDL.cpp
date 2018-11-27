@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8743/MenumateServices/WalletPayments/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (28/03/2017 12:04:28 a.m. - - $Rev: 25127 $)
+// (21/05/2018 11:46:53 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -20,7 +20,7 @@
 
 
 
-namespace NS_WalletPaymentsWSDL {
+namespace NS__WalletPaymentsWSDL {
 
 _di_IWCFServiceWalletPayments GetIWCFServiceWalletPayments(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
@@ -59,19 +59,18 @@ static void RegTypes()
   InvRegistry()->RegisterInvokeOptions(__delphirtti(IWCFServiceWalletPayments), ioDocument);
   /* WalletAccount */
   RemClassRegistry()->RegisterXSClass(__classid(WalletAccount), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletAccount");
-  /* WalletActionResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(WalletActionResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletActionResponse");
   /* WalletTransaction */
   RemClassRegistry()->RegisterXSClass(__classid(WalletTransaction), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletTransaction");
+  /* WalletActionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(WalletActionResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletActionResponse");
   /* WalletAccount */
   RemClassRegistry()->RegisterXSClass(__classid(WalletAccount2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletAccount2", L"WalletAccount");
-  /* WalletActionResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(WalletActionResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletActionResponse2", L"WalletActionResponse");
   /* WalletTransaction */
   RemClassRegistry()->RegisterXSClass(__classid(WalletTransaction2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletTransaction2", L"WalletTransaction");
+  /* WalletActionResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(WalletActionResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Wallet_Payments", L"WalletActionResponse2", L"WalletActionResponse");
 }
 #pragma startup RegTypes 32
 
-};     // NS__
-
+};     // NS__WalletPaymentsWSDL
 

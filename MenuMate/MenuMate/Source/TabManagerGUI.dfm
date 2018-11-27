@@ -451,25 +451,6 @@ object frmTabManager: TfrmTabManager
             TabOrder = 0
           end
         end
-        object btnClippTab: TTouchBtn
-          Left = 8
-          Top = 100
-          Width = 110
-          Height = 45
-          Font.Charset = THAI_CHARSET
-          Font.Color = clWhite
-          Font.Height = -16
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          ParentColor = True
-          Caption = 'Clipp Tabs'
-          ButtonColor = 6052441
-          LatchedColor = clBtnFace
-          DisabledButtonColor = clBtnFace
-          LatchingProperties = [lkLatchColor, lkStayDown]
-          OnMouseClick = btnClippTabMouseClick
-        end
       end
       object Panel3: TPanel
         AlignWithMargins = True

@@ -3024,11 +3024,6 @@ double TMembership::GetEarnedPointsForCurrentYear(Database::TDBTransaction &DBTr
      }
     return earnedPoints;
  }
-
-// AnsiString TMembership::SendRequestForPay(std::vector<TTenderDetails> tenderDetailsList,std::vector<TItemDetailsThor> itemsList)
-//{}
-//AnsiString TMembership::SendRequestForRefund(TRefundTransaction refundTransaction)
-//{}
 bool TMembership::CallInitMethod()
 {}
 

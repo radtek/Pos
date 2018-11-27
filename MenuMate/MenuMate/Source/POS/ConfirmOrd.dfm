@@ -110,8 +110,8 @@ object frmConfirmOrder: TfrmConfirmOrder
     object Image1: TImage
       Left = 8
       Top = 239
-      Width = 303
-      Height = 152
+      Width = 301
+      Height = 150
       Anchors = [akLeft, akTop, akRight, akBottom]
       AutoSize = True
       Center = True

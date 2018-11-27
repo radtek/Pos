@@ -14,6 +14,7 @@ class TOnlineDocketPrinterThread : public TThread
         void ProcessSecurity(TPaymentTransaction &PaymentTransaction);
         void PrintKitchenDockets(TPaymentTransaction &PaymentTransaction, int WebKey, UnicodeString JobName,UnicodeString DeviceName);
         void SendOnlineOrderToChefmate(TPaymentTransaction* inTransaction);
+        void ProcessHappyHour(TPaymentTransaction &paymentTransaction, UnicodeString orderUniqueId);
     protected:
         virtual void __fastcall Execute();
     public:
@@ -52,7 +53,5 @@ class TOnlineOrderDocketPrinter
         }
 
         void TriggerTransactionSync();
-        //void PrepareDataAndPrintDocket();
-
 };
 #endif

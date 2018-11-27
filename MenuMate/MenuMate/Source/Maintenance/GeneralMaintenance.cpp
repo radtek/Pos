@@ -244,6 +244,8 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbExcludeXReport->Checked = TGlobalSettings::Instance().ExcludeXReport;
     cbShowReprintDetails->Checked = TGlobalSettings::Instance().ShowReprintReceiptDetails;
     cbShowCashDrawerCount->Checked = TGlobalSettings::Instance().ShowCashDrawerOpeningsCount;
+     cbIntegratedEftposPreAuthorisaton->Checked = TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
+     cbIntegratedAuthorisationOnCards->Checked = TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards;
 
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
@@ -495,9 +497,21 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
         cbIntegratedEftposAdyen->Checked                     = true;
         cbIntegratedEftposAdyen->Enabled                     = true;
         cbEnableDPSTipping->Enabled                          = true;
+        cbIntegratedEftposPreAuthorisaton->Enabled           = true;
+        cbIntegratedAuthorisationOnCards->Enabled            = false;
         DisableOtherEFTPOS();
         tbtnSmartLinkIp->Enabled                             = true;
         tbtnSmartLinkIp->Caption                             = "Adyen Details";
+        if(cbEnableDPSTipping->Checked)
+        {
+            cbIntegratedEftposPreAuthorisaton->Enabled = false;
+            cbIntegratedAuthorisationOnCards->Enabled = false;
+        }
+        else if(cbIntegratedEftposPreAuthorisaton->Checked)
+        {
+            cbEnableDPSTipping->Enabled = false;
+            cbIntegratedAuthorisationOnCards->Enabled = true;
+        }
     }
     else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
     {
@@ -1583,6 +1597,14 @@ void __fastcall TfrmGeneralMaintenance::cbEnableDPSTippingClick(TObject *Sender)
 	TGlobalSettings::Instance().EnableDPSTipping = cbEnableDPSTipping->Checked;
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
+    if(TGlobalSettings::Instance().EnableDPSTipping)
+    {
+        cbIntegratedEftposPreAuthorisaton->Enabled = false;
+    }
+    else if(TGlobalSettings::Instance().EnableEftPosAdyen)
+    {
+       cbIntegratedEftposPreAuthorisaton->Enabled = true;
+    }
 	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableDPSTipping,TGlobalSettings::Instance().EnableDPSTipping);
 	DBTransaction.Commit();
 }
@@ -4507,6 +4529,7 @@ void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObj
 //----------------------------------------------------------------------------
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sender)
 {
+
     TGlobalSettings::Instance().EnableEftPosAdyen = cbIntegratedEftposAdyen->Checked;
     if(TGlobalSettings::Instance().EnableEftPosAdyen)
         MessageBox("Please provide Adyen Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
@@ -4611,6 +4634,7 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
         tbtnSmartLinkIp->Caption                             = "PaymentSense Details";
     }
 
+
     if(eftposSettingCount == 11) //if any new setting made then incremet 10 by 1.
         EnableOtherEFTPOS();
 }
@@ -4648,8 +4672,12 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
         cbICELink->Checked                                   = false;
     }
     cbEnableDPSTipping->Enabled                          = false;
+    cbIntegratedEftposPreAuthorisaton->Enabled           =  false;
+     cbIntegratedAuthorisationOnCards->Enabled            = false;
+
     if(!TGlobalSettings::Instance().EnableEftPosDPS)
     {
+
         cbIntegratedEftposDPS->Enabled                       = true;
         cbIntegratedEftposDPS->Checked                       = false;
     }
@@ -4661,6 +4689,8 @@ void TfrmGeneralMaintenance::EnableOtherEFTPOS()
     {
         cbIntegratedEftposAdyen->Enabled                     = true;
         cbIntegratedEftposAdyen->Checked                     = false;
+        cbIntegratedEftposPreAuthorisaton->Checked                     = false;
+        cbIntegratedAuthorisationOnCards->Checked                     = false;
     }
     if(!TGlobalSettings::Instance().EnableEftPosSmartConnect)
     {
@@ -4724,3 +4754,38 @@ void __fastcall TfrmGeneralMaintenance::cbRestartServiceAtZedClick(TObject *Send
     DBTransaction.Commit();
 }
 //----------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbPreAuthorisatonClick(TObject *Sender)
+{
+   TGlobalSettings::Instance().EnableEftPosPreAuthorisation = cbIntegratedEftposPreAuthorisaton->Checked;
+	Database::TDBTransaction DBTransaction(DBControl);
+    if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+    {
+        cbEnableDPSTipping->Enabled = false;
+        cbIntegratedAuthorisationOnCards->Enabled = true;
+        TGlobalSettings::Instance().PrintCardHolderReceipt = true;
+        TGlobalSettings::Instance().PrintMerchantReceipt = true;
+    }
+    else
+    {
+       cbEnableDPSTipping->Enabled = true;
+       cbIntegratedAuthorisationOnCards->Enabled = false;
+       cbIntegratedAuthorisationOnCards->Checked = TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = false;
+    }
+	DBTransaction.StartTransaction();
+	TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableEftPosPreAuthorisation,TGlobalSettings::Instance().EnableEftPosPreAuthorisation);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableAdjustAuthorisationOnCards,TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintCardHolderReceipt, TGlobalSettings::Instance().PrintCardHolderReceipt);
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmPrintMerchantReceipt, TGlobalSettings::Instance().PrintMerchantReceipt);
+	DBTransaction.Commit();
+}
+//------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbIntegratedAuthorisationOnCardsClick(TObject *Sender)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+    TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = cbIntegratedAuthorisationOnCards->Checked;
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards);
+    DBTransaction.Commit();
+
+}
+

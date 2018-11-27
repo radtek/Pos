@@ -52,10 +52,10 @@ object frmPhoenixRoom: TfrmPhoenixRoom
       ParentFont = False
       TabOrder = 0
       object Label32: TLabel
-        Left = 9
-        Top = 4
-        Width = 439
-        Height = 24
+        Left = 7
+        Top = 1
+        Width = 300
+        Height = 32
         AutoSize = False
         Caption = 'Search by'
         Font.Charset = DEFAULT_CHARSET
@@ -65,6 +65,7 @@ object frmPhoenixRoom: TfrmPhoenixRoom
         Font.Style = [fsBold]
         ParentFont = False
         Layout = tlCenter
+        WordWrap = True
       end
       object lbeCaption: TLabel
         Left = 8
@@ -228,6 +229,19 @@ object frmPhoenixRoom: TfrmPhoenixRoom
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = tbtnCancelClick
+      end
+      object btnSpaces: TTouchBtn
+        Left = 8
+        Top = 154
+        Width = 119
+        Height = 65
+        ParentColor = True
+        Caption = 'Update Spaces'
+        ButtonColor = clNavy
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = btnSpacesMouseClick
       end
     end
     object Panel19: TPanel
@@ -2175,6 +2189,28 @@ object frmPhoenixRoom: TfrmPhoenixRoom
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnNumPadClick
+    end
+    object RadioGroupSelection: TRadioGroup
+      Left = 16
+      Top = 23
+      Width = 329
+      Height = 105
+      Caption = 'Selection Criteria'
+      Color = 14342874
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ItemIndex = 0
+      Items.Strings = (
+        'Search By Guest Name'
+        'Search By Property Spaces')
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 15
+      OnClick = RadioGroupSelectionClick
     end
   end
 end

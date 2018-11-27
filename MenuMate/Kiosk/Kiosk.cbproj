@@ -62,172 +62,9 @@
 			<TASM_Debugging>None</TASM_Debugging>
 		</PropertyGroup>
 		<ItemGroup>
-			<CppCompile Include="..\MenuMate\Source\DeviceStatusBase.cpp">
-				<DependentOn>..\MenuMate\Source\DeviceStatusBase.h</DependentOn>
-				<BuildOrder>37</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\ManagerVariable.cpp">
-				<DependentOn>..\MenuMate\Source\ManagerVariable.h</DependentOn>
-				<BuildOrder>25</BuildOrder>
-			</CppCompile>
-			<None Include="..\Registration\Source\RegMods.h">
-				<BuildOrder>20</BuildOrder>
-			</None>
-			<CppCompile Include="..\MenuMate\Source\ManagerMembership.cpp">
-				<DependentOn>..\MenuMate\Source\ManagerMembership.h</DependentOn>
-				<BuildOrder>6</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinystr.cpp">
-				<BuildOrder>11</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\SimpleTCP\Stream.cpp">
-				<DependentOn>..\SimpleTCP\Stream.h</DependentOn>
-				<BuildOrder>24</BuildOrder>
-			</CppCompile>
-			<ResourceCompile Include="..\MenuMate\Source\html.rc">
-				<Form>html.res</Form>
-				<BuildOrder>62</BuildOrder>
-			</ResourceCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxml.cpp">
-				<BuildOrder>12</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
-				<Form>frmTouchKeyboard</Form>
-				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
-				<BuildOrder>26</BuildOrder>
-			</CppCompile>
-			<ResFiles Include="Kiosk.res">
-				<BuildOrder>1</BuildOrder>
-			</ResFiles>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
-				<BuildOrder>13</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipERS.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipERS.h</DependentOn>
-				<BuildOrder>21</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\PointsRulesSetUtils.cpp">
-				<DependentOn>..\MenuMate\Source\PointsRulesSetUtils.h</DependentOn>
-				<BuildOrder>28</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\GlobalSettings.cpp">
-				<BuildOrder>60</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
-				<BuildOrder>10</BuildOrder>
-			</CppCompile>
-			<None Include="..\MenuMate\Source\PrinterDefs.h">
-				<BuildOrder>46</BuildOrder>
-			</None>
-			<CppCompile Include="Kiosk.cpp">
-				<BuildOrder>0</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\ContactPoints.cpp">
-				<DependentOn>..\MenuMate\Source\ContactPoints.h</DependentOn>
-				<BuildOrder>26</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\Membership.cpp">
-				<DependentOn>..\MenuMate\Source\Membership.h</DependentOn>
-				<BuildOrder>20</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\System\DB_Utilities.cpp">
-				<DependentOn>..\..\Shared-Source\System\DB_Utilities.h</DependentOn>
-				<BuildOrder>19</BuildOrder>
-			</CppCompile>
-			<None Include="..\GLProtocal\src\google\protobuf\io\coded_stream.h">
-				<BuildOrder>70</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\Office\Source\TaxProfile\TaxProfile.cpp">
-				<DependentOn>..\..\Office\Source\TaxProfile\TaxProfile.h</DependentOn>
-				<BuildOrder>70</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\PointsType.cpp">
-				<DependentOn>..\MenuMate\Source\PointsType.h</DependentOn>
-				<BuildOrder>69</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\System\Core\MM_DBCore.cpp">
-				<DependentOn>..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
-				<BuildOrder>27</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipEbetData.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipEbetData.h</DependentOn>
-				<BuildOrder>48</BuildOrder>
-			</CppCompile>
-			<None Include="..\MenuMate\Source\StringTableVariables.h">
-				<BuildOrder>77</BuildOrder>
-			</None>
-			<CppCompile Include="..\MenuMate\Source\MMSettings.cpp">
-				<DependentOn>..\MenuMate\Source\MMSettings.h</DependentOn>
-				<BuildOrder>48</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\PrintInfo.cpp">
-				<DependentOn>..\MenuMate\Source\PrintInfo.h</DependentOn>
-				<BuildOrder>48</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\Printout.cpp">
-				<DependentOn>..\MenuMate\Source\Printout.h</DependentOn>
-				<BuildOrder>45</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\Contact.cpp">
-				<DependentOn>..\MenuMate\Source\Contact.h</DependentOn>
-				<BuildOrder>23</BuildOrder>
-			</CppCompile>
-			<None Include="..\GLProtocal\src\google\protobuf\descriptor.h">
-				<BuildOrder>74</BuildOrder>
-			</None>
-			<CppCompile Include="..\MenuMate\Source\PrintFormat.cpp">
-				<DependentOn>..\MenuMate\Source\PrintFormat.h</DependentOn>
-				<BuildOrder>41</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\rounding.cpp">
-				<DependentOn>..\MenuMate\Source\rounding.h</DependentOn>
-				<BuildOrder>53</BuildOrder>
-			</CppCompile>
-			<None Include="ModelSupport_Kiosk\default.txaPackage"/>
-			<None Include="..\MenuMate\Source\Enum.h">
-				<BuildOrder>7</BuildOrder>
-			</None>
-			<CppCompile Include="..\..\Shared-Source\TZForm\ZForm.cpp">
-				<DependentOn>..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
-				<BuildOrder>15</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\Request.cpp">
-				<DependentOn>..\MenuMate\Source\Request.h</DependentOn>
-				<BuildOrder>43</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\DeviceImage.cpp">
-				<DependentOn>..\MenuMate\Source\DeviceImage.h</DependentOn>
-				<BuildOrder>34</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\IBLogs\LogsString.cpp">
-				<DependentOn>..\MenuMate\Source\IBLogs\LogsString.h</DependentOn>
-				<BuildOrder>16</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\SmartCards\blowfish.cpp">
-				<BuildOrder>30</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\Registry\MMRegistry.cpp">
-				<DependentOn>..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
-				<BuildOrder>35</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\DeviceDB.cpp">
-				<DependentOn>..\MenuMate\Source\DeviceDB.h</DependentOn>
-				<BuildOrder>33</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="DeviceKiosk.cpp">
-				<DependentOn>DeviceKiosk.h</DependentOn>
-				<BuildOrder>32</BuildOrder>
-			</CppCompile>
-			<None Include="..\MenuMate\Source\IBLogs\MMlogging.h">
-				<BuildOrder>17</BuildOrder>
-			</None>
-			<CppCompile Include="..\MenuMate\Source\ContactGroup.cpp">
-				<DependentOn>..\MenuMate\Source\ContactGroup.h</DependentOn>
-				<BuildOrder>61</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipEbetTCP.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipEbetTCP.h</DependentOn>
-				<BuildOrder>49</BuildOrder>
+			<CppCompile Include="..\MenuMate\Source\ManagerLocations.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerLocations.h</DependentOn>
+				<BuildOrder>40</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\MenuMate\Source\OpSys.cpp">
 				<DependentOn>..\MenuMate\Source\OpSys.h</DependentOn>
@@ -237,17 +74,14 @@
 				<DependentOn>..\MenuMate\Source\DevicePC.h</DependentOn>
 				<BuildOrder>36</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipEBetGUI.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipEBetGUI.h</DependentOn>
-				<BuildOrder>50</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\ManagerLocations.cpp">
-				<DependentOn>..\MenuMate\Source\ManagerLocations.h</DependentOn>
-				<BuildOrder>40</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="..\MenuMate\Source\SystemEvents.cpp">
 				<DependentOn>..\MenuMate\Source\SystemEvents.h</DependentOn>
 				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp">
+				<Form>frmTouchNumpad</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchNumpad.h</DependentOn>
+				<BuildOrder>52</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\MenuMate\Source\EventsContact.cpp">
 				<DependentOn>..\MenuMate\Source\EventsContact.h</DependentOn>
@@ -257,41 +91,89 @@
 				<DependentOn>..\MenuMate\Source\MMContactInfo.h</DependentOn>
 				<BuildOrder>57</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipEBet.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipEBet.h</DependentOn>
-				<BuildOrder>51</BuildOrder>
+			<CppCompile Include="..\MenuMate\Source\SmartCards\blowfish.cpp">
+				<BuildOrder>30</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchNumpad.cpp">
-				<Form>frmTouchNumpad</Form>
-				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchNumpad.h</DependentOn>
-				<BuildOrder>52</BuildOrder>
+			<CppCompile Include="..\..\Shared-Source\Registry\MMRegistry.cpp">
+				<DependentOn>..\..\Shared-Source\Registry\MMRegistry.h</DependentOn>
+				<BuildOrder>35</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceImage.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceImage.h</DependentOn>
+				<BuildOrder>34</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\IBLogs\LogsString.cpp">
+				<DependentOn>..\MenuMate\Source\IBLogs\LogsString.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceDB.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceDB.h</DependentOn>
+				<BuildOrder>33</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ContactGroup.cpp">
+				<DependentOn>..\MenuMate\Source\ContactGroup.h</DependentOn>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="DeviceKiosk.cpp">
+				<DependentOn>DeviceKiosk.h</DependentOn>
+				<BuildOrder>32</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\IBLogs\MMlogging.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
 			<CppCompile Include="..\MenuMate\Source\WindowsPrinters.cpp">
 				<DependentOn>..\MenuMate\Source\WindowsPrinters.h</DependentOn>
 				<BuildOrder>47</BuildOrder>
 			</CppCompile>
-			<None Include="ModelSupport_Kiosk\default.txvpck"/>
-			<CppCompile Include="..\MenuMate\Source\PrinterPhysical.cpp">
-				<DependentOn>..\MenuMate\Source\PrinterPhysical.h</DependentOn>
-				<BuildOrder>46</BuildOrder>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternalTCP.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternalTCP.h</DependentOn>
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Micros\MembershipExternalXML.cpp">
+				<DependentOn>..\MenuMate\Source\Micros\MembershipExternalXML.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PointsTransaction.cpp">
+				<DependentOn>..\MenuMate\Source\PointsTransaction.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="..\..\libs\TouchButtonsR.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>18</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternal.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternal.h</DependentOn>
+				<BuildOrder>72</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PaySubsUtility.cpp">
+				<DependentOn>..\MenuMate\Source\PaySubsUtility.h</DependentOn>
+				<BuildOrder>76</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DBTierLevel.cpp">
+				<DependentOn>..\MenuMate\Source\DBTierLevel.h</DependentOn>
+				<BuildOrder>71</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\IBLogs\logsdef.h">
+				<BuildOrder>17</BuildOrder>
+			</None>
+			<CppCompile Include="Main.cpp">
+				<Form>frmMain</Form>
+				<DependentOn>Main.h</DependentOn>
+				<BuildOrder>2</BuildOrder>
 			</CppCompile>
 			<None Include="ModelSupport_Kiosk\Database\default.txvpck"/>
 			<CppCompile Include="..\MenuMate\Source\DBContacts.cpp">
 				<DependentOn>..\MenuMate\Source\DBContacts.h</DependentOn>
 				<BuildOrder>58</BuildOrder>
 			</CppCompile>
+			<None Include="ModelSupport_Kiosk\default.txvpck"/>
+			<CppCompile Include="..\MenuMate\Source\PrinterPhysical.cpp">
+				<DependentOn>..\MenuMate\Source\PrinterPhysical.h</DependentOn>
+				<BuildOrder>46</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="..\MenuMate\Source\Access.cpp">
 				<DependentOn>..\MenuMate\Source\Access.h</DependentOn>
 				<BuildOrder>60</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\SystemConfig.cpp">
-				<Form>frmSystemConfig</Form>
-				<DependentOn>..\MenuMate\Source\SystemConfig.h</DependentOn>
-				<BuildOrder>14</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipExternalGUI.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipExternalGUI.h</DependentOn>
-				<BuildOrder>71</BuildOrder>
 			</CppCompile>
 			<CppCompile Include="..\MenuMate\Source\Processing.cpp">
 				<Form>frmProcessing</Form>
@@ -303,48 +185,150 @@
 				<DependentOn>..\..\Shared-Source\Touch Utils\MMMessageBox.h</DependentOn>
 				<BuildOrder>27</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\PointsTransaction.cpp">
-				<DependentOn>..\MenuMate\Source\PointsTransaction.h</DependentOn>
-				<BuildOrder>29</BuildOrder>
+			<CppCompile Include="..\MenuMate\Source\SystemConfig.cpp">
+				<Form>frmSystemConfig</Form>
+				<DependentOn>..\MenuMate\Source\SystemConfig.h</DependentOn>
+				<BuildOrder>14</BuildOrder>
 			</CppCompile>
-			<LibFiles Include="..\..\libs\TouchButtonsR.lib">
-				<IgnorePath>true</IgnorePath>
-				<BuildOrder>18</BuildOrder>
-			</LibFiles>
-			<CppCompile Include="..\MenuMate\Source\MembershipExternalTCP.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipExternalTCP.h</DependentOn>
-				<BuildOrder>70</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\Micros\MembershipExternalXML.cpp">
-				<DependentOn>..\MenuMate\Source\Micros\MembershipExternalXML.h</DependentOn>
-				<BuildOrder>69</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\MembershipExternal.cpp">
-				<DependentOn>..\MenuMate\Source\MembershipExternal.h</DependentOn>
-				<BuildOrder>72</BuildOrder>
-			</CppCompile>
-			<None Include="..\MenuMate\Source\IBLogs\logsdef.h">
-				<BuildOrder>17</BuildOrder>
-			</None>
-			<CppCompile Include="Main.cpp">
-				<Form>frmMain</Form>
-				<DependentOn>Main.h</DependentOn>
-				<BuildOrder>2</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\PaySubsUtility.cpp">
-				<DependentOn>..\MenuMate\Source\PaySubsUtility.h</DependentOn>
-				<BuildOrder>76</BuildOrder>
-			</CppCompile>
-			<CppCompile Include="..\MenuMate\Source\DBTierLevel.cpp">
-				<DependentOn>..\MenuMate\Source\DBTierLevel.h</DependentOn>
+			<CppCompile Include="..\MenuMate\Source\MembershipExternalGUI.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipExternalGUI.h</DependentOn>
 				<BuildOrder>71</BuildOrder>
 			</CppCompile>
-			<FormResources Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
+			<CppCompile Include="..\MenuMate\Source\MembershipERS.cpp">
+				<DependentOn>..\MenuMate\Source\MembershipERS.h</DependentOn>
+				<BuildOrder>21</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PointsRulesSetUtils.cpp">
+				<DependentOn>..\MenuMate\Source\PointsRulesSetUtils.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<ResFiles Include="Kiosk.res">
+				<BuildOrder>1</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlerror.cpp">
+				<BuildOrder>13</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\GlobalSettings.cpp">
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Kiosk.cpp">
+				<BuildOrder>0</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ContactPoints.cpp">
+				<DependentOn>..\MenuMate\Source\ContactPoints.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxmlparser.cpp">
+				<BuildOrder>10</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\PrinterDefs.h">
+				<BuildOrder>46</BuildOrder>
+			</None>
+			<None Include="..\Registration\Source\RegMods.h">
+				<BuildOrder>20</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\ManagerMembership.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerMembership.h</DependentOn>
+				<BuildOrder>6</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\DeviceStatusBase.cpp">
+				<DependentOn>..\MenuMate\Source\DeviceStatusBase.h</DependentOn>
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\ManagerVariable.cpp">
+				<DependentOn>..\MenuMate\Source\ManagerVariable.h</DependentOn>
+				<BuildOrder>25</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinystr.cpp">
+				<BuildOrder>11</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\tinyXML\tinyxml.cpp">
+				<BuildOrder>12</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.cpp">
+				<Form>frmTouchKeyboard</Form>
+				<DependentOn>..\..\Shared-Source\Touch Utils\MMTouchKeyboard.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\SimpleTCP\Stream.cpp">
+				<DependentOn>..\SimpleTCP\Stream.h</DependentOn>
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<ResourceCompile Include="..\MenuMate\Source\html.rc">
+				<Form>html.res</Form>
+				<BuildOrder>62</BuildOrder>
+			</ResourceCompile>
+			<CppCompile Include="..\MenuMate\Source\Membership.cpp">
+				<DependentOn>..\MenuMate\Source\Membership.h</DependentOn>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<None Include="..\GLProtocal\src\google\protobuf\descriptor.h">
+				<BuildOrder>74</BuildOrder>
+			</None>
+			<CppCompile Include="..\MenuMate\Source\PrintFormat.cpp">
+				<DependentOn>..\MenuMate\Source\PrintFormat.h</DependentOn>
+				<BuildOrder>41</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Printout.cpp">
+				<DependentOn>..\MenuMate\Source\Printout.h</DependentOn>
+				<BuildOrder>45</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Contact.cpp">
+				<DependentOn>..\MenuMate\Source\Contact.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\rounding.cpp">
+				<DependentOn>..\MenuMate\Source\rounding.h</DependentOn>
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\TZForm\ZForm.cpp">
+				<DependentOn>..\..\Shared-Source\TZForm\ZForm.h</DependentOn>
+				<BuildOrder>15</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\Request.cpp">
+				<DependentOn>..\MenuMate\Source\Request.h</DependentOn>
+				<BuildOrder>43</BuildOrder>
+			</CppCompile>
+			<None Include="ModelSupport_Kiosk\default.txaPackage"/>
+			<None Include="..\MenuMate\Source\Enum.h">
+				<BuildOrder>7</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\Office\Source\TaxProfile\TaxProfile.cpp">
+				<DependentOn>..\..\Office\Source\TaxProfile\TaxProfile.h</DependentOn>
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PointsType.cpp">
+				<DependentOn>..\MenuMate\Source\PointsType.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\..\Shared-Source\System\DB_Utilities.cpp">
+				<DependentOn>..\..\Shared-Source\System\DB_Utilities.h</DependentOn>
+				<BuildOrder>19</BuildOrder>
+			</CppCompile>
+			<None Include="..\GLProtocal\src\google\protobuf\io\coded_stream.h">
+				<BuildOrder>70</BuildOrder>
+			</None>
+			<CppCompile Include="..\..\Shared-Source\System\Core\MM_DBCore.cpp">
+				<DependentOn>..\..\Shared-Source\System\Core\MM_DBCore.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\MMSettings.cpp">
+				<DependentOn>..\MenuMate\Source\MMSettings.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="..\MenuMate\Source\PrintInfo.cpp">
+				<DependentOn>..\MenuMate\Source\PrintInfo.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<None Include="..\MenuMate\Source\StringTableVariables.h">
+				<BuildOrder>77</BuildOrder>
+			</None>
 			<FormResources Include="..\..\Shared-Source\Touch Utils\MMTouchNumpad.dfm"/>
-			<FormResources Include="..\MenuMate\Source\SystemConfig.dfm"/>
+			<FormResources Include="Main.dfm"/>
 			<FormResources Include="..\MenuMate\Source\Processing.dfm"/>
 			<FormResources Include="..\..\Shared-Source\Touch Utils\MMMessageBox.dfm"/>
-			<FormResources Include="Main.dfm"/>
+			<FormResources Include="..\MenuMate\Source\SystemConfig.dfm"/>
+			<FormResources Include="..\..\Shared-Source\Touch Utils\MMTouchKeyboard.dfm"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>
