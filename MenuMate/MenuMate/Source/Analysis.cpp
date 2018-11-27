@@ -4619,7 +4619,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				IBInternalQuery->Close();
 				IBInternalQuery->SQL->Text = "Select " "Contacts.Name, "
 				"DAYARCBILLPAY.PAY_TYPE,DAYARCBILLPAY.TAX_FREE,DAYARCBILLPAY.CASH_OUT, "
-				"DAYARCBILLPAY.SUBTOTAL,DAYARCBILLPAY.ROUNDING,DAYARCBILLPAY.ARCBILL_KEY,DAYARCBILLPAY.PROPERTIES " "From "
+				"DAYARCBILLPAY.SUBTOTAL,DAYARCBILLPAY.ROUNDING,DAYARCBILLPAY.ARCBILL_KEY,DAYARCBILLPAY.PROPERTIES,DAYARCBILLPAY.TIP_AMOUNT " "From "
 				"Security left Join DayArcbill on " "Security.Security_Ref = DayArcbill.Security_Ref " "left Join DayArcbillPay on "
 				"DayArcbill.ARCBILL_KEY = DayArcbillPay.ARCBILL_KEY " "Left Join Contacts on " "Security.user_key = Contacts.Contacts_Key "
 				"Where " "Security.Time_Stamp >= :StartTime and " "Security.Time_Stamp < :EndTime and " "Security.Security_Event = '" +
@@ -4628,7 +4628,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				"Union All "
 
 				"Select " "Contacts.Name, " "ARCBILLPAY.PAY_TYPE,ARCBILLPAY.TAX_FREE,ARCBILLPAY.CASH_OUT, "
-				"ARCBILLPAY.SUBTOTAL,ARCBILLPAY.ROUNDING,ARCBILLPAY.ARCBILL_KEY,ARCBILLPAY.PROPERTIES " "From "
+				"ARCBILLPAY.SUBTOTAL,ARCBILLPAY.ROUNDING,ARCBILLPAY.ARCBILL_KEY,ARCBILLPAY.PROPERTIES,ARCBILLPAY.TIP_AMOUNT " "From "
 				"Security left Join Arcbill on " "Security.Security_Ref = Arcbill.Security_Ref " "left Join ArcbillPay on "
 				"Arcbill.ARCBILL_KEY = ArcbillPay.ARCBILL_KEY " "Left Join Contacts on " "Security.user_key = Contacts.Contacts_Key "
 				"Where " "Security.Time_Stamp >= :StartTime and " "Security.Time_Stamp < :EndTime and " "Security.Security_Event = '" +
@@ -4669,6 +4669,16 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 						ThisTransaction.Count++;
 						TransactionsCount[PaymentName] = ThisTransaction;
 					}
+                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Tip")
+                    {
+                       TotalInBilledTips += IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency;
+                       TipCount++;
+                    }
+                    if(IBInternalQuery->FieldByName("TIP_AMOUNT")->AsCurrency != 0)
+                    {
+                       TotalInBilledTips += IBInternalQuery->FieldByName("TIP_AMOUNT")->AsCurrency;
+                       TipCount++;
+                    }
 				}
 
 				Printout->PrintFormat->DocumentName = "User Report : " + TempUserInfo.Name;
@@ -4724,7 +4734,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 				}
 				if (TotalInBilledTips != 0)
 				{
-					Printout->PrintFormat->Add("Tips Billed | " + FormatFloat("0.00", TotalInBilledTips) + " | " + FormatFloat("0.00",
+					Printout->PrintFormat->Add("Total Tips | " + FormatFloat("0.00", TotalInBilledTips) + " | " + FormatFloat("0.00",
 					TotalInBilledTips / TipCount));
 				}
 
@@ -5070,7 +5080,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 
                 if (TotalInBilledTips != 0)
                  {
-                    Printout->PrintFormat->Add("Tips Billed | " + FormatFloat("0.00", TotalInBilledTips));
+                    Printout->PrintFormat->Add("Total Tips | " + FormatFloat("0.00", TotalInBilledTips));
 
                  }
 
