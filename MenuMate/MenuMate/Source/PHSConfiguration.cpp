@@ -383,7 +383,7 @@ void __fastcall TfrmPHSConfiguration::tbItemDefCatClick(TObject *Sender)
         else
         {
             caption = "Enter the API-KEY.";
-            TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->ApiKey,caption);
+            TDeviceRealTerminal::Instance().BasePMS->ApiKey = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->ApiKey,caption);
             tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
         }
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
