@@ -680,7 +680,7 @@ void TDBOrder::TransferOrders(Database::TDBTransaction &DBTransaction,TList *Ord
 				" ORDERS.TAB_NAME = :TAB_NAME, "
 				" ORDERS.TAB_TYPE = :TAB_TYPE, "
 				" ORDERS.TIME_KEY = :TIME_KEY, "
-				" ORDERS.SIDE_ORDER_KEY = NULL, "
+			 //	" ORDERS.SIDE_ORDER_KEY = NULL, "
 				" ORDERS.SETMENU_MASK = 0, "
 				" ORDERS.SETMENU_GROUP = 0 "
 
@@ -2505,11 +2505,11 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
 		IBInternalQuery->SQL->Text =
         "SELECT a.ORDER_KEY,a.ORDER_TYPE,a.ITEM_NAME,a.SIZE_NAME,a.MENU_NAME,a.PRICE,a.DISCOUNT,a.QTY, "
         " a.SIDE_ORDER_KEY,a.TIME_STAMP, a.ITEM_ID,	a.TIME_KEY,a.PATRON_COUNT,a.ITEM_TYPE,b.WEIGHTED_SIZE, "
-        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME "
+        " a.ROOM_NO, a.ACC_NO, a.FIRST_NAME, a.LAST_NAME, a.CANCEL_FINAL_PRICE "
         " FROM ORDERS a inner join SIZES b  "
         " on a.SIZE_NAME = b.SIZE_NAME  "
         " WHERE a.TAB_KEY = :TAB_KEY "
-        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19  "
+        " group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20  "
         " ORDER BY a.ITEM_NAME,a.SIZE_NAME,a.Price,a.QTY ";
 		IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = TabKey;
 		IBInternalQuery->ExecQuery();
@@ -2608,7 +2608,8 @@ double TDBOrder::LoadPickNMixOrdersAndGetQuantity(Database::TDBTransaction &DBTr
                 Order.Qty = IBInternalQuery->FieldByName("QTY")->AsFloat;
                 Order.PatronCount = IBInternalQuery->FieldByName("PATRON_COUNT")->AsInteger;
 
-                if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0)
+                if(IBInternalQuery->FieldByName("SIDE_ORDER_KEY")->AsInteger >0 &&
+                                    IBInternalQuery->FieldByName("CANCEL_FINAL_PRICE")->AsCurrency == 0)
                 {
                     Order.IsSide = true;
                 }

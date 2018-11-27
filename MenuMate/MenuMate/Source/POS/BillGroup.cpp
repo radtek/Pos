@@ -998,7 +998,13 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
     {
         if(HasOnlineOrders)
         {
-            if(VisibleItems.size() > SelectedItems.size())
+            int sideCount = 0;
+		    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+		    {
+                if(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false)  //Added condition to exclude Side which has Cost equal to 0
+                sideCount++;
+		    }
+            if(VisibleItems.size()-sideCount > SelectedItems.size())
             {
                 MessageBox("To bill off Online ordering tab , please select all the Items.","Info",MB_OK+MB_ICONINFORMATION);
                 return;
@@ -3133,7 +3139,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = QtyStr + ptrItem->Name;
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Tag = ptrItem->Key;
 
-			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment)
+			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment || (CurrentDisplayMode == eTabs && HasOnlineOrders))
 			{
 				tbtnMove->Enabled = false;
 			}
