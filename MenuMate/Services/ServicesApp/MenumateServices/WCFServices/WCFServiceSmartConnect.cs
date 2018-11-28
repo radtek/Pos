@@ -658,9 +658,16 @@ namespace MenumateServices.WCFServices
             {
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
 
+                location = Path.Combine(location, "Smart Connect Logs");
 
-                string location = Path.Combine(path, "Smart Connect Logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");

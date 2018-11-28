@@ -2522,6 +2522,8 @@ private:
   bool            FContainerType_Specified;
   bool            FIsConfirmed;
   bool            FIsConfirmed_Specified;
+  bool            FIsHappyHourApplied;
+  bool            FIsHappyHourApplied_Specified;
   UnicodeString   FLocation;
   bool            FLocation_Specified;
   guid            FMemberGuid;
@@ -2572,6 +2574,10 @@ private:
   {  FIsConfirmed = _prop_val; FIsConfirmed_Specified = true;  }
   bool __fastcall IsConfirmed_Specified(int Index)
   {  return FIsConfirmed_Specified;  } 
+  void __fastcall SetIsHappyHourApplied(int Index, bool _prop_val)
+  {  FIsHappyHourApplied = _prop_val; FIsHappyHourApplied_Specified = true;  }
+  bool __fastcall IsHappyHourApplied_Specified(int Index)
+  {  return FIsHappyHourApplied_Specified;  } 
   void __fastcall SetLocation(int Index, UnicodeString _prop_val)
   {  FLocation = _prop_val; FLocation_Specified = true;  }
   bool __fastcall Location_Specified(int Index)
@@ -2641,6 +2647,7 @@ __published:
   __property UnicodeString ContainerNumber = { index=(IS_OPTN|IS_NLBL), read=FContainerNumber, write=SetContainerNumber, stored = ContainerNumber_Specified };
   __property OrderContainerType ContainerType = { index=(IS_OPTN), read=FContainerType, write=SetContainerType, stored = ContainerType_Specified };
   __property bool       IsConfirmed = { index=(IS_OPTN), read=FIsConfirmed, write=SetIsConfirmed, stored = IsConfirmed_Specified };
+  __property bool       IsHappyHourApplied = { index=(IS_OPTN), read=FIsHappyHourApplied, write=SetIsHappyHourApplied, stored = IsHappyHourApplied_Specified };
   __property UnicodeString   Location = { index=(IS_OPTN|IS_NLBL), read=FLocation, write=SetLocation, stored = Location_Specified };
   __property guid       MemberGuid = { index=(IS_OPTN|IS_NLBL), read=FMemberGuid, write=SetMemberGuid, stored = MemberGuid_Specified };
   __property UnicodeString  OrderGuid = { index=(IS_OPTN|IS_NLBL), read=FOrderGuid, write=SetOrderGuid, stored = OrderGuid_Specified };

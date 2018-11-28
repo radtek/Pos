@@ -497,5 +497,5 @@ static void RegTypes()
 }
 #pragma startup RegTypes 32
 
-};     // NS__
+};     // NS__LoyaltyMateWSDL
 

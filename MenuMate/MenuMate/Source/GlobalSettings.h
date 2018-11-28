@@ -543,6 +543,7 @@ public:
     bool EnableEftPosPreAuthorisation;
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
+    int HHPriceLevelKey;
 };
 
 #endif
