@@ -901,7 +901,6 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMMResponse(LoyaltyOnlineOr
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateExceptionFailedResponse(AnsiString inMessage )
 {
-
    if(inMessage.Pos("XML") > 0 || inMessage.Pos("The handle") > 0 )
    return MMLoyaltyServiceResponse(false,"Not able to connect with server.","",FailedDueToException,AnsiString( "" ) );
    else

@@ -3,7 +3,7 @@
     public class RequestAddress
     {
        // public const string BaseAddress = "http://menumateloyalty.com/";
-        public const string BaseAddress = "http://menumatepos.com/";
+        public const string BaseAddress = "http://192.168.0.123/Vouchers/";//"http://lmonlineordering.azurewebsites.net/";//"http://menumatepos.com/";
 //"http://menumateloyalty.com/";"http://lmonlineordering.azurewebsites.net/"
 
         //Member

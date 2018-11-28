@@ -191,12 +191,34 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                                                                                 transaction.PointsType,
                                                                                 transaction.InvoiceNumber);
             if(!postTransactionResponse.IsSuccesful)
-            {    
+            {
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	            DBTransaction.StartTransaction();
-                TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
-                DBTransaction.Commit();
-                throw new Exception(postTransactionResponse.Message);
+                DBTransaction.StartTransaction();
+
+                if(postTransactionResponse.ResponseCode == 19)
+                {
+                    TMMContactInfo contactInfo;
+                    UnicodeString email = TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey);
+                    MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByEmail( transaction.SyndicateCode,
+                                                                                email, contactInfo, false);
+
+                    if(response.IsSuccesful && response.ResponseCode != MemberNotExist)
+                    {
+                        TLoyaltyMateUtilities::UpdateUUID(DBTransaction, transaction.ContactKey, contactInfo.CloudUUID);
+                    }
+                    DBTransaction.Commit();
+                }
+                else if(postTransactionResponse.ResponseCode == 18)
+                {
+                    TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    DBTransaction.Commit();
+                }
+                else
+                {
+                    TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    DBTransaction.Commit();
+                    throw new Exception(postTransactionResponse.Message);
+                }
             }
             else
                 result = true;

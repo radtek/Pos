@@ -16367,6 +16367,7 @@ void TfrmSelectDish::DoCloundSync()
 {
     try
     {
+        TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable("T");
         TManagerCloudSync ManagerCloudSync;
         ManagerCloudSync.SyncCompanyDetails();
         ManageDiscounts();

@@ -60,6 +60,9 @@ public:
     int StreamCheckCRC(AnsiString value);
     TBytes CreateByteArray( const char* inBuffer, __int32 inBufferSize );
     static void UpdatePendingTransactions(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString paramValue);
+    static void UpdateUUID(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString uuid);
+    static void MakeAllPendingTransactionsAvailable(UnicodeString paramValue);
+
 };
 //---------------------------------------------------------------------------
 

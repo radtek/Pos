@@ -326,6 +326,20 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed);
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateResponseError(
+                            @"Multiple GUID exists",
+                            ex.Message,
+                            LoyaltyResponseCode.MultipleGUIDExist);
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateResponseError(
+                            @"GUID Not found",
+                            ex.Message,
+                            LoyaltyResponseCode.GUIDNotFound);
+            }            
             catch (Exception ex)
             {
                 return CreateResponseError(

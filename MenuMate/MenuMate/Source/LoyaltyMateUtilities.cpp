@@ -433,6 +433,41 @@ void TLoyaltyMateUtilities::UpdatePendingTransactions(Database::TDBTransaction &
     }
 }
 //------------------------------------------------------------------------------------
-
-
-
+void TLoyaltyMateUtilities::UpdateUUID(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString uuid)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYATTRIBUTES a SET a.UUID = :UUID "
+                            "WHERE a.CONTACTS_KEY = :CONTACTS_KEY  ";
+        query->ParamByName("CONTACT_KEY")->AsInteger = inContactKey;
+        query->ParamByName("UUID")->AsString = uuid;
+        query->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//------------------------------------------------------------------------------------
+void TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable(UnicodeString paramValue)
+{
+    Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	dBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dBTransaction.Query(dBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS LPT SET LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING ";
+        query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = paramValue;
+        query->ExecQuery();
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+    {
+        dBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//------------------------------------------------------------------------------------
