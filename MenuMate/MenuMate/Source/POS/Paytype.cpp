@@ -48,6 +48,7 @@
 #include "DiscountGroup.h"
 #include "CardSwipe.h"
 #include "SCDPatronUtility.h"
+#include "ItemSizeCategory.h"
 // ---------------------------------------------------------------------------
 #define NUMBER_OF_PAYMENT_TYPES_IN_VIEW 9
 #define ALTCOL 0
@@ -4754,7 +4755,7 @@ bool TfrmPaymentType::IsItemAssignToPrinter(TList *Orders)
            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
            DBTransaction.StartTransaction();
            TItemComplete *Order = (TItemComplete*)Orders->Items[i];
-           bool Categorykey =   IsCategoryAssignedToKitchenPrinter(DBTransaction, Order->Categories->FinancialCategoryKey);
+           bool Categorykey = IsCategoryAssignedToKitchenPrinter(DBTransaction,Order);
            int coursekey = GettingCourseKey(DBTransaction, Order->ItemKey);
            bool Itemcoursekey = IsCourseAssignedToKitchenPrinter(DBTransaction, coursekey) ;
            if(Itemcoursekey || Categorykey)
@@ -4772,7 +4773,32 @@ bool TfrmPaymentType::IsItemAssignToPrinter(TList *Orders)
 }
 
 //----------------------------------------------------------------------------------
-bool TfrmPaymentType::IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int CategoryKey)
+bool TfrmPaymentType::IsCategoryAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction,TItemComplete *item)
+{
+
+    bool RetVal = false;
+    try
+    {
+       for (int j = 0; j < item->Categories->Count; j++)
+       {
+			TItemSizeCategory* category = item->Categories->CategoryGet(j);
+
+            if(IsCategoryKeyExistInDB(DBTransaction, category->CategoryKey))
+            {
+               RetVal = true;
+               break;
+            }
+         }
+       }
+        catch(Exception &E)
+        {
+            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+            throw;
+        }
+    return RetVal;
+}
+//-----------------------------------------------------------------------------------
+bool TfrmPaymentType::IsCategoryKeyExistInDB(Database::TDBTransaction &DBTransaction, int CategoryKey)
 {
     bool RetVal = false;
     try
@@ -4789,9 +4815,8 @@ bool TfrmPaymentType::IsCategoryAssignedToKitchenPrinter(Database::TDBTransactio
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return RetVal;
 }
-//----------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------
 bool TfrmPaymentType::IsCourseAssignedToKitchenPrinter(Database::TDBTransaction &DBTransaction, int coursekey)
 {
     bool RetVal = false;

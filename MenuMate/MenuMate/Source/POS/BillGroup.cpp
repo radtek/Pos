@@ -998,7 +998,13 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
     {
         if(HasOnlineOrders)
         {
-            if(VisibleItems.size() > SelectedItems.size())
+            int sideCount = 0;
+		    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+		    {
+                if(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false)  //Added condition to exclude Side which has Cost equal to 0
+                sideCount++;
+		    }
+            if(VisibleItems.size()-sideCount > SelectedItems.size())
             {
                 MessageBox("To bill off Online ordering tab , please select all the Items.","Info",MB_OK+MB_ICONINFORMATION);
                 return;
@@ -1114,7 +1120,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
-
+                        MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
 						int mypatroncount = 0;
 						std::map <__int64, TPnMOrder> TabItems;
 						for (std::set <__int64> ::iterator CrntTabKey = SelectedTabs.begin(); CrntTabKey != SelectedTabs.end();
@@ -1300,7 +1306,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
-
+                        MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys);    //Merging the Item keys of Zero Price Sides with Selected Item Keys
                         PatronCount = DeterminePatronCount();
 						SplitItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransPartialPayment);
 					}
@@ -1411,7 +1417,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
-
+                        MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
 						PatronCount = DeterminePatronCount();
 						splittedItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransSplitPayment);
 
@@ -2570,6 +2576,7 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
             DisableToggleGSTButton(DBTransaction);
         }
         UpdateContainerListColourDisplay();
+        HasOnlineOrders = TDBTab::HasOnlineOrders(CurrentSelectedTab);
         UpdateTableForOnlineOrdering();
 //        MessageBox(CurrentSelectedTab,"CurrentSelectedTab in tgridClick",MB_OK);
         UpdateTabForOnlineOrdering();
@@ -2887,6 +2894,7 @@ void TfrmBillGroup::SplitItemOnClick(int itemSelected)
         SplitItem(DBTransaction,itemSelected,qtyLeft);
         if(frmTouchNumpad->splitValue < SelectedItems[itemSelected].Qty)
            RefreshItemStatus(frmTouchNumpad->CURResult,itemSelected,DBTransaction);
+        UpdateItemListDisplay(DBTransaction);
         DBTransaction.Commit();
     }
 }
@@ -3053,14 +3061,18 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 			TDBOrder::LoadPickNMixOrdersAndGetQuantity(DBTransaction, CurrentSelectedTab, VisibleItems);
 		}
 		std::auto_ptr <TList> SortingList(new TList);
+        int sideCount = 0;
 		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
 		{
-			SortingList->Add(&itItem->second);
+            if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))  //Added condition to exclude Side which has Cost equal to 0
+			  SortingList->Add(&itItem->second);
+            else
+              sideCount++;
 		}
 		//SortingList->Sort(ComparePickNMix);
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
-		tgridItemList->RowCount = VisibleItems.size();
+		tgridItemList->RowCount = VisibleItems.size() - sideCount;  // To reduce the Count of Sides with Zero Price from RowCount
 
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType &&  VisibleItems.size() != SelectedItems.size() && VisibleItems.size() &&
                 SelectedItems.size() && VisibleItems.size() > 1 )
@@ -3075,7 +3087,6 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		for (int i = 0; i < SortingList->Count; i++)
 		{
 			TPnMOrder *ptrItem = (TPnMOrder*)SortingList->Items[i];
-
 			if (SelectedItems.find(ptrItem->Key) == SelectedItems.end())
 			{ // Not Found add it.
 				if(ptrItem->Type == CanceledOrder)
@@ -3128,7 +3139,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = QtyStr + ptrItem->Name;
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Tag = ptrItem->Key;
 
-			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment)
+			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment || (CurrentDisplayMode == eTabs && HasOnlineOrders))
 			{
 				tbtnMove->Enabled = false;
 			}
@@ -3613,7 +3624,8 @@ void TfrmBillGroup::ShowReceipt()
 			std::set <__int64> ReceiptItemKeys;
 			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
 			{
-				ReceiptItemKeys.insert(itItem->first);
+                if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))     //Added condition to exclude Side which has Cost equal to 0
+				    ReceiptItemKeys.insert(itItem->first);
 			}
 
 			TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
@@ -5576,4 +5588,15 @@ void TfrmBillGroup::SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction
     {
         TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, CurrentSelectedTab, info.ContactKey, info.EMail);
     }
+}
+//--------------------------------------------------
+void TfrmBillGroup:: MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64> &SelectedItemKeys)
+{
+    std::set <__int64> ZeroPriceSideKeys;
+    for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+    {
+        if(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false)
+          ZeroPriceSideKeys.insert(itItem->first);
+    }
+    SelectedItemKeys.insert(ZeroPriceSideKeys.begin(),ZeroPriceSideKeys.end());    //Merging the Item keys of Zero Price Sides with Selected Item Keys
 }

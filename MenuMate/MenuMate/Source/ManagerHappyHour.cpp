@@ -5,10 +5,10 @@
 
 std::vector<THappyHour> TManagerHappyHour::LoadHappyHourProfiles(bool allTerminalsHHProfile)
 {
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
 
     try
     {

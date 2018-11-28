@@ -360,6 +360,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
             siteOrderViewModel.UserEmailId = siteOrderModel.UserEmailId;
             siteOrderViewModel.MemberGuid = siteOrderModel.MemberGuid;
+            siteOrderViewModel.IsHappyHourApplied = siteOrderModel.IsHappyHourApplied;
             siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();            
             siteOrderViewModel.OrderInvoiceTransaction = new ApiOrderInvoiceTransactionViewModel();
 

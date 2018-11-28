@@ -567,9 +567,9 @@ AnsiString TManagerMews::GetLogFileName()
     AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
-//    directoryName = directoryName + "\\logs";
-//    if (!DirectoryExists(directoryName))
-//        CreateDir(directoryName);
+    directoryName = directoryName + "\\logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
     directoryName = directoryName + "\\Mews Post Logs";
     if (!DirectoryExists(directoryName))
         CreateDir(directoryName);
