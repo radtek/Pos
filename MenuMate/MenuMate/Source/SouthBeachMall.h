@@ -100,7 +100,6 @@ private:
 protected:
     TMallExportSalesWrapper PrepareDataForDatabase(TPaymentTransaction &paymentTransaction, int arcBillKey, TDateTime currentTime);
     TMallExportPrepareData PrepareDataForExport(int zKey = 0) ;
-    IExporterInterface* CreateExportMedium();
 
 public:
     TSouthBeachMall();

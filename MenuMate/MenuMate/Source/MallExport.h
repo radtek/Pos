@@ -40,7 +40,7 @@ protected:
     virtual TMallExportPrepareData PrepareDataForExport(int zKey = 0) = 0;
 
     //Create export medium which type of file will be exported
-    virtual IExporterInterface* CreateExportMedium() = 0;
+    virtual IExporterInterface* CreateExportMedium();
 
     //Insert all data into mall_export_sales table in row based pattern.
     virtual bool InsertInToMallExport_Sales(Database::TDBTransaction &dbTransaction , TMallExportSalesWrapper mallExportSalesData);

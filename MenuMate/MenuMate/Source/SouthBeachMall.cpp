@@ -255,21 +255,6 @@ TMallExportPrepareData TSouthBeachMall::PrepareDataForExport(int zKey)
     return preparedData;
 }
 //---------------------------------------------------------------------------
-IExporterInterface* TSouthBeachMall::CreateExportMedium()
-{
-    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-    UnicodeString exportType = GetExportType(mallid)  ;
-    if(exportType == ".txt")
-    {
-        return new TMallExportTextFile;
-    }
-    else
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Export Type not found");
-		throw;
-    }
-}
-//---------------------------------------------------------------------------
 bool TSouthBeachMall::IsItemVatable(TItemMinorComplete *order, TSouthBeachMallField &fieldData,double &VatAmount)
 {
     std::vector<BillCalculator::TTaxResult> taxInfomation = order->BillCalcResult.Tax;

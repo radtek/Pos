@@ -1356,21 +1356,6 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
 		throw;
 	}
 }
-//----------------------------------------------------------------------------------------------------------------------------
-IExporterInterface* TEstanciaMall::CreateExportMedium()
-{
-    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-    UnicodeString exportType = GetExportType(mallid)  ;
-    if(exportType == ".txt")
-    {
-        return new TMallExportTextFile;
-    }
-    else
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Export Type not found");
-		throw;
-    }
-}
 //--------------------------------------------------------------------------------------------------------------------
 UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int zKey)
 {

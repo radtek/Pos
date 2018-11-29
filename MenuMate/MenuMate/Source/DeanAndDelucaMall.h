@@ -79,8 +79,6 @@ protected:
     //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
     TMallExportPrepareData PrepareDataForExport(int zKey = 0);
 
-    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
-    IExporterInterface* CreateExportMedium();
 
 public:
     //Constructor

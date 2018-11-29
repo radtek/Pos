@@ -990,22 +990,6 @@ UnicodeString TDeanAndDelucaMall::GetFileName(Database::TDBTransaction &dBTransa
     return fileName;
 }
 //----------------------------------------------------------------------------------------------------------------
-IExporterInterface* TDeanAndDelucaMall::CreateExportMedium()
-{
-
-    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
-    UnicodeString exportType = GetExportType(mallid)  ;
-    if(exportType == ".txt")
-    {
-        return new TMallExportTextFile;
-    }
-    else
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Export Type not found");
-		throw;
-    }
-}
-//----------------------------------------------------------------------------------------------------------------
 void TDeanAndDelucaMall::PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order, TDeanAndDelucaMallField &fieldData)
 {
     //Create Taxes Object to collect all taxes details
