@@ -207,13 +207,15 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                     {
                         TLoyaltyMateUtilities::UpdateUUID(DBTransaction, transaction.ContactKey, contactInfo.CloudUUID);
                     }
-                    DBTransaction.Commit();
+                    else
+                    {
+                        TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    }
                 }
                 else if(postTransactionResponse.ResponseCode == 18)
                 {
                     TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
                     SendEmail(DBTransaction, transaction);
-                    DBTransaction.Commit();
                 }
                 else
                 {
@@ -221,6 +223,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                     DBTransaction.Commit();
                     throw new Exception(postTransactionResponse.Message);
                 }
+                DBTransaction.Commit();
             }
             else
                 result = true;
