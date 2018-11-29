@@ -992,6 +992,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		OnAfterTransactionComplete.Occured();
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
         delete logList;
         logList = NULL;
 	}
@@ -1002,6 +1007,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
 
         TStringList* logList = new TStringList();
         logList->Add("Exception in  ProcessTransaction()");
@@ -3774,6 +3785,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
     bool FiscalTransaction = true;
+    bool austriaFiscalTransaction = true;
 
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
@@ -3891,6 +3903,11 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(!FiscalTransaction)
         return RetVal;
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+        managerAustria->ExportData(PaymentTransaction);
+    }
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)

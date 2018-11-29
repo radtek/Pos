@@ -6461,7 +6461,13 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
+    bool isAustriaSignaturePrinted = true;
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        PrintFiscalAustriaSignature(PrintJob);
+        isAustriaSignaturePrinted = false;
 
+    }
     if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
          || !TGlobalSettings::Instance().SetVoidFooter)
     {
@@ -6481,7 +6487,8 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 		}
         if (PrintJob->ReceiptFooter->Count == 0)
         {
-            Empty = true;
+            if(isAustriaSignaturePrinted)
+                Empty = true;
         }
         else
         {
@@ -6501,7 +6508,8 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
     }
     else
     {
-        Empty = true;
+        if(isAustriaSignaturePrinted)
+            Empty = true;
     }
 }
 
@@ -9368,5 +9376,103 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->Line->Columns[0]->Text  = "Signature :____________________________________________";
         pPrinter->AddLine();
     }
+}
+void TPrintSection::PrintFiscalAustriaSignature(TReqPrintJob *PrintJob)
+{
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->FontInfo.Bold = false;
+        pPrinter->Line->FontInfo.Height = fsNormalSize;
+        pPrinter->Line->FontInfo.Width = fsNormalSize;
+        __int64 status = 99;
+        int responseId = 99;
+        UnicodeString content = "";
+        GetAustriaFiscalSignature(status,responseId,PrintJob->Transaction->InvoiceNumber);
+        if(status == 0x4154000000000000)
+        {
+            content = GetSignatureContent(responseId);
+        }
+        else if(status == 0x4154000000000002)
+        {
+            content = "SSCD temporary out of service";
+        }
+        else if(status == 0x4154000000000001)
+        {
+            content = "Security mechanism is out of service";
+        }
+        else
+        {
+            content = "Unknown Status";
+        }
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+        if(content.Length() > pPrinter->Width)
+        {
+            pPrinter->Line->Columns[0]->Text = "Fiscal Signature";
+            pPrinter->AddLine();
+            int lengthCovered = pPrinter->Width;
+            for(int i = 1; i <= content.Length();)
+            {
+                pPrinter->Line->Columns[0]->Text = content.SubString(i,pPrinter->Width);
+                pPrinter->AddLine();
+                i += pPrinter->Width;
+                lengthCovered += pPrinter->Width;
+            }
+        }
+        else
+        {
+            pPrinter->Line->Columns[0]->Text = content;
+            pPrinter->AddLine();
+        }
+}
+void TPrintSection::GetAustriaFiscalSignature(__int64 &status, int &responseId, UnicodeString invoiveNumber)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT STATE, RESPONSE_ID FROM AUSTRIAFISCALRESPONSE WHERE MMINVOICENUMBER = :MMINVOICENUMBER";
+        IBInternalQuery->ParamByName("MMINVOICENUMBER")->AsString = invoiveNumber;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            UnicodeString state = IBInternalQuery->FieldByName("STATE")->AsString;
+            status = StrToInt64(state);
+            responseId = IBInternalQuery->FieldByName("RESPONSE_ID")->AsInteger;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(ex.Message,"Exception",MB_OK);
+    }
+}
+UnicodeString TPrintSection::GetSignatureContent(int responseId)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    UnicodeString content = "";
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT DATA FROM AUSTRIAFISCALSIGNATURES WHERE RESPONSE_ID = :RESPONSE_ID";
+        IBInternalQuery->ParamByName("RESPONSE_ID")->AsString = responseId;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            content = IBInternalQuery->FieldByName("DATA")->AsString;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(ex.Message,"Exception",MB_OK);
+    }
+    return content;
 }
 //--------------------------------------------------------------------------------------

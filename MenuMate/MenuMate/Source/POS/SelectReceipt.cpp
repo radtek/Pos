@@ -72,6 +72,12 @@ void TfrmSelectReceipt::ShowReceipt()
 	try
 	{
 		ManagerReceipt->Get(Lines);
+//        MessageBox(Lines->Count,"Count",MB_OK);
+//        for(int i = 0; i <Lines->Count; i++)
+//        {
+//            MessageBox(Lines->Strings[i],"",MB_OK);
+//        }
+//        MessageBox(ManagerReceipt->InvoiceNumber,"InvoiceNumber",MB_OK);
 		memReceipt->Lines->Assign(Lines);
 		toggleAvailabilityOfTippingButton();
 	}

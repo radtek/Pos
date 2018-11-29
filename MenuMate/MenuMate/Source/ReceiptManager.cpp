@@ -632,12 +632,89 @@ void TManagerReceipt::Get(TStringList *Lines)
 	  if (TrimmedLine != "")
           Lines->Add(TrimmedLine);
 
-
+      if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+      {
+        for(int i = 0; i < Lines->Count; i++)
+        {
+            UnicodeString str =  Lines->Strings[i];
+            if(str.Pos("Unknown Status") != 0)
+            {
+//                MessageBox("Unkown Status found","",MB_OK);
+//                MessageBox(i,"At Index",MB_OK);
+                UnicodeString signatureValue = GetSignatureValueForReceipt();
+                int k = i;
+                for(int j = 1; j <= signatureValue.Length();)
+                {
+                    if(j == 1)
+                        Lines->Strings[k] = signatureValue.SubString(j,str.Length());
+                    else
+                        Lines->Insert(k,signatureValue.SubString(j,str.Length()));
+                    j += str.Length();
+                    k++;
+                    i = k;
+                }
+            }
+            else if(str.Pos("SSCD temporary out of service") != 0)
+            {
+                UnicodeString signatureValue = GetSignatureValueForReceipt();
+                int k = i;
+                for(int j = 1; j <= signatureValue.Length();)
+                {
+                    if(j == 1)
+                        Lines->Strings[k] = signatureValue.SubString(j,str.Length());
+                    else
+                        Lines->Insert(k,signatureValue.SubString(j,str.Length()));
+                    j += str.Length();
+                    k++;
+                    i = k;
+                }
+            }
+            else if(str.Pos("Security mechanism is out of service") != 0)
+            {
+                UnicodeString signatureValue = GetSignatureValueForReceipt();
+                int k = i;
+                for(int j = 1; j <= signatureValue.Length();)
+                {
+                    if(j == 1)
+                        Lines->Strings[k] = signatureValue.SubString(j,str.Length());
+                    else
+                        Lines->Insert(k,signatureValue.SubString(j,str.Length()));
+                    j += str.Length();
+                    k++;
+                    i = k;
+                }
+            }
+        }
+      }
    }
    catch(Exception & E)
    {
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
    }
+}
+UnicodeString TManagerReceipt::GetSignatureValueForReceipt()
+{
+    UnicodeString signatureValue = "";
+   	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+	DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->SQL->Text = "SELECT DATA FROM AUSTRIAFISCALSIGNATURES WHERE RESPONSE_ID "
+                                     " in (SELECT RESPONSE_ID FROM AUSTRIAFISCALRESPONSE WHERE MMINVOICENUMBER = :MMINVOICENUMBER)";
+        IBInternalQuery->ParamByName("MMINVOICENUMBER")->AsString = InvoiceNumber;
+        IBInternalQuery->ExecQuery();
+        signatureValue = IBInternalQuery->FieldByName("DATA")->AsString;
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+       DBTransaction.Rollback();
+       MessageBox(ex.Message,"",MB_OK);
+       TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+    return signatureValue;
 }
 //------------------------------------------------------------------------------
 bool TManagerReceipt::IsStartOfReceiptInfo(TStringList *Lines)

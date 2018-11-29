@@ -10,6 +10,7 @@
 #include "MMTouchKeyboard.h"
 #include "SerialConfig.h"
 #include "FiscalDataUtility.h"
+#include "ManagerAustriaFiscal.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -189,15 +190,12 @@ void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
             if(AreDetailsProvidedForAustria())
             {
                 // Call Services to Validate details
-                if(true)
+                std::auto_ptr<TManagerAustriaFiscal> managerAustriaFiscal(new TManagerAustriaFiscal());
+                if(managerAustriaFiscal->GetEchoResponseFromConfig())
                 {
                      TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = true;
                      TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
                      MessageBox("Fiscal Austria details are validated.\rOther Fiscal integrations are disabled now.","Info",MB_OK+MB_ICONINFORMATION);
-                }
-                else
-                {
-                    MessageBox("Fiscal Austria details are not validated.\rFiscal integrations is disabled.","Info",MB_OK+MB_ICONINFORMATION);
                 }
             }
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);

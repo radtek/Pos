@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_57Tables()
 {
     update6_57Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_58Tables()
+{
+    update6_58Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -108,6 +113,12 @@ void TApplyParser::update6_56Tables()
 void TApplyParser::update6_57Tables()
 {
     AlterTableArcBill6_57(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_58Tables()
+{
+    Create6_58Generator(_dbControl );
+    Create6_58Table(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -909,5 +920,81 @@ void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_58Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_AUSTRIAFISCALRESPONSE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALRESPONSE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALRESPONSE_ID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_AUSTRIAFISCALSIGNATURE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALSIGNATURE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALSIGNATURE_ID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_AUSTRIAFISCALDETAILS_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALDETAILS_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALDETAILS_ID TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_58Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "AUSTRIAFISCALRESPONSE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALRESPONSE "
+        "( "
+        "  RESPONSE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  MMINVOICENUMBER VARCHAR(50), "
+        "  CASHBOXID VARCHAR(100), "
+        "  QUEUEID VARCHAR(100), "
+        "  QUEUEITEMID VARCHAR(100), "
+        "  QUEUEROW VARCHAR(50), "
+        "  TERMINALID VARCHAR(100), "
+        "  RECEIPTREFERENCE VARCHAR(100), "
+        "  CASHBOXIDENTIFICATION VARCHAR(100), "
+        "  RECEIPTIDENTIFICATION VARCHAR(100), "
+        "  RECEIPTMOMENT TIMESTAMP, "
+        "  STATE VARCHAR(50), "
+        "  STATEDATA VARCHAR(100), "
+        "  IS_SIGNED CHAR(1) DEFAULT 'F' "
+        ");",
+		inDBControl );
+    }
+    if ( !tableExists( "AUSTRIAFISCALSIGNATURES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALSIGNATURES "
+        "( "
+        "  SIGNATURE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  RESPONSE_ID INTEGER, "
+        "  SIGNATUREFORMAT VARCHAR(100), "
+        "  SIGNATURETYPE VARCHAR(100), "
+        "  CAPTION VARCHAR(250), "
+        "  DATA VARCHAR(250) "
+        ");",
+		inDBControl );
+    }
+    if ( !tableExists( "AUSTRIAFISCALINVOICEDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALINVOICEDETAILS "
+        "( "
+        "  DETAILSID INTEGER NOT NULL PRIMARY KEY, "
+        "  MMINVOICENUMBER VARCHAR(50), "
+        "  DESCRIPTION VARCHAR(100), "
+        "  QTY NUMERIC(15,2), "
+        "  AMOUNT NUMERIC(15,2), "
+        "  ITEMCASE VARCHAR(50), "
+        "  VATRATE NUMERIC(15,2), "
+        "  IS_PAYMENT CHAR(1) DEFAULT 'F'"
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

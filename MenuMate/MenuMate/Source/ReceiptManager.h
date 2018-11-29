@@ -23,6 +23,7 @@ class TManagerReceipt : public TManager
     void AddDuplicateLabel(TMemoryStream* ReceiptToEdit,TStringList *Lines);
     void PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool IsCompanyDetailsReprintReceipt = false);
     bool CanReprintReceipt(Database::TDBTransaction &DBTransaction, AnsiString InvoiceNumber);
+    UnicodeString GetSignatureValueForReceipt();
 	public:
 	TManagerReceipt(Database::TDBControl &inDBControl);
 	virtual ~TManagerReceipt();
