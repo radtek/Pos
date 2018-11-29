@@ -966,7 +966,7 @@ void TLoyaltyMateThread::SendEmail(Database::TDBTransaction &DBTransaction, TLoy
         AnsiString filename = Dir + "\\" + "MemberDetail.txt";
         AnsiString emailId = "development@menumate.com";
 
-        AnsiString emailBody = "Multiple GUID Exist for the member having details as:\r";
+        AnsiString emailBody = "Duplicate GUID Exist for the member having details as:\r";
                       emailBody += "Email:- " + TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey) + "\r";
                       emailBody += "Original Syndicate Code:- " + transaction.SyndicateCode.OriginalSyndCode + "\r";
                       emailBody += "Cloud UUID:- " + transaction.CloudUUID + "\r";
@@ -976,7 +976,7 @@ void TLoyaltyMateThread::SendEmail(Database::TDBTransaction &DBTransaction, TLoy
 
         TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-        SendEmail::Send(filename, "GUID Mismatch", emailId, emailBody);
+        SendEmail::Send(filename, "Duplicate GUID ", emailId, emailBody);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
     }
     catch(Exception &E)
