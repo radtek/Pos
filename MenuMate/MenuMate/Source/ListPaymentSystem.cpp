@@ -2206,7 +2206,13 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                     }
                 }
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
-				IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+                if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
+                    ||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
+				    ||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
+					&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
+                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
+                else
+                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
                 if (!PaymentTransaction.CreditTransaction)
                 {
                     IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
@@ -4836,7 +4842,7 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTra
 		"WHERE ARCBILL_KEY=:ARCBILL_KEY AND PAY_TYPE=:PAY_TYPE AND PAY_TYPE_DETAILS=:PAYMENT_REF";
 		IBInternalQuery->ParamByName("PAYMENT_REF")->AsString = originalPaymentRef;
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
-		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tip";
+		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tips";
 		IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = tipAmount;
 		IBInternalQuery->ExecQuery();
 
@@ -4855,7 +4861,7 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTra
 
 			IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = Retval;
 			IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
-			IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tip";
+			IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tips";
 			IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
 			IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = tipAmount;
 			IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = 0.0;

@@ -1010,7 +1010,7 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
                                             " where DAP.ARCBILL_KEY = :ARCBILL_KEY "
                                             " and "
                                             " CHARACTER_LENGTH(TRIM(BOTH ' ' from DAP.PAY_TYPE_DETAILS)) > 0 "
-                                            " AND PAY_TYPE not in ('Cash','Tip') ";
+                                            " AND PAY_TYPE not in ('Cash','Tips') ";
 
             if(TGlobalSettings::Instance().EnableEftPosAdyen)
                 IBInternalQuery->SQL->Text += "AND (TRIM(DAP.PAYMENT_CARD_TYPE) CONTAINING ('MC') or TRIM(DAP.PAYMENT_CARD_TYPE) CONTAINING ('Visa')) ";
