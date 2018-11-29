@@ -3438,7 +3438,7 @@
 			</CppCompile>
 			<CppCompile Include="..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.cpp">
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
-				<BuildOrder>783</BuildOrder>
+				<BuildOrder>784</BuildOrder>
 			</CppCompile>
 			<FormResources Include="DiscountEditor.dfm"/>
 			<FormResources Include="Casino Security Screen\TransactionAuditScreen.dfm"/>

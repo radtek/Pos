@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "ManagerLoyaltyMate.h"
+#include "SendEmail.h"
 
 //---------------------------------------------------------------------------
 
@@ -211,6 +212,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                 else if(postTransactionResponse.ResponseCode == 18)
                 {
                     TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    SendEmail(DBTransaction, transaction);
                     DBTransaction.Commit();
                 }
                 else
@@ -948,4 +950,37 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
         ErrorMessage = E.Message;
     }
     delete LoyaltyMateInterface;
+}
+//------------------------------------------------------------------------------------
+void TLoyaltyMateThread::SendEmail(Database::TDBTransaction &DBTransaction, TLoyaltyMateTransaction transaction)
+{
+    try
+    {
+        UnicodeString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
+        AnsiString Dir = ExtractFilePath(Application->ExeName) + "MemberEmails";
+        if (!DirectoryExists(Dir))
+        {
+           CreateDir(Dir);
+        }
+
+        AnsiString filename = Dir + "\\" + "MemberDetail.txt";
+        AnsiString emailId = "development@menumate.com";
+
+        AnsiString emailBody = "Multiple GUID Exist for the member having details as:\r";
+                      emailBody += "Email:- " + TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey) + "\r";
+                      emailBody += "Original Syndicate Code:- " + transaction.SyndicateCode.OriginalSyndCode + "\r";
+                      emailBody += "Cloud UUID:- " + transaction.CloudUUID + "\r";
+                      emailBody += "Invoice Number:- " + transaction.InvoiceNumber + "\r";
+                      emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
+                      emailBody += "Thank You";
+
+        TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        SendEmail::Send(filename, "GUID Mismatch", emailId, emailBody);
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
