@@ -634,19 +634,6 @@ void TEstanciaMall::SetDiscountAndTaxes(TEstanciaMallField &fieldData, TEstancia
         fieldData.SSDiscount5NonApprovedNonVatable += (double)(estanciaDiscounts.nonApprovedDiscounts[4]);
     }
 }
-//----------------------------------------------------------------------------------------------------------------------------
-int TEstanciaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
-{
-    //patron count
-    int totalPatronCount = 0;
-    std::vector <TPatronType> ::iterator ptrPatronTypes;
-    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
-    {
-        totalPatronCount += ptrPatronTypes->Count;
-    }
-    return totalPatronCount;
-}
-//---------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------
 void TEstanciaMall::InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData,
                                         TEstanciaMallField fieldData, int arcBillKey)

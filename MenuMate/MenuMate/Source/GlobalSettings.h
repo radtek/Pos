@@ -544,6 +544,7 @@ public:
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
     int HHPriceLevelKey;
+    int MallBatchID;
 };
 
 #endif

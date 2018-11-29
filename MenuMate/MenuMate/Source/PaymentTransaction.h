@@ -205,6 +205,7 @@ class TPaymentTransaction
 		TPMSClientDetails PMSClientDetails;
         bool IsCashDrawerOpened;
         int PatronCountFromMenu;
+        bool IsPatronAdded;
 };
 
 #endif

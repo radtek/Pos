@@ -31,9 +31,6 @@ private:
     //For storing bill time.
     TDateTime billedTime;
 
-    //Get Total Patron count for a Bill
-    int GetPatronCount(TPaymentTransaction &paymentTransaction);
-
     //Fetch Mall Setting for file writing
     void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
                                 int index, int zKey = 0);

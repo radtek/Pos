@@ -178,21 +178,9 @@ TMallExportSalesWrapper TDeanAndDelucaMall::PrepareDataForDatabase(TPaymentTrans
         double amount = 0;
         billedTime = currentTime;
         std::list<TMallExportSettings>::iterator it;
-
-        for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
-        {
-            if(it->Value != "" )
-            {
-                if(it->ControlName == "edMallTenantNo")
-                {
-                    fieldData->TenantCode = it->Value;
-                }
-                else if(it->ControlName == "edMallTerminalNo" )
-                {
-                    fieldData->TerminalNumber = StrToInt(it->Value);
-                }
-            }
-        }
+        GetTerminalSettings( tenantCode, terminalNumber);
+        fieldData->TenantCode = tenantCode;
+        fieldData->TerminalNumber = terminalNumber;
 
         for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
         {
@@ -307,17 +295,6 @@ void TDeanAndDelucaMall::InsertFieldInToList(Database::TDBTransaction &dbTransac
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Control Number", "int", fieldData.ZKey, 19, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Total Number Of Sales Transaction", "int", fieldData.SalesCount, 20, arcBillKey);
     PushFieldsInToList(dbTransaction, mallExportSalesData, "Hour Code", "int", IntToStr(hourCode), 21, arcBillKey);
-}
-//-----------------------------------------------------------------------------------------------------------
-int TDeanAndDelucaMall::GetPatronCount(TPaymentTransaction &paymentTransaction)
-{
-    int totalPatronCount = 0;
-    std::vector <TPatronType> ::iterator ptrPatronTypes;
-    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
-    {
-        totalPatronCount += ptrPatronTypes->Count;
-    }
-    return totalPatronCount != 0 ? totalPatronCount : 1;
 }
 //---------------------------------------------------------------------------------
 TMallExportPrepareData TDeanAndDelucaMall::PrepareDataForExport(int zKey)

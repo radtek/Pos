@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_57Tables()
 {
     update6_57Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_58Tables()
+{
+    update6_58Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -909,5 +914,12 @@ void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
 	}
 }
-}
 //------------------------------------------------------------------------------
+void TApplyParser::update6_58Tables()
+{
+    Insert6_39Malls(_dbControl, 4, "South Beach ", "F");
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 4);
+    AlterTable6_49MallExportSales(_dbControl);
+}
+}

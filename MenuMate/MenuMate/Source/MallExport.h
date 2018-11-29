@@ -20,8 +20,6 @@ struct TMallExportDiscount
 class TMallExport: public TMallExportInterface
 {
 private:
-    //Check whether transaction is done before zed
-    bool CheckTransactionDoneBeforeZed();
 
     //Get OldAccumulated Sale
     double GetOldAccumulatedSales(int fieldIndex);
@@ -63,6 +61,20 @@ protected:
     
 	//prepare SCD, PWD and others discount
 	virtual TMallExportDiscount PrepareDiscounts(Database::TDBTransaction &dbTransaction, TItemMinorComplete *order);
+
+    virtual bool CheckTransactionDoneBeforeZed();
+
+    //FOr Getting Terminal settings like tenant code, terminal number;
+    virtual void GetTerminalSettings(UnicodeString & tenantNo, int & termianlNumber);
+
+    //Get Patron Count for the order.
+    virtual int GetPatronCount(TPaymentTransaction &paymentTransaction);
+
+    // Get maximum zed key from zeds table.
+    virtual int GetMaxZed_KeyInZed(int maxzedKey = 0);
+
+    //Get maximum zed key from mall export sales table.
+    virtual int GetMaxZedKeyInSales(int maxzedKey = 0);
 
 
 public:

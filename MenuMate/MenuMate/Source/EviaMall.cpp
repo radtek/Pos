@@ -161,28 +161,14 @@ TMallExportSalesWrapper TEviaMall::PrepareDataForDatabase(TPaymentTransaction &p
     try
     {
        TEviaMallField *fieldData = new  TEviaMallField();
+       int terminalNumber;
+       UnicodeString tenantCode;
        UnicodeString saletime =  Now().FormatString("hh:00");
        fieldData->SalesTime  = saletime ;
 
-       for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
-       {
-            if(it->Value != "" )
-            {
-               if(it->ControlName == "edMallTenantNo")
-                {
-                    UnicodeString tenantcode =  it->Value;
-
-                    fieldData->StallCode =  "\"" + tenantcode + "\""   ;
-
-                }
-                else if(it->ControlName == "edMallTerminalNo" )
-                {
-                   fieldData->PosNumber = StrToInt(it->Value) ;
-
-                }
-
-            }
-        }
+       GetTerminalSettings( tenantCode, terminalNumber);
+       fieldData->StallCode = "\"" + tenantCode + "\"";
+       fieldData->PosNumber = terminalNumber;
 
         for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
         {

@@ -204,6 +204,7 @@ private:	// User declarations
     int UpdateZKeyInArcMallExportForMegaWorld();
     bool DuplicateEntryInTable;
     void SettleEFTPOSBills();
+    void UpdateMaxZedTime(int fieldindex);
 
 public:		// User declarations
 	bool ZedCancel;
