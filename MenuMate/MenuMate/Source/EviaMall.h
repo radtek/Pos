@@ -18,22 +18,19 @@ class TEviaMall : public TMallExport
    void PrepareDataByItem(Database::TDBTransaction &dbTransaction, TItemMinorComplete *Order, TEviaMallField &fieldData,TPaymentTransaction &paymentTransaction);
    void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEviaMallField &fieldData, int arcBillKey);
    int GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemKey);
-   UnicodeString GetFieldIndexList(std::set<int> indexKeys);
-   UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
+   UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int zKey = 0);
    UnicodeString GetSaleDeptName(Database::TDBTransaction &dbTransaction,int itemKey, int saletypeid );
    int GetMaxZedKey(Database::TDBTransaction &dbTransaction,int mallid ,int devicekey, int zKey = 0);
    bool CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransaction, int zKey);
    void Getdevicekey(Database::TDBTransaction &dbTransaction, int zKey ,std::vector<int> &devicekeyvalue);
    bool IsItemVatable(TItemMinorComplete *order, TEviaMallField &fieldData);
-   void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,std::set<int> indexKeys3,
+   void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList1,UnicodeString indexKeysList2, UnicodeString indexKeysList3,
                                                 TMallExportPrepareData &prepareDataForHSF,std::list<TMallExportSalesData> &prepareListForPreparedata, int index,int poskey,int zKey = 0);
-   void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, std::set<int> indexKeys2,int index1,int index2,
+   void PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList1,UnicodeString indexKeysList2,int index1,int index2,
                                                 TMallExportPrepareData &prepareDataForDSFPD,std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey, int zKey = 0);
 
-   void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,int index1,
+   void PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction,  UnicodeString indexKeysList1,int index1,
                                                 TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForGrand, int index,int terminalkey, int zKey = 0);
-
-   std::set<int> InsertInToSet(int arr[], int size);
 
    protected:
 

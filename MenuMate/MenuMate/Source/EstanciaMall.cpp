@@ -1,4 +1,4 @@
-//---------------------------------------------------------------------------
+                                                                                                    //---------------------------------------------------------------------------
 
 
 #pragma hdrstop
@@ -721,47 +721,23 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)
 
     try
     {
-        //Set for inserting index. these indexes will be used for fetching data
-        std::set<int> keyToCheck;
-        std::set<int> keyToCheck2;
 
-        //Indexes for which data will not selected
-        int dailySalekeys[12] = {1, 2, 3,4, 5, 33, 35, 37, 38, 66, 67, 68};
-        int dailySalekeys2[2] = {33, 35};
-
-        //insert these indexes into set.
-        keyToCheck = InsertInToSet(dailySalekeys, 12);
-        keyToCheck2 = InsertInToSet(dailySalekeys2, 2);
+        UnicodeString indexKeysList = "1, 2, 3, 4, 5, 33, 35, 37, 38, 66, 67, 68";
+        UnicodeString indexKeysList2 = "33, 35";
 
         //Prepare Data For Daily Sales File
-        PrepareDataForDailySalesFile(dbTransaction, keyToCheck, keyToCheck2, preparedData, 1, zKey);
+        PrepareDataForDailySalesFile(dbTransaction, indexKeysList, indexKeysList2, preparedData, 1, zKey);
 
-       //indexes for selecting total Net sale, patron count, etc
-        int  hourIndexkeys[3] = {32,34,66};
-        int hourIndexKeys2[2] = {65,34};
-
-        //Clear the map because same map is used for many time insertion
-        keyToCheck.clear();
-        keyToCheck2.clear();
-
-        //insert these indexes into set.
-        keyToCheck = InsertInToSet(hourIndexkeys, 3);
-        keyToCheck2 = InsertInToSet(hourIndexKeys2, 2);
+        indexKeysList = "32,34,66";
+        indexKeysList2 = "65,34";
 
         //Prepare Data For Hourly File
-        PrepareDataForHourlySalesFile(dbTransaction, keyToCheck, keyToCheck2, 65, preparedData, 2, zKey);
+        PrepareDataForHourlySalesFile(dbTransaction, indexKeysList, indexKeysList2, 65, preparedData, 2, zKey);
 
-        //indexes for selecting total Net sale, invoice number , status
-        int invoiceIndex[3] = {65, 67, 68};
-
-         //Clear the map because same map is used for many time insertion
-        keyToCheck.clear();
-
-        //insert these indexes into set.
-        keyToCheck = InsertInToSet(invoiceIndex, 3);
+        indexKeysList = "65, 67, 68";
 
         //Prepare Data For Invoice File
-        PrepareDataForInvoiceSalesFile(dbTransaction, keyToCheck, 65, preparedData, 3, zKey);
+        PrepareDataForInvoiceSalesFile(dbTransaction, indexKeysList, 65, preparedData, 3, zKey);
 
        //Commit the transaction as we have completed all the transactions
         dbTransaction.Commit();
@@ -775,7 +751,7 @@ TMallExportPrepareData TEstanciaMall::PrepareDataForExport(int zKey)
     return preparedData;
 }
 //-----------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2,
+void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int indexKey2,
                                                     TMallExportPrepareData &prepareDataForInvoice, int index, int zKey)
 {
     //Create List Of SalesData for invoice file
@@ -785,39 +761,22 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
         ///Store First Letter of file name
         UnicodeString fileName = "I";
 
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
-
         ///Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(fileNameKeys, 4);
+        UnicodeString indexKeysList = "1, 2, 3, 33";
 
         //Get file name according to field index.
-        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+        fileName = fileName + "" + GetFileName(dBTransaction, indexKeysList, zKey);
 
         //insert filename into map according to index and file type
         prepareDataForInvoice.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-        //insert indexes into array for fetching tenant code, date , terminal number, sales type
-        int invoiceIndexKeys[4] = {1, 2, 3, 35};
-
-        //clear the map.
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(invoiceIndexKeys, 4);
+        indexKeysList = "1, 2, 3, 35";
 
          ///Load MallSetting For writing into file
-        LoadMallSettingsForInvoiceFile(dBTransaction, prepareDataForInvoice, keysToSelect, index, zKey);
+        LoadMallSettingsForInvoiceFile(dBTransaction, prepareDataForInvoice, indexKeysList, index, zKey);
 
         //Query for selecting data for invoice file
         IBInternalQuery->Close();
@@ -893,7 +852,7 @@ void TEstanciaMall::PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBT
 	}
 }
 //-----------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
+void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, UnicodeString indexKeysList2, int indexKey3,
                                                     TMallExportPrepareData &prepareDataForHSF, int index, int zKey)
 {
     //Create List Of SalesData for hourly file
@@ -903,40 +862,22 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
         ///Store First Letter of file name
         UnicodeString fileName = "H";
 
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
-        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
-
         ///Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(fileNameKeys, 4);
+        UnicodeString indexKeysList = "1, 2, 3, 33";
 
         //Get file name according to field index.
-        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+        fileName = fileName + "" + GetFileName(dBTransaction, indexKeysList, zKey);
 
         //insert filename into map according to index and file type
         prepareDataForHSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-         //insert indexes into array for fetching tenant code, date , terminal number
-        int hourIndexKeys[3] = {1, 2, 3};
-
-        //clear the map
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(hourIndexKeys, 3);
+        indexKeysList = "1, 2, 3";
 
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, keysToSelect, index, zKey);
+        LoadMallSettingsForFile(dBTransaction, prepareDataForHSF, indexKeysList, index, zKey);
 
         //Query for selecting data for hourly file
         IBInternalQuery->Close();
@@ -1090,7 +1031,7 @@ void TEstanciaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTr
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, UnicodeString indexKeysList2,
                                                    TMallExportPrepareData &prepareDataForDSF, int index, int zKey)
 {
     //Create List Of SalesData for hourly file
@@ -1100,10 +1041,6 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         ///Store First Letter of file name ie; file type
         UnicodeString fileName = "D";
 
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = GetFieldIndexList(indexKeys);
-        UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
-
         //Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
@@ -1111,32 +1048,18 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
         Database::TcpIBSQL selectQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(selectQuery);
 
-        //Declare Set For storing index
-        std::set<int>keysToSelect;
-
-        //Create array for storing index by which file name will be prepared
-        int  fileNameKeys[4] = {1, 2, 3, 33};
-
-         //Store keys into set
-        keysToSelect = InsertInToSet(fileNameKeys, 4);
+        UnicodeString indexKeysList = "1, 2, 3, 33";
 
         //Get file name according to field index.
-        fileName = fileName + "" + GetFileName(dBTransaction, keysToSelect, zKey);
+        fileName = fileName + "" + GetFileName(dBTransaction, indexKeysList, zKey);
 
         //insert filename into map according to index and file type
         prepareDataForDSF.FileName.insert( std::pair<int,UnicodeString >(index, fileName ));
 
-         //insert indexes into array for fetching tenant code, date , terminal number
-        int dailyIndexKeys[3] = {1, 2, 3};
-
-        //clear the map
-        keysToSelect.clear();
-
-        //Store keys into set
-        keysToSelect = InsertInToSet(dailyIndexKeys, 3);
+        indexKeysList = "1, 2, 3";
 
         ///Load MallSetting For writing into file
-        LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, keysToSelect, index, zKey);
+        LoadMallSettingsForFile(dBTransaction, prepareDataForDSF, indexKeysList, index, zKey);
 
         selectQuery->Close();
         selectQuery->SQL->Text = "SELECT Z_KEY FROM MALLEXPORT_SALES a WHERE a.MALL_KEY = :MALL_KEY AND a.Z_KEY != :Z_KEY";
@@ -1364,16 +1287,13 @@ void TEstanciaMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBTra
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, std::set<int> keysToSelect,
+void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, UnicodeString indexKeysList,
                                                 int index, int zKey)
 {
     try
     {
         //Create List Of mallExportSetting
         std::list<TMallExportSettings> mallSettings;
-
-        //Seperate key with commas in the form of string.
-        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
 
         //Register Query.
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -1436,19 +1356,6 @@ void TEstanciaMall::LoadMallSettingsForFile(Database::TDBTransaction &dBTransact
 		throw;
 	}
 }
-//------------------------------------------------------------------------------------------------------------------
-UnicodeString TEstanciaMall::GetFieldIndexList(std::set<int> indexKeys)
-{
-    //Seperate keys with commas and store in the form of string and return
-    std::set<int>::iterator indexKeysIt = indexKeys.begin();
-    UnicodeString indexKeyList = IntToStr(*indexKeysIt);
-    indexKeysIt++;
-    for(; indexKeysIt != indexKeys.end(); indexKeysIt++)
-    {
-        indexKeyList += ", " + IntToStr(*indexKeysIt);
-    }
-    return indexKeyList;
-}
 //----------------------------------------------------------------------------------------------------------------------------
 IExporterInterface* TEstanciaMall::CreateExportMedium()
 {
@@ -1465,16 +1372,13 @@ IExporterInterface* TEstanciaMall::CreateExportMedium()
     }
 }
 //--------------------------------------------------------------------------------------------------------------------
-UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey)
+UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int zKey)
 {
     UnicodeString fileName = "";
     try
     {
         //create list of mallexportsetting
         std::list<TMallExportSettings> mallSettings;
-
-        //seperate keys with comma in the form of string
-        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
 
         //Register Query.
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -1533,16 +1437,13 @@ UnicodeString TEstanciaMall::GetFileName(Database::TDBTransaction &dBTransaction
     return fileName;
 }
 //--------------------------------------------------------------------------------------------------------------------
-void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, std::set<int> keysToSelect,
+void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareData, UnicodeString indexKeysList,
                                                         int index, int zKey)
 {
     try
     {
         //Create list of mallexport setting
         std::list<TMallExportSettings> mallSettings;
-
-        //seperate keys with comm in the form of string
-        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
 
         //Register Query
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
@@ -1607,15 +1508,4 @@ void TEstanciaMall::LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBT
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------
-std::set<int> TEstanciaMall::InsertInToSet(int arr[], int size)
-{
-    //function for inserting array into set.
-    std::set<int> keyToCheck;
-    for(int index = 0; index < size; index++)
-            keyToCheck.insert(arr[index]);
-
-    return keyToCheck;
-}
-//------------------------------------------------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------------------------------------------------
 

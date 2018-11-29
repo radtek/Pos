@@ -288,17 +288,13 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
 {
     TMallExportPrepareData preparedData;
     UnicodeString fileName;
-    std::set<int>keysToSelect;
-    int  fileNameKeys[1] = {3};
 
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
-
-    keysToSelect = InsertInToSet(fileNameKeys, 1);
-    fileName = GetFileName(dbTransaction, keysToSelect, zKey)  ;
+    UnicodeString indexKeysList = "3";
+    fileName = GetFileName(dbTransaction, indexKeysList, zKey)  ;
     preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
-    keysToSelect.clear();
 
     try
     {
@@ -311,35 +307,20 @@ TMallExportPrepareData TEviaMall::PrepareDataForExport(int zKey)
         for(int i=0; i<devicekey.size(); i++)
         {
             devicekeyvalue = devicekey[i];
-            std::set<int> keyToCheck1;
-            std::set<int> keyToCheck2;
-            std::set<int> keyToCheck3;
-
-            int hourSalekeys1[3] = {9,11,13};
-            int hourSalekeys2[7] = {5,6,7,8,12,14,15};
-            int hourSalekeys3[5]  ={1,2,3,4,10} ;
-            keyToCheck1 = InsertInToSet(hourSalekeys1, 3);
-            keyToCheck2 = InsertInToSet(hourSalekeys2, 7);
-            keyToCheck3 = InsertInToSet(hourSalekeys3, 5);
+            UnicodeString indexKeysList1 = "9,11,13";
+            UnicodeString indexKeysList2 = "5,6,7,8,12,14,15";
+            UnicodeString indexKeysList3 = "1,2,3,4,10";
 
 
-            PrepareDataForHourlySalesFile(dbTransaction, keyToCheck1, keyToCheck2,keyToCheck3, preparedData,preparelist, 1,devicekeyvalue, zKey);
-            keyToCheck1.clear();
-            keyToCheck2.clear();
-            keyToCheck3.clear();
+            PrepareDataForHourlySalesFile(dbTransaction, indexKeysList1, indexKeysList2, indexKeysList3, preparedData,preparelist, 1,devicekeyvalue, zKey);
 
-            int dailySalesKeys1[9] = {1,2,3,4,10,16,17,18,19} ;
-            int dailySalesKeys2[2] = {2,3} ;
-            keyToCheck1 = InsertInToSet(dailySalesKeys1, 9);
-            keyToCheck2 = InsertInToSet(dailySalesKeys2, 2);
+            indexKeysList1 = "1,2,3,4,10,16,17,18,19";
+            indexKeysList2 = "2,3";
 
-            PrepareDataForDailySalesPerDeptFile(dbTransaction,keyToCheck1,keyToCheck2,10,1,preparedData,preparelist,1,devicekeyvalue,zKey) ;
-            keyToCheck1.clear();
-            keyToCheck2.clear();
+            PrepareDataForDailySalesPerDeptFile(dbTransaction,indexKeysList1,indexKeysList2,10,1,preparedData,preparelist,1,devicekeyvalue,zKey) ;
 
-            int grandtotalkeys[4] ={1,2,3,19};
-            keyToCheck1 = InsertInToSet(grandtotalkeys, 4);
-            PrepareDataForGrandTotalsFile(dbTransaction,keyToCheck1,18,preparedData,preparelist,1,devicekeyvalue,zKey);
+            indexKeysList1 = "1,2,3,19";
+            PrepareDataForGrandTotalsFile(dbTransaction,indexKeysList1,18,preparedData,preparelist,1,devicekeyvalue,zKey);
 
         }
         preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(1, preparelist ));
@@ -427,15 +408,6 @@ int TEviaMall::GetItemSalesId(Database::TDBTransaction &dbTransaction, int itemK
 	}
     return salesTypeId;
 }
-//---------------------------------------------------------------------------
-std::set<int> TEviaMall::InsertInToSet(int arr[], int size)
-{
-    std::set<int> keyToCheck;
-    for(int index = 0; index < size; index++)
-            keyToCheck.insert(arr[index]);
-
-    return keyToCheck;
-}
 
 //---------------------------------------------------------------------------
 UnicodeString TEviaMall::GetSaleDeptName(Database::TDBTransaction &dbTransaction, int itemKey, int saletypeId)
@@ -468,26 +440,12 @@ UnicodeString TEviaMall::GetSaleDeptName(Database::TDBTransaction &dbTransaction
 	}
     return salesDeptname;
 }
-
-
-UnicodeString TEviaMall::GetFieldIndexList(std::set<int> indexKeys)
-{
-    std::set<int>::iterator indexKeysIt = indexKeys.begin();
-    UnicodeString indexKeyList = IntToStr(*indexKeysIt);
-    indexKeysIt++;
-    for(; indexKeysIt != indexKeys.end(); indexKeysIt++)
-    {
-        indexKeyList += ", " + IntToStr(*indexKeysIt);
-    }
-    return indexKeyList;
-}
-
-UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey)
+//--------------------------------------------------------------------------
+UnicodeString TEviaMall::GetFileName(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int zKey)
 {
      UnicodeString fileName = "";
     try
     {
-        UnicodeString indexKeysList = GetFieldIndexList(keysToSelect);
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
 
@@ -583,7 +541,7 @@ bool TEviaMall:: CheckSingleOrMultiplePos(Database::TDBTransaction &dbTransactio
 
 }
 
-void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, std::set<int> indexKeys3,
+void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList1,UnicodeString indexKeysList2, UnicodeString indexKeysList3,
                                                    TMallExportPrepareData &prepareDataForHSF, std::list<TMallExportSalesData> &prepareListForHSF, int index,int terminalkey , int zKey)
 {
 
@@ -599,11 +557,6 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
       IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
 
       keysToSelect.clear();
-
-
-      UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
-      UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
-      UnicodeString indexKeysList3 = GetFieldIndexList(indexKeys3);
 
       IBInternalQuery->Close();
 
@@ -779,7 +732,7 @@ void TEviaMall::PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransa
 
 }
 
-void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1,std::set<int> indexKeys2, int index1,int index2,
+void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList1,UnicodeString indexKeysList2, int index1,int index2,
                                                    TMallExportPrepareData &prepareDataForDSFPD, std::list<TMallExportSalesData> &prepareListForDSF, int index,int terminalkeys, int zKey)
 {
     bool IsmultipledevicekeyExist = false;
@@ -790,9 +743,6 @@ void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dB
 
       std::set<int>keysToSelect;
       IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
-
-      UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
-      UnicodeString indexKeysList2 = GetFieldIndexList(indexKeys2);
 
 
         IBInternalQuery->Close();
@@ -952,14 +902,13 @@ void TEviaMall::PrepareDataForDailySalesPerDeptFile(Database::TDBTransaction &dB
 
 }
 
-void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys1, int index1,
+void TEviaMall::PrepareDataForGrandTotalsFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList1, int index1,
                                         TMallExportPrepareData &prepareDataForDGT,std::list<TMallExportSalesData> &prepareListForDGT, int index,int terminalkey, int zKey )
 {
     try
     {
         Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
         dBTransaction.RegisterQuery(IBInternalQuery);
-        UnicodeString indexKeysList1 = GetFieldIndexList(indexKeys1);
         int maxZedKey;
         bool IsmultipledevicekeyExist = false;
         IsmultipledevicekeyExist =  CheckSingleOrMultiplePos(dBTransaction,zKey) ;
