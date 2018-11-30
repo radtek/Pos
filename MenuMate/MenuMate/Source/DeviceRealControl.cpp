@@ -1385,8 +1385,8 @@ bool TDeviceRealControl::insertMemberPointsAdjustmentRecordToDB( Database::TDBTr
 		IBInternalQuery->ParamByName("POINTSTRANSACTIONS_KEY")->AsInteger = pointsTransactionKey;
 		IBInternalQuery->ParamByName("CONTACTS_KEY")->AsInteger = contactKey;
 		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
-		IBInternalQuery->ParamByName("ADJUSTMENT_TYPE")->AsInteger = 4; // at the time of implementation, this was the pttsync
-		IBInternalQuery->ParamByName("ADJUSTMENT_SUBTYPE")->AsInteger = 2; // at the time of implementation, this was ptstAccount
+		IBInternalQuery->ParamByName("ADJUSTMENT_TYPE")->AsInteger = 1; // at the time of implementation, this was the pttsync
+		IBInternalQuery->ParamByName("ADJUSTMENT_SUBTYPE")->AsInteger = 1; // at the time of implementation, this was ptstAccount
 		IBInternalQuery->ParamByName("ADJUSTMENT")->AsCurrency = adjustment;
 		IBInternalQuery->ParamByName("EXPORTED_STATUS")->AsInteger = 1; //1 being the exported
 		IBInternalQuery->ParamByName("TIME_STAMP_EXPORTED")->AsDateTime = Now();
