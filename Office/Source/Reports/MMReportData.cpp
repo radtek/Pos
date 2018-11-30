@@ -6044,6 +6044,8 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
                     "case when (c.name is null) then 'Non-member transaction'else (c.name ||' '|| c.LAST_NAME) end billed_to "
                     "From POINTSTRANSACTIONS "
                     "left join contacts c on c.contacts_key = POINTSTRANSACTIONS.contacts_key "
+                    " where "
+                    " POINTSTRANSACTIONS.INVOICE_NUMBER  = :in "
                     "Group By 1,2 "
                     "union all "
                     "Select ab.INVOICE_NUMBER, "
