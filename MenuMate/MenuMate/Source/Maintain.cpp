@@ -48,7 +48,6 @@
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
-#include "ManagerPanasonic.h"
 #include "ManagerPatron.h"
 #include "EnableFloorPlan.h"
 #include "WebMate.h"
@@ -2992,12 +2991,12 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
         }
     }
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
-        TManagerPanasonic::Instance()->PrepareTenderTypes();
-        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-    }
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//        TManagerPanasonic::Instance()->PrepareTenderTypes();
+//        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//    }
 }
 //-------------------------------------------------------------------------------------
 
