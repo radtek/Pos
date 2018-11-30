@@ -145,7 +145,7 @@ _dayArcBillSubQuery =  	" Select "
                                         "Left Join DayArcBillPay On                            "
                                         "	DayArcBill.ArcBill_Key = DayArcBillPay.ArcBill_Key "
                                         "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM DayArchive a "
-                                        "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
+                                        "   where a.Time_Stamp >= :StartTime and a.Time_Stamp < :EndTime group by a.ARCBILL_KEY,a.TABLE_NAME  )ab on ab.ARCBILL_KEY=DayArcBill.ARCBILL_KEY "
                                      "Where "
                                         "Security.Security_Event = 'Billed By' And (coalesce(DayArcBillPay.TIP_AMOUNT,0) > 0 or DAYARCBILL.TOTAL < 0) and DAYARCBILLPAY.NOTE != 'Total Change.' ";
 
@@ -180,8 +180,8 @@ _arcBillSubQuery =      " Select   "
                                                 "	ArcBill.Security_Ref = Security.Security_Ref    "
                                                 "Left Join ArcBillPay On                            "
                                                 "	ArcBill.ArcBill_Key = ArcBillPay.ArcBill_Key "
-                                                "      left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
-                                                "     group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
+                                                "   left join(SELECT  a.ARCBILL_KEY,a.TABLE_NAME, cast (sum(a.QTY * a.PRICE) as numeric(17,4)) price FROM Archive a "
+                                                " where  a.Time_Stamp >= :StartTime and a.Time_Stamp < :EndTime group by a.ARCBILL_KEY,a.TABLE_NAME )ab on ab.ARCBILL_KEY=ArcBill.ARCBILL_KEY "
                                       "Where "
                                                 "Security.Security_Event = 'Billed By'  And (coalesce(ArcBillPay.TIP_AMOUNT,0) > 0 or ARCBILL.TOTAL < 0) and ARCBILLPAY.NOTE != 'Total Change.' ";
 
@@ -1518,7 +1518,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"left join ARCHIVE on ARCBILL.ARCBILL_KEY = ARCHIVE.ARCBILL_KEY "
 			"left join ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
-        " ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and     "
+        " ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and Archive.TIME_STAMP_BILLED >= :StartTime and Archive.TIME_STAMP_BILLED < :EndTime ) and     "
 
 		    "((COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
           "COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable') ) and "
@@ -1563,7 +1563,7 @@ void TdmMMReportData::SetupHalfHourlyDaily(TDateTime StartTime, TDateTime EndTim
 			"left join DAYARCHIVE on DAYARCBILL.ARCBILL_KEY = DAYARCHIVE.ARCBILL_KEY "
 			"left join DAYARCORDERDISCOUNTS on DAYARCHIVE.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 		"Where "
-        "dayARCHIVE.ARCHIVE_KEY not in (Select     dayarchive.ARCHIVE_KEY from   (select *from dayARCHIVE where dayARCHIVE.PRICE=0) dayARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=dayARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and "  
+        "dayARCHIVE.ARCHIVE_KEY not in (Select     dayarchive.ARCHIVE_KEY from   (select *from dayARCHIVE where dayARCHIVE.PRICE=0 and dayARCHIVE.TIME_STAMP_BILLED >= :StartTime and dayARCHIVE.TIME_STAMP_BILLED < :EndTime) dayARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=dayARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and dayARCHIVE.TIME_STAMP_BILLED >= :StartTime and dayARCHIVE.TIME_STAMP_BILLED < :EndTime ) and "
 
 		    "((COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Complimentary' and "
           "COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0) <> 'Non-Chargeable' ) ) and "
@@ -2108,7 +2108,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
                 "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                 "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
                 
-        " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
         " (( "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
            "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and  "
@@ -2223,7 +2223,7 @@ void TdmMMReportData::SetupDayConsumption(TDateTime StartTime, TDateTime EndTime
                         "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                 "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
         " (( "
           "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and  "
@@ -2288,7 +2288,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-     " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' ) and  "
+     " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 
         "(( "
           "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
@@ -2353,7 +2353,7 @@ void TdmMMReportData::SetupCategoryConsumption(TDateTime StartTime, TDateTime En
 		"group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		"DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-		  " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+		  " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where  DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 
         "(( "
           "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
@@ -2524,8 +2524,8 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
             "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
             "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-		
-        " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+
+        " Where ARCHIVE.ARCHIVE_KEY not in (Select     archive.ARCHIVE_KEY from   (select *from ARCHIVE where ARCHIVE.PRICE=0  and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
         "(( "
           "  COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') )  AND "	   //Exclude Surcharge
@@ -2604,7 +2604,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
                         "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		    "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
         "(( "
           "  COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and   "
            " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') )   and "	//Exclude surcharge
@@ -2763,7 +2763,7 @@ void TdmMMReportData::SetupCategoryConsumptionExcSurcharge(TDateTime StartTime, 
                     
          + _taxJoins + ///For selecting tax
                 
-		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY')and "
+		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP < :EndTime)and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -2980,7 +2980,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
                                 "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                             "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 	
-        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and  ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and  ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
                " ((  "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')  ) and "   //chng
@@ -3039,7 +3039,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
                         "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
             "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
             " (( "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary')  ) and "
@@ -3111,7 +3111,7 @@ void TdmMMReportData::SetupMenuConsumption(TDateTime StartTime, TDateTime EndTim
 			 "Orders.Security_Ref = Security.Security_Ref "
              + _taxJoins + ///For selecting tax
                      
-		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime ) and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3179,7 +3179,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
                             "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
 		    "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 		    " ((  "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
@@ -3236,7 +3236,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
                             "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                          "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
                 " ((   "
                 " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
                 " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
@@ -3310,7 +3310,7 @@ void TdmMMReportData::SetupLocationConsumption(TDateTime StartTime, TDateTime En
 			"Orders  Left Join Security on "
 			 "Orders.Security_Ref = Security.Security_Ref "
              + _taxJoins + ///For selecting tax
-		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime ) and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3361,7 +3361,7 @@ void TdmMMReportData::SetupTabConsumption(TDateTime StartTime, TDateTime EndTime
 				"Orders.Tab_Key = Tab.Tab_Key "
          + _taxJoins + ///For selecting tax
 
-		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+		"Where security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime ) and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3433,7 +3433,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
                         "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                    "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
 
-        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 		    " (( "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or  ARCHIVE.PRICE!=0) and "
@@ -3502,7 +3502,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
                             "group by a.ARCHIVE_KEY ,a.DISCOUNT_GROUPNAME) "
                             "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
 		
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " (( "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or DayArchive.PRICE!=0) and "
@@ -3592,7 +3592,7 @@ void TdmMMReportData::Setup3rdPartyConsumption(TDateTime StartTime, TDateTime En
 				"Orders.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key "
              + _taxJoins + ///For selecting tax
 
-		"Where  security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY') and "
+		"Where  security.SECURITY_REF not in(select security.SECURITY_REF from SECURITY where SECURITY.SECURITY_EVENT='CancelY' and SECURITY.TIME_STAMP >= :StartTime and SECURITY.TIME_STAMP  < :EndTime ) and "
 			"Orders.Time_Stamp >= :StartTime and "
 			"Orders.Time_Stamp < :EndTime and "
 			"Security.Security_Event = 'Ordered By' ";
@@ -3749,7 +3749,7 @@ void TdmMMReportData::SetupUserSales(TDateTime StartTime, TDateTime EndTime, TSt
 	}
 	qrUserSales->SQL->Text = qrUserSales->SQL->Text +
 		//"Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
-        "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
+        "Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DayArchive where DayArchive.PRICE=0 and DayArchive.TIME_STAMP_BILLED >= :StartTime and DayArchive.TIME_STAMP_BILLED < :EndTime ) DayArchive left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where security.SECURITY_EVENT='CancelY' and DayArchive.TIME_STAMP_BILLED >= :StartTime and DayArchive.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " ((  "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') ) and "
@@ -4245,7 +4245,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
 		
-        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) and  "
 		    " (( "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or Archive.PRICE!=0) and "
@@ -4312,7 +4312,7 @@ void TdmMMReportData::SetupCategoryConsumptionByHalfHour(TDateTime StartTime, TD
 			"Left Join CategoryGroups on "
 				"ArcCategories.CategoryGroups_Key = CategoryGroups.CategoryGroups_Key "
 
-        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DayArchive.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime ) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 		    " (( "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
           " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or DAYArchive.PRICE!=0) and "
@@ -4491,7 +4491,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
                 "ARCORDERDISCOUNTS on ARCHIVE.ARCHIVE_KEY = ARCORDERDISCOUNTS.ARCHIVE_KEY "
          " left join PATRONCOUNT on PATRONCOUNT.ARCBILL_KEY=ARCHIVE.ARCBILL_KEY "
 
-        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where ARCHIVE.ARCHIVE_KEY not in (  Select     archive.ARCHIVE_KEY from (select *from ARCHIVE where ARCHIVE.PRICE=0 and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime ) ARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=ARCHIVE.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and ARCHIVE.TIME_STAMP_BILLED >= :StartTime and ARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 		    " (( "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or Archive.PRICE!=0) and "
@@ -4602,7 +4602,7 @@ void TdmMMReportData::SetupHalfHourlyDailyByConsumption(TDateTime StartTime, TDa
                     "DAYARCORDERDISCOUNTS on DayArchive.ARCHIVE_KEY = DAYARCORDERDISCOUNTS.ARCHIVE_KEY "
             " left join DAYPATRONCOUNT on DAYPATRONCOUNT.ARCBILL_KEY=DAYARCHIVE.ARCBILL_KEY  "
 
-        " Where DAYARCHIVE.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY') and  "
+        " Where DAYARCHIVE.ARCHIVE_KEY not in (Select     DayArchive.ARCHIVE_KEY from   (select *from DAYARCHIVE where DAYARCHIVE.PRICE=0 and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) DAYARCHIVE left join SECURITY on  SECURITY.SECURITY_REF=DayArchive.SECURITY_REF where  security.SECURITY_EVENT='CancelY' and DAYARCHIVE.TIME_STAMP_BILLED >= :StartTime and DAYARCHIVE.TIME_STAMP_BILLED < :EndTime) and  "
 		    " (( "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
             " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary') or DAYArchive.PRICE!=0) and "
@@ -7144,7 +7144,7 @@ void TdmMMReportData::SetupDiscounts(TDateTime StartTime, TDateTime EndTime,TStr
         "Left Join Archive On   "
 			   "	ArcBill.ArcBill_Key = Archive.ArcBill_Key  "
                " 	left join (SELECT a.SECURITY_REF, a.FROM_VAL  "
-              "FROM SECURITY a where a.SECURITY_EVENT='Discounted By' )SECURITY  on SECURITY.SECURITY_REF=Archive.SECURITY_REF  "
+              "FROM SECURITY a where a.SECURITY_EVENT='Discounted By'and a.TIME_STAMP >= :StartTime and a.TIME_STAMP  < :EndTime )SECURITY  on SECURITY.SECURITY_REF=Archive.SECURITY_REF  "
         "LEFT JOIN (  "
 				   "	 SELECT    "
 					 "	ARCORDERTAXES.ARCHIVE_KEY,  "
