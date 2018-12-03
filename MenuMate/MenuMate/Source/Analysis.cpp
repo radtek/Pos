@@ -4669,7 +4669,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 						ThisTransaction.Count++;
 						TransactionsCount[PaymentName] = ThisTransaction;
 					}
-                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Tip")
+                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Tips")
                     {
                        TotalInBilledTips += IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency;
                        TipCount++;
