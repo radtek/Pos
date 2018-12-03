@@ -449,5 +449,6 @@ TGlobalSettings::TGlobalSettings()
     PrintTipAndSignature = false;
     EnableAdjustAuthorisationOnCards = false;
     HHPriceLevelKey = 1;
+    EnableItemDetailsPosting = false;
 }
 

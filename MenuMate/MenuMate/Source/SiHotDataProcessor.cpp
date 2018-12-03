@@ -137,8 +137,18 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory_Desc   = "";
     siHotService.MiddleCategory       = categoryCode;
     siHotService.MiddleCategory_Desc  = itemComplete->MenuName;
-    siHotService.ArticleCategory      = categoryCode;
-    siHotService.ArticleCategory_Desc = "";
+    if(itemComplete->ItemSizeIdentifierKey > 0 || itemComplete->ItemSizeIdentifierKey <= 999)
+    {
+        siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+    }
+    else
+    {
+        siHotService.ArticleCategory      = "999";
+    }
+    MessageBox(itemComplete->ItemSizeIdentifierKey,"",MB_OK);
+    siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
+//    siHotService.ArticleCategory      = categoryCode;
+//    siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo            = categoryCode;
     siHotService.ArticleNo_Desc       = "";
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
@@ -930,4 +940,3 @@ void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStri
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }
-//----------------------------------------------------------------------------

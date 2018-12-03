@@ -62,7 +62,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object Label2: TLabel
       Left = 310
-      Top = 482
+      Top = 480
       Width = 217
       Height = 44
       Caption = 'Oracle Communication Server'
@@ -76,10 +76,24 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object lblNoTaxToSihot: TLabel
       Left = 310
-      Top = 544
+      Top = 536
       Width = 201
       Height = 22
       Caption = 'Send No Tax To Sihot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
+    object lblEnableItemDetailsPosting: TLabel
+      Left = 310
+      Top = 560
+      Width = 179
+      Height = 44
+      Caption = 'Enable Item details posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -437,7 +451,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbOracleInterfacePort: TTouchBtn
       Left = 310
-      Top = 587
+      Top = 603
       Width = 259
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -475,11 +489,19 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbNoTaxToSihot: TCheckBox
       Left = 558
-      Top = 550
-      Width = 97
+      Top = 542
+      Width = 11
       Height = 17
       TabOrder = 21
       OnClick = cbNoTaxToSihotClick
+    end
+    object cbEnableItemDetailsPosting: TCheckBox
+      Left = 558
+      Top = 577
+      Width = 11
+      Height = 17
+      TabOrder = 22
+      OnClick = cbEnableItemDetailsPostingClick
     end
   end
   object Panel2: TPanel

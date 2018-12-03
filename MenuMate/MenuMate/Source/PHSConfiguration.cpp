@@ -1053,3 +1053,11 @@ AnsiString TfrmPHSConfiguration::GetMewsName(AnsiString code,eVertSel selectionT
     return name;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbEnableItemDetailsPostingClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().SendNoTaxToSiHot = cbEnableItemDetailsPosting->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableItemDetailsPosting, TGlobalSettings::Instance().EnableItemDetailsPosting);
+    DBTransaction.Commit();
+}

@@ -48,6 +48,8 @@ __published:	// IDE-managed Components
     TTouchBtn *tbTimeOut;
     TLabel *lblNoTaxToSihot;
     TCheckBox *cbNoTaxToSihot;
+    TLabel *lblEnableItemDetailsPosting;
+    TCheckBox *cbEnableItemDetailsPosting;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -73,6 +75,7 @@ __published:	// IDE-managed Components
     void __fastcall tbOracleInterfaceIPMouseClick(TObject *Sender);
     void __fastcall tbTimeOutMouseClick(TObject *Sender);
     void __fastcall cbNoTaxToSihotClick(TObject *Sender);
+    void __fastcall cbEnableItemDetailsPostingClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();

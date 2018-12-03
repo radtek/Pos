@@ -544,6 +544,7 @@ public:
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
     int HHPriceLevelKey;
+    bool EnableItemDetailsPosting;
 };
 
 #endif

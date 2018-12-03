@@ -77,4 +77,40 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
     }
 }
 //----------------------------------------------------------------------------
-
+void TPMSHelper::GetItemSizeIdentifierKeys(TList *Orders)
+{
+    int revenueCode = 0;
+    Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
+    transaction.StartTransaction();
+    try
+    {
+		TIBSQL *IBInternalQuery = transaction.Query(transaction.AddQuery());
+        for(int i = 0; i < Orders->Count; i++)
+        {
+            TItemComplete *ic = (TItemComplete*)Orders->Items[i];
+            IBInternalQuery->Close();
+            IBInternalQuery->SQL->Text =
+                " Select a.ITEMSIZE_IDENTIFIER FROM ITEMSIZE a WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME = :SIZE_NAME" ;
+            IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = ic->ItemKey;
+            IBInternalQuery->ParamByName("SIZE_NAME")->AsString = ic->Size;
+            IBInternalQuery->ExecQuery();
+            if(IBInternalQuery->RecordCount)
+            {
+                if(IBInternalQuery->FieldByName("ITEMSIZE_IDENTIFIER")->AsInteger != NULL)
+                    ic->ItemSizeIdentifierKey = IBInternalQuery->FieldByName("ITEMSIZE_IDENTIFIER")->AsInteger;
+                else
+                    ic->ItemSizeIdentifierKey = 0;
+            }
+            else
+            {
+                ic->ItemSizeIdentifierKey = 0;
+            }
+        }
+        transaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        transaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+}

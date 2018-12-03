@@ -48,7 +48,7 @@
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPatron.h"
 #include "EnableFloorPlan.h"
 #include "WebMate.h"
@@ -2987,91 +2987,91 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
         switch(Action)
         {
             case 1 :
-                EnablePanasonicIntegration();
+//                EnablePanasonicIntegration();
                 break;
         }
     }
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
-        TManagerPanasonic::Instance()->PrepareTenderTypes();
-        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-    }
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//        TManagerPanasonic::Instance()->PrepareTenderTypes();
+//        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//    }
 }
 //-------------------------------------------------------------------------------------
 
-void TfrmMaintain::EnablePanasonicIntegration()
-{
-    bool keepFormAlive = true;
-    while(keepFormAlive)
-    {
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
-
-         std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-        TVerticalSelection Item;
-        Item.Title = "Cancel";
-        Item.Properties["Color"] = "0x000098F5";
-        Item.Properties["FontColor"] = IntToStr(clWhite);;
-        Item.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item);
-
-        TVerticalSelection Item1;
-        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled? "Enabled" : "Disabled"));
-        Item1.Properties["Action"] = IntToStr(1);
-
-        if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
-        {
-            Item1.Properties["Color"] = IntToStr(clGreen);
-        }
-        else
-        {
-            Item1.Properties["Color"] = IntToStr(clRed);
-        }
-
-        Item1.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item1);
-
-        TVerticalSelection Item2;
-        Item2.Title = "Server IP \r" + TGlobalSettings::Instance().PanasonicServerIP;
-        Item2.Properties["Action"] = IntToStr(2);
-        Item2.Properties["Color"] = IntToStr(clNavy);
-        Item2.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item2);
-
-        SelectionForm1->ShowModal();
-        TVerticalSelection SelectedItem1;
-        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-        {
-            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-            switch(Action)
-            {
-                case 1 :
-                    SaveEnabledState(dbTransaction);
-                    break;
-                case 2 :
-                    SaveServerIp(dbTransaction);
-            }
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
-        }
-        else
-        {
-            keepFormAlive = false;
-            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
-            {
-                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
-                TGlobalSettings::Instance().PanasonicServerIP = "";
-            }
-            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
-        }
-        dbTransaction.Commit();
-    }
-}
+//void TfrmMaintain::EnablePanasonicIntegration()
+//{
+//    bool keepFormAlive = true;
+//    while(keepFormAlive)
+//    {
+//        //Register the database transaction..
+//        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+//        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+//        dbTransaction.StartTransaction();
+//
+//         std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+//
+//        TVerticalSelection Item;
+//        Item.Title = "Cancel";
+//        Item.Properties["Color"] = "0x000098F5";
+//        Item.Properties["FontColor"] = IntToStr(clWhite);;
+//        Item.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item);
+//
+//        TVerticalSelection Item1;
+//        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled? "Enabled" : "Disabled"));
+//        Item1.Properties["Action"] = IntToStr(1);
+//
+//        if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
+//        {
+//            Item1.Properties["Color"] = IntToStr(clGreen);
+//        }
+//        else
+//        {
+//            Item1.Properties["Color"] = IntToStr(clRed);
+//        }
+//
+//        Item1.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item1);
+//
+//        TVerticalSelection Item2;
+//        Item2.Title = "Server IP \r" + TGlobalSettings::Instance().PanasonicServerIP;
+//        Item2.Properties["Action"] = IntToStr(2);
+//        Item2.Properties["Color"] = IntToStr(clNavy);
+//        Item2.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item2);
+//
+//        SelectionForm1->ShowModal();
+//        TVerticalSelection SelectedItem1;
+//        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+//        {
+//            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+//            switch(Action)
+//            {
+//                case 1 :
+//                    SaveEnabledState(dbTransaction);
+//                    break;
+//                case 2 :
+//                    SaveServerIp(dbTransaction);
+//            }
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//        }
+//        else
+//        {
+//            keepFormAlive = false;
+//            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
+//            {
+//                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+//                TGlobalSettings::Instance().PanasonicServerIP = "";
+//            }
+//            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//        }
+//        dbTransaction.Commit();
+//    }
+//}
 //-------------------------------------------------------------------------------------------------------
 void TfrmMaintain::SaveServerIp(Database::TDBTransaction &dbTransaction)
 {
@@ -3125,13 +3125,13 @@ void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
             {
                 case 1 :
 
-                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
+//                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
                     break;
                 case 2 :
-                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+//                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
                     break;
             }
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
         }
     }
     else
