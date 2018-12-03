@@ -36,7 +36,7 @@ bool TManagerAustriaFiscal::GetEchoResponseFromConfig()
             }
             else
             {
-                retValue = true;
+                retValue = false;
                 list->Add((AnsiString)"Commisioning is unsuccessful." +"\n");
             }
         }

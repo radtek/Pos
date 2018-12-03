@@ -639,8 +639,6 @@ void TManagerReceipt::Get(TStringList *Lines)
             UnicodeString str =  Lines->Strings[i];
             if(str.Pos("Unknown Status") != 0)
             {
-//                MessageBox("Unkown Status found","",MB_OK);
-//                MessageBox(i,"At Index",MB_OK);
                 UnicodeString signatureValue = GetSignatureValueForReceipt();
                 int k = i;
                 for(int j = 1; j <= signatureValue.Length();)

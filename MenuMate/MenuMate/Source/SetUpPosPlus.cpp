@@ -331,6 +331,7 @@ void TfrmSetUpPosPlus::ConfigureForMode()
             tbtnTerminalId->Enabled         = true;
             tbtnTerminalId->Caption         = TGlobalSettings::Instance().AustriaFiscalTerminalId;
             labelOrganization->Caption      = "Access Token";
+            tbtnOrganizationNumber->Enabled = false;
             tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "" ? "*****" : "";
         }
     }
@@ -387,10 +388,10 @@ bool TfrmSetUpPosPlus::AreDetailsProvidedForAustria()
     if(TGlobalSettings::Instance().AustriaFiscalUrl.Trim() != "")
         if(TGlobalSettings::Instance().AustriaFiscalCashBoxId.Trim() != "")
             if(TGlobalSettings::Instance().AustriaFiscalTerminalId.Trim() != "")
-                if(TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "")
+//                if(TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "")
                     allProvided = true;
-                else
-                    errorString = "Please provide Access Token for Fiscal Austria.\r";
+//                else
+//                    errorString = "Please provide Access Token for Fiscal Austria.\r";
             else
                 errorString = "Please provide Terminal Id for Fiscal Austria.\r";
         else
