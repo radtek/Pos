@@ -5125,6 +5125,7 @@ void TdmMMReportData::SetupInvoice( TDateTime StartTime, TDateTime EndTime, TStr
 //---------------------------------------------------------------------------
 void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTime, TStrings *Members)
 {
+
 	qrInvoiceDetailed->Close();
     qrInvoiceDetailed->SQL->Text =
         "select "
@@ -5178,16 +5179,16 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(ARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and ARCBILLPAY.SUBTOTAL != 0  and "
+            " (ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR ARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and ARCBILLPAY.SUBTOTAL != 0  and Archive.ARCBILL_KEY != 0 and "
             "arcbill.time_stamp >= :StartTime and "
-            "arcbill.time_stamp < :EndTime   ";
+            "arcbill.time_stamp < :EndTime   " ;
 
 	if (Members->Count)
 	{
 		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
 											ParamString(Members->Count, "(contacts.Name ||' '|| contacts.LAST_NAME)", "MembersParam") + ")";
 	}
-	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +   
+	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
             "union all "
         "select "
@@ -5240,7 +5241,7 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 		"Where "
 		    "(COALESCE( DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Non-Chargeable' and "
              " COALESCE(DAYARCORDERDISCOUNTS.DISCOUNT_GROUPNAME,0)<> 'Complimentary' ) and "
-              " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 )and DAYARCBILLPAY.SUBTOTAL != 0 and "
+              " (DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES OR DAYARCBILLPAY.PROPERTIES LIKE :PAYMENT_PROPERTIES2 )and DAYARCBILLPAY.SUBTOTAL != 0 and dayArchive.ARCBILL_KEY != 0 and  "
             "dayarcbill.time_stamp >= :StartTime and "
             "dayarcbill.time_stamp < :EndTime   " ;
 
@@ -5251,8 +5252,62 @@ void TdmMMReportData::SetupInvoiceDetailed( TDateTime StartTime, TDateTime EndTi
 	}
 	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
 
+     "UNION ALL  "
+
+      "SELECT "
+      "a.STAFF_NAME, "
+       "a.TIME_STAMP, "
+        "CAST(0.0 AS NUMERIC(17,4)) TOTAL_INC, "
+         "CASE WHEN p.ADJUSTMENT_TYPE = '1'  THEN 'Point Purchase'  WHEN p.ADJUSTMENT_TYPE = '7'  THEN 'Refund Point' END ITEM_NAME, "
+                "p.ADJUSTMENT as PRICE, "
+                "Cast('1' As NUMERIC(17,4)) Qty  , "
+                 "i.INVOICE_NUMBER, "
+                "i.CONTACTS_KEY, "
+                "c.MEMBER_NUMBER, "
+                "(c.Name ||'  '|| c.LAST_NAME) name, "
+                "i.CLOSED "
+                "from POINTSTRANSACTIONS p "
+				"left join dayARCBILL a on p.INVOICE_NUMBER= a.INVOICE_NUMBER "
+                "left join INVOICES  i on a.INVOICE_KEY = i.INVOICE_KEY "
+                "left join CONTACTS  c on i.CONTACTS_KEY = c.CONTACTS_KEY "
+				"left join DAYARCBILLPAY d on d.ARCBILL_KEY = a.ARCBILL_KEY "
+				"where (d.PROPERTIES  LIKE :PAYMENT_PROPERTIES OR d.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and p.ADJUSTMENT_TYPE IN (1,7) and "
+                "a.time_stamp >= :StartTime and "
+                "a.time_stamp < :EndTime  ";
+
+
+
+     if (Members->Count)
+	 {
+		qrInvoiceDetailed->SQL->Text =	qrInvoiceDetailed->SQL->Text + "And (" +
+											ParamString(Members->Count, "(c.Name ||' '|| c.LAST_NAME)", "MembersParam") + ")";
+    	}
+	qrInvoiceDetailed->SQL->Text =		qrInvoiceDetailed->SQL->Text +
+         "UNION ALL "
+
+        "SELECT "
+            "a.STAFF_NAME, "
+            "a.TIME_STAMP, "
+            "CAST(0.0 AS NUMERIC(17,4)) TOTAL_INC, "
+            "CASE WHEN p.ADJUSTMENT_TYPE = '1'  THEN 'Point Purchase'  WHEN p.ADJUSTMENT_TYPE IN (1,7)  THEN 'Refund Point' END ITEM_NAME, "
+            "p.ADJUSTMENT as PRICE, "
+            "Cast('1' As NUMERIC(17,4)) Qty , "
+            "i.INVOICE_NUMBER, "
+            "i.CONTACTS_KEY, "
+            "c.MEMBER_NUMBER, "
+            "(c.Name ||'  '|| c.LAST_NAME) name, "
+            "i.CLOSED "
+        "FROM POINTSTRANSACTIONS p "
+        "LEFT JOIN ARCBILL a on p.INVOICE_NUMBER= a.INVOICE_NUMBER "
+        "LEFT JOIN INVOICES  i on a.INVOICE_KEY = i.INVOICE_KEY "
+        "LEFT JOIN CONTACTS  c on i.CONTACTS_KEY = c.CONTACTS_KEY "
+        "LEFT JOIN ARCBILLPAY d on d.ARCBILL_KEY = a.ARCBILL_KEY "
+        "WHERE (d.PROPERTIES  LIKE :PAYMENT_PROPERTIES OR d.PROPERTIES LIKE :PAYMENT_PROPERTIES2) and p.ADJUSTMENT_TYPE IN (1,7)  and "
+        "a.time_stamp >= :StartTime and "
+        "a.time_stamp < :EndTime  "
+
 		"Order By "
-			"8, 6";
+		"10, 9,7,6";
 
 	for (int i=0; i<Members->Count; i++)
 	{
@@ -5989,6 +6044,8 @@ void TdmMMReportData::SetupBillDetails(AnsiString InvoiceNumber)
                     "case when (c.name is null) then 'Non-member transaction'else (c.name ||' '|| c.LAST_NAME) end billed_to "
                     "From POINTSTRANSACTIONS "
                     "left join contacts c on c.contacts_key = POINTSTRANSACTIONS.contacts_key "
+                    " where "
+                    " POINTSTRANSACTIONS.INVOICE_NUMBER  = :in "
                     "Group By 1,2 "
                     "union all "
                     "Select ab.INVOICE_NUMBER, "

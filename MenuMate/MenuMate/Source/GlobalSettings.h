@@ -543,6 +543,7 @@ public:
     bool EnableEftPosPreAuthorisation;
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
+    int HHPriceLevelKey;
     bool IsAustriaFiscalStorageEnabled;
     UnicodeString AustriaFiscalUrl;
     UnicodeString AustriaFiscalCashBoxId;

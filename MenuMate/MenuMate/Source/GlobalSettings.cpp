@@ -448,6 +448,7 @@ TGlobalSettings::TGlobalSettings()
     EnableEftPosPreAuthorisation = false;
     PrintTipAndSignature = false;
     EnableAdjustAuthorisationOnCards = false;
+    HHPriceLevelKey = 1;
     IsAustriaFiscalStorageEnabled = false;
     AustriaFiscalUrl = "";
     AustriaFiscalCashBoxId = "";

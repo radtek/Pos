@@ -492,6 +492,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmUpdateMenu, TGlobalSettings::Instance().UpdateMenu);
+       TGlobalSettings::Instance().ForceHappyHour = false;
+       TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmForceHappyHour, TGlobalSettings::Instance().ForceHappyHour);
        if(TGlobalSettings::Instance().ItemPriceIncludeTax)
        {
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
@@ -518,22 +520,22 @@ void TfrmMain::SyncCompanyDetails()
         bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
         if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
-            //UnloadSignalR();
-            //EnableOnlineOrdering();
+            UnloadSignalR();
+            EnableOnlineOrdering();
         }
         else if(!isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
-//            DisableOnlineOrdering();
-//            UnicodeString strValue = "Online ordering could not be enabled since sync with online module failed.\r";
-//            strValue += "Please ensure below mentioned things:-.\r";
-//            strValue += "1. Syndicate code & Site Id are correct.\r";
-//            strValue += "2. POS terminal is connected to network.";
-//            MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
+            DisableOnlineOrdering();
+            UnicodeString strValue = "Online ordering could not be enabled since sync with online module failed.\r";
+            strValue += "Please ensure below mentioned things:-.\r";
+            strValue += "1. Syndicate code & Site Id are correct.\r";
+            strValue += "2. POS terminal is connected to network.";
+            MessageBox(strValue,"Info",MB_OK+MB_ICONINFORMATION);
         }
     }
     else
     {
-       //DisableOnlineOrdering();
+       DisableOnlineOrdering();
     }
 
 }
@@ -624,8 +626,8 @@ void __fastcall TfrmMain::btnExitClick(TObject *Sender)
         // call api to set connection status of signalR
         if(TGlobalSettings::Instance().LoyaltyMateEnabled && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
-//            UnsetOrderingDetails();
-//            UnloadSignalR();
+            UnsetOrderingDetails();
+            UnloadSignalR();
         }
 		frmSecurity->LogOut();
 		frmMain->Close();

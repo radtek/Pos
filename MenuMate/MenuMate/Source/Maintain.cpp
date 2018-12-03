@@ -62,6 +62,8 @@
 #include "SetUpPosPlus.h"
 #include "ManagerCloudSync.h"
 #include "SignalRUtility.h"
+#include "ManagerLocations.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -1427,19 +1429,19 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
     Item2.CloseSelection = true;
     SelectionForm->Items.push_back(Item2);
 
-//    TVerticalSelection Item3;
-//	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
-//	Item3.Properties["Action"] = IntToStr(3);
-//    if( TGlobalSettings::Instance().EnableOnlineOrdering )
-//	{
-//		Item3.Properties["Color"] = IntToStr(clGreen);
-//	}
-//	else
-//	{
-//		Item3.Properties["Color"] = IntToStr(clRed);
-//	}
-//    Item3.CloseSelection = true;
-//    SelectionForm->Items.push_back(Item3);
+    TVerticalSelection Item3;
+	Item3.Title = UnicodeString("Enable/Disable \r Online Ordering ") + UnicodeString((TGlobalSettings::Instance().EnableOnlineOrdering ? "Enabled" : "Disabled"));
+	Item3.Properties["Action"] = IntToStr(3);
+    if( TGlobalSettings::Instance().EnableOnlineOrdering )
+	{
+		Item3.Properties["Color"] = IntToStr(clGreen);
+	}
+	else
+	{
+		Item3.Properties["Color"] = IntToStr(clRed);
+	}
+    Item3.CloseSelection = true;
+    SelectionForm->Items.push_back(Item3);
 
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;
@@ -1514,7 +1516,7 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
             }  break;
             case 3 :
 			{
-               //EnableOnlineOrdering(DBTransaction);
+               EnableOnlineOrdering(DBTransaction);
             }  break;
 		}
 	}
@@ -3409,9 +3411,22 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
                 UnloadSignalR();
                 break;
         }
-        DBTransaction.StartTransaction();
-        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+
+
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+    {
+        TManagerLocations locationManager;
+        if(locationManager.FindLocation(DBTransaction,"Loyalty") == 0)
+        {
+             int Key = 0;
+            locationManager.SetLocation(DBTransaction,Key,"Loyalty",3);
+        }
+
+    }
         DBTransaction.Commit();
+
     }
 }
 //-----------------------------------------------------------------------------------------------
@@ -3517,8 +3532,8 @@ void TfrmMaintain::DeactivateLoyaltymate()
     TGlobalSettings::Instance().LoyaltyMateEnabled = false;
     if(TGlobalSettings::Instance().EnableOnlineOrdering)
     {
-        //UnloadSignalR();
-        //MessageBox("Online ordering module is deactivated since Loyaltymate is disabled.","Info",MB_OK+MB_ICONINFORMATION);
+        UnloadSignalR();
+        MessageBox("Online ordering module is deactivated since Loyaltymate is disabled.","Info",MB_OK+MB_ICONINFORMATION);
     }
 }
 //-----------------------------------------------------------------------------

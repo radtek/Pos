@@ -5052,10 +5052,10 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 	{
 		OrderBundle = new TList;
 		TDateTime TimeStamp = Now();
+
 		for (int i = 0; i < WorkingOrdersList->Count; )
 		{
 			TItemComplete *CurrentOrder = (TItemComplete*)WorkingOrdersList->Items[i];
-
 			if (TimeStamp > CurrentOrder->TimeStamp)
 			{
 				TimeStamp = CurrentOrder->TimeStamp;
@@ -5064,7 +5064,8 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 			TOrderBundle *TempBundle = new TOrderBundle();
 			TempBundle->BundleOrders(PrintJob, WorkingOrdersList.get(), i,Format);
 
-			OrderBundle->Add(TempBundle);
+            if(!(CurrentOrder->IsSide && CurrentOrder->PriceEach() == 0))    //Added condition to exclude Side which has Cost equal to 0
+    			OrderBundle->Add(TempBundle);
 		}
 
 		for (int j = 0; j < OrderBundle->Count; j++)
@@ -7668,52 +7669,56 @@ TDocketFormat &inFormat)
 
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt && PrintJob->JobType == pjReceiptReceipt)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen && PrintJob->JobType == pjKitchen))
-             {
-                UnicodeString ItemName = "";
-                UnicodeString SizeName = "";
-                if (PrintJob->JobType == pjKitchen)
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
-                }
-                else
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
-                }
-
-                if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
-                {
-                    TItemSubSection SubItem;
-                    SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + SizeName + Spacer1 + ItemName;
-                    SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
-                   if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                   {
-                       SubItem.isManuallyWeight=true;
-                   }
-                     else
-                   {
-                       SubItem.isManuallyWeight=false;
-                   }
-                   SubItems.push_back(SubItem);
-                }
-                else
-                {
-                    TItemSubSection SubItem;
-                    SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + ItemName;
-                    SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
+           if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+           && PrintJob->JobType == pjReceiptReceipt)
+           && !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+           && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+           || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+           && PrintJob->JobType == pjKitchen))
+            {
+               UnicodeString ItemName = "";
+               UnicodeString SizeName = "";
+               if (PrintJob->JobType == pjKitchen)
+               {
+                   ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
+                   SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
+               }
+               else
+               {
+                   ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
+                   SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
+               }
+               if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
+               {
+                   TItemSubSection SubItem;
+                   SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + SizeName + Spacer1 + ItemName;
+                   SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
                   if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                   {
-                       SubItem.isManuallyWeight=true;
-                   }
-                   else
-                   {
-                       SubItem.isManuallyWeight=false;
-                   }
-                   SubItems.push_back(SubItem);
-                }
-            }
+                  {
+                      SubItem.isManuallyWeight=true;
+                  }
+                    else
+                  {
+                      SubItem.isManuallyWeight=false;
+                  }
+                  SubItems.push_back(SubItem);
+               }
+               else
+               {
+                   TItemSubSection SubItem;
+                   SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + ItemName;
+                   SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
+                 if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
+                  {
+                      SubItem.isManuallyWeight=true;
+                  }
+                  else
+                  {
+                      SubItem.isManuallyWeight=false;
+                  }
+                  SubItems.push_back(SubItem);
+               }
+           }
 		}
 	}
 }
@@ -8839,8 +8844,12 @@ TDocketFormat &inFormat)
 
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-
-            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt && PrintJob->JobType == pjReceiptReceipt)) || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen && PrintJob->JobType == pjKitchen))
+            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+            && PrintJob->JobType == pjReceiptReceipt)
+            &&!((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+            && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
+            || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+            && PrintJob->JobType == pjKitchen))
             {
                 UnicodeString ItemName = "";
                 UnicodeString SizeName = "";
@@ -8907,7 +8916,7 @@ TDocketFormat &inFormat)
 
                 }
             }
-		}
+      }
 	}
 }
 // -----------------------------------------------------------------------------

@@ -464,3 +464,103 @@ int TDBOnlineOrdering::GetMemberKey(Database::TDBTransaction &dbTransaction, int
     return memberKey;
 }
 //----------------------------------------------------------------------------
+int TDBOnlineOrdering::GetItemSizeKey(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName)
+{
+    int itemSizeKey = 0;
+    try
+    {
+        int itemId = GetItemIdByItemKey(dbTransaction, itemKey);
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = " SELECT a.ITEMSIZE_KEY FROM ITEMSIZE a "
+                                     " WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME = :SIZE_NAME ";
+        ibInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemId;
+        ibInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            itemSizeKey = ibInternalQuery->FieldByName("ITEMSIZE_KEY")->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return itemSizeKey;
+}
+//----------------------------------------------------------------------------
+int TDBOnlineOrdering::GetItemIdByItemKey(Database::TDBTransaction &dbTransaction, int itemKey)
+{
+    int itemId = 0;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = " SELECT a.ITEM_ID FROM ITEM a "
+                                     " WHERE a.ITEM_KEY = :ITEM_KEY ";
+        ibInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemKey;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            itemId = ibInternalQuery->FieldByName("ITEM_ID")->AsInteger;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return itemId;
+}
+//----------------------------------------------------------------------------
+Currency TDBOnlineOrdering::GetHappyHourPrice(Database::TDBTransaction &dbTransaction, int itemsizeKey, int priceLevelKey)
+{
+    Currency happyHourPrice = 0.0;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = " SELECT a.PRICE FROM PRICELEVELITEMSIZE a "
+                                     " WHERE a.ITEMSIZE_KEY = :ITEMSIZE_KEY AND a.PRICELEVEL_KEY = :PRICELEVEL_KEY ";
+        ibInternalQuery->ParamByName("ITEMSIZE_KEY")->AsInteger = itemsizeKey;
+        ibInternalQuery->ParamByName("PRICELEVEL_KEY")->AsInteger = priceLevelKey;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            happyHourPrice = ibInternalQuery->FieldByName("PRICE")->AsCurrency;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return happyHourPrice;
+}
+//----------------------------------------------------------------------------
+void TDBOnlineOrdering::UpdateHappyHourPriceForItem(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
+                            UnicodeString onlineOrderId, Currency hhPrice, Currency basePrice)
+{        
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text = "UPDATE ORDERS a SET a.PRICE_LEVEL1 = :PRICE_LEVEL1 , a.HAPPYHOUR = :HAPPYHOUR, a.PRICE = :PRICE, "
+                                        "a.BASE_PRICE = :BASE_PRICE "
+                                     " WHERE a.ITEM_ID = :ITEM_ID AND a.SIZE_NAME = :SIZE_NAME AND a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->ParamByName("ITEM_ID")->AsInteger = itemKey;
+        ibInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = onlineOrderId;
+        ibInternalQuery->ParamByName("PRICE_LEVEL1")->AsCurrency = hhPrice;
+        ibInternalQuery->ParamByName("PRICE")->AsCurrency = hhPrice;
+        ibInternalQuery->ParamByName("BASE_PRICE")->AsCurrency = basePrice;
+        ibInternalQuery->ParamByName("HAPPYHOUR")->AsString = "T";
+        ibInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+
+
+

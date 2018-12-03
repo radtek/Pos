@@ -128,6 +128,7 @@ enum vmVariables
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
+   vmForceHappyHour,// vmHHPriceLevelKey,
 	// Points Config ---------------------------------------------------------------
    vmEarnsPointsWhileRedeeming = 5200, vmMinMemberNumber, vmRecycleMemberNumber, vmOnlyEarnsPointsWhileRedeeming, vmSpendPtsOnlyFullProduct, vmMinRedemptionPoint,
    vmSpendPtsOnlySelectItems, vmPoleDisplayShowPoints, vmEarntPointsOnWeight,vmAllowPointPaymentByWeight,vmAllowPointPaymentByValue, vmAllowRefundPoints,

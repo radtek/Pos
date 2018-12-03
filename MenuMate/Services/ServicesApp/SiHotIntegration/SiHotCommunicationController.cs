@@ -372,9 +372,16 @@ namespace SiHotIntegration
                 list.Add("=================================================================================");
                 string path = System.IO.Path.GetDirectoryName(
                           System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
 
+                location = Path.Combine(location, "Sihot Post Logs");
 
-                string location = Path.Combine(path, "Sihot Post Logs");
                 if (location.Contains(@"file:\"))
                 {
                     location = location.Replace(@"file:\", "");

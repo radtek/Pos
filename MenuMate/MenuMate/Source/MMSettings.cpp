@@ -435,10 +435,11 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().RestartServiceAtZED = TManagerVariable::Instance().GetBool(DBTransaction, vmRestartServiceAtZED, false);
         TGlobalSettings::Instance().SendNoTaxToSiHot = TManagerVariable::Instance().GetBool(DBTransaction, vmSendNoTaxToSihot, false);
         TGlobalSettings::Instance().RevenueCodeDiscountPart = TManagerVariable::Instance().GetStr(DBTransaction, vmRevenueCodeDiscountPart, "");
-        TGlobalSettings::Instance().EnableOnlineOrdering = false;//TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
+        TGlobalSettings::Instance().EnableOnlineOrdering = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableOnlineOrdering, false);
         TGlobalSettings::Instance().EnableEftPosPreAuthorisation = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableEftPosPreAuthorisation, false);
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
+        TGlobalSettings::Instance().ForceHappyHour = TManagerVariable::Instance().GetBool(DBTransaction, vmForceHappyHour, false);
         TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAustriaFiscalStorageEnabled, false);
         TGlobalSettings::Instance().AustriaFiscalUrl = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalUrl, "");
         TGlobalSettings::Instance().AustriaFiscalCashBoxId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalCashBoxId, "");
