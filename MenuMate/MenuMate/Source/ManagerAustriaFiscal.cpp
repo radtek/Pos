@@ -138,11 +138,12 @@ bool TManagerAustriaFiscal::ExportData(TPaymentTransaction &paymentTransaction)
         {
             StoreDataInDB(response,receiptAustria.ReceiptReference,DBTransaction);
             StoreInvoiceDetailsinDB(receiptAustria,DBTransaction);
-        }
-        if(response.Signatures.size() == 0 || response.State != 0x4154000000000000)
-        {
             TakeCorrectiveMeasures(DBTransaction);
         }
+//        if(response.Signatures.size() == 0 /*|| response.State != 0x4154000000000000*/)
+//        {
+//
+//        }
         DBTransaction.Commit();
     }
     catch(Exception &ex)
@@ -701,8 +702,14 @@ void TManagerAustriaFiscal::StoreDataInDB(TReceiptResponseAustriaFiscal response
         IBInternalQuery->ParamByName("STATE")->AsString = response.State;
         IBInternalQuery->ParamByName("STATEDATA")->AsString = response.StateData;
         bool isSigned = false;
-        if (response.State == 0x4154000000000000 && response.Signatures.size() > 0)
-            isSigned = true;
+        for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
+        {
+            if(response.Signatures[indexSig].Data != "")
+            {
+                isSigned = true;
+                break;
+            }
+        }
         if(isSigned)
             IBInternalQuery->ParamByName("IS_SIGNED")->AsString = "T";
         else
@@ -740,13 +747,16 @@ void TManagerAustriaFiscal::TakeCorrectiveMeasures(Database::TDBTransaction &DBT
 {
     try
     {
-        if(IsZeroReceiptSuccessful())
+        std::vector<TReceiptRequestAustriaFiscal> receiptsPending;
+        receiptsPending.clear();
+        GetOldInvoices(receiptsPending,DBTransaction);
+        if(receiptsPending.size() > 0)
         {
-            std::vector<TReceiptRequestAustriaFiscal> receiptsPending;
-            receiptsPending.clear();
-            GetOldInvoices(receiptsPending,DBTransaction);
-            GetInvoiceDetails(receiptsPending,DBTransaction);
-            SendOldInvoices(receiptsPending,DBTransaction);
+            if(IsZeroReceiptSuccessful())
+            {
+                GetInvoiceDetails(receiptsPending,DBTransaction);
+                SendOldInvoices(receiptsPending,DBTransaction);
+            }
         }
     }
     catch(Exception &Exc)
@@ -834,7 +844,16 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
         {
             std::auto_ptr<TAustriaFiscalInterface> austriaInterface(new TAustriaFiscalInterface());
             TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptsPending[i]);
-            if(response.State == 0x4154000000000000 && response.Signatures.size() > 0)
+            bool isSigned = false;
+            for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
+            {
+                if(response.Signatures[indexSig].Data != "")
+                {
+                    isSigned = true;
+                    break;
+                }
+            }
+            if(isSigned)
                 UpdateInvoiceDetails(DBTransaction,receiptsPending[i],response);
         }
     }
@@ -910,8 +929,16 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
         IBInternalQuery->ExecQuery();
         int responseId = IBInternalQuery->FieldByName("RESPONSE_ID")->AsInteger;
         bool isSigned = false;
-        if (response.State == 0x4154000000000000 && response.Signatures.size() > 0)
-            isSigned = true;
+        for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
+        {
+            if(response.Signatures[indexSig].Data != "")
+            {
+                isSigned = true;
+                break;
+            }
+        }
+
+
         if(isSigned)
         {
             for(int i = 0; i < response.Signatures.size(); i++)

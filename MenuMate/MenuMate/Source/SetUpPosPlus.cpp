@@ -323,6 +323,7 @@ void TfrmSetUpPosPlus::ConfigureForMode()
         }
         else if(StorageType == AustriaFiscal)
         {
+            Caption = "Fiscal Austria Set Up";
             labelPortNumber->Caption        = "Fiscal Autria Url";
             tbtnPortNumber->Caption         = TGlobalSettings::Instance().AustriaFiscalUrl;
             labelConfigure->Caption         = "Cash Box Id";
