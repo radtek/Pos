@@ -128,17 +128,23 @@ bool TManagerAustriaFiscal::ExportData(TPaymentTransaction &paymentTransaction)
         if(response.UnableToConnectToMenumateService)
         {
             response.CashBoxID = receiptAustria.CashBoxID;
+            response.State = "0";
+            response.TerminalID = TGlobalSettings::Instance().AustriaFiscalTerminalId;
             StoreDataInDB(response,receiptAustria.ReceiptReference,DBTransaction);
             StoreInvoiceDetailsinDB(receiptAustria,DBTransaction);
         }
         else if(response.UnableToConnectToFiscalService)
         {
             response.CashBoxID = receiptAustria.CashBoxID;
+            response.State = "0";
+            response.TerminalID = TGlobalSettings::Instance().AustriaFiscalTerminalId;
             StoreDataInDB(response,receiptAustria.ReceiptReference,DBTransaction);
             StoreInvoiceDetailsinDB(receiptAustria,DBTransaction);
         }
         else
         {
+            if(response.State == NULL || response.State == "")
+                response.State = "0";
             StoreDataInDB(response,receiptAustria.ReceiptReference,DBTransaction);
             StoreInvoiceDetailsinDB(receiptAustria,DBTransaction);
             if(response.State == 0x4154000000000010)
@@ -399,6 +405,20 @@ std::vector<TChargeItemAustriaFiscal> TManagerAustriaFiscal::GetChargeItemsAustr
             chargeItemPointsPurchased.Amount = (double)paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
             chargeItems.push_back(chargeItemPointsPurchased);
         }
+        if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
+        {
+            TChargeItemAustriaFiscal chargeItemPointsRefund;
+
+            if(!paymentTransaction.CreditTransaction)
+                chargeItemPointsRefund.ChargeItemCase = 0x4154000000000000;
+            else
+                chargeItemPointsRefund.ChargeItemCase = 0x4154000000000006;
+            chargeItemPointsRefund.Description = "Refund Points";
+            chargeItemPointsRefund.VATRate = 0;
+            chargeItemPointsRefund.Quantity = 1;
+            chargeItemPointsRefund.Amount = (double)paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+            chargeItems.push_back(chargeItemPointsRefund);
+        }
         if(paymentTransaction.Money.TotalRounding != 0)
         {
             for(int index = 0; index < chargeItems.size(); index++)
@@ -449,12 +469,20 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
         {
             TPayItemAustriaFiscal austriaPayment;
             austriaPayment.PayItemCase = 0x4154000000000000;
-            austriaPayment.Amount = ((double)(payment->GetPayTendered() + payment->GetCashOut() - (payment->GetChange()) - (payment->GetAdjustment())));
+            austriaPayment.Amount = ((double)(payment->GetPayTendered() - payment->GetCashOut() - (payment->GetChange()) - (payment->GetAdjustment())));
             if(!paymentTransaction.CreditTransaction)
                 austriaPayment.Quantity = 1;
             else
                 austriaPayment.Quantity = -1;
-            austriaPayment.Description = payment->Name;
+            UnicodeString paymentName = payment->Name;
+            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+                if(payment->CardType != "")
+                {
+                    paymentName = payment->CardType;
+                }
+            }
+            austriaPayment.Description = paymentName;
             payItems.push_back(austriaPayment);
         }
         if(payment->GetCashOut() != 0)
@@ -466,7 +494,15 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
                 austriaPaymentCashOut.Quantity = 1;
             else
                 austriaPaymentCashOut.Quantity = -1;
-            austriaPaymentCashOut.Description = payment->Name + " Cash Out";
+            UnicodeString paymentName = payment->Name;
+            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+                if(payment->CardType != "")
+                {
+                    paymentName = payment->CardType;
+                }
+            }
+            austriaPaymentCashOut.Description = paymentName + " Cash Out";
             payItems.push_back(austriaPaymentCashOut);
         }
         if(payment->TipAmount != 0)
@@ -478,7 +514,15 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
                 austriaPaymentTip.Quantity = 1;
             else
                 austriaPaymentTip.Quantity = -1;
-            austriaPaymentTip.Description = payment->Name + "Tips";
+            UnicodeString paymentName = payment->Name;
+            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+            {
+                if(payment->CardType != "")
+                {
+                    paymentName = payment->CardType;
+                }
+            }
+            austriaPaymentTip.Description = paymentName + "Tips";
             payItems.push_back(austriaPaymentTip);
         }
     }
@@ -719,22 +763,28 @@ void TManagerAustriaFiscal::StoreDataInDB(TReceiptResponseAustriaFiscal response
         IBInternalQuery->ParamByName("STATE")->AsString = response.State;
         IBInternalQuery->ParamByName("STATEDATA")->AsString = response.StateData;
         bool isSigned = false;
-        __int64 status = StrToInt64(response.State);
-//        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
-//        {
-            for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
+//        if(response.State != NULL && response.State.Trim() != "")
+        __int64 status = 0;
+        TryStrToInt64(response.State,status);
+        if(status != 0)
+        {
+            if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
             {
-                if(response.Signatures[indexSig].Data != "")
+                for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
                 {
-                    isSigned = true;
-                    break;
+                    if(response.Signatures[indexSig].Data != "")
+                    {
+                        isSigned = true;
+                        break;
+                    }
                 }
             }
-//        }
+        }
         if(isSigned)
             IBInternalQuery->ParamByName("IS_SIGNED")->AsString = "T";
         else
             IBInternalQuery->ParamByName("IS_SIGNED")->AsString = "F";
+
         IBInternalQuery->ExecQuery();
         if(isSigned)
         {
@@ -866,9 +916,10 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
             std::auto_ptr<TAustriaFiscalInterface> austriaInterface(new TAustriaFiscalInterface());
             TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptsPending[i]);
             bool isSigned = false;
-            __int64 status = StrToInt64(response.State);
-    //        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
-    //        {
+            __int64 status = 0;
+            TryStrToInt64(response.State,status);
+            if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+            {
                 for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
                 {
                     if(response.Signatures[indexSig].Data != "")
@@ -877,7 +928,7 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
                         break;
                     }
                 }
-//            }
+            }
             if(isSigned)
                 UpdateInvoiceDetails(DBTransaction,receiptsPending[i],response);
         }
@@ -954,9 +1005,10 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
         IBInternalQuery->ExecQuery();
         int responseId = IBInternalQuery->FieldByName("RESPONSE_ID")->AsInteger;
         bool isSigned = false;
-        __int64 status = StrToInt64(response.State);
-//        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
-//        {
+        __int64 status = 0;
+        TryStrToInt64(response.State,status);
+        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+        {
             for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
             {
                 if(response.Signatures[indexSig].Data != "")
@@ -965,7 +1017,7 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
                     break;
                 }
             }
-//        }
+        }
 
 
         if(isSigned)
