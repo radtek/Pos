@@ -1914,7 +1914,6 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
 		currentYearTierLevel = TDBTierLevel::GetTierLevelAsPerEarnedPoints(PaymentTransaction.DBTransaction,earnedPoints);
 
-
 		if(currentYearTierLevel < lastYearTierLevel)
 		{
 			tierLevel = lastYearTierLevel ;
@@ -1923,16 +1922,15 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			tierLevel = currentYearTierLevel;
 		}
-
-		bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel;
+       bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel && tierLevel != 0;
 		if(IsTierLevelChanged)
-		{
+		{   
 			TGlobalSettings::Instance().TierLevelChange   = tierLevel;
 			MessageBox(PaymentTransaction.Membership.Member.Name + "'s Tier Level Changed To " +
 			TDBTierLevel::GetTierLevelName(PaymentTransaction.DBTransaction,tierLevel), "Tier Level", MB_OK + MB_ICONINFORMATION);
+            PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		}
 
-		PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		TDBTierLevel::UpdateMemberTierLevel(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);
     }
 	catch(Exception & E)
