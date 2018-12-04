@@ -137,18 +137,24 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory_Desc   = "";
     siHotService.MiddleCategory       = categoryCode;
     siHotService.MiddleCategory_Desc  = itemComplete->MenuName;
-    if(itemComplete->ItemSizeIdentifierKey > 0 || itemComplete->ItemSizeIdentifierKey <= 999)
+    if(TGlobalSettings::Instance().EnableItemDetailsPosting)
     {
-        siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+        int alphaNumericCheck = 0;
+        if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+        {
+            siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+        }
+        else
+        {
+            siHotService.ArticleCategory      = "999";
+        }
+        siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
     }
     else
     {
-        siHotService.ArticleCategory      = "999";
+        siHotService.ArticleCategory      = categoryCode;
+        siHotService.ArticleCategory_Desc = "";
     }
-    MessageBox(itemComplete->ItemSizeIdentifierKey,"",MB_OK);
-    siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
-//    siHotService.ArticleCategory      = categoryCode;
-//    siHotService.ArticleCategory_Desc = "";
     siHotService.ArticleNo            = categoryCode;
     siHotService.ArticleNo_Desc       = "";
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)

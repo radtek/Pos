@@ -347,7 +347,7 @@ namespace SiHotIntegration
                                    "    Price Unit:-  " + ppu + 
                                    "    Price Total:- " + total + 
                                    "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage +
-                                   "Article Category:-" + roomChargeDetails.ItemList[itemIndex].ArticleCategory +
+                                   "    Article Category:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory +
                                    "    Description:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc);
                    
                 }

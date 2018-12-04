@@ -79,7 +79,6 @@ void TPMSHelper::GetRevenueCode(TList *Orders)//(int _itemKey, UnicodeString _si
 //----------------------------------------------------------------------------
 void TPMSHelper::GetItemSizeIdentifierKeys(TList *Orders)
 {
-    int revenueCode = 0;
     Database::TDBTransaction transaction(TDeviceRealTerminal::Instance().DBControl);
     transaction.StartTransaction();
     try

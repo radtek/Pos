@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 670
+  ClientHeight = 725
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 9
     Top = 8
     Width = 600
-    Height = 657
+    Height = 712
     Color = 10011108
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -33,7 +33,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     TabOrder = 0
     DesignSize = (
       600
-      657)
+      712)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -62,7 +62,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object Label2: TLabel
       Left = 310
-      Top = 480
+      Top = 482
       Width = 217
       Height = 44
       Caption = 'Oracle Communication Server'
@@ -76,7 +76,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object lblNoTaxToSihot: TLabel
       Left = 310
-      Top = 536
+      Top = 544
       Width = 201
       Height = 22
       Caption = 'Send No Tax To Sihot'
@@ -89,11 +89,11 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       WordWrap = True
     end
     object lblEnableItemDetailsPosting: TLabel
-      Left = 310
-      Top = 560
-      Width = 179
-      Height = 44
-      Caption = 'Enable Item details posting'
+      Left = 16
+      Top = 649
+      Width = 217
+      Height = 66
+      Caption = 'Enable Item Details Posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -408,7 +408,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbEnableCustomerJourney: TCheckBox
       Left = 558
-      Top = 365
+      Top = 368
       Width = 27
       Height = 51
       Anchors = [akLeft]
@@ -451,7 +451,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbOracleInterfacePort: TTouchBtn
       Left = 310
-      Top = 603
+      Top = 587
       Width = 259
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -489,15 +489,15 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbNoTaxToSihot: TCheckBox
       Left = 558
-      Top = 542
+      Top = 550
       Width = 11
       Height = 17
       TabOrder = 21
       OnClick = cbNoTaxToSihotClick
     end
     object cbEnableItemDetailsPosting: TCheckBox
-      Left = 558
-      Top = 577
+      Left = 268
+      Top = 664
       Width = 11
       Height = 17
       TabOrder = 22
@@ -508,7 +508,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 615
     Top = 8
     Width = 137
-    Height = 657
+    Height = 712
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

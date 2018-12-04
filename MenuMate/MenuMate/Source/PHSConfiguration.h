@@ -48,8 +48,8 @@ __published:	// IDE-managed Components
     TTouchBtn *tbTimeOut;
     TLabel *lblNoTaxToSihot;
     TCheckBox *cbNoTaxToSihot;
-    TLabel *lblEnableItemDetailsPosting;
     TCheckBox *cbEnableItemDetailsPosting;
+    TLabel *lblEnableItemDetailsPosting;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);

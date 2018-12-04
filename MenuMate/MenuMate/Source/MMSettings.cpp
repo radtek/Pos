@@ -440,6 +440,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
         TGlobalSettings::Instance().ForceHappyHour = TManagerVariable::Instance().GetBool(DBTransaction, vmForceHappyHour, false);
+        TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
