@@ -14,6 +14,7 @@
 #include "PosMain.h"
 #include "StringTools.h"
 #include "FiscalDataUtility.h"
+#include "ShowPrintout.h"
 TManagerReceipt *ManagerReceipt;
 // ---------------------------------------------------------------------------
 
@@ -1059,17 +1060,16 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
 {
    try
    {
-
-       std::auto_ptr <TPrintout> Printout(new TPrintout);
-
-
+        std::auto_ptr <TPrintout> Printout(new TPrintout);
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
+
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT DAYARCBILLPAY.PAY_TYPE,DAYARCBILLPAY.SUBTOTAL,DAYARCBILL.STAFF_NAME,DAYARCBILL.INVOICE_NUMBER FROM DAYARCBILLPAY "
-       " Left join DAYARCBILL on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
-       " WHERE DAYARCBILLPAY.ARCBILL_KEY = :ARCBILL_KEY AND PAY_TYPE not in ('Cash') ";
+        IBInternalQuery->SQL->Text = "SELECT DAYARCBILLPAY.PAY_TYPE,DAYARCBILLPAY.SUBTOTAL,DAYARCBILL.STAFF_NAME,DAYARCBILL.INVOICE_NUMBER "
+                                     "FROM DAYARCBILLPAY "
+                                     " Left join DAYARCBILL on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
+                                     " WHERE DAYARCBILLPAY.ARCBILL_KEY = :ARCBILL_KEY AND AND DAYARCBILLPAY.PROPERTIES LIKE :PROPERTIES '%19%' ";
         IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcbillkey;
         IBInternalQuery->ExecQuery();
 
@@ -1148,16 +1148,6 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
-        Printout->PrintFormat->Line->Columns[0]->Text = "Payment Type";
-        Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("PAY_TYPE")->AsString ;
-        Printout->PrintFormat->AddLine();
-
-        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        Printout->PrintFormat->Line->ColCount = 2;
-        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
-        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
-        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Tip Amount";
         Printout->PrintFormat->Line->Columns[1]->Text =  CurrencyString + FormatFloat("0.00", tipAmount);
@@ -1174,6 +1164,18 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Text = CurrencyString +" "+ FormatFloat("0.00", ReceiptValue + tipAmount);
         Printout->PrintFormat->AddLine();
 
+        Printout->PrintFormat->Line->Columns[0]->Text = "Payment Type";
+        Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("PAY_TYPE")->AsString ;
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
 
 
         Printout->PrintFormat->Line->ColCount = 1;
@@ -1189,6 +1191,8 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
 
 
         Printout->PrintFormat->PartialCut();
+
+
 
         std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (Owner));
         Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
