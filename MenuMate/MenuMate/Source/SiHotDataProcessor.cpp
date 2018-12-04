@@ -292,8 +292,24 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.MiddleCategory        = categoryCode;
 //        MessageBox(siHotService.MiddleCategory,"AddDiscountPartToService3",MB_OK);
         siHotService.MiddleCategory_Desc   = "Discount";
-        siHotService.ArticleCategory       = categoryCode;
-        siHotService.ArticleCategory_Desc  = "";
+        if(TGlobalSettings::Instance().EnableItemDetailsPosting)
+        {
+            int alphaNumericCheck = 0;
+            if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+            {
+                siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+            }
+            else
+            {
+                siHotService.ArticleCategory      = "999";
+            }
+            siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
+        }
+        else
+        {
+            siHotService.ArticleCategory      = categoryCode;
+            siHotService.ArticleCategory_Desc = "";
+        }
         siHotService.ArticleNo             = categoryCode;
         siHotService.ArticleNo_Desc        = "";
         double pricePerUnit                = fabs(itemComplete->BillCalcResult.TotalDiscount);
