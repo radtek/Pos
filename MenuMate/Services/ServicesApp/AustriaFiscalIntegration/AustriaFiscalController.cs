@@ -44,7 +44,7 @@ namespace AustriaFiscalIntegration
             }
             return responseLocal;
         }
-        public bool CommissionAustriaFiscal(string url, string cashBoxId, List<string> logsList)
+        public bool CommissionAustriaFiscal(string url, string cashBoxId, List<string> logsList, string terminalId)
         {
             bool retValue = false;
             try 
@@ -52,7 +52,7 @@ namespace AustriaFiscalIntegration
                 var reqdata = new ReceiptRequest()
                 {
                     ftCashBoxID = cashBoxId,
-                    cbTerminalID = "1",
+                    cbTerminalID = terminalId,
                     ftReceiptCase = 0x4154000000000003,
                     cbReceiptReference = "Commision Receipt",//n.ToString(),
                     cbReceiptMoment = DateTime.UtcNow,
@@ -60,7 +60,7 @@ namespace AustriaFiscalIntegration
                     cbPayItems = new PayItem[] { }
                 };
                 var response = AustriaFiscalAppManager.Instance.proxy.Sign(reqdata);
-                if (response.ftState == 0x4154000000000000)
+                if (response.ftState == 0x4154000000000000 || response.ftState == 0x4154000000000010 || response.ftState == 0x4154000000000020)
                     retValue = true;
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace AustriaFiscalIntegration
             }
             return retValue;
         }
-        public bool SendZeroReceipt(string url, string cashBoxId, List<string> logsList)
+        public bool SendZeroReceipt(string url, string cashBoxId, List<string> logsList, string terminalId)
         {
             bool retValue = false;
             try
@@ -78,7 +78,7 @@ namespace AustriaFiscalIntegration
                 var reqdata = new ReceiptRequest()
                 {
                     ftCashBoxID = cashBoxId,
-                    cbTerminalID = "1",
+                    cbTerminalID = terminalId,
                     ftReceiptCase = 0x4154000000000002,
                     cbReceiptReference = "Zero Receipt",//n.ToString(),
                     cbReceiptMoment = DateTime.UtcNow,
@@ -86,7 +86,59 @@ namespace AustriaFiscalIntegration
                     cbPayItems = new PayItem[] { }
                 };
                 var response = AustriaFiscalAppManager.Instance.proxy.Sign(reqdata);
-                if (response.ftState == 0x4154000000000000)
+                if (response.ftState == 0x4154000000000000 || response.ftState == 0x4154000000000010 || response.ftState == 0x4154000000000020)
+                    retValue = true;
+            }
+            catch (Exception ex)
+            {
+                logsList.Add("Exception occured at:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                logsList.Add("Exception is:-                            " + ex.Message);
+            }
+            return retValue;
+        }
+        public bool SendMonthlyReceipt(string url, string cashBoxId, List<string> logsList, string terminalId)
+        {
+            bool retValue = false;
+            try
+            {
+                var reqdata = new ReceiptRequest()
+                {
+                    ftCashBoxID = cashBoxId,
+                    cbTerminalID = terminalId,
+                    ftReceiptCase = 0x4154000000000005,
+                    cbReceiptReference = "Monthly Receipt",//n.ToString(),
+                    cbReceiptMoment = DateTime.UtcNow,
+                    cbChargeItems = new ChargeItem[] { },
+                    cbPayItems = new PayItem[] { }
+                };
+                var response = AustriaFiscalAppManager.Instance.proxy.Sign(reqdata);
+                if (response.ftState == 0x4154000000000000 || response.ftState == 0x4154000000000010 || response.ftState == 0x4154000000000020)
+                    retValue = true;
+            }
+            catch (Exception ex)
+            {
+                logsList.Add("Exception occured at:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                logsList.Add("Exception is:-                            " + ex.Message);
+            }
+            return retValue;
+        }
+        public bool SendAnnualReceipt(string url, string cashBoxId, List<string> logsList, string terminalId)
+        {
+            bool retValue = false;
+            try
+            {
+                var reqdata = new ReceiptRequest()
+                {
+                    ftCashBoxID = cashBoxId,
+                    cbTerminalID = terminalId,
+                    ftReceiptCase = 0x4154000000000006,
+                    cbReceiptReference = "Annual Receipt",//n.ToString(),
+                    cbReceiptMoment = DateTime.UtcNow,
+                    cbChargeItems = new ChargeItem[] { },
+                    cbPayItems = new PayItem[] { }
+                };
+                var response = AustriaFiscalAppManager.Instance.proxy.Sign(reqdata);
+                if (response.ftState == 0x4154000000000000 || response.ftState == 0x4154000000000010 || response.ftState == 0x4154000000000020)
                     retValue = true;
             }
             catch (Exception ex)

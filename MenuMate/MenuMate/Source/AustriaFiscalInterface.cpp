@@ -143,13 +143,13 @@ TReceiptResponseAustriaFiscal TAustriaFiscalInterface::AppyAdapterToResponse(Rec
     return response;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId)
+bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->CommissionAustriaFiscal(url,cashBoxId);
+        retValue = AustriaClient->CommissionAustriaFiscal(url,cashBoxId,terminalId);
     }
     catch(Exception &ex)
     {
@@ -157,13 +157,41 @@ bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, Unicode
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId)
+bool TAustriaFiscalInterface::SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->SendZeroReceipt(url,cashBoxId);
+        retValue = AustriaClient->SendZeroReceipt(url,cashBoxId,terminalId);
+    }
+    catch(Exception &ex)
+    {
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TAustriaFiscalInterface::SendMonthlyReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+{
+    bool retValue = false;
+    try
+    {
+        CoInitialize(NULL);
+        retValue = AustriaClient->SendMonthlyReceipt(url,cashBoxId,terminalId);
+    }
+    catch(Exception &ex)
+    {
+    }
+    return retValue;
+}
+//---------------------------------------------------------------------------
+bool TAustriaFiscalInterface::SendAnnualReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+{
+    bool retValue = false;
+    try
+    {
+        CoInitialize(NULL);
+        retValue = AustriaClient->SendAnnualReceipt(url,cashBoxId,terminalId);
     }
     catch(Exception &ex)
     {

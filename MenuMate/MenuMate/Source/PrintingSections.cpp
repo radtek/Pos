@@ -9396,7 +9396,7 @@ void TPrintSection::PrintFiscalAustriaSignature(TReqPrintJob *PrintJob)
         int responseId = 99;
         UnicodeString content = "";
         GetAustriaFiscalSignature(status,responseId,PrintJob->Transaction->InvoiceNumber);
-        if(status == 0x4154000000000000)
+        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
         {
             content = GetSignatureContent(responseId);
         }

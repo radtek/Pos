@@ -15,8 +15,12 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         ReceiptReponseLocal PostData(ReceiptRequestLocal receiptRequest);
         [OperationContract]
-        bool CommissionAustriaFiscal(string url, string cashBoxId);
+        bool CommissionAustriaFiscal(string url, string cashBoxId, string terminalId);
         [OperationContract]
-        bool SendZeroReceipt(string url, string cashBoxId);
+        bool SendZeroReceipt(string url, string cashBoxId, string terminalId);
+        [OperationContract]
+        bool SendMonthlyReceipt(string url, string cashBoxId, string terminalId);
+        [OperationContract]
+        bool SendAnnualReceipt(string url, string cashBoxId, string terminalId);
     }
 }

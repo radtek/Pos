@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8748/MenumateServices/AustriaService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (29/11/2018 5:51:35 p.m. - - $Rev: 25127 $)
+// (4/12/2018 8:17:36 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AustriaFiscalWSDLH
@@ -685,8 +685,10 @@ __interface INTERFACE_UUID("{DD933A9F-8F97-CA0C-D733-2C6D16D4B6AC}") IAustriaFis
 public:
   virtual UnicodeString   InitAustriaFiscal(const UnicodeString url, const UnicodeString cashBoxId) = 0; 
   virtual ReceiptReponseLocal* PostData(const ReceiptRequestLocal* receiptRequest) = 0; 
-  virtual bool            CommissionAustriaFiscal(const UnicodeString url, const UnicodeString cashBoxId) = 0; 
-  virtual bool            SendZeroReceipt(const UnicodeString url, const UnicodeString cashBoxId) = 0; 
+  virtual bool            CommissionAustriaFiscal(const UnicodeString url, const UnicodeString cashBoxId, const UnicodeString terminalId) = 0; 
+  virtual bool            SendZeroReceipt(const UnicodeString url, const UnicodeString cashBoxId, const UnicodeString terminalId) = 0; 
+  virtual bool            SendMonthlyReceipt(const UnicodeString url, const UnicodeString cashBoxId, const UnicodeString terminalId) = 0; 
+  virtual bool            SendAnnualReceipt(const UnicodeString url, const UnicodeString cashBoxId, const UnicodeString terminalId) = 0; 
 };
 typedef DelphiInterface<IAustriaFiscalIntegrationWebService> _di_IAustriaFiscalIntegrationWebService;
 

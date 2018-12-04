@@ -43,7 +43,7 @@ namespace MenumateServices.WCFServices
             WriteToFile(logsList);
             return response;
         }
-        public bool CommissionAustriaFiscal(string url, string cashBoxId)
+        public bool CommissionAustriaFiscal(string url, string cashBoxId, string terminalId)
         {
             bool retValue = false;
             List<string> logsList = new List<string>();
@@ -51,7 +51,7 @@ namespace MenumateServices.WCFServices
             {
                 logsList.Add("Request for Commission:-                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 AustriaFiscalController controller = new AustriaFiscalController();
-                retValue = controller.CommissionAustriaFiscal(url, cashBoxId, logsList);
+                retValue = controller.CommissionAustriaFiscal(url, cashBoxId, logsList,terminalId);
             }
             catch (Exception ex)
             { 
@@ -59,15 +59,47 @@ namespace MenumateServices.WCFServices
             WriteToFile(logsList);
             return retValue;
         }
-        public bool SendZeroReceipt(string url, string cashBoxId)
+        public bool SendZeroReceipt(string url, string cashBoxId,string terminalId)
         {
             bool retValue = false;
             List<string> logsList = new List<string>();
             try
             {
-                logsList.Add("Request for Commission:-                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                logsList.Add("Request for Zero Receipt:-                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 AustriaFiscalController controller = new AustriaFiscalController();
-                retValue = controller.SendZeroReceipt(url, cashBoxId, logsList);
+                retValue = controller.SendZeroReceipt(url, cashBoxId, logsList, terminalId);
+            }
+            catch (Exception ex)
+            {
+            }
+            WriteToFile(logsList);
+            return retValue;
+        }
+        public bool SendMonthlyReceipt(string url, string cashBoxId, string terminalId)
+        {
+            bool retValue = false;
+            List<string> logsList = new List<string>();
+            try
+            {
+                logsList.Add("Request for Monthly Receipt:-                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                AustriaFiscalController controller = new AustriaFiscalController();
+                retValue = controller.SendMonthlyReceipt(url, cashBoxId, logsList, terminalId);
+            }
+            catch (Exception ex)
+            {
+            }
+            WriteToFile(logsList);
+            return retValue;
+        }
+        public bool SendAnnualReceipt(string url, string cashBoxId, string terminalId)
+        {
+            bool retValue = false;
+            List<string> logsList = new List<string>();
+            try
+            {
+                logsList.Add("Request for Annual Receipt:-                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                AustriaFiscalController controller = new AustriaFiscalController();
+                retValue = controller.SendAnnualReceipt(url, cashBoxId, logsList, terminalId);
             }
             catch (Exception ex)
             {

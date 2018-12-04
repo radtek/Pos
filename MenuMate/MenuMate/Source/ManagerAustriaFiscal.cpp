@@ -72,7 +72,8 @@ bool TManagerAustriaFiscal::IsZeroReceiptSuccessful()
     {
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
         retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
     }
     catch(Exception &ex)
     {
@@ -88,11 +89,13 @@ bool TManagerAustriaFiscal::CommissionAustriaFiscal()
     {
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
         bool isSuccessful = fiscalInterface->CommissionAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
         if(isSuccessful)
         {
             retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
         }
     }
     catch(Exception &ex)
@@ -138,6 +141,20 @@ bool TManagerAustriaFiscal::ExportData(TPaymentTransaction &paymentTransaction)
         {
             StoreDataInDB(response,receiptAustria.ReceiptReference,DBTransaction);
             StoreInvoiceDetailsinDB(receiptAustria,DBTransaction);
+            if(response.State == 0x4154000000000010)
+            {
+                std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
+                retValue = fiscalInterface->SendMonthlyReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                                TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId);
+            }
+            else if(response.State == 0x4154000000000020)
+            {
+                std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
+                retValue = fiscalInterface->SendAnnualReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                                TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId);
+            }
             TakeCorrectiveMeasures(DBTransaction);
         }
 //        if(response.Signatures.size() == 0 /*|| response.State != 0x4154000000000000*/)
@@ -702,14 +719,18 @@ void TManagerAustriaFiscal::StoreDataInDB(TReceiptResponseAustriaFiscal response
         IBInternalQuery->ParamByName("STATE")->AsString = response.State;
         IBInternalQuery->ParamByName("STATEDATA")->AsString = response.StateData;
         bool isSigned = false;
-        for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
-        {
-            if(response.Signatures[indexSig].Data != "")
+        __int64 status = StrToInt64(response.State);
+//        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+//        {
+            for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
             {
-                isSigned = true;
-                break;
+                if(response.Signatures[indexSig].Data != "")
+                {
+                    isSigned = true;
+                    break;
+                }
             }
-        }
+//        }
         if(isSigned)
             IBInternalQuery->ParamByName("IS_SIGNED")->AsString = "T";
         else
@@ -845,14 +866,18 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
             std::auto_ptr<TAustriaFiscalInterface> austriaInterface(new TAustriaFiscalInterface());
             TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptsPending[i]);
             bool isSigned = false;
-            for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
-            {
-                if(response.Signatures[indexSig].Data != "")
+            __int64 status = StrToInt64(response.State);
+    //        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+    //        {
+                for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
                 {
-                    isSigned = true;
-                    break;
+                    if(response.Signatures[indexSig].Data != "")
+                    {
+                        isSigned = true;
+                        break;
+                    }
                 }
-            }
+//            }
             if(isSigned)
                 UpdateInvoiceDetails(DBTransaction,receiptsPending[i],response);
         }
@@ -929,14 +954,18 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
         IBInternalQuery->ExecQuery();
         int responseId = IBInternalQuery->FieldByName("RESPONSE_ID")->AsInteger;
         bool isSigned = false;
-        for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
-        {
-            if(response.Signatures[indexSig].Data != "")
+        __int64 status = StrToInt64(response.State);
+//        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+//        {
+            for(int indexSig = 0; indexSig < response.Signatures.size(); indexSig++)
             {
-                isSigned = true;
-                break;
+                if(response.Signatures[indexSig].Data != "")
+                {
+                    isSigned = true;
+                    break;
+                }
             }
-        }
+//        }
 
 
         if(isSigned)
