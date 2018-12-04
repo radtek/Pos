@@ -6637,7 +6637,7 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateR
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
-        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        TGlobalSettings::Instance().PrintCardHolderReceipt && !TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards && !TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
       if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||

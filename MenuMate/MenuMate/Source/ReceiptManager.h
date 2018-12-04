@@ -49,6 +49,7 @@ class TManagerReceipt : public TManager
 	void GetLastReceipt(Database::TDBTransaction &DBTransaction);
 	void PrintLastReceipt();
 	void Print();
+    void PrintDocket(int arcbillkey,int tipAmount);
    
 	__property TDateTime Date = { read = FSelectedDate ,write = SetCurrentDate};
 	bool CanApplyTipOnThisReceiptsTransaction(

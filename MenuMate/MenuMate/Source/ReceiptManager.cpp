@@ -1054,4 +1054,155 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
 
    return retVal;
 }
+//-------------------------------------------------------------------------
+void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
+{
+   try
+   {
+
+       std::auto_ptr <TPrintout> Printout(new TPrintout);
+
+
+        Database::TDBTransaction DBTransaction(DBControl);
+        DBTransaction.StartTransaction();
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT DAYARCBILLPAY.PAY_TYPE,DAYARCBILLPAY.SUBTOTAL,DAYARCBILL.STAFF_NAME,DAYARCBILL.INVOICE_NUMBER FROM DAYARCBILLPAY "
+       " Left join DAYARCBILL on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
+       " WHERE DAYARCBILLPAY.ARCBILL_KEY = :ARCBILL_KEY AND PAY_TYPE not in ('Cash') ";
+        IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcbillkey;
+        IBInternalQuery->ExecQuery();
+
+        Printout->PrintFormat->NewLine();
+        Printout->PrintFormat->Line->ColCount = 1;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
+        Printout->PrintFormat->AddLine();
+
+
+
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Date/Time";
+        Printout->PrintFormat->Line->Columns[1]->Text =  Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy") + " " + Now().FormatString("hh:nn am/pm");
+        Printout->PrintFormat->AddLine();
+
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4 ;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Terminal Name";
+        Printout->PrintFormat->Line->Columns[1]->Text = TerminalName;
+        Printout->PrintFormat->AddLine();
+
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + +4 ;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Staff Name";
+        Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("STAFF_NAME")->AsString ;
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Receipt No.";
+        Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString ;
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Original Total";
+        Printout->PrintFormat->Line->Columns[1]->Text = CurrencyString +" " + FormatFloat("0.00", ReceiptValue);
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Payment Type";
+        Printout->PrintFormat->Line->Columns[1]->Text = IBInternalQuery->FieldByName("PAY_TYPE")->AsString ;
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Tip Amount";
+        Printout->PrintFormat->Line->Columns[1]->Text =  CurrencyString + FormatFloat("0.00", tipAmount);
+        Printout->PrintFormat->AddLine();
+
+        Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        Printout->PrintFormat->Line->ColCount = 2;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
+
+        Printout->PrintFormat->Line->Columns[0]->Text = "Updated Total";
+        Printout->PrintFormat->Line->Columns[1]->Text = CurrencyString +" "+ FormatFloat("0.00", ReceiptValue + tipAmount);
+        Printout->PrintFormat->AddLine();
+
+
+
+        Printout->PrintFormat->Line->ColCount = 1;
+         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
+        Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
+        Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
+        Printout->PrintFormat->AddLine();
+
+
+
+        Printout->PrintFormat->NewLine();
+
+
+
+        Printout->PrintFormat->PartialCut();
+
+        std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (Owner));
+        Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
+
+         frmShowPrintout->btnCancel->Caption = "Close";
+		 frmShowPrintout->btnClose->Visible = false;
+		 frmShowPrintout->btnClosePrint->Caption = "Print";
+
+	  frmShowPrintout->btnClosePrintClick(Owner);
+  }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	  throw;
+   }
+}
 
