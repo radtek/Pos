@@ -786,7 +786,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
+                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() - payment->GetCashOut()- payment->GetChange()));
                 iter->second.Amount         = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))
@@ -795,22 +795,26 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             cashOutStore                    += (double)payment->GetCashOut();
         }
-        if(i + 1 == _paymentTransaction.PaymentsCount())
-        {
-            if(indexcash == "" && cashOutStore != 0.0)
-            {
-                TSiHotPayments siHotPaymentCash;
-                siHotPaymentCash.Type           = cashType;
-                double amountValue              = RoundTo((double)cashOutStore,-2);
-                siHotPaymentCash.Amount         = amountValue;//RoundTo((double)cashOutStore,-2);
-                siHotPaymentCash.Description    = "Cash";
-                siHotPaymentCash.Billno         = billNo;
-                siHotPaymentCash.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
-                siHotPaymentCash.Cashier        = TDeviceRealTerminal::Instance().User.Name;
-                siHotPaymentCash.Source         = "Guest";
-                paymentSiHot[cashType]          = siHotPaymentCash;
-            }
-        }
+//        if(i + 1 == _paymentTransaction.PaymentsCount())
+//        {
+//            if(indexcash == "" && cashOutStore != 0.0)
+//            {
+//                TSiHotPayments siHotPaymentCash;
+////                if(cashType == NULL || cashType == "")
+////                {
+////                    cashType = GetPMSDefaultCode(paymentsMap);
+////                }
+//                siHotPaymentCash.Type           = cashType;
+//                double amountValue              = RoundTo((double)cashOutStore,-2);
+//                siHotPaymentCash.Amount         = amountValue;//RoundTo((double)cashOutStore,-2);
+//                siHotPaymentCash.Description    = "Cash";
+//                siHotPaymentCash.Billno         = billNo;
+//                siHotPaymentCash.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
+//                siHotPaymentCash.Cashier        = TDeviceRealTerminal::Instance().User.Name;
+//                siHotPaymentCash.Source         = "Guest";
+//                paymentSiHot[cashType]          = siHotPaymentCash;
+//            }
+//        }
         if((payment->GetPaymentAttribute(ePayTypeRoomInterface)) && payment->GetCashOut() != 0)
         {
             AddExpensesToSiHotService(payment,_roomCharge,billNo);
