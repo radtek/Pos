@@ -235,6 +235,10 @@ namespace AustriaFiscalIntegration
                                 SignatureType = signature.ftSignatureType
                             };
                             responseLocal.Signatures[index] = signatureLocal;
+                            if (signatureLocal.Data != null && signatureLocal.Data != "")
+                            {
+                                logsList.Add("Signature Data is:-                       " + signatureLocal.Data);
+                            }
                             index++;
                         }
                     }
