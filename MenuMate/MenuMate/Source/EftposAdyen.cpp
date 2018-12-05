@@ -203,13 +203,8 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
                               EftTrans->MerchantAccount = response->PaymentResponse->PaymentResult->PaymentAcquirerData->MerchantID;
 
                               // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
-                              if(TGlobalSettings::Instance().PrintCardHolderReceipt )
-                              {
-                                    //if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
-                                       // LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
-//                                    else
-//                                        LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
-                              }
+                               if(TGlobalSettings::Instance().PrintCardHolderReceipt )
+                                    LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
 
                               if(TGlobalSettings::Instance().PrintMerchantReceipt )
                                     LoadEftPosReceiptSecond(response->PaymentResponse->PaymentReceiptUsable2);
@@ -239,13 +234,7 @@ void TEftposAdyen::ProcessEftPos(eEFTTransactionType TxnType,Currency AmtPurchas
 
                                       // Receipt index 1 corresponds to Customer receipt & index 2 corresponds to Cashier receipt
                                       if(TGlobalSettings::Instance().PrintCardHolderReceipt )
-                                      {
-                                            if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
-                                                LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
-                                            else
-                                                LoadEftPosReceipt(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable1);
-                                      }
-
+                                       LoadEftPosReceipt(response->PaymentResponse->PaymentReceiptUsable1);
                                       if(TGlobalSettings::Instance().PrintMerchantReceipt )
                                             LoadEftPosReceiptSecond(response->TransactionStatusResponse->RepeatedMessageResponse->RepeatedResponseMessageBody->PaymentResponse->PaymentReceiptUsable2);
                                    }

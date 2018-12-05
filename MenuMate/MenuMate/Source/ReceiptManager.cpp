@@ -14,7 +14,7 @@
 #include "PosMain.h"
 #include "StringTools.h"
 #include "FiscalDataUtility.h"
-#include "ShowPrintout.h"
+
 TManagerReceipt *ManagerReceipt;
 // ---------------------------------------------------------------------------
 
@@ -1060,7 +1060,12 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
 {
    try
    {
-        std::auto_ptr <TPrintout> Printout(new TPrintout);
+   	    TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
+		TempReceipt->JobType = pjReceiptReceipt;
+        TPrintout *Printout = new TPrintout;
+        Printout->Printer = TComms::Instance().ReceiptPrinter;
+		TempReceipt->Printouts->Add(Printout);
+       // std::auto_ptr <TPrintout> Printout(new TPrintout);
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
 
@@ -1069,7 +1074,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         IBInternalQuery->SQL->Text = "SELECT DAYARCBILLPAY.PAY_TYPE,DAYARCBILLPAY.SUBTOTAL,DAYARCBILL.STAFF_NAME,DAYARCBILL.INVOICE_NUMBER "
                                      "FROM DAYARCBILLPAY "
                                      " Left join DAYARCBILL on DAYARCBILLPAY.ARCBILL_KEY = DAYARCBILL.ARCBILL_KEY "
-                                     " WHERE DAYARCBILLPAY.ARCBILL_KEY = :ARCBILL_KEY AND AND DAYARCBILLPAY.PROPERTIES LIKE :PROPERTIES '%19%' ";
+                                     " WHERE DAYARCBILLPAY.ARCBILL_KEY = :ARCBILL_KEY AND DAYARCBILLPAY.PROPERTIES LIKE '%19%' ";
         IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcbillkey;
         IBInternalQuery->ExecQuery();
 
@@ -1080,9 +1085,6 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
         Printout->PrintFormat->AddLine();
 
-
-
-
         Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
@@ -1090,11 +1092,9 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
-
         Printout->PrintFormat->Line->Columns[0]->Text = "Date/Time";
         Printout->PrintFormat->Line->Columns[1]->Text =  Now().FormatString("dd") + "/" + Now().FormatString("mm") + "/" + Now().FormatString("yyyy") + " " + Now().FormatString("hh:nn am/pm");
         Printout->PrintFormat->AddLine();
-
 
         Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
         Printout->PrintFormat->Line->ColCount = 2;
@@ -1106,7 +1106,6 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[0]->Text = "Terminal Name";
         Printout->PrintFormat->Line->Columns[1]->Text = TerminalName;
         Printout->PrintFormat->AddLine();
-
 
         Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
         Printout->PrintFormat->Line->ColCount = 2;
@@ -1148,7 +1147,6 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
-
         Printout->PrintFormat->Line->Columns[0]->Text = "Tip Amount";
         Printout->PrintFormat->Line->Columns[1]->Text =  CurrencyString + FormatFloat("0.00", tipAmount);
         Printout->PrintFormat->AddLine();
@@ -1175,33 +1173,15 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
-
-
-
         Printout->PrintFormat->Line->ColCount = 1;
-         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
         Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
         Printout->PrintFormat->AddLine();
-
-
-
         Printout->PrintFormat->NewLine();
-
-
-
         Printout->PrintFormat->PartialCut();
 
-
-
-        std::auto_ptr <TfrmShowPrintout> (frmShowPrintout)(TfrmShowPrintout::Create <TfrmShowPrintout> (Owner));
-        Printout->PrintToStream(frmShowPrintout->CurrentPrintout.get());
-
-         frmShowPrintout->btnCancel->Caption = "Close";
-		 frmShowPrintout->btnClose->Visible = false;
-		 frmShowPrintout->btnClosePrint->Caption = "Print";
-
-	  frmShowPrintout->btnClosePrintClick(Owner);
+         TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
   }
    catch(Exception & E)
    {
