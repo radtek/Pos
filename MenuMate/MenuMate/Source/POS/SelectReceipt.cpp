@@ -523,6 +523,9 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
                 }
                 else
                     MessageBox("Tip applied successfully", "Tip Applied", MB_ICONINFORMATION + MB_OK);
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+                      ManagerReceipt->PrintDocketForTips(arcBillKey,tipAmount);
+
             }
         }
         toggleAvailabilityOfTippingButton();
@@ -540,3 +543,5 @@ void TfrmSelectReceipt::SearchUsingTransactionNumber(UnicodeString inTransaction
        MessageBox("Receipt Number not found.", "Receipt Not Found", MB_ICONINFORMATION + MB_OK);
     }
 }
+//----------------------------------------------------------------------------------------------
+

@@ -3420,6 +3420,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarStr(DBTransaction, vmAustriaFiscalTerminalId, "Austria Fiscal Terminal Id", "Austria Fiscal Terminal Id", vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmAustriaFiscalAccessToken, "Austria Fiscal Access Token", "Austria Fiscal Access Token", vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction, vmIsAustriaFiscalPostInProgress, "Shows status of posting","Gets true while posting to Austria ",vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

@@ -119,6 +119,12 @@ void TApplyParser::update6_58Tables()
 {
     Create6_58Generator(_dbControl );
     Create6_58Table(_dbControl);
+	AlterTableLoyaltyPendingTrans6_58(_dbControl);
+    UpdateTableLoyaltyPending6_58(_dbControl);
+    Insert6_39Malls(_dbControl, 4, "South Beach ", "F");
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 4);
+    AlterTable6_49MallExportSales(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -993,6 +999,38 @@ void TApplyParser::Create6_58Table(TDBControl* const inDBControl)
         "  IS_PAYMENT CHAR(1) DEFAULT 'F'"
         ");",
 		inDBControl );
+    }
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::AlterTableLoyaltyPendingTrans6_58(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "LOYALTYPENDINGTRANSACTIONS ", "IS_AVAILABLE_FOR_POSTING", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE LOYALTYPENDINGTRANSACTIONS "
+        "ADD IS_AVAILABLE_FOR_POSTING T_TRUEFALSE DEFAULT 'T' ; ",
+        inDBControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateTableLoyaltyPending6_58(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+        if ( fieldExists( "LOYALTYPENDINGTRANSACTIONS ", "IS_AVAILABLE_FOR_POSTING ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS a SET a.IS_AVAILABLE_FOR_POSTING = 'T' WHERE a.IS_AVAILABLE_FOR_POSTING IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
     }
 }
 //------------------------------------------------------------------------------

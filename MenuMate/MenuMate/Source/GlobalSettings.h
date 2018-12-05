@@ -549,6 +549,7 @@ public:
     UnicodeString AustriaFiscalCashBoxId;
     UnicodeString AustriaFiscalTerminalId;
     UnicodeString AustriaFiscalAccessToken;
+    bool EnableItemDetailsPosting;
 };
 
 #endif

@@ -84,6 +84,7 @@ const UnicodeString MenuSQL =
 		"ItemSize.default_patron_count, "
         "ItemSize.PRICE_FOR_POINTS, "
         "ItemSize.REVENUECODE,"
+        "ItemSize.ITEMSIZE_IDENTIFIER,"
 
 		"ArcCategories.Category, "
         "ArcCategories.GL_CODE, "
@@ -465,6 +466,7 @@ public:
 	int DefaultPatronCount;
     Currency	  PriceForPoints;
     int           RevenueCode;
+    int           ItemSizeIdentifierKey;
 };
 //---------------------------------------------------------------------------
 class TItemSideInfo : public TDBKey

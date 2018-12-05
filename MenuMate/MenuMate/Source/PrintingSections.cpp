@@ -9384,6 +9384,9 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Text  = "Signature :____________________________________________";
         pPrinter->AddLine();
+
+        if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+            pPrinter->PartialCut();
     }
 }
 void TPrintSection::PrintFiscalAustriaSignature(TReqPrintJob *PrintJob)

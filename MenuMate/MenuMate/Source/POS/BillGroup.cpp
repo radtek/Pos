@@ -4224,6 +4224,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
         {
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
             pmsHelper->GetRevenueCode(PaymentTransaction.Orders);
+            pmsHelper->GetItemSizeIdentifierKeys(PaymentTransaction.Orders);
         }
         TMMContactInfo Member;
         if(SelectedDiscount.IsComplimentaryDiscount())

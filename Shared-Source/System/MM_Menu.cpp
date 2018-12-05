@@ -616,6 +616,7 @@ bool TMenuLoadDB::GetNextItemSize(Menu::TItemSizeInfo *ItemSizeInfo)
 			ItemSizeInfo->PriceForPoints = QFBN(sqlMenu, "PRICE_FOR_POINTS", AsCurrency);
 #undef QFBN
             ItemSizeInfo->RevenueCode = sqlMenu->FieldByName("REVENUECODE")->AsInteger;
+            ItemSizeInfo->ItemSizeIdentifierKey = sqlMenu->FieldByName("ITEMSIZE_IDENTIFIER")->AsInteger;
 			ItemSizeInfo->Categories.clear();
 			ItemSizeInfo->Recipes.clear();
             ItemSizeInfo->TaxProfiles.clear();

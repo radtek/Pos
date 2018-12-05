@@ -208,7 +208,7 @@ private:
     bool DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransaction);
     void ManageGiftCardValidations(Database::TDBTransaction &DBTransaction);
     void PeachTreeSettings();
-    void EnablePanasonicIntegration();
+//    void EnablePanasonicIntegration();
     void SaveServerIp(Database::TDBTransaction &dbTransaction);
     void SaveEnabledState(Database::TDBTransaction &dbTransaction);
     void SelectPMSType();

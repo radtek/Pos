@@ -454,5 +454,6 @@ TGlobalSettings::TGlobalSettings()
     AustriaFiscalCashBoxId = "";
     AustriaFiscalTerminalId = "";
     AustriaFiscalAccessToken = "";
+    EnableItemDetailsPosting = false;
 }
 

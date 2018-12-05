@@ -2219,13 +2219,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                     }
                 }
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
-                if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
-                    ||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
-				    ||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
-					&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
-                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
-                else
-                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+				IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
                 if (!PaymentTransaction.CreditTransaction)
                 {
                     IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
@@ -6383,8 +6377,8 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
     }
 }
 //-------------------------------------------------------------------------------------
-void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
-{
+//void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
+//{
 //    TDBPanasonic* dbPanasonic = new TDBPanasonic();
 //    dbPanasonic->UniDataBaseConnection->Open();
 //    dbPanasonic->UniDataBaseConnection->StartTransaction();
@@ -6393,7 +6387,7 @@ void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeStri
 //
 //    dbPanasonic->UniDataBaseConnection->Commit();
 //    dbPanasonic->UniDataBaseConnection->Close();
-}
+//}
 //-----------------------------------------------------------------------------------
 void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
 {
@@ -6656,7 +6650,7 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateR
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
-        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        TGlobalSettings::Instance().PrintCardHolderReceipt  && !TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
       if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||
