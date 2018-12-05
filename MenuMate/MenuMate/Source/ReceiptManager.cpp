@@ -1056,7 +1056,7 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
    return retVal;
 }
 //-------------------------------------------------------------------------
-void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
+void TManagerReceipt::PrintDocketForTips(int arcbillkey , int tipAmount)
 {
    try
    {
