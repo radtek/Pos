@@ -790,7 +790,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter                    = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                double amountV              = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
+                double amountV              = ((double)(payment->GetPayTendered() - payment->GetChange()));
                 amountV                     = RoundTo(amountV,-2);
                 siHotPayment.Amount         = amountV;//(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description    = payment->Name;
@@ -802,7 +802,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() - payment->GetCashOut()- payment->GetChange()));
+                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() - payment->GetChange()));
                 iter->second.Amount         = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))
