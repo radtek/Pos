@@ -121,6 +121,10 @@ void TApplyParser::update6_58Tables()
     Create6_58Table(_dbControl);
 	AlterTableLoyaltyPendingTrans6_58(_dbControl);
     UpdateTableLoyaltyPending6_58(_dbControl);
+    Insert6_39Malls(_dbControl, 4, "South Beach ", "F");
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 4);
+    AlterTable6_49MallExportSales(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
