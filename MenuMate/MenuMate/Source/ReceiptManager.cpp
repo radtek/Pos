@@ -1056,7 +1056,7 @@ bool TManagerReceipt::CanApplyTipOnThisReceiptsTransaction(WideString &outPaymen
    return retVal;
 }
 //-------------------------------------------------------------------------
-void TManagerReceipt::PrintDocketForTips(int arcbillkey , int tipAmount)
+void TManagerReceipt::PrintDocketForTips(int arcbillkey , Currency tipAmount)
 {
    try
    {
@@ -1069,6 +1069,7 @@ void TManagerReceipt::PrintDocketForTips(int arcbillkey , int tipAmount)
 
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
+
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
