@@ -341,15 +341,27 @@ namespace SiHotIntegration
                         total =
                              roomChargeDetails.ItemList[itemIndex].PriceTotal.Substring(0, (roomChargeDetails.ItemList[itemIndex].PriceTotal.IndexOf(".") + 3));
                     }
-                    stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory + 
-                                   "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc + 
-                                   "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount + 
-                                   "    Price Unit:-  " + ppu + 
-                                   "    Price Total:- " + total + 
-                                   "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage +
-                                   "    Article Category:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory +
-                                   "    Description:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc);
-                   
+                    if(roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc != "")
+                    {
+                        stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory +
+                                       "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc +
+                                       "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount +
+                                       "    Price Unit:-  " + ppu +
+                                       "    Price Total:- " + total +
+                                       "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage +
+                                       "    Article Category:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory +
+                                       "    Description:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc);
+
+                    }
+                    else
+                    {
+                        stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory +
+                                       "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc +
+                                       "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount +
+                                       "    Price Unit:-  " + ppu +
+                                       "    Price Total:- " + total +
+                                       "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage);
+                    }
                 }
                 stringList.Add("***********End Of Items**************");
                 for (int i = 0; i < roomChargeDetails.PaymentList.Count; i++)
