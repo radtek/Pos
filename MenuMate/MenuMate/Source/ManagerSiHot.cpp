@@ -165,7 +165,8 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey,
+                                                    TGlobalSettings::Instance().EnableItemDetailsPosting);
     Processing->Close();
     if(roomResponse.IsSuccessful)
     {
@@ -231,7 +232,7 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
-            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey,TGlobalSettings::Instance().EnableItemDetailsPosting);
             if(roomResponse.IsSuccessful)
                 retValue = true;
             else

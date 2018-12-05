@@ -19,7 +19,7 @@ class TSiHotInterface
     public:
        TSiHotInterface();
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest, int timeOut, UnicodeString apiKey);
-       TRoomChargeResponse SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey);
+       TRoomChargeResponse SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey, bool isItemDetailsPosting);
        bool ValidateIPAddressPort(AnsiString address,int port, int transno);
 };
 #endif

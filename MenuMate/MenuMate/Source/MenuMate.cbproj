@@ -3121,10 +3121,6 @@
 				<DependentOn>ReceiptUtility.h</DependentOn>
 				<BuildOrder>719</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="SiHotWSDL.cpp">
-				<DependentOn>SiHotWSDL.h</DependentOn>
-				<BuildOrder>763</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="ChitNumberController.cpp">
 				<DependentOn>ChitNumberController.h</DependentOn>
 				<BuildOrder>401</BuildOrder>
@@ -3427,6 +3423,10 @@
 			<CppCompile Include="..\..\Components BCB6\Eftpos\CadmusEftposLib_OCX.cpp">
 				<DependentOn>..\..\Components BCB6\Eftpos\CadmusEftposLib_OCX.h</DependentOn>
 				<BuildOrder>788</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SiHotWSDL.cpp">
+				<DependentOn>SiHotWSDL.h</DependentOn>
+				<BuildOrder>782</BuildOrder>
 			</CppCompile>
 			<FormResources Include="GenericGroupGUI.dfm"/>
 			<FormResources Include="DiscountEditor.dfm"/>
