@@ -140,7 +140,7 @@ namespace SiHotIntegration
             }
             return roomDetails;
         }
-        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount, int timeOut, string apiKey)
+        public RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int retryCount, int timeOut, string apiKey, bool isItemsDetailsPosting)
         {
             List<string> stringList = new List<string>();
             RoomChargeResponse response = new RoomChargeResponse();
@@ -177,7 +177,7 @@ namespace SiHotIntegration
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
-                        GetDetailsList(roomChargeDetails, stringList);
+                        GetDetailsList(roomChargeDetails, stringList, isItemsDetailsPosting);
                         // to clear existing data if any
                         if (tc.Available > 0)
                         {
@@ -299,7 +299,7 @@ namespace SiHotIntegration
             }
             return value;
         }
-        private void GetDetailsList(RoomChargeDetails roomChargeDetails, List<string> stringList)
+        private void GetDetailsList(RoomChargeDetails roomChargeDetails, List<string> stringList, bool isItemsDetailsPosting)
         {
             try
             {
@@ -341,7 +341,7 @@ namespace SiHotIntegration
                         total =
                              roomChargeDetails.ItemList[itemIndex].PriceTotal.Substring(0, (roomChargeDetails.ItemList[itemIndex].PriceTotal.IndexOf(".") + 3));
                     }
-                    if(roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc != "")
+                    if (isItemsDetailsPosting)
                     {
                         stringList.Add("Middle Category:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory +
                                        "    Description:- " + roomChargeDetails.ItemList[itemIndex].MiddleCategory_Desc +
