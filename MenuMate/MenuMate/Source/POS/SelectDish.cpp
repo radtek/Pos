@@ -13790,6 +13790,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 	itemComplete->MemberFreeSaleDiscount = itemSize->MemberFreeSaleDiscount;
 	itemComplete->LocationFreeSaleCount = itemSize->LocationFreeSaleCount;
 	itemComplete->LocationFreeSaleDiscount = itemSize->LocationFreeSaleDiscount;
+    itemComplete->ItemSizeIdentifierKey = itemSize->ItemSizeIdentifierKey;
 
 	if (itemComplete->SetMenuMaster && itemComplete->SetMenuMask != 0)
 	{
@@ -14059,6 +14060,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(SelectedSize)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(SelectedSize)->PLU;
         NewSubOrder->RevenueCode = Item->Sizes->SizeGet(SelectedSize)->RevenueCode;
+        NewSubOrder->ItemSizeIdentifierKey = Item->Sizes->SizeGet(SelectedSize)->ItemSizeIdentifierKey;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(SelectedSize)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(SelectedSize)->Cost; // Get default cost if assigned.
@@ -14135,6 +14137,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 		NewSubOrder->ThirdPartyCode = Item->Sizes->SizeGet(0)->ThirdPartyCode;
 		NewSubOrder->PLU = Item->Sizes->SizeGet(0)->PLU;
         NewSubOrder->RevenueCode = Item->Sizes->SizeGet(0)->RevenueCode;
+        NewSubOrder->ItemSizeIdentifierKey = Item->Sizes->SizeGet(0)->ItemSizeIdentifierKey;
 		// Sort Recipes
 		NewSubOrder->SalesRecipesToApply->RecipeCopyList(Item->Sizes->SizeGet(0)->Recipes);
 		NewSubOrder->Cost = Item->Sizes->SizeGet(0)->Cost; // Get default cost if assigned.

@@ -10885,6 +10885,7 @@ bool TfrmMenuEdit::LoadFromFile()
 		if( LoadMenuFromFile( OpenDialog1->FileName ) )
 		{
 			result = true;
+            ResetItemAndItemSizeIdentifier();
 		}
 		else
 		{

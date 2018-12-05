@@ -346,7 +346,9 @@ namespace SiHotIntegration
                                    "    Quantity:-    " + roomChargeDetails.ItemList[itemIndex].Amount + 
                                    "    Price Unit:-  " + ppu + 
                                    "    Price Total:- " + total + 
-                                   "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage);
+                                   "    VAT Percent:- " + roomChargeDetails.ItemList[itemIndex].VATPercentage +
+                                   "    Article Category:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory +
+                                   "    Description:- " + roomChargeDetails.ItemList[itemIndex].ArticleCategory_Desc);
                    
                 }
                 stringList.Add("***********End Of Items**************");

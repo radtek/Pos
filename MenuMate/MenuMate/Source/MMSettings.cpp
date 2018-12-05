@@ -396,7 +396,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
         TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmCompanyDetails, false);
         TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
-        TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
+//        TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
         TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");
         TGlobalSettings::Instance().CashVarianceGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashVariance, "6-3400");
         TGlobalSettings::Instance().ReportExportPath = TManagerVariable::Instance().GetStr(DBTransaction, vmReportExportPath, "");
@@ -440,6 +440,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
         TGlobalSettings::Instance().ForceHappyHour = TManagerVariable::Instance().GetBool(DBTransaction, vmForceHappyHour, false);
+        TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

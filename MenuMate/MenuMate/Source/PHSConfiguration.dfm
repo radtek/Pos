@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 670
+  ClientHeight = 725
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 9
     Top = 8
     Width = 600
-    Height = 657
+    Height = 712
     Color = 10011108
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -33,7 +33,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     TabOrder = 0
     DesignSize = (
       600
-      657)
+      712)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -80,6 +80,20 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       Width = 201
       Height = 22
       Caption = 'Send No Tax To Sihot'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
+    object lblEnableItemDetailsPosting: TLabel
+      Left = 16
+      Top = 649
+      Width = 217
+      Height = 66
+      Caption = 'Enable Item Details Posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -394,7 +408,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbEnableCustomerJourney: TCheckBox
       Left = 558
-      Top = 365
+      Top = 368
       Width = 27
       Height = 51
       Anchors = [akLeft]
@@ -476,17 +490,25 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     object cbNoTaxToSihot: TCheckBox
       Left = 558
       Top = 550
-      Width = 97
+      Width = 11
       Height = 17
       TabOrder = 21
       OnClick = cbNoTaxToSihotClick
+    end
+    object cbEnableItemDetailsPosting: TCheckBox
+      Left = 268
+      Top = 664
+      Width = 11
+      Height = 17
+      TabOrder = 22
+      OnClick = cbEnableItemDetailsPostingClick
     end
   end
   object Panel2: TPanel
     Left = 615
     Top = 8
     Width = 137
-    Height = 657
+    Height = 712
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

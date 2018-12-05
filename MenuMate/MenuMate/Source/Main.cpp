@@ -88,7 +88,7 @@
 #include "MMCustomerDisplayManager.h"
 #include "ManagerCloudSync.h"
 #include "CSVExportReceiver.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPMS.h"
 #include "EftposSmartConnect.h"
 #include "EftposAdyen.h"
@@ -476,12 +476,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
-            TManagerPanasonic::Instance();
-            TManagerPanasonic::Instance()->PrepareTenderTypes();
-            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-        }
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
+//            TManagerPanasonic::Instance();
+//            TManagerPanasonic::Instance()->PrepareTenderTypes();
+//            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//        }
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);

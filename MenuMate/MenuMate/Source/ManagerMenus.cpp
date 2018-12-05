@@ -1022,6 +1022,7 @@ TListMenu *TManagerMenus::LoadMenuFromDB(Database::TDBControl &DBControl, const 
 
                              Size->PriceLevels = ItemSizeInfo.PriceLevels;
                              Size->RevenueCode = ItemSizeInfo.RevenueCode;
+                             Size->ItemSizeIdentifierKey = ItemSizeInfo.ItemSizeIdentifierKey;
 
 
 

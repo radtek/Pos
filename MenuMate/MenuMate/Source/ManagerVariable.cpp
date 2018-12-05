@@ -3411,6 +3411,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt","Show  Tip And Signature.\r""Default is False",vmgPrinting, false);
         SetVarBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, "Enable Adjust Authorisation on all cards","Card will follow Master or Visa  card process \r""Default is False",vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmForceHappyHour, "Force Happy Hour", "This will force the terminal to apply Happy Hour.\r" "Default is False", vmgHappyHour, false);
+        SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

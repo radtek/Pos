@@ -226,12 +226,12 @@ void TSalesForceCommAtZed::CreatePVAsPaymentType(Database::TDBTransaction &DBTra
            TDeviceRealTerminal::Instance().PocketVouchers->URL = Url;
         }
 
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
-            std::vector <UnicodeString> PayTypes;
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-            TDeviceRealTerminal::Instance().PaymentSystem->InsertPaymentTypeInPanasonicDB(PayTypes);
-        }
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
+//            std::vector <UnicodeString> PayTypes;
+//            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+//            TDeviceRealTerminal::Instance().PaymentSystem->InsertPaymentTypeInPanasonicDB(PayTypes);
+//        }
     }
     catch(Exception &E)
     {

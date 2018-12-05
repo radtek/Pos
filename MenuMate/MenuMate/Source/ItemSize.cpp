@@ -150,6 +150,7 @@ TItemSize::TItemSize(item_key_type host_item_key)
    CostForPoints = 0;
    IsCanBePaidForUsingPoints = false;  // check can be paid by points..
    RevenueCode = 0;
+   ItemSizeIdentifierKey = 0;
 }
 
 __fastcall TItemSize::~TItemSize()
@@ -185,4 +186,5 @@ void TItemSize::SizeCopy(TItemSize * Copy)
    default_patron_count_ = Copy->default_patron_count_;
    PriceLevels= Copy->PriceLevels;
    IsCanBePaidForUsingPoints = Copy->IsCanBePaidForUsingPoints;  // check can be paid by points..
+   ItemSizeIdentifierKey = Copy->ItemSizeIdentifierKey;
 }
