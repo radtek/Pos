@@ -1081,7 +1081,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
 
         Printout->PrintFormat->NewLine();
         Printout->PrintFormat->Line->ColCount = 1;
-        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 20;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
         Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
         Printout->PrintFormat->AddLine();
@@ -1090,7 +1090,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5 ;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Date/Time";
@@ -1101,7 +1101,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4 ;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Terminal Name";
@@ -1112,7 +1112,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + +4 ;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Staff Name";
@@ -1123,7 +1123,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Receipt No.";
@@ -1134,7 +1134,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Original Total";
@@ -1145,7 +1145,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5 ;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Tip Amount";
@@ -1156,7 +1156,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Updated Total";
@@ -1171,11 +1171,11 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->ColCount = 2;
         Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width * 2 / 3;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
-        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 4;
+        Printout->PrintFormat->Line->Columns[1]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 2 / 3) + 5;
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->ColCount = 1;
-        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 18;
+        Printout->PrintFormat->Line->Columns[0]->Width = Printout->PrintFormat->Width - (Printout->PrintFormat->Width * 1 / 3) + 20;
         Printout->PrintFormat->Line->Columns[0]->Alignment = taLeftJustify;
         Printout->PrintFormat->Line->Columns[0]->Text = "-------------------------------------------------------------------------------------------------------------------------------";
         Printout->PrintFormat->AddLine();
