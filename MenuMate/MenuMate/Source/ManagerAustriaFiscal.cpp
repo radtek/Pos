@@ -416,8 +416,31 @@ std::vector<TChargeItemAustriaFiscal> TManagerAustriaFiscal::GetChargeItemsAustr
             chargeItemPointsRefund.Description = "Refund Points";
             chargeItemPointsRefund.VATRate = 0;
             chargeItemPointsRefund.Quantity = 1;
-            chargeItemPointsRefund.Amount = (double)paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+            chargeItemPointsRefund.Amount = fabs((double)paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded());
             chargeItems.push_back(chargeItemPointsRefund);
+        }
+        for(int indexPayment = 0; indexPayment < paymentTransaction.PaymentsCount();indexPayment++)
+        {
+            TPayment* payment = paymentTransaction.PaymentGet(indexPayment);
+            if(!payment->GetPaymentAttribute(ePayTypeCustomSurcharge) && !payment->GetPaymentAttribute(ePayTypeSurcharge)
+               && payment->GetAdjustment() != 0 && payment->AdjustmentReason.Pos("Points") == 0)
+            {
+                TChargeItemAustriaFiscal chargeItemAdjustments;
+
+                if(!paymentTransaction.CreditTransaction)
+                    chargeItemAdjustments.ChargeItemCase = 0x4154000000000000;
+                else
+                    chargeItemAdjustments.ChargeItemCase = 0x4154000000000006;
+                chargeItemAdjustments.Description = payment->AdjustmentReason;
+                if(payment->IsLoyaltyGiftCard())
+                {
+                   chargeItemAdjustments.Description = "Purchased Gift Card #" + paymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber;
+                }
+                chargeItemAdjustments.VATRate = 0;
+                chargeItemAdjustments.Quantity = 1;
+                chargeItemAdjustments.Amount = (double)payment->GetAdjustment();
+                chargeItems.push_back(chargeItemAdjustments);
+            }
         }
         if(paymentTransaction.Money.TotalRounding != 0)
         {
@@ -469,7 +492,7 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
         {
             TPayItemAustriaFiscal austriaPayment;
             austriaPayment.PayItemCase = 0x4154000000000000;
-            austriaPayment.Amount = ((double)(payment->GetPayTendered() - payment->GetCashOut() - (payment->GetChange()) - (payment->GetAdjustment())));
+            austriaPayment.Amount = ((double)(payment->GetPayTendered() - (payment->GetChange()) - (payment->GetAdjustment()) - payment->TipAmount));
             if(!paymentTransaction.CreditTransaction)
                 austriaPayment.Quantity = 1;
             else
@@ -485,26 +508,26 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
             austriaPayment.Description = paymentName;
             payItems.push_back(austriaPayment);
         }
-        if(payment->GetCashOut() != 0)
-        {
-            TPayItemAustriaFiscal austriaPaymentCashOut;
-            austriaPaymentCashOut.PayItemCase = 0x4154000000000000;
-            austriaPaymentCashOut.Amount = ((double)payment->GetCashOut());
-            if(!paymentTransaction.CreditTransaction)
-                austriaPaymentCashOut.Quantity = 1;
-            else
-                austriaPaymentCashOut.Quantity = -1;
-            UnicodeString paymentName = payment->Name;
-            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
-            {
-                if(payment->CardType != "")
-                {
-                    paymentName = payment->CardType;
-                }
-            }
-            austriaPaymentCashOut.Description = paymentName + " Cash Out";
-            payItems.push_back(austriaPaymentCashOut);
-        }
+//        if(payment->GetCashOut() != 0)
+//        {
+//            TPayItemAustriaFiscal austriaPaymentCashOut;
+//            austriaPaymentCashOut.PayItemCase = 0x4154000000000000;
+//            austriaPaymentCashOut.Amount = ((double)payment->GetCashOut());
+//            if(!paymentTransaction.CreditTransaction)
+//                austriaPaymentCashOut.Quantity = 1;
+//            else
+//                austriaPaymentCashOut.Quantity = -1;
+//            UnicodeString paymentName = payment->Name;
+//            if(payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
+//            {
+//                if(payment->CardType != "")
+//                {
+//                    paymentName = payment->CardType;
+//                }
+//            }
+//            austriaPaymentCashOut.Description = paymentName + " Cash Out";
+//            payItems.push_back(austriaPaymentCashOut);
+//        }
         if(payment->TipAmount != 0)
         {
             TPayItemAustriaFiscal austriaPaymentTip;
@@ -522,7 +545,7 @@ std::vector<TPayItemAustriaFiscal> TManagerAustriaFiscal::GetPayItemsAustria(TPa
                     paymentName = payment->CardType;
                 }
             }
-            austriaPaymentTip.Description = paymentName + "Tips";
+            austriaPaymentTip.Description = paymentName + " Tips";
             payItems.push_back(austriaPaymentTip);
         }
     }
