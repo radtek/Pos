@@ -517,7 +517,7 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
                 }
                 else
                     MessageBox("Tip applied successfully", "Tip Applied", MB_ICONINFORMATION + MB_OK);
-                    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards && TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
                       ManagerReceipt->PrintDocket(arcBillKey,tipAmount);
 
             }

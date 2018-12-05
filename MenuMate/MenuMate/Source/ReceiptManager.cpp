@@ -1060,6 +1060,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
 {
    try
    {
+
    	    TReqPrintJob* TempReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
 		TempReceipt->JobType = pjReceiptReceipt;
         TPrintout *Printout = new TPrintout;
@@ -1148,7 +1149,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->Line->Columns[1]->Alignment = taRightJustify;
 
         Printout->PrintFormat->Line->Columns[0]->Text = "Tip Amount";
-        Printout->PrintFormat->Line->Columns[1]->Text =  CurrencyString + FormatFloat("0.00", tipAmount);
+        Printout->PrintFormat->Line->Columns[1]->Text =  CurrencyString +" "+ FormatFloat("0.00", tipAmount);
         Printout->PrintFormat->AddLine();
 
         Printout->PrintFormat->Line->FontInfo.Height = fsNormalSize;
@@ -1182,10 +1183,10 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->PartialCut();
 
         TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+
         delete Printout;
         Printout = NULL;
-        delete TempReceipt;
-        TempReceipt = NULL;
+
   }
    catch(Exception & E)
    {
