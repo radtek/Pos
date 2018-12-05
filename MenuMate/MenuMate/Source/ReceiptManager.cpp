@@ -1065,7 +1065,7 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         TPrintout *Printout = new TPrintout;
         Printout->Printer = TComms::Instance().ReceiptPrinter;
 		TempReceipt->Printouts->Add(Printout);
-       // std::auto_ptr <TPrintout> Printout(new TPrintout);
+
         Database::TDBTransaction DBTransaction(DBControl);
         DBTransaction.StartTransaction();
 
@@ -1181,7 +1181,11 @@ void TManagerReceipt::PrintDocket(int arcbillkey , int tipAmount)
         Printout->PrintFormat->NewLine();
         Printout->PrintFormat->PartialCut();
 
-         TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        TempReceipt->Printouts->Print(TDeviceRealTerminal::Instance().ID.Type);
+        delete Printout;
+        Printout = NULL;
+        delete TempReceipt;
+        TempReceipt = NULL;
   }
    catch(Exception & E)
    {
