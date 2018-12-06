@@ -901,13 +901,12 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           object cbEnableTableLock: TCheckBox
             Left = 8
             Top = 18
-            Width = 250
+            Width = 260
             Height = 20
             Anchors = [akLeft]
-            Caption = 'Enable Table Lock'
+            Caption = 'Enable table assignment to a staff'
             TabOrder = 0
             OnClick = cbEnableTableLockClick
-            ExplicitTop = 21
           end
         end
         object gbItemBilling: TGroupBox
