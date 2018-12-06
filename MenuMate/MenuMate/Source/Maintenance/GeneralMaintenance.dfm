@@ -623,16 +623,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 448
           Top = 49
           Width = 401
-          Height = 50
+          Height = 45
           Caption = 'Production Tracking'
           ParentBackground = False
           TabOrder = 0
           DesignSize = (
             401
-            50)
+            45)
           object cbSaleAndMakeTimes: TCheckBox
-            Left = 8
-            Top = 21
+            Left = 3
+            Top = 15
             Width = 361
             Height = 25
             Anchors = [akLeft]
@@ -643,19 +643,19 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox6: TGroupBox
           Left = 447
-          Top = 100
+          Top = 95
           Width = 401
-          Height = 90
+          Height = 85
           Anchors = [akLeft]
           Caption = 'Storage Settings'
           ParentBackground = False
           TabOrder = 1
           DesignSize = (
             401
-            90)
+            85)
           object lbeSeatLabel: TLabel
             Left = 8
-            Top = 59
+            Top = 55
             Width = 67
             Height = 18
             Anchors = [akLeft]
@@ -664,38 +664,41 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object edSeatLabel: TEdit
             Left = 96
-            Top = 59
+            Top = 55
             Width = 210
             Height = 26
             Anchors = [akLeft]
             MaxLength = 6
             TabOrder = 0
             OnMouseUp = edSeatLabelMouseUp
+            ExplicitTop = 59
           end
           object cbTableSeats: TCheckBox
             Left = 8
-            Top = 40
+            Top = 37
             Width = 297
             Height = 17
             Anchors = [akLeft]
             Caption = 'Enable Table Seat Interface'
             TabOrder = 1
             OnClick = cbTableSeatsClick
+            ExplicitTop = 40
           end
           object cbTabsInterface: TCheckBox
             Left = 8
-            Top = 20
+            Top = 18
             Width = 297
             Height = 17
             Anchors = [akLeft]
             Caption = 'Enable Tabs Interface'
             TabOrder = 2
             OnClick = cbTabsInterfaceClick
+            ExplicitTop = 20
           end
         end
         object GroupBox21: TGroupBox
           Left = 447
-          Top = 190
+          Top = 180
           Width = 401
           Height = 45
           Anchors = [akLeft]
@@ -734,7 +737,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox19: TGroupBox
           Left = 447
-          Top = 448
+          Top = 433
           Width = 401
           Height = 115
           Anchors = [akLeft]
@@ -806,144 +809,176 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object GroupBox23: TGroupBox
           Left = 447
-          Top = 563
+          Top = 548
           Width = 401
-          Height = 49
+          Height = 45
           Anchors = [akLeft]
           Caption = 'Item Search'
           TabOrder = 8
           DesignSize = (
             401
-            49)
+            45)
           object cbItemSearch: TCheckBox
             Left = 8
-            Top = 21
+            Top = 19
             Width = 250
             Height = 20
             Anchors = [akLeft]
             Caption = 'Enable Item Search'
             TabOrder = 0
             OnClick = cbItemSearchClick
+            ExplicitTop = 21
           end
         end
         object GroupBoxEJournal: TGroupBox
           Left = 447
-          Top = 613
+          Top = 595
           Width = 401
-          Height = 70
+          Height = 60
           Anchors = [akLeft]
           Caption = 'E Journal'
           TabOrder = 9
           DesignSize = (
             401
-            70)
+            60)
           object cbExcludeReceipt: TCheckBox
             Left = 8
-            Top = 21
+            Top = 17
             Width = 250
             Height = 20
             Anchors = [akLeft]
             Caption = 'Do not include Receipt'
             TabOrder = 1
             OnClick = cbExcludeReceiptClick
+            ExplicitTop = 21
           end
           object cbExcludeXReport: TCheckBox
             Left = 8
-            Top = 40
+            Top = 33
             Width = 250
             Height = 20
             Anchors = [akLeft]
             Caption = 'Do not include X Report'
             TabOrder = 0
             OnClick = cbExcludeXReportClick
+            ExplicitTop = 40
           end
         end
         object GroupBoxResourceManagement: TGroupBox
           Left = 447
-          Top = 684
+          Top = 656
           Width = 401
-          Height = 50
+          Height = 45
           Anchors = [akLeft]
           Caption = 'Resource Management'
-          TabOrder = 7
+          TabOrder = 10
           DesignSize = (
             401
-            50)
+            45)
           object cbRestartService: TCheckBox
             Left = 8
-            Top = 21
+            Top = 18
             Width = 250
             Height = 20
             Anchors = [akLeft]
             Caption = 'Restart Service at ZED'
             TabOrder = 0
             OnClick = cbRestartServiceAtZedClick
+            ExplicitTop = 21
+          end
+        end
+        object GroupBoxTableGroup: TGroupBox
+          Left = 447
+          Top = 705
+          Width = 401
+          Height = 45
+          Anchors = [akLeft]
+          Caption = 'Table Group'
+          TabOrder = 7
+          DesignSize = (
+            401
+            45)
+          object cbEnableTableLock: TCheckBox
+            Left = 8
+            Top = 18
+            Width = 250
+            Height = 20
+            Anchors = [akLeft]
+            Caption = 'Enable Table Lock'
+            TabOrder = 0
+            OnClick = cbEnableTableLockClick
+            ExplicitTop = 21
           end
         end
         object gbItemBilling: TGroupBox
           Left = 447
-          Top = 235
+          Top = 225
           Width = 401
-          Height = 213
+          Height = 208
           Anchors = [akLeft]
           Caption = 'Item Billing'
           TabOrder = 6
           DesignSize = (
             401
-            213)
+            208)
           object cbDisplayTaxExempt: TCheckBox
             Left = 8
-            Top = 19
+            Top = 18
             Width = 377
             Height = 25
             Anchors = [akLeft]
             Caption = 'Enable Tax Removal'
             TabOrder = 6
             OnClick = cbDisplayTaxExemptClick
+            ExplicitTop = 19
           end
           object cbSkipConfirmationOnFastTender: TCheckBox
             Left = 8
-            Top = 43
+            Top = 42
             Width = 350
             Height = 25
             Anchors = [akLeft]
             Caption = 'Skip Confirmation on Fast Tender Shortcuts'
             TabOrder = 1
             OnClick = cbSkipConfirmationOnFastTenderClick
+            ExplicitTop = 43
           end
           object cbTransferTableOnPrintPrelim: TCheckBox
             Left = 8
-            Top = 67
+            Top = 65
             Width = 320
             Height = 25
             Anchors = [akLeft]
             Caption = 'Delayed Payment'
             TabOrder = 2
             OnClick = cbTransferTableOnPrintPrelimClick
+            ExplicitTop = 67
           end
           object cbEnableCancelCheckRemoval: TCheckBox
             Left = 8
-            Top = 91
+            Top = 89
             Width = 370
             Height = 25
             Anchors = [akLeft]
             Caption = 'Enable Security Check on Cancel at Payment Tender'
             TabOrder = 3
             OnClick = cbEnableCancelCheckRemovalClick
+            ExplicitTop = 91
           end
           object cbRoundOnBilling: TCheckBox
             Left = 8
-            Top = 114
+            Top = 111
             Width = 250
             Height = 25
             Anchors = [akLeft]
             Caption = 'Round On Billing'
             TabOrder = 5
             OnClick = cbRoundOnBillingClick
+            ExplicitTop = 114
           end
           object tbRoundingOnBilling: TTouchBtn
             Left = 313
-            Top = 114
+            Top = 111
             Width = 80
             Height = 33
             Anchors = [akLeft]
@@ -960,36 +995,40 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbRoundingOnBillingClick
+            ExplicitTop = 114
           end
           object cbDeleteItemSizeAfterSale: TCheckBox
             Left = 8
-            Top = 139
+            Top = 136
             Width = 250
             Height = 20
             Anchors = [akLeft]
             Caption = 'Delete ItemSize After Sale'
             TabOrder = 0
             OnClick = cbDeleteItemSizeAfterSaleClick
+            ExplicitTop = 139
           end
           object cbMergeSimilarItem: TCheckBox
             Left = 8
-            Top = 162
+            Top = 158
             Width = 250
             Height = 25
             Anchors = [akLeft]
             Caption = 'Merge Similar Items for Billing'
             TabOrder = 4
             OnClick = cbMergeSimilarItemClick
+            ExplicitTop = 162
           end
           object cbSplitBillByMenuType: TCheckBox
             Left = 8
-            Top = 185
+            Top = 180
             Width = 250
             Height = 25
             Anchors = [akLeft]
             Caption = 'Split Bill On Menu Basis'
             TabOrder = 7
             OnClick = cbSplitBillByMenuTypeClick
+            ExplicitTop = 185
           end
         end
       end
@@ -2447,7 +2486,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS SmartPay'
-            TabOrder = 8
+            TabOrder = 7
             OnClick = cbIntegratedEftposSmartPayClick
           end
           object cbEnableDPSTipping: TCheckBox
@@ -2457,7 +2496,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'Enable Tipping Transactions'
-            TabOrder = 7
+            TabOrder = 6
             OnClick = cbEnableDPSTippingClick
           end
           object cbIntegratedEftposSmartConnect: TCheckBox
@@ -2477,7 +2516,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'Cadmus Cronos'
-            TabOrder = 9
+            TabOrder = 8
             OnClick = cbCadmusCronosClick
           end
           object cbIntegratedEftposAdyen: TCheckBox
@@ -2487,7 +2526,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS Adyen'
-            TabOrder = 11
+            TabOrder = 9
             OnClick = cbIntegratedEftposAdyenClick
           end
           object cbIntegratedEftposPaymentSense: TCheckBox
@@ -2497,7 +2536,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Height = 20
             Anchors = [akLeft]
             Caption = 'EFTPOS Payment Sense'
-            TabOrder = 12
+            TabOrder = 13
             OnClick = cbIntegratedEftposPaymentSenseClick
           end
           object cbIntegratedEftposPreAuthorisaton: TCheckBox
@@ -2677,10 +2716,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Logging'
       ImageIndex = 5
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 0
@@ -2896,10 +2931,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
       Caption = 'Magic Memories'
       ImageIndex = 6
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel3: TPanel
         Left = 5
         Top = -8
@@ -3602,10 +3633,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     object tsCustomerDisplay: TTabSheet
       Caption = 'Customer Display.'
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Panel16: TPanel
         Left = 0
         Top = 0

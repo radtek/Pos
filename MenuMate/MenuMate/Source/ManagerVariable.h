@@ -125,6 +125,7 @@ enum vmVariables
     vmIsBillSplittedByMenuType,
     vmIsAutoLoggedOut,
     vmDiningBal,
+    vmIsTableLockEnabled,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -226,8 +227,9 @@ enum vmVariables
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
-vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
-	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,	vmEnableItemDetailsPosting};
+    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
+	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,
+    vmEnableItemDetailsPosting};
 
 // ---------------------------------------------------------------------------
 class TManagerVariable

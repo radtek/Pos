@@ -3421,6 +3421,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarStr(DBTransaction, vmAustriaFiscalAccessToken, "Austria Fiscal Access Token", "Austria Fiscal Access Token", vmg3rdPartyInterface, "");
         SetVarBool(DBTransaction, vmIsAustriaFiscalPostInProgress, "Shows status of posting","Gets true while posting to Austria ",vmgPOS, false);
         SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmIsTableLockEnabled,"Enable Table Lock", "Table will be accessed by that staff only who have save first orders on it.\r", vmgPOS, false);
 	}
 	catch(Exception &E)
 	{

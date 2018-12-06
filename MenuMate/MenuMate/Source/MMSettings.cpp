@@ -446,6 +446,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().AustriaFiscalTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalTerminalId, "");
         TGlobalSettings::Instance().AustriaFiscalAccessToken = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalAccessToken, "");
         TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
+        TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

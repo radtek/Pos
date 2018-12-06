@@ -4445,9 +4445,12 @@ eDisplayMode TfrmBillGroup::SelectedZone()
     RemoveMembership(DBTransaction);
 	DBTransaction.Commit();
 	DBTransaction.StartTransaction();
+
 	if (SelectionForm->ShowModal() != mrCancel)
 	{
-        tbtnSelectZone->Caption = SelectionForm->Title;
+        if(SelectionForm->SelectedTabType != TabTableSeat)
+            tbtnSelectZone->Caption = SelectionForm->Title;
+
 		switch(int(SelectionForm->SelectedTabType))
 		{
 		case TabNormal:
@@ -4534,7 +4537,18 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                 if( floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 //				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 				{
-
+                    if(TGlobalSettings::Instance().IsTableLockEnabled)
+                    {
+                        UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(DBTransaction, floorPlanReturnParams.TabContainerNumber);
+                        if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                        {
+                            MessageBox("This Table can only be billed by staff " + StaffName,"Error",MB_OK);
+                            ResetForm();
+                            floorPlan.reset();
+                            break;
+                        }
+                     }
+                     tbtnSelectZone->Caption = SelectionForm->Title;
                     CurrentDisplayMode = eTables;
                     CurrentTabType     = TabTableSeat;
                     UpdateRightButtonDisplay(NULL);

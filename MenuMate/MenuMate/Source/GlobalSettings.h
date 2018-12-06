@@ -550,6 +550,7 @@ public:
     UnicodeString AustriaFiscalTerminalId;
     UnicodeString AustriaFiscalAccessToken;
     bool EnableItemDetailsPosting;
+    bool IsTableLockEnabled;
 };
 
 #endif

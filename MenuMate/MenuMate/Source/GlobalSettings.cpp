@@ -455,5 +455,6 @@ TGlobalSettings::TGlobalSettings()
     AustriaFiscalTerminalId = "";
     AustriaFiscalAccessToken = "";
     EnableItemDetailsPosting = false;
+    IsTableLockEnabled = false;
 }
 
