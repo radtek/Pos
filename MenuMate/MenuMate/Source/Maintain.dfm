@@ -922,7 +922,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'POS Plus'
+            Caption = 'Fiscal Reporting'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace

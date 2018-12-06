@@ -43,6 +43,7 @@ namespace MenumateServices
             this.serviceInstallerAdyenIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerPaymentSense = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerMewsIntegration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerAustria = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -129,12 +130,19 @@ namespace MenumateServices
             this.serviceInstallerPaymentSense.ServiceName = "MenumateServicePaymentSense";
             this.serviceInstallerPaymentSense.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
-            // serviceInstallerMews
+            // serviceInstallerMewsIntegration
             // 
             this.serviceInstallerMewsIntegration.Description = "Menumate Mews Server";
             this.serviceInstallerMewsIntegration.DisplayName = "MenumateServiceMewsIntegration";
             this.serviceInstallerMewsIntegration.ServiceName = "MenumateServiceMewsIntegration";
             this.serviceInstallerMewsIntegration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
+            // serviceInstallerAustria
+            // 
+            this.serviceInstallerAustria.Description = "Menumate Austria FiscalSevice";
+            this.serviceInstallerAustria.DisplayName = "Menumate Austria Fiscal Sevice";
+            this.serviceInstallerAustria.ServiceName = "MenumateServiceAustriaIntegration";
+            this.serviceInstallerAustria.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
@@ -151,7 +159,8 @@ namespace MenumateServices
             this.serviceInstallerSmartConnect,
             this.serviceInstallerAdyenIntegration,
             this.serviceInstallerPaymentSense,
-            this.serviceInstallerMewsIntegration});
+            this.serviceInstallerMewsIntegration,
+            this.serviceInstallerAustria});
 
         }
 
@@ -200,5 +209,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerAdyenIntegration;
         private ServiceInstaller serviceInstallerPaymentSense;
         private ServiceInstaller serviceInstallerMewsIntegration;
+        private ServiceInstaller serviceInstallerAustria;
     }
 }

@@ -94,7 +94,7 @@
 #include "EftposAdyen.h"
 #include "EFTPOSPaymentSense.h"
 #include "SignalRUtility.h"
-
+#include "ManagerAustriaFiscal.h"
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
 #pragma link "TouchControls"
@@ -397,7 +397,13 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         {
             TCSVExportReceiver::Instance().Initialise(TGlobalSettings::Instance().CSVExportIP, TGlobalSettings::Instance().CSVPath, 47001);
         }
-
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustriaFiscal(new TManagerAustriaFiscal());
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled =  managerAustriaFiscal->GetEchoResponseFromMain();
+            if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+                MessageBox("Could not communicate with Austria Fiscal.\rAustria Fiscal reporting is disabled.","Error",MB_OK+MB_ICONERROR);
+        }
 		// Set up Header and Footer Info.
 		TDeviceRealTerminal::Instance().LoadHdrFtr();
 		FormResize(Sender);
@@ -493,6 +499,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
        }
        WriteDBPathAndIPToFile();
+       if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+          SetUpAustriaFiscal();
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -1904,3 +1912,8 @@ void TfrmMain::WriteDBPathAndIPToFile()
     logList->SaveToFile(fileName );
 }
 ////------------------------------------------------------------------------------------------
+void TfrmMain::SetUpAustriaFiscal()
+{
+    // Call for Setting up Austria Fiscal
+}
+//------------------------------------------------------------------------------

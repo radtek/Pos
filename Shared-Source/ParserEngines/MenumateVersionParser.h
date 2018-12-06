@@ -981,7 +981,10 @@ namespace MenumateVersionParser
         void AlterTableArcBill6_57(TDBControl* const inDBControl);
         void upgrade6_58Tables();
         void update6_58Tables();
-        void AlterTableLoyaltyPendingTrans6_58(TDBControl* const inDBControl);
+        void Create6_58Generator(TDBControl* const inDBControl);
+        void Create6_58Table(TDBControl* const inDBControl);
+		void AlterTableLoyaltyPendingTrans6_58(TDBControl* const inDBControl);
+        void UpdateTableLoyaltyPending6_58(TDBControl* const inDBControl);
 
     };// class
 } // namespace

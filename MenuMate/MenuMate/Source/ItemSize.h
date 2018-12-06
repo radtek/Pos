@@ -70,6 +70,7 @@ public:
    Currency CostForPoints;
    bool IsCanBePaidForUsingPoints;
    int  RevenueCode;
+   int  ItemSizeIdentifierKey;
 
 private:
    item_key_type host_item_key_;

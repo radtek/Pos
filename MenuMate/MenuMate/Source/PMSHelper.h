@@ -14,6 +14,7 @@ private:
 public:
     bool LoadRevenueCodes(std::map<int,TRevenueCodeDetails> &RevenueCodesMap, Database::TDBTransaction &DBTransaction);
     void GetRevenueCode(TList *Orders);
+    void GetItemSizeIdentifierKeys(TList *Orders);
 //    void InitializePMSDefaultPayment();
     //void LoadPMSPaymentTypes(std::map<int, TPMSPaymentType> &PMSPaymentTypesMap);
 };

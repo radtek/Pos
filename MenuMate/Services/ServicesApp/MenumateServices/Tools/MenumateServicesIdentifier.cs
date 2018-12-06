@@ -19,6 +19,7 @@ namespace MenumateServices
         SmartConnect,
         AdyenIntegration,
         PaymentSense,
-        MewsIntegration
+        MewsIntegration,
+        AustriaFiscalIntegration
     };
 }

@@ -84,7 +84,7 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
     }
 }
 //---------------------------------------------------------------------------
-TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey)
+TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey, bool isItemDetailsPosting)
 {
     TRoomChargeResponse roomChargeResponse;
     roomChargeResponse.IsSuccessful = false;
@@ -128,7 +128,7 @@ TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge,
         roomChargeDetails->Total = _roomCharge.Total;
         CoInitialize(NULL);
         timeOut = timeOut * 1000;
-        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut,apiKey);
+        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut,apiKey,isItemDetailsPosting);
         roomChargeResponse.IsSuccessful = roomResponse->IsSuccessful;
         roomChargeResponse.ResponseMessage = roomResponse->Response;
         return roomChargeResponse;

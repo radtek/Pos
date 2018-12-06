@@ -3411,6 +3411,16 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt","Show  Tip And Signature.\r""Default is False",vmgPrinting, false);
         SetVarBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, "Enable Adjust Authorisation on all cards","Card will follow Master or Visa  card process \r""Default is False",vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmForceHappyHour, "Force Happy Hour", "This will force the terminal to apply Happy Hour.\r" "Default is False", vmgHappyHour, false);
+        SetVarBool(DBTransaction,vmIsAustriaFiscalStorageEnabled,"Austria Fiscal Storage Enabling",
+        "When this is enabled, bill details will get stored to Austria Fiscal Cloud.\r"
+        "Default is false",
+        vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmAustriaFiscalUrl, "Austria Fiscal URL", "Austria Fiscal URL", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalCashBoxId, "Austria Fiscal Cash Box Id", "Austria Fiscal Cash Box Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalTerminalId, "Austria Fiscal Terminal Id", "Austria Fiscal Terminal Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalAccessToken, "Austria Fiscal Access Token", "Austria Fiscal Access Token", vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction, vmIsAustriaFiscalPostInProgress, "Shows status of posting","Gets true while posting to Austria ",vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
 	}
 	catch(Exception &E)
 	{

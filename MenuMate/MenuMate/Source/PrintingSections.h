@@ -348,6 +348,9 @@ private:
     //generic method to check whether payment done by param payment type. Old method has not removed. in future itr can be used.
     bool IsPaymentDoneWithParamPaymentType(TReqPrintJob *PrintJob, ePaymentAttribute attributeIndex);
     void PrintTipAndSignature(TReqPrintJob *PrintJob);
+    void PrintFiscalAustriaSignature(TReqPrintJob *PrintJob);
+    void GetAustriaFiscalSignature(__int64 &status, int &responseId,UnicodeString invoiveNumber);
+    UnicodeString GetSignatureContent(int responseId);
 };
 
 // ------------------------------------------------------------------------------
