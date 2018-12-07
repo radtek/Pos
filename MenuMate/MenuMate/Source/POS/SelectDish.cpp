@@ -4497,8 +4497,6 @@ void __fastcall TfrmSelectDish::tbtnChangeTableClick(TObject *Sender)
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 
         DBTransaction.StartTransaction();
-        // Tables table column tablock  is updated False
-	   	TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 
         std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
         int patronCount = GetCount(selectedTablePatrons);
@@ -5133,6 +5131,21 @@ bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)
 			break;
 		}
 	}
+
+    if(TGlobalSettings::Instance().IsTableLockEnabled && SelectedTable)
+    {
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+		DBTransaction.StartTransaction();
+        UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(DBTransaction, SelectedTable);
+        DBTransaction.Commit();
+        if(StaffName.Trim() != "" && TempUserInfo.Name.Pos(StaffName) == 0)
+        {
+            MessageBox("This Table can only be accessed by staff " + StaffName,"Error",MB_OK);
+            RetVal = false;
+            Refresh();
+            return RetVal;
+        }
+     }
 
 	if (OrdersTaken)
 	{
@@ -7193,9 +7206,6 @@ void TfrmSelectDish::SelectNewMenus()
 	DBTransaction.StartTransaction();
     TLoginSuccess Result = GetStaffLoginAccess(DBTransaction, CheckMenuEditor);
 
-    if(SelectedTable)
-        TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
-
         bool AskForLogin = false;
 	if ((!TDeviceRealTerminal::Instance().Menus->GetMenusExist(DBTransaction))&&(Result == lsAccepted))
 	{
@@ -8452,7 +8462,6 @@ void __fastcall TfrmSelectDish::tbtnSystemMouseClick (TObject *Sender)
 	IsTabBillProcessed=true;
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();
-    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
 	bool Proceed = false;
     if(dc_item_show && TGlobalSettings::Instance().IsDrinkCommandEnabled)
     {
@@ -8666,16 +8675,23 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 	if(IsSubSidizeOrderCancil)
 	{
         IsSubSidizeOrderCancil=false;
-
         return;
-
     }
+
 	if (CurrentTender != 0)
 	{
 		MessageBox("You must clear the tender amount before saving orders.", "Error", MB_OK + MB_ICONERROR);
 		return;
 	}
-	if (SeatOrders[0]->Orders->Count > 0)
+
+    int index = 0;
+
+    if(TGlobalSettings::Instance().IsTableLockEnabled && SeatOrders[0]->Orders->Count == 0 && SeatOrders[SelectedSeat]->Orders->Count)
+    {
+        index = SelectedSeat;
+    }
+
+	if (SeatOrders[index]->Orders->Count > 0)
 	{
 		TotalCosts();
 		UpdateExternalDevices();
@@ -9031,11 +9047,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 		if (!OrdersPending())
 		{
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-			DBTransaction.StartTransaction();
-
-            //Set the table status as availabale.
-            TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
-            DBTransaction.Commit();
 
             if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey && SeatOrders[SelectedSeat]->Orders->Count &&
                         SelectedTable && ShowMemberValidationMessage(SelectedTable))
@@ -9055,8 +9066,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
             {
                 frmBillGroup->PatronTypes = selectedTablePatrons;
             }
-            //Set the table status as availabale.
-            TDBTables::UpdateTableStatus(DBTransaction, frmBillGroup->CurrentTable, false);
 
             DBTransaction.Commit();
 			frmBillGroup->ShowModal();
@@ -9178,8 +9187,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 				}
                 else
                 {
-                    //Set the table status as availabale.
-                    TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
                    SelectedParty = SetPartyNameOnChitSettings(DBTransaction, SelectedParty, SelectedTable, true);
 
                    if(OrderContainer.Location["PrintPreLimReceipt"])
@@ -9222,10 +9229,6 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                 delete frmConfirmOrder;
                 frmConfirmOrder = NULL;
 			}
-            else
-            {
-                TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, false);
-            }
 
             int SeatKey  = TDBTables::GetOrCreateSeat(DBTransaction, SelectedTable, SelectedSeat);
             int TabKey = TDBTab::GetOrCreateTab(DBTransaction,TDBTables::GetTabKey(DBTransaction,SeatKey));
@@ -10202,6 +10205,18 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                OrderContainer.Location["PartyName"    ] = floorPlanReturnParams.PartyName;
 	                                OrderContainer.Location["RoomNumber"   ] = 0;
 	                                OrderContainer.AllowPartyNameChanged     = true;
+
+                                    if(TGlobalSettings::Instance().IsTableLockEnabled)
+                                    {
+                                        UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(DBTransaction, floorPlanReturnParams.TabContainerNumber);
+                                        if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                                        {
+                                            MessageBox("This Table has been already occupied by staff " + StaffName,"Error",MB_OK);
+                                            Retval = mrAbort;
+                                            floorPlan.reset();
+                                            break;
+                                        }
+                                     }
 
 	                                if( GetTableContainer( DBTransaction, OrderContainer ) != mrOk )
 	                                {
@@ -11199,12 +11214,15 @@ void TfrmSelectDish::showOldTablePicker()
             DBTransaction.StartTransaction();
             int TableKey = TDBTables::GetOrCreateTable(DBTransaction, SelectedTable);
 
-             if(TDBTables::IsTableLocked(DBTransaction,SelectedTable))
+             if(TGlobalSettings::Instance().IsTableLockEnabled)
              {
-                MessageBox("Table is accessed by staff on another terminal.","Error",MB_OK);
-                showOldTablePicker();
+                UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(DBTransaction, SelectedTable);
+                if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                {
+                    MessageBox("This Table has been already occupied by staff " + StaffName,"Error",MB_OK);
+                    showOldTablePicker();
+                }
              }
-             TDBTables::UpdateTableStatus(DBTransaction, SelectedTable, true);
              DBTransaction.Commit();
 
             refreshSelectedSeat();
