@@ -1848,7 +1848,6 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 {
    if(PaymentTransaction.Membership.Member.ContactKey == 0)
      return;
-
 	try
 	{
 
@@ -1894,9 +1893,9 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			refDate = RecodeYear(activationDate, YearOf(Now()) - 1) ;
 		}
-		if(YearSpan(activationDate,currentDate) >= 1)
+		if(DaysBetween(activationDate,currentDate) >= 365)
 		{
-
+            
 			TDateTime startDate =  RecodeYear(refDate, YearOf(refDate) - 1);
 			if(TGlobalSettings::Instance().LoyaltyMateEnabled)
 			{
