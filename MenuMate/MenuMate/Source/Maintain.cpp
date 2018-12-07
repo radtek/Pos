@@ -341,12 +341,9 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 		return;
     }
 
-	std::auto_ptr<TfrmSelectTable> frm_seltbl(
-	TfrmSelectTable::Create<TfrmSelectTable>(
-	this, TDeviceRealTerminal::Instance().DBControl));
+	std::auto_ptr<TfrmSelectTable> frm_seltbl(TfrmSelectTable::Create<TfrmSelectTable>(	this, TDeviceRealTerminal::Instance().DBControl));
 
-	std::auto_ptr<TfrmTouchKeyboard> frm_tchkb(
-	TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	std::auto_ptr<TfrmTouchKeyboard> frm_tchkb(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 
 	bool must_signal_changes = 0;
 
@@ -357,11 +354,26 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 	frm_tchkb->AllowCarriageReturn = false;
 	frm_tchkb->Caption = "Enter Table Name";
 
-	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; ) {
+	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; )
+    {     
 		tr.StartTransaction();
-		frm_tchkb->KeyboardText =
-		TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
-		if (frm_tchkb->ShowModal() == mrOk) {
+
+        if(TGlobalSettings::Instance().IsTableLockEnabled)
+        {
+            UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(tr, frm_seltbl->SelectedTabContainerNumber);
+            if(StaffName.Trim() != "" && tmp_ui.Name.Pos(StaffName) == 0)
+            {
+                MessageBox("This Table name can only be changed by staff " + StaffName,"Error",MB_OK);
+                tr.Commit();
+                must_signal_changes = false;
+                break;
+            }
+        }
+
+		frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
+
+		if (frm_tchkb->ShowModal() == mrOk)
+        {
 			TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
 			frm_tchkb->KeyboardText);
 			must_signal_changes |= 1;
