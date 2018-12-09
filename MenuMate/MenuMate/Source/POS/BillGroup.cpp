@@ -5563,6 +5563,8 @@ void TfrmBillGroup::GetLoyaltyMemberByEmail(UnicodeString email)
             TDBContacts::GetContactDetails(dbTransaction, contactKey, contactInfo);
             TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
             ManagerLoyaltyVoucher.DisplayMemberVouchers(dbTransaction,contactInfo);
+            TManagerDiscount managerDiscount;
+            managerDiscount.GetMembershipDiscounts(dbTransaction,contactInfo.AutoAppliedDiscounts);
             Membership.Assign(contactInfo, emsManual);
         }
 
