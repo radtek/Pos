@@ -1926,7 +1926,7 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
 		currentYearTierLevel = TDBTierLevel::GetTierLevelAsPerEarnedPoints(PaymentTransaction.DBTransaction,earnedPoints);
 
-		if(currentYearTierLevel < lastYearTierLevel)
+		if(TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, currentYearTierLevel) < TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, lastYearTierLevel))
 		{
 			tierLevel = lastYearTierLevel ;
 		}
