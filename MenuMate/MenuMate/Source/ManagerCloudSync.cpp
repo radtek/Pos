@@ -60,8 +60,8 @@ bool TManagerCloudSync::SyncCompanyDetails()
 
         if(!result)
             MessageBox(syncThread->ErrorMessage,"Failed to perform sync operation", MB_ICONERROR + MB_OK);
-        else
-            TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable("T");
+//        else
+//            TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable("T");
 
         // cleanup
         delete _lmOperationDialogBox;
