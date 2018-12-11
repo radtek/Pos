@@ -181,6 +181,13 @@ namespace MenumateServices.LoyaltyMate
                             LoyaltyResponseCode.AuthenticationFailed,
                             CreateMemberInfo(requestInfo.RequestKey));
             }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateMemberResponseError(
+                            @"GUID Not found",
+                            ex.Message,
+                            LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
+            }     
             catch (Exception exc)
             {
                 return CreateMemberResponseError(
