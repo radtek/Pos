@@ -977,11 +977,14 @@ void TLoyaltyMateThread::SendEmail(Database::TDBTransaction &DBTransaction, TLoy
                       emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
                       emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
                       emailBody += "Thank You";
-
-        TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
-        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-        SendEmail::Send(filename, "Multiple Email exist for same GUID.", emailId, emailBody);
-        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(TGlobalSettings::Instance().EmailHost.Trim() != "" && TGlobalSettings::Instance().EmailHostPort != 0 &&
+                    TGlobalSettings::Instance().EmailId.Trim() != "" && TGlobalSettings::Instance().EmailPassword.Trim() != "")
+        {
+            TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
+            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+            SendEmail::Send(filename, "Multiple Email exist for same GUID.", emailId, emailBody);
+            TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        }
     }
     catch(Exception &E)
     {
