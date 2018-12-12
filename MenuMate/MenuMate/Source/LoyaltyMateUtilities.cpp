@@ -441,7 +441,7 @@ void TLoyaltyMateUtilities::UpdateUUID(Database::TDBTransaction &DBTransaction, 
         query->Close();
         query->SQL->Text =  "UPDATE LOYALTYATTRIBUTES a SET a.UUID = :UUID "
                             "WHERE a.CONTACTS_KEY = :CONTACTS_KEY  ";
-        query->ParamByName("CONTACT_KEY")->AsInteger = inContactKey;
+        query->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
         query->ParamByName("UUID")->AsString = uuid;
         query->ExecQuery();
     }
