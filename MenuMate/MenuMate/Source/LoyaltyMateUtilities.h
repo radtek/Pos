@@ -62,6 +62,7 @@ public:
     static void UpdatePendingTransactions(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString paramValue);
     static void UpdateUUID(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString uuid);
     static void MakeAllPendingTransactionsAvailable(UnicodeString paramValue);
+    static int GetContactKeyByEmail(Database::TDBTransaction &DBTransaction,UnicodeString email);
 
 };
 //---------------------------------------------------------------------------

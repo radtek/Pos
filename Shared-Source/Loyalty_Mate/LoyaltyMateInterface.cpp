@@ -94,6 +94,26 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
         wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.GetSyndCode(),CreateRequest(uuid));
+
+        if(wcfResponse->ResponseCode == 19 && outContactInfo.EMail.Trim() != "")
+        {
+            TMMContactInfo contactInfo;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+
+            CoInitialize(NULL);
+            wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(outContactInfo.EMail));
+            if(wcfResponse->Successful)
+            {
+                int contactKey = TLoyaltyMateUtilities::GetContactKeyByEmail(DBTransaction, outContactInfo.EMail);
+
+                if(contactKey)
+                    TLoyaltyMateUtilities::UpdateUUID(DBTransaction, contactKey, outContactInfo.CloudUUID);
+            }
+
+            DBTransaction.Commit();
+        }
+
         if(wcfResponse->Successful)
             ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
         return CreateMMResponse( wcfResponse );

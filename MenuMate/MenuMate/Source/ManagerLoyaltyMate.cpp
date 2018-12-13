@@ -392,6 +392,7 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingUUID()
             delete LoyaltyMateInterface;
 			return;
         }
+        contactInfo.EMail = MemberEmail;
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetails(syndicateCode, UUID, contactInfo, replacePoints);
         OperationSuccessful = response.IsSuccesful;
         if(!response.IsSuccesful)

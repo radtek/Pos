@@ -471,3 +471,27 @@ void TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable(UnicodeString pa
     }
 }
 //------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+int TLoyaltyMateUtilities::GetContactKeyByEmail(Database::TDBTransaction &DBTransaction,UnicodeString email)
+{
+   int contactKey = 0;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE EMAIL=:EMAIL";
+      IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+      IBInternalQuery->ExecQuery();
+      if(IBInternalQuery->RecordCount)
+      {
+         contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+      }
+   }
+	catch(Exception &E)
+   {
+		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+      throw;
+   }
+
+	return contactKey;
+}
