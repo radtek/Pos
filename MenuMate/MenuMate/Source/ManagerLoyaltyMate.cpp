@@ -4,7 +4,7 @@
 #pragma hdrstop
 
 #include "ManagerLoyaltyMate.h"
-#include "SendEmail.h"
+
 
 //---------------------------------------------------------------------------
 
@@ -196,7 +196,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                 Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
                 DBTransaction.StartTransaction();
 
-                if(postTransactionResponse.ResponseCode == 19)
+                if(postTransactionResponse.ResponseCode == GUIDNotFound)
                 {
                     TMMContactInfo contactInfo;
                     UnicodeString email = TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey);
@@ -212,10 +212,18 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                         TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
                     }
                 }
-                else if(postTransactionResponse.ResponseCode == 18)
+                else if(postTransactionResponse.ResponseCode == MultipleGUIDExist)
                 {
                     TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
-                    SendEmail(DBTransaction, transaction);
+                    AnsiString emailBody = "Multiple Email exist for same GUID having details as:\r";
+                    emailBody += "Email:- " + TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey) + "\r";
+                    emailBody += "Original Syndicate Code:- " + transaction.SyndicateCode.OriginalSyndCode + "\r";
+                    emailBody += "Cloud UUID:- " + transaction.CloudUUID + "\r";
+                    emailBody += "Invoice Number:- " + transaction.InvoiceNumber + "\r";
+                    emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
+                    emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
+                    emailBody += "Thank You";
+                    LoyaltyMateInterface->SendEmail(DBTransaction, emailBody);
                 }
                 else
                 {
@@ -956,35 +964,4 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
     delete LoyaltyMateInterface;
 }
 //------------------------------------------------------------------------------------
-void TLoyaltyMateThread::SendEmail(Database::TDBTransaction &DBTransaction, TLoyaltyMateTransaction transaction)
-{
-    try
-    {
-        UnicodeString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
-        AnsiString Dir = ExtractFilePath(Application->ExeName) + "MemberEmails";
-        if (!DirectoryExists(Dir))
-        {
-           CreateDir(Dir);
-        }
 
-        AnsiString filename = Dir + "\\" + "MemberDetail.txt";
-        AnsiString emailId = "development@menumate.com";
-
-        AnsiString emailBody = "Multiple Email exist for same GUID having details as:\r";
-                      emailBody += "Email:- " + TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey) + "\r";
-                      emailBody += "Original Syndicate Code:- " + transaction.SyndicateCode.OriginalSyndCode + "\r";
-                      emailBody += "Cloud UUID:- " + transaction.CloudUUID + "\r";
-                      emailBody += "Invoice Number:- " + transaction.InvoiceNumber + "\r";
-                      emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
-                      emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
-                      emailBody += "Thank You";
-            TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
-            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-            SendEmail::Send(filename, "Multiple Email exist for same GUID.", emailId, emailBody, true);
-            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-    }
-    catch(Exception &E)
-    {
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-    }
-}

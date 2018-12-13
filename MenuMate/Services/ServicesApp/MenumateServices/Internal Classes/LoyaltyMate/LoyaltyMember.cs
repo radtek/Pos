@@ -181,6 +181,10 @@ namespace MenumateServices.LoyaltyMate
                             LoyaltyResponseCode.AuthenticationFailed,
                             CreateMemberInfo(requestInfo.RequestKey));
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
+            }
             catch (GUIDNotFoundException ex)
             {
                 return CreateMemberResponseError(@"GUID Not found",  ex.Message,  LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
@@ -228,6 +232,14 @@ namespace MenumateServices.LoyaltyMate
                             LoyaltyResponseCode.AuthenticationFailed,
                             new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateMemberResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
+            }     
             catch (Exception exc)
             {
                 return CreateMemberResponseError(@"Failed to request member's info from the server",

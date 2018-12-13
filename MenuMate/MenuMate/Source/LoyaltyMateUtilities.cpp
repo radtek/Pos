@@ -470,28 +470,26 @@ void TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable(UnicodeString pa
         TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
     }
 }
-//------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------
-int TLoyaltyMateUtilities::GetContactKeyByEmail(Database::TDBTransaction &DBTransaction,UnicodeString email)
+bool TLoyaltyMateUtilities::IsUUIDExist(Database::TDBTransaction &DBTransaction,UnicodeString uuid)
 {
-   int contactKey = 0;
+   bool result = false;
    try
    {
       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
       IBInternalQuery->Close();
-      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM CONTACTS WHERE EMAIL=:EMAIL";
-      IBInternalQuery->ParamByName("EMAIL")->AsString = email;
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM LOYALTYATTRIBUTES WHERE UUID=:UUID";
+      IBInternalQuery->ParamByName("UUID")->AsString = uuid;
       IBInternalQuery->ExecQuery();
+
       if(IBInternalQuery->RecordCount)
-      {
-         contactKey = IBInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
-      }
+         result = true;
    }
 	catch(Exception &E)
    {
-		TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
-      throw;
+	    TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+        throw;
    }
-
-	return contactKey;
+	return result;
 }
+//------------------------------------------------------------------------------------

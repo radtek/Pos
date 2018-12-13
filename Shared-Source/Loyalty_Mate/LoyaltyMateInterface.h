@@ -34,6 +34,12 @@ enum MMLoyaltyResponseCode
   TransactionFailed,
   GetGiftCardFailed,
   GetPocketVoucherFailed,
+  MenuSyncingFailed,
+  TaxSettingSyncingFailed,
+  UpdateOnlineOrderStatusFailed,
+  PostOnlineOrderInvoiceInfoFailed,
+  MultipleGUIDExist,
+  GUIDNotFound,
   FailedDueToException,
 };
 
@@ -162,6 +168,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
         MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
         bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
+        void SendEmail(Database::TDBTransaction &DBTransaction, AnsiString emailBody);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();

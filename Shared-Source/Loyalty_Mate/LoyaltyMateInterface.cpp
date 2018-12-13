@@ -11,6 +11,7 @@
 #include "ManagerDiscount.h"
 #include "DBMenu.h"
 #include "Payment.h"
+#include "SendEmail.h"
 #include <map>
 
 //---------------------------------------------------------------------------
@@ -94,9 +95,8 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
         wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.GetSyndCode(),CreateRequest(uuid));
-
-        if(wcfResponse->ResponseCode == 19 && outContactInfo.EMail.Trim() != "")
-        {
+        if(wcfResponse->ResponseCode == GUIDNotFound && outContactInfo.EMail.Trim() != "")
+        {   
             TMMContactInfo contactInfo;
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();
@@ -105,12 +105,34 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
             wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(outContactInfo.EMail));
             if(wcfResponse->Successful)
             {
-                int contactKey = TLoyaltyMateUtilities::GetContactKeyByEmail(DBTransaction, outContactInfo.EMail);
-
-                if(contactKey)
+                ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
+                int contactKey = TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail);
+                if(contactKey && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,outContactInfo.CloudUUID))
+                {
                     TLoyaltyMateUtilities::UpdateUUID(DBTransaction, contactKey, outContactInfo.CloudUUID);
+                }
+                else
+                {
+                    wcfResponse->Successful = false;
+                    wcfResponse->Message = "Failed to Download member.";
+                }
             }
-
+            DBTransaction.Commit();
+            return CreateMMResponse( wcfResponse );
+        }
+        else if(wcfResponse->ResponseCode == MultipleGUIDExist)
+        {
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            AnsiString emailBody = "Unable to Download Member Details.\r";
+            emailBody += "Multiple Email exist for same GUID having details as:\r";
+            emailBody += "Email:- " + outContactInfo.EMail + "\r";
+            emailBody += "Original Syndicate Code:- " + syndicateCode.GetSyndCode() + "\r";
+            emailBody += "Cloud UUID:- " + uuid + "\r";
+            emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
+            emailBody += "Contact Key:- " + IntToStr(TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail)) + "\r\r";
+            emailBody += "Thank You";
+            SendEmail(DBTransaction, emailBody);
             DBTransaction.Commit();
         }
 
@@ -1545,6 +1567,31 @@ InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TI
         throw;
     }
     return invoiceTransactionModel;
+}
+//-----------------------------------------------------------------------------
+void TLoyaltyMateInterface::SendEmail(Database::TDBTransaction &DBTransaction, AnsiString emailBody)
+{
+    try
+    {
+        UnicodeString DeviceName = TDeviceRealTerminal::Instance().ID.Name;
+        AnsiString Dir = ExtractFilePath(Application->ExeName) + "MemberEmails";
+        if (!DirectoryExists(Dir))
+        {
+           CreateDir(Dir);
+        }
+
+        AnsiString filename = Dir + "\\" + "MemberDetail.txt";
+        AnsiString emailId = "ravish.sharma@menumate.com;development@menumate.com;tripurary.mishra@menumatetech.com";
+
+        TMMProcessingState State(Screen->ActiveForm, "Sending Emails...", "Sending Emails...");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        SendEmail::Send(filename, "Multiple Email exist for same GUID.", emailId, emailBody, true);
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }
 
 #pragma package(smart_init)
