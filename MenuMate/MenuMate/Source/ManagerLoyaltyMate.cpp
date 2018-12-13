@@ -203,7 +203,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                     MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByEmail( transaction.SyndicateCode,
                                                                                 email, contactInfo, false);
 
-                    if(response.IsSuccesful && response.ResponseCode != MemberNotExist)
+                    if(response.IsSuccesful && response.ResponseCode != MemberNotExist && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,contactInfo.CloudUUID))
                     {
                         TLoyaltyMateUtilities::UpdateUUID(DBTransaction, transaction.ContactKey, contactInfo.CloudUUID);
                     }
