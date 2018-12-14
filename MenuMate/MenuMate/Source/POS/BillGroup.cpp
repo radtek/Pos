@@ -1120,8 +1120,10 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
+
                         if(TGlobalSettings::Instance().HideFreeSides)
-                        MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
+                            MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
+
 						int mypatroncount = 0;
 						std::map <__int64, TPnMOrder> TabItems;
 						for (std::set <__int64> ::iterator CrntTabKey = SelectedTabs.begin(); CrntTabKey != SelectedTabs.end();
