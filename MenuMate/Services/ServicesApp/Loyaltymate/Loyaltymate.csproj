@@ -69,7 +69,9 @@
     <Compile Include="Enum\UserType.cs" />
     <Compile Include="Exceptions\AuthenticationFailedException.cs" />
     <Compile Include="Exceptions\CustomException.cs" />
+    <Compile Include="Exceptions\GUIDNotFoundException.cs" />
     <Compile Include="Exceptions\LoyaltymateOperationException.cs" />
+    <Compile Include="Exceptions\MultipleGUIDException.cs" />
     <Compile Include="Model\ApiCompanyViewModel.cs" />
     <Compile Include="Model\ApiDiscountUsageRequestViewModel.cs" />
     <Compile Include="Model\ApiDiscountViewModel.cs" />

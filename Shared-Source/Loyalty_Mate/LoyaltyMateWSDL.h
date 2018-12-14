@@ -13,7 +13,7 @@
 //  >Import : http://localhost:8734/MenumateServices/LoyaltyMate/?xsd=xsd7
 // Encoding : utf-8
 // Version  : 1.0
-// (19/11/2018 4:41:26 p.m. - - $Rev: 25127 $)
+// (28/11/2018 10:25:19 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   LoyaltyMateWSDLH
@@ -211,7 +211,9 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   MenuSyncingFailed, 
   TaxSettingSyncingFailed, 
   UpdateOnlineOrderStatusFailed, 
-  PostOnlineOrderInvoiceInfoFailed
+  PostOnlineOrderInvoiceInfoFailed, 
+  MultipleGUIDExist, 
+  GUIDNotFound
 };
 
 class LoyaltyResponseCode_TypeInfoHolder : public TObject {
@@ -3193,7 +3195,7 @@ typedef DelphiInterface<IWCFServiceLoyaltyMate> _di_IWCFServiceLoyaltyMate;
 _di_IWCFServiceLoyaltyMate GetIWCFServiceLoyaltyMate(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__LoyaltyMateWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__LoyaltyMateWSDL;

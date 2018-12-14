@@ -518,6 +518,15 @@ void TfrmMain::SyncCompanyDetails()
         TManagerCloudSync ManagerCloudSync;
         ManagerCloudSync.CheckSyndCodes();
         bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
+
+         AnsiString DirectoryName = ExtractFilePath(Application->ExeName) + "MemberEmails";
+         if (!DirectoryExists(DirectoryName))
+            CreateDir(DirectoryName);
+
+         AnsiString filename = DirectoryName + "\\" + "MemberDetail.txt";
+        std::auto_ptr <TStringList> logList(new TStringList);
+        logList->SaveToFile(filename);
+
         if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
             UnloadSignalR();

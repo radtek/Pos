@@ -82,7 +82,9 @@ std::vector<int> TLoyaltyMateUtilities::GetAllContactsWithPendingTransactions()
                         "   DISTINCT(LPT.CONTACT_KEY) "
                         "FROM "
                         "   LOYALTYPENDINGTRANSACTIONS LPT"
-                        "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY ";
+                        "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY "
+                        "   WHERE LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING ";
+    query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = "T";
     query->ExecQuery();
     while(!query->Eof)
     {
@@ -401,9 +403,6 @@ AnsiString TLoyaltyMateUtilities::GetUniqueNumber(Database::TDBTransaction &DBTr
 
 
 //------------------------------------------------------------------------------------
-
-
-
 bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBTransaction,int inContactKey)
 {
     bool result = true;
@@ -415,6 +414,82 @@ bool TLoyaltyMateUtilities::HasPendingTransactions(Database::TDBTransaction &DBT
     result = !query->Eof;
     return result;
 }
+//------------------------------------------------------------------------------------
+void TLoyaltyMateUtilities::UpdatePendingTransactions(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString paramValue)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS LPT SET LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING "
+                            "WHERE LPT.CONTACT_KEY = :CONTACT_KEY  ";
+        query->ParamByName("CONTACT_KEY")->AsInteger = inContactKey;
+        query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = paramValue;
+        query->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//------------------------------------------------------------------------------------
+void TLoyaltyMateUtilities::UpdateUUID(Database::TDBTransaction &DBTransaction, int inContactKey, UnicodeString uuid)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYATTRIBUTES a SET a.UUID = :UUID "
+                            "WHERE a.CONTACTS_KEY = :CONTACTS_KEY  ";
+        query->ParamByName("CONTACTS_KEY")->AsInteger = inContactKey;
+        query->ParamByName("UUID")->AsString = uuid;
+        query->ExecQuery();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//------------------------------------------------------------------------------------
+void TLoyaltyMateUtilities::MakeAllPendingTransactionsAvailable(UnicodeString paramValue)
+{
+    Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	dBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL* query = dBTransaction.Query(dBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS LPT SET LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING ";
+        query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = paramValue;
+        query->ExecQuery();
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+    {
+        dBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+    }
+}
+//-------------------------------------------------------------------------
+bool TLoyaltyMateUtilities::IsUUIDExist(Database::TDBTransaction &DBTransaction,UnicodeString uuid)
+{
+   bool result = false;
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT CONTACTS_KEY FROM LOYALTYATTRIBUTES WHERE UUID=:UUID";
+      IBInternalQuery->ParamByName("UUID")->AsString = uuid;
+      IBInternalQuery->ExecQuery();
 
-
-
+      if(IBInternalQuery->RecordCount)
+         result = true;
+   }
+	catch(Exception &E)
+   {
+	    TManagerLogs::Instance().Add(__FUNC__,ERRORLOG,E.Message);
+        throw;
+   }
+	return result;
+}
+//------------------------------------------------------------------------------------

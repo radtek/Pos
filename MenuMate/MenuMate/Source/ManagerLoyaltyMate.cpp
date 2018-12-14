@@ -5,6 +5,7 @@
 
 #include "ManagerLoyaltyMate.h"
 
+
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -191,7 +192,47 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                                                                                 transaction.PointsType,
                                                                                 transaction.InvoiceNumber);
             if(!postTransactionResponse.IsSuccesful)
-                throw new Exception(postTransactionResponse.Message);
+            {
+                Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+                DBTransaction.StartTransaction();
+
+                if(postTransactionResponse.ResponseCode == GUIDNotFound)
+                {
+                    TMMContactInfo contactInfo;
+                    UnicodeString email = TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey);
+                    MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetailsByEmail( transaction.SyndicateCode,
+                                                                                email, contactInfo, false);
+
+                    if(response.IsSuccesful && response.ResponseCode != MemberNotExist && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,contactInfo.CloudUUID))
+                    {
+                        TLoyaltyMateUtilities::UpdateUUID(DBTransaction, transaction.ContactKey, contactInfo.CloudUUID);
+                    }
+                    else
+                    {
+                        TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    }
+                }
+                else if(postTransactionResponse.ResponseCode == MultipleGUIDExist)
+                {
+                    TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    AnsiString emailBody = "Multiple Email exist for same GUID having details as:\r";
+                    emailBody += "Email:- " + TDBContacts::GetEmailIdOfMember(DBTransaction,transaction.ContactKey) + "\r";
+                    emailBody += "Original Syndicate Code:- " + transaction.SyndicateCode.OriginalSyndCode + "\r";
+                    emailBody += "Cloud UUID:- " + transaction.CloudUUID + "\r";
+                    emailBody += "Invoice Number:- " + transaction.InvoiceNumber + "\r";
+                    emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
+                    emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
+                    emailBody += "Thank You";
+                    LoyaltyMateInterface->SendEmail(emailBody);
+                }
+                else
+                {
+                    TLoyaltyMateUtilities::UpdatePendingTransactions(DBTransaction, transaction.ContactKey, "F");
+                    DBTransaction.Commit();
+                    throw new Exception(postTransactionResponse.Message);
+                }
+                DBTransaction.Commit();
+            }
             else
                 result = true;
         }
@@ -359,6 +400,7 @@ void TLoyaltyMateDownloadMemberThread::DownloadMemberFromCloudUsingUUID()
             delete LoyaltyMateInterface;
 			return;
         }
+        contactInfo.EMail = MemberEmail;
         MMLoyaltyServiceResponse response = LoyaltyMateInterface->GetMemberDetails(syndicateCode, UUID, contactInfo, replacePoints);
         OperationSuccessful = response.IsSuccesful;
         if(!response.IsSuccesful)
@@ -423,7 +465,7 @@ void __fastcall TLoyaltyMateDownloadMemberThread::Execute()
 {
     if(DownLoadFromUUID)
     {
-      DownloadMemberFromCloudUsingUUID();
+       DownloadMemberFromCloudUsingUUID();
     }
     else if(DownLoadFromCode)
     {
@@ -921,3 +963,5 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
     }
     delete LoyaltyMateInterface;
 }
+//------------------------------------------------------------------------------------
+
