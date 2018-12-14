@@ -168,7 +168,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
         MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
         bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
-        void SendEmail(Database::TDBTransaction &DBTransaction, AnsiString emailBody);
+        void SendEmail(AnsiString emailBody);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
@@ -246,6 +246,7 @@ class TLoyaltyMateInterface
         OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
         OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
         InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
+        void GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
 };
 
 #endif

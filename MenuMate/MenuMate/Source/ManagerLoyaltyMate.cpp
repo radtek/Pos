@@ -223,7 +223,7 @@ bool TLoyaltyMateThread::PostMemberTransactionsToCloud(TLoyaltyMateTransaction t
                     emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
                     emailBody += "Contact Key:- " + IntToStr(transaction.ContactKey) + "\r\r";
                     emailBody += "Thank You";
-                    LoyaltyMateInterface->SendEmail(DBTransaction, emailBody);
+                    LoyaltyMateInterface->SendEmail(emailBody);
                 }
                 else
                 {

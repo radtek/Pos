@@ -122,18 +122,8 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
         }
         else if(wcfResponse->ResponseCode == MultipleGUIDExist)
         {
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            AnsiString emailBody = "Unable to Download Member Details.\r";
-            emailBody += "Multiple Email exist for same GUID having details as:\r";
-            emailBody += "Email:- " + outContactInfo.EMail + "\r";
-            emailBody += "Original Syndicate Code:- " + syndicateCode.GetSyndCode() + "\r";
-            emailBody += "Cloud UUID:- " + uuid + "\r";
-            emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
-            emailBody += "Contact Key:- " + IntToStr(TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail)) + "\r\r";
-            emailBody += "Thank You";
-            SendEmail(DBTransaction, emailBody);
-            DBTransaction.Commit();
+            AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, uuid);
+            SendEmail(EmailBody);
         }
 
         if(wcfResponse->Successful)
@@ -153,6 +143,37 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
         wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.GetSyndCode(), CreateRequest(memberCode));
+        if(wcfResponse->ResponseCode == GUIDNotFound && outContactInfo.EMail.Trim() != "")
+        {
+            TMMContactInfo contactInfo;
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+
+            CoInitialize(NULL);
+            wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(outContactInfo.EMail));
+            if(wcfResponse->Successful)
+            {
+                ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
+                int contactKey = TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail);
+                if(contactKey && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,outContactInfo.CloudUUID))
+                {
+                    TLoyaltyMateUtilities::UpdateUUID(DBTransaction, contactKey, outContactInfo.CloudUUID);
+                }
+                else
+                {
+                    wcfResponse->Successful = false;
+                    wcfResponse->Message = "Failed to Download member.";
+                }
+            }
+            DBTransaction.Commit();
+            return CreateMMResponse( wcfResponse );
+        }
+        else if(wcfResponse->ResponseCode == MultipleGUIDExist)
+        {
+            AnsiString uuid = "not available to print";
+            AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, uuid);
+            SendEmail(EmailBody);
+        }
         if(wcfResponse->Successful)
             ReadContactInfo(wcfResponse, outContactInfo, replacePoints );
         return CreateMMResponse( wcfResponse );
@@ -1569,7 +1590,23 @@ InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TI
     return invoiceTransactionModel;
 }
 //-----------------------------------------------------------------------------
-void TLoyaltyMateInterface::SendEmail(Database::TDBTransaction &DBTransaction, AnsiString emailBody)
+void TLoyaltyMateInterface::GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    AnsiString emailBody = "Unable to Download Member Details.\r";
+    emailBody += "Multiple Email exist for same GUID having details as:\r";
+    emailBody += "Email:- " + email + "\r";
+    emailBody += "Original Syndicate Code:- " + syndicateCode + "\r";
+    emailBody += "Cloud UUID:- " + uuid + "\r";
+    emailBody += "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID) + "\r";
+    emailBody += "Contact Key:- " + IntToStr(TDBContacts::GetContactByEmail(DBTransaction, email)) + "\r\r";
+    emailBody += "Thank You";
+    DBTransaction.Commit();
+    return emailBody;
+}
+//------------------------------------------------------------
+void TLoyaltyMateInterface::SendEmail(AnsiString emailBody)
 {
     try
     {
