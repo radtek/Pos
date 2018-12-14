@@ -1760,29 +1760,31 @@ bool TDBTables::IsTableLocked(Database::TDBTransaction &DBTransaction,int TableN
 }
 
 //=======================================================================================
-void TDBTables::UpdateTableStatus(Database::TDBTransaction &DBTransaction,int inTableNo , bool IsTableSelected)
+UnicodeString TDBTables::GetStaffNameForSelectedTable(Database::TDBTransaction &DBTransaction,int TableNumber)
 {
-    if(!inTableNo)
-        return;
-    try
-     {        
+	UnicodeString StaffName = "";
+	try
+	{
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " UPDATE TABLES SET IS_TABLELOCK = :IS_TABLELOCK WHERE TABLE_NUMBER = :TABLE_NUMBER ";
-        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
-
-        if(IsTableSelected)
-            IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "T" ;
-        else
-            IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F" ;
-
+        IBInternalQuery->SQL->Text =
+                                        "SELECT FIRST 1 SECURITY.FROM_VAL FROM ORDERS "
+                                        "INNER JOIN TABLES ON ORDERS.TABLE_NUMBER = TABLES.TABLE_NUMBER "
+                                        "INNER JOIN SECURITY ON ORDERS.SECURITY_REF = SECURITY.SECURITY_REF "
+                                        "WHERE SECURITY.SECURITY_EVENT = :SECURITY_EVENT AND ORDERS.TABLE_NUMBER = :TABLE_NUMBER ";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = TableNumber;
+        IBInternalQuery->ParamByName("SECURITY_EVENT")->AsString = "Ordered By";
         IBInternalQuery->ExecQuery();
 
-     }
-  	catch(Exception &Err)
+        if (IBInternalQuery->RecordCount)
+            StaffName = IBInternalQuery->FieldByName("FROM_VAL")->AsString;
+	}
+	catch(Exception &Err)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
 	}
+   return StaffName;
 }
 
 

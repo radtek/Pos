@@ -72,6 +72,12 @@ void TfrmSelectReceipt::ShowReceipt()
 	try
 	{
 		ManagerReceipt->Get(Lines);
+//        MessageBox(Lines->Count,"Count",MB_OK);
+//        for(int i = 0; i <Lines->Count; i++)
+//        {
+//            MessageBox(Lines->Strings[i],"",MB_OK);
+//        }
+//        MessageBox(ManagerReceipt->InvoiceNumber,"InvoiceNumber",MB_OK);
 		memReceipt->Lines->Assign(Lines);
 		toggleAvailabilityOfTippingButton();
 	}
@@ -517,6 +523,9 @@ void __fastcall TfrmSelectReceipt::btnAddTipMouseClick(TObject *Sender)
                 }
                 else
                     MessageBox("Tip applied successfully", "Tip Applied", MB_ICONINFORMATION + MB_OK);
+                    if(TGlobalSettings::Instance().EnableEftPosAdyen && TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+                      ManagerReceipt->PrintDocketForTips(arcBillKey,tipAmount);
+
             }
         }
         toggleAvailabilityOfTippingButton();
@@ -534,3 +543,5 @@ void TfrmSelectReceipt::SearchUsingTransactionNumber(UnicodeString inTransaction
        MessageBox("Receipt Number not found.", "Receipt Not Found", MB_ICONINFORMATION + MB_OK);
     }
 }
+//----------------------------------------------------------------------------------------------
+

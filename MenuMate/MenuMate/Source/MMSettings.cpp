@@ -440,6 +440,13 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
         TGlobalSettings::Instance().ForceHappyHour = TManagerVariable::Instance().GetBool(DBTransaction, vmForceHappyHour, false);
+        TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAustriaFiscalStorageEnabled, false);
+        TGlobalSettings::Instance().AustriaFiscalUrl = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalUrl, "");
+        TGlobalSettings::Instance().AustriaFiscalCashBoxId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalCashBoxId, "");
+        TGlobalSettings::Instance().AustriaFiscalTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalTerminalId, "");
+        TGlobalSettings::Instance().AustriaFiscalAccessToken = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalAccessToken, "");
+        TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
+        TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)

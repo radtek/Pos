@@ -13,7 +13,7 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         RoomDetails GetRoomDetails(RoomRequest roomRequest, int timeOut, string apiKey);
         [OperationContract]
-        RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut, string apiKey);
+        RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut, string apiKey, bool isItemsDetailsPosting);
         [OperationContract]
         bool ValidateCreadentials(string address, int port, int transno);
     }

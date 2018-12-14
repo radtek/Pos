@@ -2312,6 +2312,18 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                                 btnTransferTo->Caption =  "Select";
                                 break;
                               }
+
+                              if(TGlobalSettings::Instance().IsTableLockEnabled)
+                              {
+                                  UnicodeString StaffName =  TDBTables::GetStaffNameForSelectedTable(DBTransaction, floorPlanReturnParams.TabContainerNumber);
+                                  if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                                  {
+                                        MessageBox("You don't have access rights to transfer this table.","Error",MB_OK);
+                                        Retval = mrAbort;
+                                        break;
+                                  }
+                               }
+
                               if( CurrentDestTable != floorPlanReturnParams.TabContainerNumber )
                               {
                                  CurrentDestTable = floorPlanReturnParams.TabContainerNumber;
@@ -2345,6 +2357,18 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                                     lbDisplayTransferfrom->Clear();
                                     break;
                                 }
+
+                                 if(TGlobalSettings::Instance().IsTableLockEnabled)
+                                 {
+                                      UnicodeString StaffName =  TDBTables::GetStaffNameForSelectedTable(DBTransaction, floorPlanReturnParams.TabContainerNumber);
+                                      if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                                      {
+                                            MessageBox("You don't have access rights to transfer this table.","Error",MB_OK);
+                                            Retval = mrAbort;
+                                            break;
+                                      }
+                                  }
+
                                 if( CurrentSourceTable != floorPlanReturnParams.TabContainerNumber )
                                 {
                                     CurrentSourceTable = floorPlanReturnParams.TabContainerNumber;

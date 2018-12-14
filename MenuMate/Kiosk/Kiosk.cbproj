@@ -398,9 +398,7 @@
 						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
 					</Parameters>
 					<Excluded_Packages>
-						<Excluded_Packages Name="C:\Code\4.12.2\4.12.2\Shared-Source\zip\CBuilder\..\..\..\libs\ZBldr179C10.bpl">File C:\Code\4.12.2\4.12.2\Shared-Source\zip\CBuilder\..\..\..\libs\ZBldr179C10.bpl not found</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k120.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
-						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp120.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="C:\Code\MenumateSourceCode\Menumate\libs\DsgnCPortCB6.bpl">ComPort Library</Excluded_Packages>
 					</Excluded_Packages>
 					<ProjectProperties>
 						<ProjectProperties Name="AutoShowDeps">True</ProjectProperties>

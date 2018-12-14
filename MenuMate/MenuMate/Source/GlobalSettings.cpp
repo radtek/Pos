@@ -449,6 +449,13 @@ TGlobalSettings::TGlobalSettings()
     PrintTipAndSignature = false;
     EnableAdjustAuthorisationOnCards = false;
     HHPriceLevelKey = 1;
+    IsAustriaFiscalStorageEnabled = false;
+    AustriaFiscalUrl = "";
+    AustriaFiscalCashBoxId = "";
+    AustriaFiscalTerminalId = "";
+    AustriaFiscalAccessToken = "";
+    EnableItemDetailsPosting = false;
+    IsTableLockEnabled = false;
     MallBatchID = 0;
 }
 

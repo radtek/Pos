@@ -75,6 +75,8 @@
 #include "SaveLogs.h"
 #include "ManagerMews.h"
 #include "DBAdyen.h"
+#include "AustriaFiscalDataObjects.h"
+#include "ManagerAustriaFiscal.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -990,6 +992,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		OnAfterTransactionComplete.Occured();
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
         delete logList;
         logList = NULL;
 	}
@@ -1000,6 +1007,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
 
         TStringList* logList = new TStringList();
         logList->Add("Exception in  ProcessTransaction()");
@@ -2206,7 +2219,15 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                     }
                 }
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
-				IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+				
+				if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
+				||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
+				||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
+				&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
+					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
+				else
+					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+			
                 if (!PaymentTransaction.CreditTransaction)
                 {
                     IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
@@ -3772,6 +3793,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
     bool FiscalTransaction = true;
+    bool austriaFiscalTransaction = true;
 
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
@@ -3889,6 +3911,11 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(!FiscalTransaction)
         return RetVal;
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+        managerAustria->ExportData(PaymentTransaction);
+    }
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)
@@ -4836,7 +4863,7 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTra
 		"WHERE ARCBILL_KEY=:ARCBILL_KEY AND PAY_TYPE=:PAY_TYPE AND PAY_TYPE_DETAILS=:PAYMENT_REF";
 		IBInternalQuery->ParamByName("PAYMENT_REF")->AsString = originalPaymentRef;
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
-		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tip";
+		IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tips";
 		IBInternalQuery->ParamByName("TIP_AMOUNT")->AsCurrency = tipAmount;
 		IBInternalQuery->ExecQuery();
 
@@ -4855,7 +4882,7 @@ void TListPaymentSystem::InsertOrUpdateTipTransactionRecordToDB(Database::TDBTra
 
 			IBInternalQuery->ParamByName("DAYARCBILLPAY_KEY")->AsInteger = Retval;
 			IBInternalQuery->ParamByName("ARCBILL_KEY")->AsInteger = arcBillKey;
-			IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tip";
+			IBInternalQuery->ParamByName("PAY_TYPE")->AsString = "Tips";
 			IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
 			IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = tipAmount;
 			IBInternalQuery->ParamByName("ROUNDING")->AsCurrency = 0.0;
@@ -6368,7 +6395,8 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
 //
 //    dbPanasonic->UniDataBaseConnection->Commit();
 //    dbPanasonic->UniDataBaseConnection->Close();
-//}
+//}
+
 //-----------------------------------------------------------------------------------
 void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
 {
@@ -6631,7 +6659,7 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateR
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
-        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        TGlobalSettings::Instance().PrintCardHolderReceipt  && !TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
       if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||
