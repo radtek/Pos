@@ -246,7 +246,7 @@ class TLoyaltyMateInterface
         OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
         OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
         InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
-        void GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
+        AnsiString GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
 };
 
 #endif

@@ -170,8 +170,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
         }
         else if(wcfResponse->ResponseCode == MultipleGUIDExist)
         {
-            AnsiString uuid = "not available to print";
-            AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, uuid);
+            AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, "not available to print");
             SendEmail(EmailBody);
         }
         if(wcfResponse->Successful)
@@ -1590,7 +1589,7 @@ InvoiceTransactionModel* TLoyaltyMateInterface::CreateOrderInvoiceTransaction(TI
     return invoiceTransactionModel;
 }
 //-----------------------------------------------------------------------------
-void TLoyaltyMateInterface::GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid)
+AnsiString TLoyaltyMateInterface::GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
