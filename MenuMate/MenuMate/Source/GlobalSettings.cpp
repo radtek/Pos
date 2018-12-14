@@ -456,5 +456,6 @@ TGlobalSettings::TGlobalSettings()
     AustriaFiscalAccessToken = "";
     EnableItemDetailsPosting = false;
     IsTableLockEnabled = false;
+    HideFreeSides = false;
 }
 

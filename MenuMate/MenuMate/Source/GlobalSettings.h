@@ -551,6 +551,7 @@ public:
     UnicodeString AustriaFiscalAccessToken;
     bool EnableItemDetailsPosting;
     bool IsTableLockEnabled;
+    bool HideFreeSides;
 };
 
 #endif
