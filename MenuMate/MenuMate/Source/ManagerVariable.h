@@ -126,6 +126,7 @@ enum vmVariables
     vmIsAutoLoggedOut,
     vmDiningBal,
     vmIsTableLockEnabled,
+    vmHideFreeSides,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -229,7 +230,7 @@ enum vmVariables
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
     vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
 	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,
-    vmEnableItemDetailsPosting, vmHideFreeSides};
+    vmEnableItemDetailsPosting};
 
 // ---------------------------------------------------------------------------
 class TManagerVariable
