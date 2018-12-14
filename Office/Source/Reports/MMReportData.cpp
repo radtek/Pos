@@ -5557,7 +5557,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "       abp.PROPERTIES "
 "        FROM ARCBILLPAY abp                                                                                                                         "
 "        left join ARCBILL on ARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
-"        where  abp.SUBTOTAL > 0 and abp.CASH_OUT<>'T'      "
+"        where  abp.SUBTOTAL <> 0 and abp.CASH_OUT<>'T' and abp.NOTE <> 'Total Change.'      "
  + selected_tenders +
 "        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,abp.PROPERTIES "
 
@@ -5676,7 +5676,7 @@ void TdmMMReportData::SetupBillTenders(TDateTime StartTime, TDateTime EndTime,
 "       abp.PROPERTIES "
 "        FROM DAYARCBILLPAY abp                                                                                                                               "
 "        left join DAYARCBILL on DAYARCBILL.ARCBILL_KEY=abp.ARCBILL_KEY                                                                          "
-"        where abp.SUBTOTAL > 0 and   abp.CASH_OUT<>'T'   "
+"        where abp.SUBTOTAL <> 0 and   abp.CASH_OUT<>'T' and abp.NOTE <> 'Total Change.'  "
 + selected_tenders +
 "        group by abp.PAY_TYPE ,abp.ARCBILL_KEY,abp.TIP_AMOUNT,abp.PROPERTIES "
 
