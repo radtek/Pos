@@ -221,7 +221,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsPointOfSaleDisplay
+    ActivePage = tsPointOfSale
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'
@@ -1163,7 +1163,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             OnClick = cbShowItemPricesInTransferScreenClick
           end
           object cbShowLargeFonts: TCheckBox
-            Left = 8
+            Left = 9
             Top = 332
             Width = 376
             Height = 26
