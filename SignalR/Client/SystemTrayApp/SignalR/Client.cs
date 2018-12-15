@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Timers;
 using System.Windows.Forms;
 using Microsoft.AspNet.SignalR.Client;
 using SystemTrayApp.OnlineOrdering;
@@ -16,14 +17,68 @@ namespace SystemTrayApp.SignalR
         public static HubConnection Connection { get; set; }
         private static NotifyIcon notifyIcon;
         private static List<string> logsList;
+        private static System.Timers.Timer aTimer;
 
         public static bool InitializeClient()
         {
+            bool retValue = false;
             logsList = new List<string>();
             string siteCode = "";
             string syndicateCode = "";
             GetSiteDetails(ref siteCode, ref syndicateCode);
-            return Connect(siteCode, syndicateCode);
+            retValue = Connect(siteCode, syndicateCode);
+            SetTimer();
+            return retValue;
+        }
+
+        private static void SetTimer()
+        {
+            aTimer = new System.Timers.Timer(60000);
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+        }
+
+        private static void OnTimedEvent(Object source, ElapsedEventArgs arg)
+        {
+            string siteCode = "";
+            string syndicateCode = "";
+            GetSiteDetails(ref siteCode, ref syndicateCode);
+            if (Connection != null)
+            {
+                if (Connection.State != ConnectionState.Connected)
+                    ReConnect(siteCode, syndicateCode);
+            }
+        }
+
+        private static void ReConnect(string siteCode, string syndicateCode)
+        {
+            bool isConnected = false;
+            logsList.Add("SignalR is going to get reconnected        " + Connection.ConnectionId);
+            try
+            {
+                Connection.Start().Wait();
+                isConnected = Connection.State == ConnectionState.Connected;
+                ContextMenuHelper helper = new ContextMenuHelper();
+
+                if (isConnected)
+                {
+                    helper.ToggleOnConnect();
+                    logsList.Add("SignalR client is connected with connection Id        " + Connection.ConnectionId);
+                }
+                else
+                {
+                    helper.ToggleOnDisconnect();
+                    logsList.Add("SignalR client is not connected");
+                }
+            }
+            catch (Exception exception)
+            {
+                isConnected = false;
+                logsList.Add("Exception in making re-connection                        " + exception.Message);
+                logsList.Add("Exception at                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            MakeLogFile();
         }
 
         private static void GetSiteDetails(ref string siteCode, ref string syndicateCode)
@@ -122,7 +177,7 @@ namespace SystemTrayApp.SignalR
                 logsList.Add("Order Received is                                     " + order);
                 GetSiteDetails(ref siteCode, ref syndicateCode);
                 logsList.Add("siteCode is      " + siteCode + "     and syndicateCode is       " + syndicateCode);
-                loyaltyMateClient.GetOrdersFromWeb(syndicateCode,order);
+                loyaltyMateClient.GetOrdersFromWeb(syndicateCode, order);
             }
             catch (Exception exception)
             {
