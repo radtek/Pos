@@ -223,6 +223,9 @@ void TManagerMallSetup::InsertInToMallExport_Settings_Values(int mallId)
             case 3:
                 InsertSettingValuesForEvia(dbTransaction, deviceKey, mallId);
                 break;
+            case 4:
+                InsertSettingValuesForSouthBeach(dbTransaction, deviceKey, mallId);
+                break;
             default:
                 break;
         }
@@ -433,6 +436,61 @@ void TManagerMallSetup::InsertSettingValuesForEvia(Database::TDBTransaction &dbT
              int settingID[numberOfFields] =
              {
                 1, 2, 7, 9, 16, 18, 19, 20, 24, 25
+             };
+
+            TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );
+            TIBSQL *incrementGenerator = dbTransaction.Query(dbTransaction.AddQuery());
+
+            for(int index = 0; index < numberOfFields; index++)
+            {
+                incrementGenerator->Close();
+                incrementGenerator->SQL->Text = "SELECT GEN_ID(GEN_MALL_SETT_VAL_KEY, 1) FROM RDB$DATABASE";
+                incrementGenerator->ExecQuery();
+
+                insertQuery->Close();
+                insertQuery->SQL->Text =
+                            "INSERT INTO MALLEXPORT_SETTINGS_VALUES VALUES (:SETTING_VALUE_KEY, :SETTING_KEY, :FIELD_VALUE, :FIELD_TYPE, :DEVICE_KEY, :MALL_KEY) ";
+                insertQuery->ParamByName("SETTING_VALUE_KEY")->AsInteger = incrementGenerator->Fields[0]->AsInteger;
+                insertQuery->ParamByName("SETTING_KEY")->AsInteger = settingID[index];
+                insertQuery->ParamByName("FIELD_VALUE")->AsString = fieldValues[index];
+                insertQuery->ParamByName("FIELD_TYPE")->AsString = fieldTypes[index];
+                insertQuery->ParamByName("DEVICE_KEY")->AsInteger = deviceKey;
+                insertQuery->ParamByName("MALL_KEY")->AsInteger = mallId;
+                insertQuery->ExecQuery();
+            }
+        }
+    }
+    catch( Exception &E )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TManagerMallSetup::InsertSettingValuesForSouthBeach(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId)
+{
+    try
+    {
+        bool isRecordExist = IsSettingExistInDB(dbTransaction, deviceKey, mallId);
+
+        if(!isRecordExist)
+        {
+             const int numberOfFields = 14;
+
+             UnicodeString fieldTypes[numberOfFields] =
+             {
+                "UnicodeString", "UnicodeString", "int", "bool","UnicodeString","UnicodeString","UnicodeString","UnicodeString", "UnicodeString",
+                "UnicodeString", "bool", "bool", "bool", "bool"
+             };
+
+             UnicodeString fieldValues[numberOfFields] =
+             {
+                "", "", "", "true","","","","", ".txt", "Z", "false", "false", "true", "false"
+             };
+
+             int settingID[numberOfFields] =
+             {
+                1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25
              };
 
             TIBSQL *insertQuery        = dbTransaction.Query( dbTransaction.AddQuery() );

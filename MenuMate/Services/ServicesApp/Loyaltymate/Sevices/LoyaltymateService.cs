@@ -343,6 +343,14 @@ namespace Loyaltymate.Sevices
                 {
                     throw new AuthenticationFailedException();
                 }
+                else if ((int)webResponse.StatusCode == 300 )
+                {
+                    throw new MultipleGUIDException();
+                }
+                else if ((int)webResponse.StatusCode == 404)
+                {
+                    throw new GUIDNotFoundException();
+                }
                 else
                 {
                     var memberStream = new StreamReader(webResponse.GetResponseStream());

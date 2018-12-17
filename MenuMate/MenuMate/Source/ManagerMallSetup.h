@@ -24,6 +24,7 @@ class TManagerMallSetup
      static void InsertSettingValuesForDeanAndDeluca(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
      static bool IsSettingExistInDB(Database::TDBTransaction &dbTransaction, int deviceKey, int mallID);
      static void InsertSettingValuesForEvia(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
+     static void InsertSettingValuesForSouthBeach(Database::TDBTransaction &dbTransaction, int deviceKey, int mallId);
 };
 #endif
 

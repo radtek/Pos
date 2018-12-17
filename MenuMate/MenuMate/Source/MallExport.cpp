@@ -41,12 +41,19 @@ bool TMallExport::Export()
     try
     {
         TMallExportPrepareData preparedData;
-
+        bool transactionDoneBeforeZed =  false;
         //Prepare Data For Exporting into File
-        preparedData = PrepareDataForExport();
-        bool transactionDoneBeforeZed =  CheckTransactionDoneBeforeZed();
-
-        if(transactionDoneBeforeZed)
+        if(TGlobalSettings::Instance().mallInfo.MallId != 4)
+        {
+            preparedData = PrepareDataForExport();
+            transactionDoneBeforeZed =  CheckTransactionDoneBeforeZed();
+        }
+        else
+        {
+            int ZedKey = GetMaxZed_KeyInZed();
+            preparedData = PrepareDataForExport(ZedKey);
+        }
+        if(transactionDoneBeforeZed || TGlobalSettings::Instance().mallInfo.MallId == 4)
         {
             //Create Export Medium
            TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
@@ -159,37 +166,20 @@ bool TMallExport::InsertInToMallExport_Sales(Database::TDBTransaction &dbTransac
 bool TMallExport::CheckTransactionDoneBeforeZed()
 {
     bool isZKeySame = false;
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
-
     try
     {
-        Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
-        dbTransaction.RegisterQuery(IBInternalQuery);
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
-        IBInternalQuery->ExecQuery();
-        int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
-
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT MAX(a.Z_KEY) Z_KEY FROM MALLEXPORT_SALES a";
-        IBInternalQuery->ExecQuery();
-        int mallZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+        int ZedKey = GetMaxZed_KeyInZed();
+        int mallZedKey = GetMaxZedKeyInSales();
 
         if(ZedKey == mallZedKey)
             isZKeySame = true;
     }
     catch(Exception &E)
 	{
-        dbTransaction.Rollback();
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
 
-    dbTransaction.Commit();
     return isZKeySame;
 }
 //------------------------------------------------------------------------------------------------
@@ -549,5 +539,114 @@ TMallExportDiscount TMallExport::PrepareDiscounts(Database::TDBTransaction &dbTr
     }
     return discounts;
 }
+//-------------------------------------------------------------------------------------------------------------------
+void TMallExport::GetTerminalSettings(UnicodeString &tenantNo, int &termianlNumber)
+{
+    std::list<TMallExportSettings>::iterator it;
+    for(it = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); it != TGlobalSettings::Instance().mallInfo.MallSettings.end(); it++)
+    {
+        if(it->Value != "" )
+        {
+            if(it->ControlName == "edMallTenantNo")
+            {
+                tenantNo =  it->Value;
+            }
+            else if(it->ControlName == "edMallTerminalNo" )
+            {
+                termianlNumber = StrToInt(it->Value);
+            }
+        }
+    }
+}
+//-----------------------------------------------------------------------------------------------------------
+int TMallExport::GetPatronCount(TPaymentTransaction &paymentTransaction)
+{
+    int totalPatronCount = 0;
+    std::vector <TPatronType> ::iterator ptrPatronTypes;
+    for (ptrPatronTypes = paymentTransaction.Patrons.begin(); ptrPatronTypes != paymentTransaction.Patrons.end(); ptrPatronTypes++)
+    {
+        totalPatronCount += ptrPatronTypes->Count;
+    }
+    return totalPatronCount != 0 ? totalPatronCount : 1;
+}
+//---------------------------------------------------------------------------------------------------------------
+int TMallExport::GetMaxZed_KeyInZed(int maxZedKey)
+{
+   int ZedKey = 0;
+   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction.StartTransaction();
+   TIBSQL* MaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
+   try
+   {
+        MaxZedQuery->Close();
+        MaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) Z_KEY "
+                                    "FROM ZEDS a " ;
+        if(maxZedKey)
+        {
+            MaxZedQuery->SQL->Text = MaxZedQuery->SQL->Text + "WHERE a.Z_KEY < :Max_Zed_Key ";
+            MaxZedQuery->ParamByName("Max_Zed_Key")->AsInteger = maxZedKey;
+        }
+
+        MaxZedQuery->ExecQuery();
+
+        if(MaxZedQuery->RecordCount)
+            ZedKey = MaxZedQuery->Fields[0]->AsInteger;
+
+        DBTransaction.Commit();
+    }
+   catch(Exception &E)
+   {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+   }
+    return ZedKey;
+}
+//------------------------------------------------------------------------------------------------
+int TMallExport::GetMaxZedKeyInSales(int maxZedKey)
+{
+   int ZedKey = 0;
+   Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+   DBTransaction.StartTransaction();
+   TIBSQL* MaxZedQuery = DBTransaction.Query(DBTransaction.AddQuery());
+   try
+   {
+        MaxZedQuery->Close();
+        MaxZedQuery->SQL->Text =  "SELECT MAX(a.Z_KEY) Z_KEY "
+                                    "FROM MALLEXPORT_SALES a " ;
+        if(maxZedKey)
+        {
+            MaxZedQuery->SQL->Text = MaxZedQuery->SQL->Text + "WHERE a.Z_KEY < :Max_Zed_Key ";
+            MaxZedQuery->ParamByName("Max_Zed_Key")->AsInteger = maxZedKey;
+        }
+
+        MaxZedQuery->ExecQuery();
+
+        if(MaxZedQuery->RecordCount)
+            ZedKey = MaxZedQuery->Fields[0]->AsInteger;
+
+        DBTransaction.Commit();
+    }
+   catch(Exception &E)
+   {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+   }
+    return ZedKey;
+}
+//------------------------------------------------------------------------------
+IExporterInterface* TMallExport::CreateExportMedium()
+{
+    int mallid = TGlobalSettings::Instance().mallInfo.MallId ;
+    UnicodeString exportType = GetExportType(mallid)  ;
+    if(exportType == ".txt")
+    {
+        return new TMallExportTextFile;
+    }
+    else
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,"Export Type not found");
+		throw;
+    }
+}
+
 
 

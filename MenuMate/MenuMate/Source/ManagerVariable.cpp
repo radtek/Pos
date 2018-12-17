@@ -3422,6 +3422,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction, vmIsAustriaFiscalPostInProgress, "Shows status of posting","Gets true while posting to Austria ",vmgPOS, false);
         SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmIsTableLockEnabled,"Enable Table Lock", "Table will be accessed by that staff only who have save first orders on it.\r", vmgPOS, false);
+        SetVarInt(DBTransaction,vmBatchIdForSouthBeachMall, "SouthBeach Batch No","Getting the Batch number of SouthBeachMall",vmgPOS, 0);
         SetVarBool(DBTransaction,vmHideFreeSides,"Hide Free Sides", "This setting will hide the Sides having price zero from Receipt", vmgPOS, false);
 	}
 	catch(Exception &E)

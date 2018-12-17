@@ -94,7 +94,8 @@ int TDBTierLevel::GetTierLevelAsPerEarnedPoints(Database::TDBTransaction &DBTran
    {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text =  "SELECT Max(TIER_LEVEL) TIER_LEVEL FROM TIER_LEVELS  where POINTS_REQUIRED <= :POINTS_REQUIRED";
+        IBInternalQuery->SQL->Text =  "SELECT FIRST 1 TIER_LEVEL FROM TIER_LEVELS  where POINTS_REQUIRED <= :POINTS_REQUIRED "
+                                      "ORDER BY POINTS_REQUIRED DESC ";
         IBInternalQuery->ParamByName("POINTS_REQUIRED")->AsFloat = earnedPoints;
         IBInternalQuery->ExecQuery();
         if(!IBInternalQuery->Eof)

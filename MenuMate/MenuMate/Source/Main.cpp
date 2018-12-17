@@ -482,12 +482,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
 //            TManagerPanasonic::Instance();
 //            TManagerPanasonic::Instance()->PrepareTenderTypes();
 //            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-        }
+//        }
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
@@ -518,6 +518,15 @@ void TfrmMain::SyncCompanyDetails()
         TManagerCloudSync ManagerCloudSync;
         ManagerCloudSync.CheckSyndCodes();
         bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
+
+         AnsiString DirectoryName = ExtractFilePath(Application->ExeName) + "MemberEmails";
+         if (!DirectoryExists(DirectoryName))
+            CreateDir(DirectoryName);
+
+         AnsiString filename = DirectoryName + "\\" + "MemberDetail.txt";
+        std::auto_ptr <TStringList> logList(new TStringList);
+        logList->SaveToFile(filename);
+
         if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
             UnloadSignalR();
