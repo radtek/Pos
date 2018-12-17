@@ -3009,12 +3009,12 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
         }
     }
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
 //        TManagerPanasonic::Instance()->TriggerTransactionSync();
 //        TManagerPanasonic::Instance()->PrepareTenderTypes();
 //        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-    }
+//    }
 }
 //-------------------------------------------------------------------------------------
 

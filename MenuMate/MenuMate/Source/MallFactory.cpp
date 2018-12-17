@@ -26,6 +26,9 @@ TMallExport* TMallFactory::GetMallType()
          case 3:
             mallType = new TEviaMall();
             break;
+         case 4:
+            mallType = new TSouthBeachMall();
+            break;
         default:
            mallType = NULL;
     }

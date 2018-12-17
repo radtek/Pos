@@ -468,6 +468,7 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmLastZedDate, TGlobalSettings::Instance().LastZedDate);
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmLastZedTime, TGlobalSettings::Instance().LastZedTime);
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmAmountValue, TGlobalSettings::Instance().AmountValue);
+        TManagerVariable::Instance().GetProfileInt(DBTransaction,GlobalProfileKey,vmBatchIdForSouthBeachMall, TGlobalSettings::Instance().MallBatchID);
     }
 
     TManagerVariable::Instance().GetProfileInt(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmMallIndex, TGlobalSettings::Instance().MallIndex);

@@ -35,13 +35,10 @@
 
 
 //---------------------------------------------------------------------------
-bool SendEmail::Send(
-		const AnsiString& attachmentFileName,
-		const AnsiString& subject,
-		AnsiString& mailTo, const AnsiString& body)
+bool SendEmail::Send(const AnsiString& attachmentFileName, const AnsiString& subject, AnsiString& mailTo, const AnsiString& body, bool isLoyaltyEmail)
 {
    AnsiString mailToName = "MM Office Generated";
-   bool result = Send(attachmentFileName, subject, mailTo, mailToName, body);
+   bool result = Send(attachmentFileName, subject, mailTo, mailToName, body, isLoyaltyEmail);
 
    return result;
 }
@@ -49,11 +46,8 @@ bool SendEmail::Send(
 AnsiString Get_FileName(AnsiString& filename );
 //---------------------------------------------------------------------------
 
-bool SendEmail::Send(
-		const AnsiString& attachmentFileName,
-		const AnsiString& subject,
-		       AnsiString& mailTo,
-                const AnsiString& mailToName, const AnsiString& body)
+bool SendEmail::Send(const AnsiString& attachmentFileName, const AnsiString& subject, AnsiString& mailTo, const AnsiString& mailToName,
+                    const AnsiString& body, bool isLoyaltyEmail)
 {
    // for multiple files..
    TStringList *attachments = new TStringList;
@@ -91,7 +85,7 @@ bool SendEmail::Send(
     }
 
 
-   if(TGlobalSettings::Instance().EmailHost == "" || TGlobalSettings::Instance().EmailHostPort == 0 || TGlobalSettings::Instance().EmailId == "" || TGlobalSettings::Instance().EmailPassword == "")
+   if(!isLoyaltyEmail && (TGlobalSettings::Instance().EmailHost == "" || TGlobalSettings::Instance().EmailHostPort == 0 || TGlobalSettings::Instance().EmailId == "" || TGlobalSettings::Instance().EmailPassword == ""))
    {
       MessageBox("Unable to Send Email. \r"
       "Please Configure Email Settings Details. \r\r " "", "Information",
@@ -105,8 +99,6 @@ bool SendEmail::Send(
    std::auto_ptr<TIdSMTP> IdSMTP1(new TIdSMTP(NULL));
    TIdSSLIOHandlerSocketOpenSSL *IdSSLIOHandlerSocketOpenSSL1 = new TIdSSLIOHandlerSocketOpenSSL(IdSMTP1.get());
 
-   IdSSLIOHandlerSocketOpenSSL1->Host = TGlobalSettings::Instance().EmailHost;
-   IdSSLIOHandlerSocketOpenSSL1->Port = TGlobalSettings::Instance().EmailHostPort;
    IdSSLIOHandlerSocketOpenSSL1->SSLOptions->Method = sslvTLSv1;
    IdSSLIOHandlerSocketOpenSSL1->SSLOptions->Mode = sslmClient;
 
@@ -114,10 +106,24 @@ bool SendEmail::Send(
    IdSSLIOHandlerSocketOpenSSL1->ConnectTimeout = 30000;
    IdSSLIOHandlerSocketOpenSSL1->ReadTimeout = 30000;
 
-   IdSMTP1->Host = TGlobalSettings::Instance().EmailHost;
-   IdSMTP1->Username = TGlobalSettings::Instance().EmailId;
-   IdSMTP1->Password = TGlobalSettings::Instance().EmailPassword;
-   IdSMTP1->Port = TGlobalSettings::Instance().EmailHostPort;
+   if(isLoyaltyEmail)
+   {
+       IdSSLIOHandlerSocketOpenSSL1->Host = "smtp.gmail.com";
+       IdSSLIOHandlerSocketOpenSSL1->Port = 25;
+       IdSMTP1->Host = "smtp.gmail.com";
+       IdSMTP1->Username = "developmentmenumate@gmail.com";
+       IdSMTP1->Password = "Menumate@1202";
+       IdSMTP1->Port = 25;
+   }
+   else
+   {
+       IdSSLIOHandlerSocketOpenSSL1->Host = TGlobalSettings::Instance().EmailHost;
+       IdSSLIOHandlerSocketOpenSSL1->Port = TGlobalSettings::Instance().EmailHostPort;
+       IdSMTP1->Host = TGlobalSettings::Instance().EmailHost;
+       IdSMTP1->Username = TGlobalSettings::Instance().EmailId;
+       IdSMTP1->Password = TGlobalSettings::Instance().EmailPassword;
+       IdSMTP1->Port = TGlobalSettings::Instance().EmailHostPort;
+   }
    IdSMTP1->IOHandler = IdSSLIOHandlerSocketOpenSSL1;
    IdSMTP1->UseTLS = utUseImplicitTLS;
    IdSMTP1->ConnectTimeout = 30000;

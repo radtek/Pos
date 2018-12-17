@@ -38,6 +38,7 @@ class TLoyaltyMateThread: public TThread
         void LogErrorToDB(UnicodeString Function,UnicodeString Type,UnicodeString Msg,UnicodeString Terminal="");
         void UpdateMembers();
         void UploadPendingTransactions();
+        void SendEmail(Database::TDBTransaction &DBTransaction, TLoyaltyMateTransaction transaction);
     protected:
         virtual void __fastcall Execute();
     public:

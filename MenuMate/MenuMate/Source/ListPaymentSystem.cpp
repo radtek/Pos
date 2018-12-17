@@ -502,12 +502,12 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
             SetPMSPaymentType(DBTransaction,PaymentKey, Payment, true,true);
 		}
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
 //            std::vector <UnicodeString> PayTypes;
 //            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
 //            InsertPaymentTypeInPanasonicDB(PayTypes);
-        }
+//        }
 	}
 	catch(Exception & E)
 	{
@@ -1024,10 +1024,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 	Busy = false;
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
 //        TManagerPanasonic::Instance()->TriggerTransactionSync();
-    }
+//    }
     TStringList* logList = new TStringList();
     logList->Add("ProcessTransaction() Executed.");
     TSaveLogs::RecordFiscalLogs(logList);
@@ -1848,7 +1848,6 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 {
    if(PaymentTransaction.Membership.Member.ContactKey == 0)
      return;
-
 	try
 	{
 
@@ -1894,9 +1893,9 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			refDate = RecodeYear(activationDate, YearOf(Now()) - 1) ;
 		}
-		if(YearSpan(activationDate,currentDate) >= 1)
+		if(DaysBetween(activationDate,currentDate) >= 365)
 		{
-
+            
 			TDateTime startDate =  RecodeYear(refDate, YearOf(refDate) - 1);
 			if(TGlobalSettings::Instance().LoyaltyMateEnabled)
 			{
@@ -1927,8 +1926,7 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
 		currentYearTierLevel = TDBTierLevel::GetTierLevelAsPerEarnedPoints(PaymentTransaction.DBTransaction,earnedPoints);
 
-
-		if(currentYearTierLevel < lastYearTierLevel)
+		if(TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, currentYearTierLevel) < TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, lastYearTierLevel))
 		{
 			tierLevel = lastYearTierLevel ;
 		}
@@ -1936,16 +1934,15 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			tierLevel = currentYearTierLevel;
 		}
-
-		bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel;
+       bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel && tierLevel != 0;
 		if(IsTierLevelChanged)
-		{
+		{   
 			TGlobalSettings::Instance().TierLevelChange   = tierLevel;
 			MessageBox(PaymentTransaction.Membership.Member.Name + "'s Tier Level Changed To " +
 			TDBTierLevel::GetTierLevelName(PaymentTransaction.DBTransaction,tierLevel), "Tier Level", MB_OK + MB_ICONINFORMATION);
+            PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		}
 
-		PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		TDBTierLevel::UpdateMemberTierLevel(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);
     }
 	catch(Exception & E)
@@ -6396,6 +6393,7 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
 //    dbPanasonic->UniDataBaseConnection->Commit();
 //    dbPanasonic->UniDataBaseConnection->Close();
 //}
+
 //-----------------------------------------------------------------------------------
 void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
 {
