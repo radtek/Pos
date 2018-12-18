@@ -281,7 +281,7 @@ namespace FiscalLibraries
         public bool CheckPortOpenAndRetry()
         {
             bool checkPortStatus =false;
-
+            
             try
             {
                 //  stringList.Add(fiscalprinter.State.ToString());
@@ -318,7 +318,7 @@ namespace FiscalLibraries
         public string PrintReceipt()
         {
             string printResponseString = "";
-
+            bool isEndReceiptCalled = false;
             try
             {
                 string ReceiptNo = "        Receipt No. " + InvoiceNumber;
@@ -509,6 +509,8 @@ namespace FiscalLibraries
                     stringList.Add(" After payment section iteration  ");
 
                     fiscalprinter.EndFiscalReceipt(false);
+                    isEndReceiptCalled = true;
+                    printResponseString = "OK";
                     stringList.Add("EndFiscalReceipt ");
 
                     if (OpenCD)
@@ -538,14 +540,15 @@ namespace FiscalLibraries
                 stringList.Clear();
                 fiscalprinter.Close();
                 stringList.Add("printer closed in print receipt ");
-                printResponseString = "OK";
+                //printResponseString = "OK";
                 stringList.Add("printResponseString: " + printResponseString);
                 WriteToFile(stringList);
                 stringList.Clear();                
             }
             catch (Exception Ex)
             {
-                printResponseString = Ex.Message;
+                if (!isEndReceiptCalled)
+                    printResponseString = Ex.Message.Length > 50 ? Ex.Message.Substring(1,50) : Ex.Message;
                 stringList.Add("catch block of second Try block" + Ex.Message);
                 stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add(Ex.Message);

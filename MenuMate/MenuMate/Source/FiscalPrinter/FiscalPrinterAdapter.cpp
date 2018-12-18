@@ -22,26 +22,37 @@ TFiscalPrinterAdapter::TFiscalPrinterAdapter()
 //---------------------------------------------------------------------------
 UnicodeString TFiscalPrinterAdapter::ConvertInToFiscalData(TPaymentTransaction paymentTransaction)
 {
-    billDetails.InvoiceNumber = paymentTransaction.InvoiceNumber;
-    billDetails.Date = Now().FormatString("dd/mm/yyyy");
-    billDetails.Billno = paymentTransaction.InvoiceNumber;
-    billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
-    billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
-    billDetails.Time = Now().FormatString("hh:nn");
-    billDetails.TabCredit = "0";
-    billDetails.SaleType = "1";
-    billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
-    billDetails.OpenCashDrawer = false;
-    if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
+    UnicodeString responseMessage = "";
+    try
     {
-        billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
-        billDetails.SaleType = "0";
+        billDetails.InvoiceNumber = paymentTransaction.InvoiceNumber;
+        billDetails.Date = Now().FormatString("dd/mm/yyyy");
+        billDetails.Billno = paymentTransaction.InvoiceNumber;
+        billDetails.Cashier = TDeviceRealTerminal::Instance().User.Name;
+        billDetails.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
+        billDetails.Time = Now().FormatString("hh:nn");
+        billDetails.TabCredit = "0";
+        billDetails.SaleType = "1";
+        billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
+        billDetails.OpenCashDrawer = false;
+        if(paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0)
+        {
+            billDetails.PointPurchased = paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded();
+            billDetails.SaleType = "0";
+        }
+        billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;
+        billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;
+        PrepareItemInfo(paymentTransaction);
+        PrepartePaymnetInfo(paymentTransaction);
+        responseMessage = PrintFiscalReceipt(billDetails);
     }
-    billDetails.PrinterType  = TGlobalSettings::Instance().PrinterType;
-    billDetails.PrinterLogicalName = TGlobalSettings::Instance().PrinterlogicalName;
-    PrepareItemInfo(paymentTransaction);
-    PrepartePaymnetInfo(paymentTransaction);
-    UnicodeString responseMessage = PrintFiscalReceipt(billDetails);
+    catch(Exception &ex)
+    {
+        std::auto_ptr <TStringList> logList(new TStringList);
+        logList->Add("Exception occured in function ConvertInToFiscalData() and message is :  " + ex.Message);
+        TSaveLogs::RecordFiscalLogs(logList.get());
+
+    }
     return responseMessage;
 }
 //------------------------------------------------------------------------------
@@ -341,13 +352,28 @@ UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails recei
 
         logList->Clear();
         logList->Add("After sending command to fiscal printer.");
-        response = UnicodeString(responseMessage).t_str();
-        logList->Add("Response received from fiscal printer is:  " + response);
-        TSaveLogs::RecordFiscalLogs(logList);
+        if(responseMessage == NULL || responseMessage == "")
+        {
+            if(responseMessage == NULL)
+                logList->Add("Response received from fiscal printer is NULL  ");
+            else
+                logList->Add("Response received from fiscal printer is blank ");
+            TSaveLogs::RecordFiscalLogs(logList);
+            response = "OK";
+        }
+        else
+        {
+            response = UnicodeString(responseMessage).t_str();
+            logList->Add("Response received from fiscal printer is not null and response is :  " + response);
+            TSaveLogs::RecordFiscalLogs(logList);
+        }
     }
     catch(Exception & E)
     {
         response = E.Message;
+        std::auto_ptr <TStringList> logList(new TStringList);
+        logList->Add("Exception occured in function PrintFiscalReceipt() and message is :  " + response);
+        TSaveLogs::RecordFiscalLogs(logList.get());
 	}
     delete fpclass;
     fpclass = NULL;

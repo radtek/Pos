@@ -3701,7 +3701,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
         logList->Clear();
         logList->Add("Response Message received in ListPaymentSystem is: " + responseMessage);
         TSaveLogs::RecordFiscalLogs(logList);
-        if(responseMessage.Pos("OK") == 0)
+        if(responseMessage == "OK")
         {
             MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
             logList->Clear();
@@ -3719,6 +3719,12 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
                 logList->Add("Control returned after calling Print receipt Function in ReceiptPrint() function.");
                 TSaveLogs::RecordFiscalLogs(logList);
             }
+        }
+        else
+        {
+            logList->Clear();
+            logList->Add("Response message Received from Fiscal printer is not OK and response message is: "+ responseMessage);
+            TSaveLogs::RecordFiscalLogs(logList);
         }
         delete logList;
         logList = NULL;
