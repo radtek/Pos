@@ -96,5 +96,6 @@ class TReceiptResponseAustriaFiscal
 		UnicodeString StateData;
         bool UnableToConnectToMenumateService;
         bool UnableToConnectToFiscalService;
+        bool IsDataNull;
 };
 #endif
