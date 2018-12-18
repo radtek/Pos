@@ -181,6 +181,14 @@ namespace MenumateServices.LoyaltyMate
                             LoyaltyResponseCode.AuthenticationFailed,
                             CreateMemberInfo(requestInfo.RequestKey));
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateMemberResponseError(@"GUID Not found",  ex.Message,  LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
+            }     
             catch (Exception exc)
             {
                 return CreateMemberResponseError(
@@ -224,6 +232,14 @@ namespace MenumateServices.LoyaltyMate
                             LoyaltyResponseCode.AuthenticationFailed,
                             new MemberInfo() { MemberCardCode = requestInfo.RequestKey });
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateMemberResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
+            }     
             catch (Exception exc)
             {
                 return CreateMemberResponseError(@"Failed to request member's info from the server",
@@ -296,6 +312,14 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed);
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist);
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound);
+            }     
             catch (Exception ex)
             {
                 return CreateResponseError(
@@ -326,6 +350,14 @@ namespace MenumateServices.LoyaltyMate
                             ex.Message,
                             LoyaltyResponseCode.AuthenticationFailed);
             }
+            catch (MultipleGUIDException ex)
+            {
+                return CreateResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist);
+            }
+            catch (GUIDNotFoundException ex)
+            {
+                return CreateResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound);
+            }      
             catch (Exception ex)
             {
                 return CreateResponseError(

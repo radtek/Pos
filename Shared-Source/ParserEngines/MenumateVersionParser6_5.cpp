@@ -52,6 +52,11 @@ void TApplyParser::upgrade6_57Tables()
 {
     update6_57Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_58Tables()
+{
+    update6_58Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -108,6 +113,18 @@ void TApplyParser::update6_56Tables()
 void TApplyParser::update6_57Tables()
 {
     AlterTableArcBill6_57(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_58Tables()
+{
+    Create6_58Generator(_dbControl );
+    Create6_58Table(_dbControl);
+	AlterTableLoyaltyPendingTrans6_58(_dbControl);
+    UpdateTableLoyaltyPending6_58(_dbControl);
+    Insert6_39Malls(_dbControl, 4, "South Beach ", "F");
+    int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
+    InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 4);
+    AlterTable6_49MallExportSales(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -909,5 +926,113 @@ void TApplyParser::AlterTableArcBill6_57(TDBControl* const inDBControl)
         executeQuery ("ALTER TABLE ARCBILL ALTER EFTPOS_SERVICE_ID TYPE VARCHAR(50) ;", inDBControl);
 	}
 }
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_58Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_AUSTRIAFISCALRESPONSE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALRESPONSE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALRESPONSE_ID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_AUSTRIAFISCALSIGNATURE_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALSIGNATURE_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALSIGNATURE_ID TO 0;", inDBControl);
+	}
+    if(!generatorExists("GEN_AUSTRIAFISCALDETAILS_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_AUSTRIAFISCALDETAILS_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_AUSTRIAFISCALDETAILS_ID TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_58Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "AUSTRIAFISCALRESPONSE", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALRESPONSE "
+        "( "
+        "  RESPONSE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  MMINVOICENUMBER VARCHAR(50), "
+        "  CASHBOXID VARCHAR(100), "
+        "  QUEUEID VARCHAR(100), "
+        "  QUEUEITEMID VARCHAR(100), "
+        "  QUEUEROW VARCHAR(50), "
+        "  TERMINALID VARCHAR(100), "
+        "  RECEIPTREFERENCE VARCHAR(100), "
+        "  CASHBOXIDENTIFICATION VARCHAR(100), "
+        "  RECEIPTIDENTIFICATION VARCHAR(100), "
+        "  RECEIPTMOMENT TIMESTAMP, "
+        "  STATE VARCHAR(50), "
+        "  STATEDATA VARCHAR(100), "
+        "  IS_SIGNED CHAR(1) DEFAULT 'F' "
+        ");",
+		inDBControl );
+    }
+    if ( !tableExists( "AUSTRIAFISCALSIGNATURES", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALSIGNATURES "
+        "( "
+        "  SIGNATURE_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  RESPONSE_ID INTEGER, "
+        "  SIGNATUREFORMAT VARCHAR(100), "
+        "  SIGNATURETYPE VARCHAR(100), "
+        "  CAPTION VARCHAR(250), "
+        "  DATA VARCHAR(250) "
+        ");",
+		inDBControl );
+    }
+    if ( !tableExists( "AUSTRIAFISCALINVOICEDETAILS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE AUSTRIAFISCALINVOICEDETAILS "
+        "( "
+        "  DETAILSID INTEGER NOT NULL PRIMARY KEY, "
+        "  MMINVOICENUMBER VARCHAR(50), "
+        "  DESCRIPTION VARCHAR(100), "
+        "  QTY NUMERIC(15,2), "
+        "  AMOUNT NUMERIC(15,2), "
+        "  ITEMCASE VARCHAR(50), "
+        "  VATRATE NUMERIC(15,2), "
+        "  IS_PAYMENT CHAR(1) DEFAULT 'F'"
+        ");",
+		inDBControl );
+    }
+}
+//-------------------------------------------------------------------------------
+void TApplyParser::AlterTableLoyaltyPendingTrans6_58(TDBControl* const inDBControl)
+{
+    if ( !fieldExists( "LOYALTYPENDINGTRANSACTIONS ", "IS_AVAILABLE_FOR_POSTING", _dbControl ) )
+    {
+        executeQuery (
+        "ALTER TABLE LOYALTYPENDINGTRANSACTIONS "
+        "ADD IS_AVAILABLE_FOR_POSTING T_TRUEFALSE DEFAULT 'T' ; ",
+        inDBControl);
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::UpdateTableLoyaltyPending6_58(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *_dbControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *UpdateQuery    = transaction.Query(transaction.AddQuery());
+
+        if ( fieldExists( "LOYALTYPENDINGTRANSACTIONS ", "IS_AVAILABLE_FOR_POSTING ", _dbControl ) )
+        {
+            UpdateQuery->SQL->Text =  "UPDATE LOYALTYPENDINGTRANSACTIONS a SET a.IS_AVAILABLE_FOR_POSTING = 'T' WHERE a.IS_AVAILABLE_FOR_POSTING IS NULL ",
+            UpdateQuery->ExecQuery();
+        }
+        transaction.Commit();
+    }
+    catch( Exception &E )
+    {
+        transaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

@@ -114,7 +114,7 @@ class TListPaymentSystem : public TMMPaymentSystem
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
-    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
+//    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
     bool IsOracleConfigured();
     bool IsSiHotConfigured();
      //settle th eeftpos bills after zed performed..

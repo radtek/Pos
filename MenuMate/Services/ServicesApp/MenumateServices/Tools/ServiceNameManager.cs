@@ -51,6 +51,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.AdyenIntegration: return "AdyenIntegrationWebService";
                 case MenumateServicesIdentifier.PaymentSense: return "MenumateServicePaymentSense";
                 case MenumateServicesIdentifier.MewsIntegration: return "MewsIntegrationWebService";
+                case MenumateServicesIdentifier.AustriaFiscalIntegration: return "AustriaFiscalIntegrationWebService";
                 default: return @"";
             }
         }

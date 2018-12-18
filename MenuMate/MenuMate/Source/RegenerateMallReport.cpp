@@ -28,10 +28,30 @@ __fastcall TfrmRegenerateMallReport::TfrmRegenerateMallReport(TComponent* Owner)
     mcEndDate->Date = EndDate;
 
     InitializeTimeOptions();
-    cbStartHour->ItemIndex = 5;
-    cbEndHour->ItemIndex = 5;
-    cbStartMin->ItemIndex = 0;
-    cbEndMin->ItemIndex = 0;
+    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+    {
+        cbStartHour->ItemIndex = 0;
+        cbEndHour->ItemIndex = 23;
+        cbStartMin->ItemIndex = 0;
+        cbEndMin->ItemIndex = 59;
+
+        lbStartMin->Visible = false;
+        lbStartHour->Visible = false;
+        cbStartHour->Visible = false;
+        cbStartMin->Visible = false;
+        cbEndHour->Visible = false;
+        cbEndMin->Visible = false;
+        lbEndHour->Visible = false;
+        lbEndMin->Visible = false;
+
+    }
+    else
+    {
+        cbStartHour->ItemIndex = 5;
+        cbEndHour->ItemIndex = 5;
+        cbStartMin->ItemIndex = 0;
+        cbEndMin->ItemIndex = 0;
+    }
     ReportPath = "";
 
     StartHour = cbStartHour->ItemIndex;
@@ -186,6 +206,13 @@ void TfrmRegenerateMallReport::InitializeTimeOptions()
 //---------------------------------------------------------------------------
 void TfrmRegenerateMallReport::InitializeTimeSet(TDateTime &SDate, TDateTime &EDate)
 {
+   if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+   {
+     StartHour ="00";
+     StartMin = "00";
+     EndHour = "23";
+     EndMin = "59";
+   }
     UnicodeString StartHM = StartHour + ":" + StartMin + ":00";
     UnicodeString EndHM = EndHour + ":" + EndMin + ":00";
 

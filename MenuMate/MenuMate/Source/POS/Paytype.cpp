@@ -3058,6 +3058,8 @@ void __fastcall TfrmPaymentType::tbPatronCountClick(TObject *Sender)
         {
             RestructureBillForPatrons();
         }
+        if(TGlobalSettings::Instance().mallInfo.MallId==4)
+          CurrentTransaction.IsPatronAdded = true;
 		Reset();
 		ShowPaymentTotals();
 	}

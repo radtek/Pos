@@ -48,7 +48,7 @@
 #include "DBTables.h"
 #include "GroupGUI.h"
 #include "DBGroups.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPatron.h"
 #include "EnableFloorPlan.h"
 #include "WebMate.h"
@@ -170,10 +170,15 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
         TouchBtnFiscalStorage->ButtonColor = clGreen;
         TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
     }
+    else if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        TouchBtnFiscalStorage->ButtonColor = clGreen;
+        TouchBtnFiscalStorage->Caption = "Austria Fiscal\r[Enabled]";
+    }
     else
     {
         TouchBtnFiscalStorage->ButtonColor = clRed;
-        TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
+        TouchBtnFiscalStorage->Caption = "Fiscal Reporting\r[Disabled]";
     }
 }
 //---------------------------------------------------------------------------
@@ -336,12 +341,9 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 		return;
     }
 
-	std::auto_ptr<TfrmSelectTable> frm_seltbl(
-	TfrmSelectTable::Create<TfrmSelectTable>(
-	this, TDeviceRealTerminal::Instance().DBControl));
+	std::auto_ptr<TfrmSelectTable> frm_seltbl(TfrmSelectTable::Create<TfrmSelectTable>(	this, TDeviceRealTerminal::Instance().DBControl));
 
-	std::auto_ptr<TfrmTouchKeyboard> frm_tchkb(
-	TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
+	std::auto_ptr<TfrmTouchKeyboard> frm_tchkb(TfrmTouchKeyboard::Create<TfrmTouchKeyboard>(this));
 
 	bool must_signal_changes = 0;
 
@@ -352,11 +354,26 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 	frm_tchkb->AllowCarriageReturn = false;
 	frm_tchkb->Caption = "Enter Table Name";
 
-	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; ) {
+	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; )
+    {     
 		tr.StartTransaction();
-		frm_tchkb->KeyboardText =
-		TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
-		if (frm_tchkb->ShowModal() == mrOk) {
+
+        if(TGlobalSettings::Instance().IsTableLockEnabled)
+        {
+            UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(tr, frm_seltbl->SelectedTabContainerNumber);
+            if(StaffName.Trim() != "" && tmp_ui.Name.Pos(StaffName) == 0)
+            {
+                MessageBox("This Table name can only be changed by staff " + StaffName,"Error",MB_OK);
+                tr.Commit();
+                must_signal_changes = false;
+                break;
+            }
+        }
+
+		frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
+
+		if (frm_tchkb->ShowModal() == mrOk)
+        {
 			TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
 			frm_tchkb->KeyboardText);
 			must_signal_changes |= 1;
@@ -2987,91 +3004,91 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
         switch(Action)
         {
             case 1 :
-                EnablePanasonicIntegration();
+//                EnablePanasonicIntegration();
                 break;
         }
     }
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
-        TManagerPanasonic::Instance()->PrepareTenderTypes();
-        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-    }
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//        TManagerPanasonic::Instance()->PrepareTenderTypes();
+//        TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//    }
 }
 //-------------------------------------------------------------------------------------
 
-void TfrmMaintain::EnablePanasonicIntegration()
-{
-    bool keepFormAlive = true;
-    while(keepFormAlive)
-    {
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
-
-         std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-        TVerticalSelection Item;
-        Item.Title = "Cancel";
-        Item.Properties["Color"] = "0x000098F5";
-        Item.Properties["FontColor"] = IntToStr(clWhite);;
-        Item.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item);
-
-        TVerticalSelection Item1;
-        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled? "Enabled" : "Disabled"));
-        Item1.Properties["Action"] = IntToStr(1);
-
-        if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
-        {
-            Item1.Properties["Color"] = IntToStr(clGreen);
-        }
-        else
-        {
-            Item1.Properties["Color"] = IntToStr(clRed);
-        }
-
-        Item1.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item1);
-
-        TVerticalSelection Item2;
-        Item2.Title = "Server IP \r" + TGlobalSettings::Instance().PanasonicServerIP;
-        Item2.Properties["Action"] = IntToStr(2);
-        Item2.Properties["Color"] = IntToStr(clNavy);
-        Item2.CloseSelection = true;
-        SelectionForm1->Items.push_back(Item2);
-
-        SelectionForm1->ShowModal();
-        TVerticalSelection SelectedItem1;
-        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
-        {
-            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
-            switch(Action)
-            {
-                case 1 :
-                    SaveEnabledState(dbTransaction);
-                    break;
-                case 2 :
-                    SaveServerIp(dbTransaction);
-            }
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
-        }
-        else
-        {
-            keepFormAlive = false;
-            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
-            {
-                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
-                TGlobalSettings::Instance().PanasonicServerIP = "";
-            }
-            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
-        }
-        dbTransaction.Commit();
-    }
-}
+//void TfrmMaintain::EnablePanasonicIntegration()
+//{
+//    bool keepFormAlive = true;
+//    while(keepFormAlive)
+//    {
+//        //Register the database transaction..
+//        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+//        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+//        dbTransaction.StartTransaction();
+//
+//         std::auto_ptr<TfrmVerticalSelect> SelectionForm1(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+//
+//        TVerticalSelection Item;
+//        Item.Title = "Cancel";
+//        Item.Properties["Color"] = "0x000098F5";
+//        Item.Properties["FontColor"] = IntToStr(clWhite);;
+//        Item.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item);
+//
+//        TVerticalSelection Item1;
+//        Item1.Title = UnicodeString("Enable/Disable \r") + UnicodeString((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled? "Enabled" : "Disabled"));
+//        Item1.Properties["Action"] = IntToStr(1);
+//
+//        if( TGlobalSettings::Instance().IsPanasonicIntegrationEnabled )
+//        {
+//            Item1.Properties["Color"] = IntToStr(clGreen);
+//        }
+//        else
+//        {
+//            Item1.Properties["Color"] = IntToStr(clRed);
+//        }
+//
+//        Item1.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item1);
+//
+//        TVerticalSelection Item2;
+//        Item2.Title = "Server IP \r" + TGlobalSettings::Instance().PanasonicServerIP;
+//        Item2.Properties["Action"] = IntToStr(2);
+//        Item2.Properties["Color"] = IntToStr(clNavy);
+//        Item2.CloseSelection = true;
+//        SelectionForm1->Items.push_back(Item2);
+//
+//        SelectionForm1->ShowModal();
+//        TVerticalSelection SelectedItem1;
+//        if(SelectionForm1->GetFirstSelectedItem(SelectedItem1) && SelectedItem1.Title != "Cancel" )
+//        {
+//            int Action = StrToIntDef(SelectedItem1.Properties["Action"],0);
+//            switch(Action)
+//            {
+//                case 1 :
+//                    SaveEnabledState(dbTransaction);
+//                    break;
+//                case 2 :
+//                    SaveServerIp(dbTransaction);
+//            }
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//        }
+//        else
+//        {
+//            keepFormAlive = false;
+//            if((TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && TGlobalSettings::Instance().PanasonicServerIP == "") )
+//            {
+//                TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+//                TGlobalSettings::Instance().PanasonicServerIP = "";
+//            }
+//            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmPanasonicServerIP,TGlobalSettings::Instance().PanasonicServerIP);
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//        }
+//        dbTransaction.Commit();
+//    }
+//}
 //-------------------------------------------------------------------------------------------------------
 void TfrmMaintain::SaveServerIp(Database::TDBTransaction &dbTransaction)
 {
@@ -3125,13 +3142,13 @@ void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
             {
                 case 1 :
 
-                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
+//                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = true;
                     break;
                 case 2 :
-                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
+//                    TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = false;
                     break;
             }
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
+//            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsPanasonicIntegrationEnabled,TGlobalSettings::Instance().IsPanasonicIntegrationEnabled);
         }
     }
     else
@@ -3256,51 +3273,75 @@ bool TfrmMaintain::SetUpPhoenix()
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::TouchBtnFiscalMouseClick(TObject *Sender)
 {
-     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-     DBTransaction.StartTransaction();
-     try
-     {
-    	TMMContactInfo TempUserInfo;
-    	std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-    	TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-    	DBTransaction.Commit();
-    	if (Result == lsAccepted)
-    	{
-            DBTransaction.StartTransaction();
-            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
-            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
-            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
-            frmsetUpPosPlus->tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().OrganizationNumber;
-            frmsetUpPosPlus->tbtnPortNumber->Caption = "Port Number";
-            if(!TGlobalSettings::Instance().IsFiscalStorageEnabled)
-                frmsetUpPosPlus->tbtnConfigure->ButtonColor = clRed;
-            frmsetUpPosPlus->ShowModal();
-            if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    TLoginSuccess Result = VerifyUserAuthorization();
+	if (Result == lsAccepted)
+	{
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = "0x000098F5";
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "POS Plus";
+        Item1.Properties["Action"] = IntToStr(1);
+        Item1.Properties["Color"] = IntToStr(clNavy);
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+
+
+        TVerticalSelection Item2;
+        Item2.Title = "Austria Fiscal";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clNavy);
+        Item2.CloseSelection = true;
+        SelectionForm->Items.push_back(Item2);
+
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            switch(Action)
             {
-                TouchBtnFiscalStorage->ButtonColor = clGreen;
-                TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+                case 1 :
+                {
+                   SetUpPosPlus();
+                   break;
+                }
+                case 2 :
+                {
+                   SetUpAustriaFiscal();
+                   break;
+                }
             }
-            else
-            {
-                TouchBtnFiscalStorage->ButtonColor = clRed;
-                TouchBtnFiscalStorage->Caption = "POS Plus\r[Disabled]";
-            }
-    	}
-    	else if (Result == lsDenied)
-    	{
-    		MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
-    	}
-    	else if (Result == lsPINIncorrect)
-    	{
-    		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-    	}
-     }
-     catch (Exception &Exc)
-     {
-         DBTransaction.Rollback();
-         TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
-     }
+        }
+        if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+        {
+            TouchBtnFiscalStorage->ButtonColor = clGreen;
+            TouchBtnFiscalStorage->Caption = "POS Plus\r[Enabled]";
+        }
+        else if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            TouchBtnFiscalStorage->ButtonColor = clGreen;
+            TouchBtnFiscalStorage->Caption = "Austria Fiscal\r[Enabled]";
+        }
+        else
+        {
+            TouchBtnFiscalStorage->ButtonColor = clRed;
+            TouchBtnFiscalStorage->Caption = "Fiscal Reporting\r[Disabled]";
+        }
+	}
+	else if (Result == lsDenied)
+	{
+		MessageBox("You do not have access to the Fiscal Interface settings.", "Error", MB_OK + MB_ICONERROR);
+	}
+	else if (Result == lsPINIncorrect)
+	{
+		MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+	}
 }
 //---------------------------------------------------------------------------
 bool TfrmMaintain::SetUpOracle()
@@ -3521,5 +3562,79 @@ bool TfrmMaintain::SyncOnlineOrderingDetails()
     TManagerCloudSync ManagerCloudSync;
     result = ManagerCloudSync.SyncOnlineOrderingDetails();
     return result;
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::SetUpPosPlus()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo TempUserInfo;
+        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+        TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+        DBTransaction.Commit();
+        if (Result == lsAccepted)
+        {
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->StorageType = PosPlus;
+            frmsetUpPosPlus->ConfigureForMode();
+            frmsetUpPosPlus->ShowModal();
+        }
+        else if (Result == lsDenied)
+        {
+            MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if (Result == lsPINIncorrect)
+        {
+            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+        }
+    }
+    catch (Exception &Exc)
+    {
+     DBTransaction.Rollback();
+     TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+    }
+}
+//-----------------------------------------------------------------------------
+void TfrmMaintain::SetUpAustriaFiscal()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TMMContactInfo TempUserInfo;
+        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
+        TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
+        DBTransaction.Commit();
+        if (Result == lsAccepted)
+        {
+            DBTransaction.StartTransaction();
+            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+            frmsetUpPosPlus->StorageType = AustriaFiscal;
+            frmsetUpPosPlus->ConfigureForMode();
+            frmsetUpPosPlus->ShowModal();
+        }
+        else if (Result == lsDenied)
+        {
+            MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
+        }
+        else if (Result == lsPINIncorrect)
+        {
+            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
+        }
+    }
+    catch (Exception &Exc)
+    {
+     DBTransaction.Rollback();
+     TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, Exc.Message);
+    }
 }
 //-----------------------------------------------------------------------------

@@ -419,6 +419,7 @@ object frmMain: TfrmMain
     Font.Style = [fsBold]
     ParentColor = False
     ParentFont = False
+    ShowAccelChar = False
     Transparent = True
   end
   object MemInfo: TMemo

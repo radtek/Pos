@@ -5,12 +5,14 @@
 //---------------------------------------------------------------------------
 #include "Manager.h"
 #include "MM_DBCore.h"
+#include "ShowPrintout.h"
 //---------------------------------------------------------------------------
 
 class TManagerReceipt : public TManager
 {
 	private:
 	TDateTime FSelectedDate;
+    TForm *Owner;
 	Database::TDBControl &DBControl;
 	typedef std::pair<int,int> TableKeyPair;
 	std::vector<TableKeyPair> Array;
@@ -23,6 +25,7 @@ class TManagerReceipt : public TManager
     void AddDuplicateLabel(TMemoryStream* ReceiptToEdit,TStringList *Lines);
     void PrintDuplicateReceipt(TMemoryStream* DuplicateReceipt,bool IsCompanyDetailsReprintReceipt = false);
     bool CanReprintReceipt(Database::TDBTransaction &DBTransaction, AnsiString InvoiceNumber);
+    UnicodeString GetSignatureValueForReceipt();
 	public:
 	TManagerReceipt(Database::TDBControl &inDBControl);
 	virtual ~TManagerReceipt();
@@ -49,7 +52,7 @@ class TManagerReceipt : public TManager
 	void GetLastReceipt(Database::TDBTransaction &DBTransaction);
 	void PrintLastReceipt();
 	void Print();
-   
+    void PrintDocketForTips(int arcbillkey, Currency tipAmount);
 	__property TDateTime Date = { read = FSelectedDate ,write = SetCurrentDate};
 	bool CanApplyTipOnThisReceiptsTransaction(
 		WideString &outPaymentRefNumber,

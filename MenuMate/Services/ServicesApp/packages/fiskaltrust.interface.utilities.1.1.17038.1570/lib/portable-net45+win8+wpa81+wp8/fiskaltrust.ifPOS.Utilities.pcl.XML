@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>fiskaltrust.ifPOS.Utilities.pcl</name>
+    </assembly>
+    <members>
+        <member name="M:fiskaltrust.ifPOS.Utilities.ToBase32String(System.Byte[])">
+            <summary>
+            Convert byte array to Base32 format
+            </summary>
+            <param name="bytes">An array of bytes to convert to Base32 format</param>
+            <returns>Returns a string representing byte array</returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.ToBase32String(System.String)">
+            <summary>
+            Convert Base64 string to Base32 format
+            </summary>
+            <param name="base64String"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.FromBase32String(System.String)">
+            <summary>
+            Convert base32 string to array of bytes
+            </summary>
+            <param name="base32String">Base32 string to convert</param>
+            <returns>Returns a byte array converted from the string</returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.ToBase64urlString(System.Byte[])">
+            <summary>
+            Convert byte array to Base64url format
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.ToBase64urlString(System.String)">
+            <summary>
+            Convert Base64 string to Base64url format
+            </summary>
+            <param name="base64"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.ToBase64String(System.Byte[])">
+            <summary>
+            Convert byte array to Base64 format
+            </summary>
+            <param name="bytes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.FromBase64urlString(System.String)">
+            <summary>
+            Convert Base64url string to byte array
+            </summary>
+            <param name="base64urlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.FromBase64String(System.String)">
+            <summary>
+            Convert Base64 string to byte array
+            </summary>
+            <param name="base64String"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.Timestamp(System.DateTime)">
+            <summary>
+            Gets the timestamp value for a datetime object
+            </summary>
+            <param name="moment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.AT_RKSV_Signature_ToBase32(System.String,System.Boolean)">
+            <summary>
+            Convert base64 rksv-signature to OCR signature and reverse
+            </summary>
+            <param name="signature"></param>
+            <param name="reverse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.AT_RKSV_Signature_ToLink(System.String)">
+            <summary>
+            Convert base64 rksv-signature to link
+            </summary>
+            <param name="signature">string to convert</param>
+            <returns>string with link</returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.AT_RKSV_AESKey_CheckSum(System.String)">
+            <summary>
+            Get Check-Sum for AES-Key
+            </summary>
+            <param name="base64AESKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.Utilities.AT_RKSV_Signature_ToDEP(System.String,System.Boolean)">
+            <summary>
+            Convert QR-Code RKSV-Signature-Format to DEP RKSV-Signature-Format
+            </summary>
+            <param name="value"></param>
+            <param name="reverse"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

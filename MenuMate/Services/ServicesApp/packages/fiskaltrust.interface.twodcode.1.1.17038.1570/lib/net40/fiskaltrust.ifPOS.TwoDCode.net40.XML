@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>fiskaltrust.ifPOS.TwoDCode.net40</name>
+    </assembly>
+    <members>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.QR_TextBytes(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Convert a text string to qr-code in form of an byte array which can be printed to an ASCII-printer with codepage 437 or 850.
+            If no character and line spacing is used a readable qr-code is printed
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.QR_TextChars(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Convert a text string to qr-code in form of an unicode-char array which can be printed to an printer.
+            If no character and line spacing is used a readable qr-code is printed
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.AZTEC_TextBytes(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Convert a text string to aztec-code in form of an byte array which can be printed to an ASCII-printer with codepage 437 or 850.
+            If no character and line spacing is used a readable aztec-code is printed
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.AZTEC_TextChars(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Convert a text string to aztec-code in form of an unicode-char array which can be printed to an printer.
+            If no character and line spacing is used a readable aztec-code is printed
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.QR_Grafic(System.String,System.Int32)">
+            <summary>
+            Convert a text string to qr-code in form of an byte array which contains a png-grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.QR_Grafic_Bmp(System.String,System.Int32)">
+            <summary>
+            Convert a text string to qr-code in form of an byte array which contains a bmp-grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.QR_Grafic(System.String,System.Drawing.Imaging.ImageFormat,System.Int32)">
+            <summary>
+            Convert a text string to qr-code in form of an byte array which contains a grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="format"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.AZTEC_Grafic(System.String,System.Int32)">
+            <summary>
+            Convert a text string to aztec-code in form of an byte array which contains a png-grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.AZTEC_Grafic_Bmp(System.String,System.Int32)">
+            <summary>
+            Convert a text string to aztec-code in form of an byte array which contains a bmp-grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+        <member name="M:fiskaltrust.ifPOS.TwoDCode.AZTEC_Grafic(System.String,System.Drawing.Imaging.ImageFormat,System.Int32)">
+            <summary>
+            Convert a text string to qr-code in form of an byte array which contains a grafic.
+            </summary>
+            <param name="data"></param>
+            <param name="format"></param>
+            <param name="width"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

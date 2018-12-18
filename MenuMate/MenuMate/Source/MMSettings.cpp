@@ -396,7 +396,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().FloatWithdrawFromCash = TManagerVariable::Instance().GetBool(DBTransaction, vmFloatWithdrawFromCash, false);
         TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt = TManagerVariable::Instance().GetBool(DBTransaction, vmCompanyDetails, false);
         TGlobalSettings::Instance().CashWithdrawalGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashWithdrawal, "");
-        TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
+//        TGlobalSettings::Instance().IsPanasonicIntegrationEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsPanasonicIntegrationEnabled, false);
         TGlobalSettings::Instance().PanasonicServerIP = TManagerVariable::Instance().GetStr(DBTransaction, vmPanasonicServerIP, "");
         TGlobalSettings::Instance().CashVarianceGLCode = TManagerVariable::Instance().GetStr(DBTransaction, vmCashVariance, "6-3400");
         TGlobalSettings::Instance().ReportExportPath = TManagerVariable::Instance().GetStr(DBTransaction, vmReportExportPath, "");
@@ -440,6 +440,13 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().PrintTipAndSignature = TManagerVariable::Instance().GetBool(DBTransaction, vmPrintTipAndSignature, false);
         TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, false);
         TGlobalSettings::Instance().ForceHappyHour = TManagerVariable::Instance().GetBool(DBTransaction, vmForceHappyHour, false);
+        TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsAustriaFiscalStorageEnabled, false);
+        TGlobalSettings::Instance().AustriaFiscalUrl = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalUrl, "");
+        TGlobalSettings::Instance().AustriaFiscalCashBoxId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalCashBoxId, "");
+        TGlobalSettings::Instance().AustriaFiscalTerminalId = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalTerminalId, "");
+        TGlobalSettings::Instance().AustriaFiscalAccessToken = TManagerVariable::Instance().GetStr(DBTransaction, vmAustriaFiscalAccessToken, "");
+        TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
+        TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
 }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
@@ -461,6 +468,7 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmLastZedDate, TGlobalSettings::Instance().LastZedDate);
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmLastZedTime, TGlobalSettings::Instance().LastZedTime);
         TManagerVariable::Instance().GetProfileStr(DBTransaction,GlobalProfileKey,vmAmountValue, TGlobalSettings::Instance().AmountValue);
+        TManagerVariable::Instance().GetProfileInt(DBTransaction,GlobalProfileKey,vmBatchIdForSouthBeachMall, TGlobalSettings::Instance().MallBatchID);
     }
 
     TManagerVariable::Instance().GetProfileInt(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmMallIndex, TGlobalSettings::Instance().MallIndex);

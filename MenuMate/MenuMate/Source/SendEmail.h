@@ -37,8 +37,8 @@ class SendEmail
 {
 	public:
 
-    static bool Send(const AnsiString& attachmentFileName, const AnsiString& subject,  AnsiString& mailTo, const AnsiString& body);
-    static bool Send(const AnsiString& attachmentFileName, const AnsiString& subject,  AnsiString& mailTo, const AnsiString& mailToName, const AnsiString& body);
+    static bool Send(const AnsiString& attachmentFileName, const AnsiString& subject,  AnsiString& mailTo, const AnsiString& body, bool isLoyaltyEmail = false);
+    static bool Send(const AnsiString& attachmentFileName, const AnsiString& subject,  AnsiString& mailTo, const AnsiString& mailToName, const AnsiString& body, bool isLoyaltyEmail);
     AnsiString Get_FileName(AnsiString& filename );
 
 };

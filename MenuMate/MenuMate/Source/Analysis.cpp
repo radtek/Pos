@@ -3210,10 +3210,18 @@ Zed:
                     {
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
-                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3)
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3 || TGlobalSettings::Instance().mallInfo.MallId == 4)
                     {
                         isMasterterminal = true;
-                        UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                        {
+                          UpdateZKeyForMallExportSales(isMasterterminal, 10);
+                          UpdateMaxZedTime(10);
+                        }
+                        else
+                        {
+                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        }
                         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
                             UpdateStallCodeForEviaMall(2);
                     }
@@ -4669,7 +4677,7 @@ void __fastcall TfrmAnalysis::tbSettleUserClick(void)
 						ThisTransaction.Count++;
 						TransactionsCount[PaymentName] = ThisTransaction;
 					}
-                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Tip")
+                    if(IBInternalQuery->FieldByName("PAY_TYPE")->AsString == "Tips")
                     {
                        TotalInBilledTips += IBInternalQuery->FieldByName("SUBTOTAL")->AsCurrency;
                        TipCount++;
@@ -9233,6 +9241,43 @@ void TfrmAnalysis::SettleEFTPOSBills()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateMaxZedTime(int fieldindex)
+{
+  TDateTime CurrentZedTime = Now();
+  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+  DBTransaction.StartTransaction();
+  try
+  {
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+    IBInternalQuery->ExecQuery();
+    int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+    IBInternalQuery->Close();
+
+    IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.DATE_CREATED = :DATE_CREATED "
+                                 "WHERE MALLEXPORT_SALES.Z_KEY = :Z_KEY "
+                                 "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+
+
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+    IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = fieldindex;
+    IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = CurrentZedTime;
+
+
+    IBInternalQuery->ExecQuery();
+
+    DBTransaction.Commit();
+
+  }
+  catch(Exception & E)
+  {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+  }
 }
 
 
