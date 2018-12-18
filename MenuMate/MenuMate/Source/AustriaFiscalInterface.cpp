@@ -43,7 +43,7 @@ TReceiptResponseAustriaFiscal TAustriaFiscalInterface::PostDataToAustriaFiscal(T
     {
         ReceiptRequestLocal* receiptAustriaLocal = ApplyAdapterToRequest(receiptRequest);
         CoInitialize(NULL);
-        responseLocal = AustriaClient->PostData(receiptAustriaLocal);
+        responseLocal = AustriaClient->PostData(receiptAustriaLocal,url,cashBoxId,accessToken);
         if(responseLocal != NULL)
            response = AppyAdapterToResponse(responseLocal);
     }
