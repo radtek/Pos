@@ -3723,7 +3723,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
         else
         {
             logList->Clear();
-            logList->Add("Response message Received from Fiscal printer is not OK and response message is: "+ responseMessage);
+            logList->Add("Response message Received from Fiscal printer is OK ");
             TSaveLogs::RecordFiscalLogs(logList);
         }
         delete logList;
