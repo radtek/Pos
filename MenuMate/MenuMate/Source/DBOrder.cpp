@@ -4230,7 +4230,10 @@ void TDBOrder::LoadOrder(Database::TDBTransaction &DBTransaction,TIBSQL *OrderTa
 
 		// This will effect speed but it wont crash now.
         Order->IsCanBePaidForUsingPoints = GetCanBePaidWithPoints(DBTransaction,Order);
-        Order->CanBePaidForUsingPoints(Order->IsCanBePaidForUsingPoints);// = Order->IsCanBePaidForUsingPoints;
+
+        if(TGlobalSettings::Instance().SpendPtsOnlySelectItems)
+            Order->CanBePaidForUsingPoints(Order->IsCanBePaidForUsingPoints);
+
 		Order->CancelledBillCalcResult.BasePrice = OrderTable->FieldByName("CANCEL_BASE_PRICE")->AsCurrency;
 		Order->CancelledBillCalcResult.GrossPrice = OrderTable->FieldByName("CANCEL_GROSS_PRICE")->AsCurrency;
 		Order->CancelledBillCalcResult.FinalPrice = OrderTable->FieldByName("CANCEL_FINAL_PRICE")->AsCurrency;
