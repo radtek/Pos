@@ -1094,18 +1094,21 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
         {
             for(int i = 0; i < response.Signatures.size(); i++)
             {
-                IBInternalQuery->Close();
-                int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
-                IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
-                         " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
-                         " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
-                IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
-                IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = responseId;
-                IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
-                IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
-                IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
-                IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
-                IBInternalQuery->ExecQuery();
+                 if(response.Signatures[i].Data != NULL && response.Signatures[i].Data.Trim() != "")
+                 {
+                    IBInternalQuery->Close();
+                    int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
+                    IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
+                             " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
+                             " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
+                    IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
+                    IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = responseId;
+                    IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
+                    IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
+                    IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
+                    IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
+                    IBInternalQuery->ExecQuery();
+                 }
             }
         }
         DBTransaction.Commit();
