@@ -906,6 +906,7 @@ void TManagerAustriaFiscal::GetOldInvoices(std::vector<TReceiptRequestAustriaFis
     try
     {
         TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT * FROM AUSTRIAFISCALRESPONSE WHERE IS_SIGNED = 'F'";
         IBInternalQuery->ExecQuery();
         for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
@@ -1000,7 +1001,9 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
                 }
             }
             if(isSigned)
+            {
                 UpdateInvoiceDetails(DBTransaction,receiptsPending[i],response);
+            }
         }
     }
     catch(Exception &Exc)
@@ -1123,24 +1126,14 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
 TDateTime TManagerAustriaFiscal::GetMomentForReceipt(UnicodeString invoiceNumber,Database::TDBTransaction &DBTransaction)
 {
     TDateTime dt = Now();
-    try
-    {
-        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " SELECT TIME_STAMP FROM DAYARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER "
-                                     " UNION ALL "
-                                     " SELECT TIME_STAMP FROM ARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
-        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
-        IBInternalQuery->ExecQuery();
-        dt = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-        DBTransaction.Commit();
-        DBTransaction.StartTransaction();
-    }
-    catch(Exception &ex)
-    {
-        DBTransaction.Rollback();
-        DBTransaction.StartTransaction();
-    }
+    TIBSQL *IBInternalQuery1= DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text = " SELECT TIME_STAMP FROM DAYARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER "
+                                 " UNION ALL "
+                                 " SELECT TIME_STAMP FROM ARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
+    IBInternalQuery1->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+    IBInternalQuery1->ExecQuery();
+    dt = IBInternalQuery1->FieldByName("TIME_STAMP")->AsDateTime;
     return dt;
 }
 
