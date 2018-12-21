@@ -400,9 +400,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
         {
             std::auto_ptr<TManagerAustriaFiscal> managerAustriaFiscal(new TManagerAustriaFiscal());
-            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled =  managerAustriaFiscal->GetEchoResponseFromMain();
-            if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
-                MessageBox("Could not communicate with Austria Fiscal.\rAustria Fiscal reporting is disabled.","Error",MB_OK+MB_ICONERROR);
+            if(TGlobalSettings::Instance().AustriaFiscalUrl != "")
+            {
+                TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled =  managerAustriaFiscal->GetEchoResponseFromMain();
+                if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+                    MessageBox("Could not communicate with Austria Fiscal.\rAustria Fiscal reporting is disabled.","Error",MB_OK+MB_ICONERROR);
+            }
         }
 		// Set up Header and Footer Info.
 		TDeviceRealTerminal::Instance().LoadHdrFtr();
