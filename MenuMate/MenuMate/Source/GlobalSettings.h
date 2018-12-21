@@ -552,6 +552,7 @@ public:
     bool EnableItemDetailsPosting;
     bool IsTableLockEnabled;
     int MallBatchID;
+    bool HideFreeSides;
 };
 
 #endif

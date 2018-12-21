@@ -671,7 +671,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             MaxLength = 6
             TabOrder = 0
             OnMouseUp = edSeatLabelMouseUp
-            ExplicitTop = 59
           end
           object cbTableSeats: TCheckBox
             Left = 8
@@ -682,7 +681,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Table Seat Interface'
             TabOrder = 1
             OnClick = cbTableSeatsClick
-            ExplicitTop = 40
           end
           object cbTabsInterface: TCheckBox
             Left = 8
@@ -693,7 +691,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Tabs Interface'
             TabOrder = 2
             OnClick = cbTabsInterfaceClick
-            ExplicitTop = 20
           end
         end
         object GroupBox21: TGroupBox
@@ -827,7 +824,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Item Search'
             TabOrder = 0
             OnClick = cbItemSearchClick
-            ExplicitTop = 21
           end
         end
         object GroupBoxEJournal: TGroupBox
@@ -850,7 +846,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Do not include Receipt'
             TabOrder = 1
             OnClick = cbExcludeReceiptClick
-            ExplicitTop = 21
           end
           object cbExcludeXReport: TCheckBox
             Left = 8
@@ -861,7 +856,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Do not include X Report'
             TabOrder = 0
             OnClick = cbExcludeXReportClick
-            ExplicitTop = 40
           end
         end
         object GroupBoxResourceManagement: TGroupBox
@@ -884,7 +878,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Restart Service at ZED'
             TabOrder = 0
             OnClick = cbRestartServiceAtZedClick
-            ExplicitTop = 21
           end
         end
         object GroupBoxTableGroup: TGroupBox
@@ -929,7 +922,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Tax Removal'
             TabOrder = 6
             OnClick = cbDisplayTaxExemptClick
-            ExplicitTop = 19
           end
           object cbSkipConfirmationOnFastTender: TCheckBox
             Left = 8
@@ -940,7 +932,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Skip Confirmation on Fast Tender Shortcuts'
             TabOrder = 1
             OnClick = cbSkipConfirmationOnFastTenderClick
-            ExplicitTop = 43
           end
           object cbTransferTableOnPrintPrelim: TCheckBox
             Left = 8
@@ -951,7 +942,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Delayed Payment'
             TabOrder = 2
             OnClick = cbTransferTableOnPrintPrelimClick
-            ExplicitTop = 67
           end
           object cbEnableCancelCheckRemoval: TCheckBox
             Left = 8
@@ -962,7 +952,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Enable Security Check on Cancel at Payment Tender'
             TabOrder = 3
             OnClick = cbEnableCancelCheckRemovalClick
-            ExplicitTop = 91
           end
           object cbRoundOnBilling: TCheckBox
             Left = 8
@@ -973,7 +962,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Round On Billing'
             TabOrder = 5
             OnClick = cbRoundOnBillingClick
-            ExplicitTop = 114
           end
           object tbRoundingOnBilling: TTouchBtn
             Left = 313
@@ -994,7 +982,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             DisabledButtonColor = clBtnFace
             LatchingProperties = [lkLatchColor, lkStayDown]
             OnMouseClick = tbRoundingOnBillingClick
-            ExplicitTop = 114
           end
           object cbDeleteItemSizeAfterSale: TCheckBox
             Left = 8
@@ -1005,7 +992,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Delete ItemSize After Sale'
             TabOrder = 0
             OnClick = cbDeleteItemSizeAfterSaleClick
-            ExplicitTop = 139
           end
           object cbMergeSimilarItem: TCheckBox
             Left = 8
@@ -1016,7 +1002,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Merge Similar Items for Billing'
             TabOrder = 4
             OnClick = cbMergeSimilarItemClick
-            ExplicitTop = 162
           end
           object cbSplitBillByMenuType: TCheckBox
             Left = 8
@@ -1027,7 +1012,6 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             Caption = 'Split Bill On Menu Basis'
             TabOrder = 7
             OnClick = cbSplitBillByMenuTypeClick
-            ExplicitTop = 185
           end
         end
       end
@@ -1048,7 +1032,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           Left = 8
           Top = 48
           Width = 401
-          Height = 385
+          Height = 410
           Caption = 'POS Display Settings'
           ParentBackground = False
           TabOrder = 0
@@ -1180,9 +1164,9 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           end
           object cbShowLargeFonts: TCheckBox
             Left = 9
-            Top = 330
-            Width = 377
-            Height = 25
+            Top = 332
+            Width = 376
+            Height = 26
             Caption = 'Show large fonts on Menu/Courses/Table Name'
             TabOrder = 16
             OnClick = cbShowLargeFontsClick
@@ -1190,11 +1174,20 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
           object cbShowDarkBackgroundInPOS: TCheckBox
             Left = 9
             Top = 351
-            Width = 377
-            Height = 25
+            Width = 376
+            Height = 29
             Caption = 'Show Dark Background in POS'
-            TabOrder = 15
+            TabOrder = 17
             OnClick = cbShowDarkBackgroundInPOSClick
+          end
+          object cbHideFreeSides: TCheckBox
+            Left = 9
+            Top = 376
+            Width = 378
+            Height = 23
+            Caption = 'Hide Free Sides'
+            TabOrder = 15
+            OnClick = cbHideFreeSidesClick
           end
           object cbTerminalExemptFromHappyHour: TCheckBox
             Left = 9
@@ -1208,7 +1201,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         end
         object rgPOSBtnSize: TRadioGroup
           Left = 8
-          Top = 439
+          Top = 464
           Width = 401
           Height = 100
           Caption = 'POS button sizes'
