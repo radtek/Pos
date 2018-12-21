@@ -113,7 +113,6 @@ private:	// User declarations
     TMemoryStream* FormattedZed(TMemoryStream *ZedToArchive);
     void CheckPocketVoucherPaymentType();
     void SyncCompanyDetails();
-    void UpdateSalesForce();
     void EmailZedReport(int z_key);
     void UpdateMallExportDetails();
     void ClearParkedSale(Database::TDBTransaction &DBTransaction);
