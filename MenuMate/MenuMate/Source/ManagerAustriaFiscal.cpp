@@ -286,6 +286,37 @@ TReceiptRequestAustriaFiscal TManagerAustriaFiscal::GetAustriaReceiptDetails(TPa
         receiptAustria.ChargeItems = GetChargeItemsAustria(paymentTransaction);
         receiptAustria.PayItems = GetPayItemsAustria(paymentTransaction);
         receiptAustria.ReceiptMoment = Now();
+        if(paymentTransaction.SalesType = eCreditPurchase && paymentTransaction.Orders->Count == 0 &&
+            (double)paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() == 0 &&
+            (double)paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() == 0 &&
+            paymentTransaction.TabCredit.size() > 0)
+        {
+            TChargeItemAustriaFiscal chargeItem;
+            chargeItem.ChargeItemCase = 0x4154000000000000;
+            chargeItem.Description = "Tab Credit Refund";
+            chargeItem.VATRate = 0;
+            chargeItem.Quantity = 1;
+            chargeItem.Amount = 0;
+            for (std::map <long, TTabCredit> ::iterator itCredit = paymentTransaction.TabCredit.begin();
+            itCredit != paymentTransaction.TabCredit.end(); advance(itCredit, 1))
+            {
+                 if((double)itCredit->second.CreditRedeemed < 0)
+                 {
+                    chargeItem.ChargeItemCase = 0x4154000000000000;
+                    chargeItem.Description = "Tab Credit Purchase";
+                 }
+            }
+            receiptAustria.ChargeItems.push_back(chargeItem);
+        }
+        if(receiptAustria.ChargeItems.size() > 0 && receiptAustria.PayItems.size() == 0)
+        {
+            TPayItemAustriaFiscal austriaPayment;
+            austriaPayment.PayItemCase = 0x4154000000000000;
+            austriaPayment.Amount = 0;
+            austriaPayment.Quantity = 1;
+            austriaPayment.Description = "Cash";
+            receiptAustria.PayItems.push_back(austriaPayment);
+        }
     }
     catch(Exception &Exc)
     {
