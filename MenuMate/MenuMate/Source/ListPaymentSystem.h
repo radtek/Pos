@@ -144,9 +144,9 @@ protected:
 	void ArchiveReferences(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
 	void ArchiveRewards(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
 	void ArchiveTransaction(TPaymentTransaction &PaymentTransaction);
-	long ArchiveBill(TPaymentTransaction &PaymentTransaction);
+	long ArchiveBill(TPaymentTransaction &PaymentTransaction, TDateTime transactionDateAndTime);
 	void ArchivePatronCount(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
-	void ArchiveOrder(TPaymentTransaction &PaymentTransaction,long ArcBillLK);
+	void ArchiveOrder(TPaymentTransaction &PaymentTransaction,long ArcBillLK, TDateTime transactionDateAndTime);
     void ArchivePoints(TPaymentTransaction &PaymentTransaction);
     void ArchiveOrderDiscounts(Database::TDBTransaction &DBTransaction,int ArchiveKey,TItemMinorComplete *Order);
     void ArchiveOrderTaxes(Database::TDBTransaction &DBTransaction,int ArchiveKey,TItemMinorComplete *Order);

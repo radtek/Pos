@@ -1694,12 +1694,13 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     {
         CheckPatronByOrderIdentification(PaymentTransaction);
     }
-	long ArcBillKey = ArchiveBill(PaymentTransaction);
+    TDateTime transactionDateAndTime = Now();
+	long ArcBillKey = ArchiveBill(PaymentTransaction,transactionDateAndTime);
 	ArchivePatronCount(PaymentTransaction, ArcBillKey);
 	ArchiveReferences(PaymentTransaction, ArcBillKey);
 	ArchivePoints(PaymentTransaction);
 	SetLastVisit(PaymentTransaction);
-	ArchiveOrder(PaymentTransaction, ArcBillKey);
+	ArchiveOrder(PaymentTransaction, ArcBillKey,transactionDateAndTime);
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
@@ -2065,7 +2066,7 @@ void TListPaymentSystem::ArchiveRewards(TPaymentTransaction &PaymentTransaction,
 	}
 }
 
-long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
+long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction, TDateTime transactionDateAndTime)
 {
     long Retval;
     bool isClippGroup = false;
@@ -2115,7 +2116,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
-		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = transactionDateAndTime;
         currentTime = IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime;
 		IBInternalQuery->ParamByName("TOTAL")->AsCurrency = Total;
 		IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Discount;
@@ -2515,7 +2516,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 	return Retval;
 }
 
-void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, long ArcBillLK)
+void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, long ArcBillLK, TDateTime transactionDateAndTime)
 {
     /**********************DLF MALL START****************************************/
     if(TGlobalSettings::Instance().MallIndex == DLFMALL )
@@ -2703,7 +2704,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("POINTS_PERCENT")->AsFloat = Order->PointsPercent;
 				IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 				IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
-				IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
+				IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = transactionDateAndTime;
 				IBInternalQuery->ParamByName("HAPPY_HOUR")->AsString = Order->HappyHour ? "T" : "F";
 				IBInternalQuery->ParamByName("NOTE")->AsString = Order->Note.SubString(1, 80);
 				IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = Order->TimeKey;

@@ -2860,22 +2860,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 	else
 	{
 		bool UpdateingStock = false;
-        if(TGlobalSettings::Instance().MallIndex == 7)
-        {
-            TIBSQL *IBSelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
-            IBSelectQuery->Close();
-            IBSelectQuery->SQL->Text = "SELECT A.ME_HOURLY_KEY "
-                                          "FROM MALLEXPORT_HOURLY A";
-
-            IBSelectQuery->ExecQuery();
-
-            if(!IBSelectQuery->RecordCount)
-            {
-                MessageBox("Zed Cannot be Processed as there is No Sales Data ", "Zed Processing",MB_OK + MB_ICONERROR);
-                return;
-            }
-
-        }
 		std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
 		Processing->Message = "Please Wait...";
 		Processing->Show();

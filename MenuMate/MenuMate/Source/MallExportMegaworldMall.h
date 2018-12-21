@@ -55,7 +55,7 @@ public:
                       int &TransactionTotal, UnicodeString &Amount, int &PatronCount);
 
     TExportResponse PrepareDateForHourly(TDateTime DateValueInHourlyFile);
-    TExportResponse PrepareDateForDaily(TDateTime DateValueInHourlyFile);
+    TExportResponse PrepareDateForDaily(TDateTime DateValueInHourlyFile, bool prepareZeroDateForDaily = true);
     TExportResponse PrepareDiscounts(TDateTime DateValueInHourlyFile);
 
 
@@ -66,50 +66,22 @@ public:
 
     TMallExportMegaworldMall* megaworldExport;
     UnicodeString OutputValue;
-    UnicodeString TENANT_NAME;
-
-    Currency NEW_GRANDTOTAL;
-    Currency OLD_GRANDTOTAL;
-
-    Currency REGDISCOUNT_AMOUNT;
-
-    Currency SCDISCOUNT_AMOUNT;
-
-    Currency VAT_SALES;
-
-    Currency DAILY_SALES;
-    Currency VOID_AMOUNT;
-    Currency REFUND_AMOUNT;
-
-    Currency SCHARGE_AMOUNT;
-
-    int TRANSACTION_COUNT;
-
-    UnicodeString TERMINAL_NAME;
-
-    TDateTime TRANSACTIONDATE;
-    Currency GROSS_SALES;
-
-    Currency CASH_SALES;
-
-    int FINEDINECUST_COUNT;
-
-    int CURRENTEODCOUNTER;
-
-    Currency CARD_SALES;
-    Currency OTHER_SALES;
-
-    int VATEXEMPT_SALES_COUNT;
-    Currency VATEXEMPT_SALES;
-    Currency SALESTYPE_FOOD;
-    Currency SALESTYPE_NONFOOD;
-    Currency SALESTYPE_GROCERIES;
-    Currency SALESTYPE_MEDICINES;
-    Currency SALESTYPE_OTHERS;
 
 protected:
 	// Override methods
     void initTimingExportResponse( TExportResponse& outResponse );
+private:
+    void WriteDataAccordingToSalesType(UnicodeString saleTypeCode, Currency SaleTypaAmount, int index, int salesTypeSize);
+    void WriteDataAccordingToDifferentSalesTotal(UnicodeString salesTotalCode, Currency salesTotalAmount);
+    void WriteDataAccordingToDifferentCountType(UnicodeString countTypeCode, int countTotal);
+    void CheckTransactionDoneBeforeZed(TDateTime &dateValueField, int &zeroZCount, bool &zeroZDoneBeforeAnySale, bool &prepareDataForZeroSales);
+    void GetMaxZKeyFromArcMallExport(int &maxzed);
+    TExportResponse PrepareZeroSalesDateForHourly(TDateTime DateFieldInHourlyData);
+    TExportResponse PrepareZeroSalesDiscounts(TDateTime DateFieldInDailyData);
+    void LoadMaxZkeyAndDateFromZed(int &maxZKeyFromZed, TDateTime &maxZDateFromZed);
+    void LoadMaxZkeyAndDateFromArcMallExportHourly(int &maxZKeyFromArcMallExportHourly, TDateTime &maxZDateFromArcMallExportHourly);
+    int GetZCountForZedsDoneBeforeAnySale(int maxZKeyFromArcMallExportHourly);
+    bool CheckIfZeroZedDoneBeforeAnySale(int maxZKeyFromArcMallExportHourly);
 
 };
 
