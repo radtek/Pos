@@ -332,7 +332,7 @@ void TfrmSetUpPosPlus::ConfigureForMode()
             tbtnTerminalId->Enabled         = true;
             tbtnTerminalId->Caption         = TGlobalSettings::Instance().AustriaFiscalTerminalId;
             labelOrganization->Caption      = "Access Token";
-            tbtnOrganizationNumber->Enabled = false;
+            tbtnOrganizationNumber->Enabled = true;
             tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "" ? "*****" : "";
         }
     }
