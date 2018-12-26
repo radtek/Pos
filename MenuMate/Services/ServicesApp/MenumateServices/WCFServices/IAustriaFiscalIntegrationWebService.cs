@@ -11,16 +11,16 @@ namespace MenumateServices.WCFServices
     public interface IAustriaFiscalIntegrationWebService
     {
         [OperationContract]
-        string InitAustriaFiscal(string url, string cashBoxId);
+        string InitAustriaFiscal(string url, string cashBoxId, string accessToken);
         [OperationContract]
-        ReceiptReponseLocal PostData(ReceiptRequestLocal receiptRequest);
+        ReceiptReponseLocal PostData(ReceiptRequestLocal receiptRequest, string url, string cashBoxId, string accessToken);
         [OperationContract]
-        bool CommissionAustriaFiscal(string url, string cashBoxId, string terminalId);
+        bool CommissionAustriaFiscal(string url, string cashBoxId, string terminalId, string accessToken);
         [OperationContract]
-        bool SendZeroReceipt(string url, string cashBoxId, string terminalId);
+        bool SendZeroReceipt(string url, string cashBoxId, string terminalId, string accessToken);
         [OperationContract]
-        bool SendMonthlyReceipt(string url, string cashBoxId, string terminalId);
+        bool SendMonthlyReceipt(string url, string cashBoxId, string terminalId, string accessToken);
         [OperationContract]
-        bool SendAnnualReceipt(string url, string cashBoxId, string terminalId);
+        bool SendAnnualReceipt(string url, string cashBoxId, string terminalId, string accessToken);
     }
 }

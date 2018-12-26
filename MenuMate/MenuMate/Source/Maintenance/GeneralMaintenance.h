@@ -339,6 +339,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbIntegratedEftposPreAuthorisaton;
         TCheckBox *cbIntegratedAuthorisationOnCards;
         TCheckBox *cbEnableTableLock;
+        TCheckBox *cbHideFreeSides;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -584,6 +585,7 @@ __published:	// IDE-managed Components
         void __fastcall cbPreAuthorisatonClick(TObject *Sender);
          void __fastcall cbIntegratedAuthorisationOnCardsClick(TObject *Sender);
         void __fastcall cbEnableTableLockClick(TObject *Sender);
+        void __fastcall cbHideFreeSidesClick(TObject *Sender);
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

@@ -21,12 +21,12 @@ void TAustriaFiscalInterface::initAustriaClient()
     AustriaClient = GetIAustriaFiscalIntegrationWebService(
                             useWSDL, austriaURL, NULL );
 }
-UnicodeString TAustriaFiscalInterface::InitAustriaFiscal(UnicodeString url, UnicodeString cashBoxId)
+UnicodeString TAustriaFiscalInterface::InitAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString accessToken)
 {
     UnicodeString response = "";
     try
     {
-        response = AustriaClient->InitAustriaFiscal(url,cashBoxId);
+        response = AustriaClient->InitAustriaFiscal(url,cashBoxId,accessToken);
     }
     catch(Exception &ex)
     {
@@ -35,7 +35,7 @@ UnicodeString TAustriaFiscalInterface::InitAustriaFiscal(UnicodeString url, Unic
     return response;
 }
 //---------------------------------------------------------------------------
-TReceiptResponseAustriaFiscal TAustriaFiscalInterface::PostDataToAustriaFiscal(TReceiptRequestAustriaFiscal receiptRequest)
+TReceiptResponseAustriaFiscal TAustriaFiscalInterface::PostDataToAustriaFiscal(TReceiptRequestAustriaFiscal receiptRequest, UnicodeString url, UnicodeString cashBoxId, UnicodeString accessToken)
 {
     TReceiptResponseAustriaFiscal response;
     ReceiptReponseLocal* responseLocal;
@@ -43,7 +43,7 @@ TReceiptResponseAustriaFiscal TAustriaFiscalInterface::PostDataToAustriaFiscal(T
     {
         ReceiptRequestLocal* receiptAustriaLocal = ApplyAdapterToRequest(receiptRequest);
         CoInitialize(NULL);
-        responseLocal = AustriaClient->PostData(receiptAustriaLocal);
+        responseLocal = AustriaClient->PostData(receiptAustriaLocal,url,cashBoxId,accessToken);
         if(responseLocal != NULL)
            response = AppyAdapterToResponse(responseLocal);
     }
@@ -112,44 +112,51 @@ ReceiptRequestLocal* TAustriaFiscalInterface::ApplyAdapterToRequest(TReceiptRequ
 TReceiptResponseAustriaFiscal TAustriaFiscalInterface::AppyAdapterToResponse(ReceiptReponseLocal* responseLocal)
 {
     TReceiptResponseAustriaFiscal response;
-    if(!responseLocal->UnableToConnectToFiscalService)
+    try
     {
-        response.CashBoxID = responseLocal->CashBoxID;
-        response.QueueID = responseLocal->QueueID;
-        response.QueueItemID = responseLocal->QueueItemID;
-        response.QueueRow = responseLocal->QueueRow;
-        response.TerminalID = responseLocal->TerminalID;
-        response.ReceiptReference = responseLocal->ReceiptReference;
-        response.CashBoxIdentification = responseLocal->CashBoxIdentification;
-        response.ReceiptIdentification = responseLocal->ReceiptIdentification;
-        response.ReceiptMoment = responseLocal->ReceiptMoment->AsUTCDateTime;
-        response.State = responseLocal->State;
-        response.StateData = responseLocal->StateData;
-        response.Signatures.clear();
-        for(int indexSignatures = 0; indexSignatures< responseLocal->Signatures.Length;indexSignatures++)
+        if(!responseLocal->UnableToConnectToFiscalService)
         {
-            TSignaturItemAustriaFiscal signaturesAustria;
-            signaturesAustria.SignatureFormat = responseLocal->Signatures[indexSignatures]->SignatureFormat;
-            signaturesAustria.SignatureType = responseLocal->Signatures[indexSignatures]->SignatureType;
-            signaturesAustria.Caption = responseLocal->Signatures[indexSignatures]->Caption;
-            signaturesAustria.Data = responseLocal->Signatures[indexSignatures]->Data;
-            response.Signatures.push_back(signaturesAustria);
+            response.CashBoxID = responseLocal->CashBoxID;
+            response.QueueID = responseLocal->QueueID;
+            response.QueueItemID = responseLocal->QueueItemID;
+            response.QueueRow = responseLocal->QueueRow;
+            response.TerminalID = responseLocal->TerminalID;
+            response.ReceiptReference = responseLocal->ReceiptReference;
+            response.CashBoxIdentification = responseLocal->CashBoxIdentification;
+            response.ReceiptIdentification = responseLocal->ReceiptIdentification;
+            response.ReceiptMoment = responseLocal->ReceiptMoment->AsUTCDateTime;
+            response.State = responseLocal->State;
+            response.StateData = responseLocal->StateData;
+            response.Signatures.clear();
+            for(int indexSignatures = 0; indexSignatures< responseLocal->Signatures.Length;indexSignatures++)
+            {
+                TSignaturItemAustriaFiscal signaturesAustria;
+                signaturesAustria.SignatureFormat = responseLocal->Signatures[indexSignatures]->SignatureFormat;
+                signaturesAustria.SignatureType = responseLocal->Signatures[indexSignatures]->SignatureType;
+                signaturesAustria.Caption = responseLocal->Signatures[indexSignatures]->Caption;
+                signaturesAustria.Data = responseLocal->Signatures[indexSignatures]->Data;
+                response.Signatures.push_back(signaturesAustria);
+            }
+        }
+        else
+        {
+            response.UnableToConnectToFiscalService = true;
         }
     }
-    else
+    catch(Exception &ex)
     {
-        response.UnableToConnectToFiscalService = true;
     }
     return response;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,
+                                                        UnicodeString terminalId,UnicodeString accessToken)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->CommissionAustriaFiscal(url,cashBoxId,terminalId);
+        retValue = AustriaClient->CommissionAustriaFiscal(url,cashBoxId,terminalId,accessToken);
     }
     catch(Exception &ex)
     {
@@ -157,13 +164,14 @@ bool TAustriaFiscalInterface::CommissionAustriaFiscal(UnicodeString url, Unicode
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+bool TAustriaFiscalInterface::SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId,
+                                                UnicodeString terminalId,UnicodeString accessToken)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->SendZeroReceipt(url,cashBoxId,terminalId);
+        retValue = AustriaClient->SendZeroReceipt(url,cashBoxId,terminalId,accessToken);
     }
     catch(Exception &ex)
     {
@@ -171,13 +179,14 @@ bool TAustriaFiscalInterface::SendZeroReceipt(UnicodeString url, UnicodeString c
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::SendMonthlyReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+bool TAustriaFiscalInterface::SendMonthlyReceipt(UnicodeString url, UnicodeString cashBoxId,
+                                                    UnicodeString terminalId,UnicodeString accessToken)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->SendMonthlyReceipt(url,cashBoxId,terminalId);
+        retValue = AustriaClient->SendMonthlyReceipt(url,cashBoxId,terminalId,accessToken);
     }
     catch(Exception &ex)
     {
@@ -185,13 +194,14 @@ bool TAustriaFiscalInterface::SendMonthlyReceipt(UnicodeString url, UnicodeStrin
     return retValue;
 }
 //---------------------------------------------------------------------------
-bool TAustriaFiscalInterface::SendAnnualReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId)
+bool TAustriaFiscalInterface::SendAnnualReceipt(UnicodeString url, UnicodeString cashBoxId,
+                                                UnicodeString terminalId,UnicodeString accessToken)
 {
     bool retValue = false;
     try
     {
         CoInitialize(NULL);
-        retValue = AustriaClient->SendAnnualReceipt(url,cashBoxId,terminalId);
+        retValue = AustriaClient->SendAnnualReceipt(url,cashBoxId,terminalId,accessToken);
     }
     catch(Exception &ex)
     {

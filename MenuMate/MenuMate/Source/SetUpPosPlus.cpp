@@ -223,7 +223,16 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
                 Close();
         }
         else
+        {
+            TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
+            DBTransaction1.Commit();
             Close();
+        }
     }
     else if(StorageType == AustriaFiscal)
     {
@@ -235,7 +244,16 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
                 Close();
         }
         else
+        {
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+            DBTransaction1.StartTransaction();
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
+            DBTransaction1.Commit();
             Close();
+        }
     }
 }
 //---------------------------------------------------------------------------
@@ -332,7 +350,7 @@ void TfrmSetUpPosPlus::ConfigureForMode()
             tbtnTerminalId->Enabled         = true;
             tbtnTerminalId->Caption         = TGlobalSettings::Instance().AustriaFiscalTerminalId;
             labelOrganization->Caption      = "Access Token";
-            tbtnOrganizationNumber->Enabled = false;
+            tbtnOrganizationNumber->Enabled = true;
             tbtnOrganizationNumber->Caption = TGlobalSettings::Instance().AustriaFiscalAccessToken.Trim() != "" ? "*****" : "";
         }
     }
