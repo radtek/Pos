@@ -9,12 +9,14 @@ class TAustriaFiscalInterface
 {
     public:
         TAustriaFiscalInterface();
-        TReceiptResponseAustriaFiscal PostDataToAustriaFiscal(TReceiptRequestAustriaFiscal receiptRequest);
-        UnicodeString InitAustriaFiscal(UnicodeString url, UnicodeString cashBoxId);
-        bool CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId);
-        bool SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId);
-        bool SendMonthlyReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId);
-        bool SendAnnualReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId);
+        TReceiptResponseAustriaFiscal PostDataToAustriaFiscal(TReceiptRequestAustriaFiscal receiptRequest,
+                                                                UnicodeString url, UnicodeString cashBoxId,
+                                                                UnicodeString accessToken);
+        UnicodeString InitAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString accessToken);
+        bool CommissionAustriaFiscal(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId,UnicodeString accessToken);
+        bool SendZeroReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId,UnicodeString accessToken);
+        bool SendMonthlyReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId,UnicodeString accessToken);
+        bool SendAnnualReceipt(UnicodeString url, UnicodeString cashBoxId,UnicodeString terminalId,UnicodeString accessToken);
     private:
         void initAustriaClient();
         ReceiptRequestLocal* ApplyAdapterToRequest(TReceiptRequestAustriaFiscal receiptRequest);

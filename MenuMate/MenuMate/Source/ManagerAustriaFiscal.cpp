@@ -73,7 +73,8 @@ bool TManagerAustriaFiscal::IsZeroReceiptSuccessful()
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
         retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                         TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
     }
     catch(Exception &ex)
     {
@@ -90,12 +91,14 @@ bool TManagerAustriaFiscal::CommissionAustriaFiscal()
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
         bool isSuccessful = fiscalInterface->CommissionAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                         TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
         if(isSuccessful)
         {
             retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                         TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId);
+                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
         }
     }
     catch(Exception &ex)
@@ -123,7 +126,10 @@ bool TManagerAustriaFiscal::ExportData(TPaymentTransaction &paymentTransaction)
         receiptAustria = GetAustriaReceiptDetails(paymentTransaction);
         // Send to Interface and get details from API.
         std::auto_ptr<TAustriaFiscalInterface> austriaInterface(new TAustriaFiscalInterface());
-        TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptAustria);
+        TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptAustria,
+                                                                                            TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                                                            TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                                                            TGlobalSettings::Instance().AustriaFiscalAccessToken);
         // Analyse details and store in DB
         if(response.UnableToConnectToMenumateService)
         {
@@ -152,14 +158,16 @@ bool TManagerAustriaFiscal::ExportData(TPaymentTransaction &paymentTransaction)
                 std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
                 retValue = fiscalInterface->SendMonthlyReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                                 TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId);
+                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                                TGlobalSettings::Instance().AustriaFiscalAccessToken);
             }
             else if(response.State == 0x4154000000000020)
             {
                 std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
                 retValue = fiscalInterface->SendAnnualReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                                 TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId);
+                                                                TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                                TGlobalSettings::Instance().AustriaFiscalAccessToken);
             }
             TakeCorrectiveMeasures(DBTransaction);
         }
@@ -209,7 +217,8 @@ bool TManagerAustriaFiscal::IsEchoSuccessful()
     bool retValue = false;
     std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
     UnicodeString response = fiscalInterface->InitAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId);
+                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
     if(response.Pos("Echo is Successful for details provided.") != 0)
         retValue = true;
     else
@@ -277,6 +286,37 @@ TReceiptRequestAustriaFiscal TManagerAustriaFiscal::GetAustriaReceiptDetails(TPa
         receiptAustria.ChargeItems = GetChargeItemsAustria(paymentTransaction);
         receiptAustria.PayItems = GetPayItemsAustria(paymentTransaction);
         receiptAustria.ReceiptMoment = Now();
+        if(paymentTransaction.SalesType = eCreditPurchase && paymentTransaction.Orders->Count == 0 &&
+            (double)paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() == 0 &&
+            (double)paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() == 0 &&
+            paymentTransaction.TabCredit.size() > 0)
+        {
+            TChargeItemAustriaFiscal chargeItem;
+            chargeItem.ChargeItemCase = 0x4154000000000000;
+            chargeItem.Description = "Tab Credit Refund";
+            chargeItem.VATRate = 0;
+            chargeItem.Quantity = 1;
+            chargeItem.Amount = 0;
+            for (std::map <long, TTabCredit> ::iterator itCredit = paymentTransaction.TabCredit.begin();
+            itCredit != paymentTransaction.TabCredit.end(); advance(itCredit, 1))
+            {
+                 if((double)itCredit->second.CreditRedeemed < 0)
+                 {
+                    chargeItem.ChargeItemCase = 0x4154000000000000;
+                    chargeItem.Description = "Tab Credit Purchase";
+                 }
+            }
+            receiptAustria.ChargeItems.push_back(chargeItem);
+        }
+        if(receiptAustria.ChargeItems.size() > 0 && receiptAustria.PayItems.size() == 0)
+        {
+            TPayItemAustriaFiscal austriaPayment;
+            austriaPayment.PayItemCase = 0x4154000000000000;
+            austriaPayment.Amount = 0;
+            austriaPayment.Quantity = 1;
+            austriaPayment.Description = "Cash";
+            receiptAustria.PayItems.push_back(austriaPayment);
+        }
     }
     catch(Exception &Exc)
     {
@@ -813,18 +853,21 @@ void TManagerAustriaFiscal::StoreDataInDB(TReceiptResponseAustriaFiscal response
         {
             for(int i = 0; i < response.Signatures.size(); i++)
             {
-                IBInternalQuery->Close();
-                int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
-                IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
-                         " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
-                         " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
-                IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
-                IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = primaryKey;
-                IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
-                IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
-                IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
-                IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
-                IBInternalQuery->ExecQuery();
+                if(response.Signatures[i].Data != NULL && response.Signatures[i].Data.Trim() != "")
+                {
+                    IBInternalQuery->Close();
+                    int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
+                    IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
+                             " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
+                             " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
+                    IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
+                    IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = primaryKey;
+                    IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
+                    IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
+                    IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
+                    IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
+                    IBInternalQuery->ExecQuery();
+                }
             }
         }
         DBTransaction.Commit();
@@ -863,6 +906,7 @@ void TManagerAustriaFiscal::GetOldInvoices(std::vector<TReceiptRequestAustriaFis
     try
     {
         TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT * FROM AUSTRIAFISCALRESPONSE WHERE IS_SIGNED = 'F'";
         IBInternalQuery->ExecQuery();
         for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
@@ -937,7 +981,11 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
         for(int i = 0; i < receiptsPending.size(); i++)
         {
             std::auto_ptr<TAustriaFiscalInterface> austriaInterface(new TAustriaFiscalInterface());
-            TReceiptResponseAustriaFiscal response = austriaInterface->PostDataToAustriaFiscal(receiptsPending[i]);
+            TReceiptResponseAustriaFiscal response =
+                                            austriaInterface->PostDataToAustriaFiscal(receiptsPending[i],
+                                                            TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                            TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                            TGlobalSettings::Instance().AustriaFiscalAccessToken);
             bool isSigned = false;
             __int64 status = 0;
             TryStrToInt64(response.State,status);
@@ -953,7 +1001,9 @@ void TManagerAustriaFiscal::SendOldInvoices(std::vector<TReceiptRequestAustriaFi
                 }
             }
             if(isSigned)
+            {
                 UpdateInvoiceDetails(DBTransaction,receiptsPending[i],response);
+            }
         }
     }
     catch(Exception &Exc)
@@ -1047,18 +1097,21 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
         {
             for(int i = 0; i < response.Signatures.size(); i++)
             {
-                IBInternalQuery->Close();
-                int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
-                IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
-                         " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
-                         " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
-                IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
-                IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = responseId;
-                IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
-                IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
-                IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
-                IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
-                IBInternalQuery->ExecQuery();
+                 if(response.Signatures[i].Data != NULL && response.Signatures[i].Data.Trim() != "")
+                 {
+                    IBInternalQuery->Close();
+                    int primaryKeySignature = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_AUSTRIAFISCALSIGNATURE_ID");
+                    IBInternalQuery->SQL->Text = " INSERT INTO AUSTRIAFISCALSIGNATURES "
+                             " ( SIGNATURE_ID, RESPONSE_ID, SIGNATUREFORMAT, SIGNATURETYPE, CAPTION, DATA ) VALUES"
+                             " ( :SIGNATURE_ID, :RESPONSE_ID, :SIGNATUREFORMAT, :SIGNATURETYPE, :CAPTION, :DATA )";
+                    IBInternalQuery->ParamByName("SIGNATURE_ID")->AsInteger = primaryKeySignature;
+                    IBInternalQuery->ParamByName("RESPONSE_ID")->AsInteger = responseId;
+                    IBInternalQuery->ParamByName("SIGNATUREFORMAT")->AsString = response.Signatures[i].SignatureFormat;
+                    IBInternalQuery->ParamByName("SIGNATURETYPE")->AsString = response.Signatures[i].SignatureType;
+                    IBInternalQuery->ParamByName("CAPTION")->AsString = response.Signatures[i].Caption;
+                    IBInternalQuery->ParamByName("DATA")->AsString = response.Signatures[i].Data;
+                    IBInternalQuery->ExecQuery();
+                 }
             }
         }
         DBTransaction.Commit();
@@ -1073,24 +1126,14 @@ void TManagerAustriaFiscal::UpdateInvoiceDetails(Database::TDBTransaction &DBTra
 TDateTime TManagerAustriaFiscal::GetMomentForReceipt(UnicodeString invoiceNumber,Database::TDBTransaction &DBTransaction)
 {
     TDateTime dt = Now();
-    try
-    {
-        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = " SELECT TIME_STAMP FROM DAYARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER "
-                                     " UNION ALL "
-                                     " SELECT TIME_STAMP FROM ARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
-        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
-        IBInternalQuery->ExecQuery();
-        dt = IBInternalQuery->FieldByName("TIME_STAMP")->AsDateTime;
-        DBTransaction.Commit();
-        DBTransaction.StartTransaction();
-    }
-    catch(Exception &ex)
-    {
-        DBTransaction.Rollback();
-        DBTransaction.StartTransaction();
-    }
+    TIBSQL *IBInternalQuery1= DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery1->Close();
+    IBInternalQuery1->SQL->Text = " SELECT TIME_STAMP FROM DAYARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER "
+                                 " UNION ALL "
+                                 " SELECT TIME_STAMP FROM ARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
+    IBInternalQuery1->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+    IBInternalQuery1->ExecQuery();
+    dt = IBInternalQuery1->FieldByName("TIME_STAMP")->AsDateTime;
     return dt;
 }
 

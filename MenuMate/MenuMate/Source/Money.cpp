@@ -217,23 +217,25 @@ void TMoney::Recalc(TPaymentTransaction &Transaction, bool isBilling)
             Change += RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
             UnRoundedChange += PaymentCashOut;
             TotalRounding += UnRoundedChange - Change;
+
         }
     }
     else
     {
         // Only give change for Cash Credits.
         // All other payment types dont give out change.
-        if (PaymentDue != 0)
-        {
-            TotalRounding += PaymentDue - RoundToNearest(PaymentDue, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
-            Change += RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
-            UnRoundedChange += PaymentCashOut;
-        }
-        else
-        {
+//        if (PaymentDue != 0)
+//        {
+//            TotalRounding += PaymentDue - RoundToNearest(PaymentDue, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
+//            Change += RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
+//            UnRoundedChange += PaymentCashOut;
+//
+//        }
+//        else
+//        {
              Change += RoundToNearest(PaymentCashOut, RoundChangeTo, TGlobalSettings::Instance().MidPointRoundsDown);
              UnRoundedChange += PaymentCashOut;
-        }
+//        }
     }
 
     if (CashPayment != NULL)
