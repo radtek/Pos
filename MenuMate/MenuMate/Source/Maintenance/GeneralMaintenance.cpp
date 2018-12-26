@@ -449,6 +449,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs );
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmIsBillSplittedByMenuType, TGlobalSettings::Instance().IsBillSplittedByMenuType );
     TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmIsTableLockEnabled, TGlobalSettings::Instance().IsTableLockEnabled );
+    TManagerVariable::Instance().GetProfileBool( DBTransaction, GlobalProfileKey, vmHideFreeSides, TGlobalSettings::Instance().HideFreeSides);
     DBTransaction.Commit();
     cbUseMemberSubs->OnClick = NULL;
     cbUseMemberSubs->Checked = TGlobalSettings::Instance().UseMemberSubs;
@@ -462,6 +463,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbCompanyDetailOnReprintReceipt->Checked = TGlobalSettings::Instance().EnableCompanyDetailOnReprintReceipt;
     cbRestartService->Checked = TGlobalSettings::Instance().RestartServiceAtZED;
     cbEnableTableLock->Checked = TGlobalSettings::Instance().IsTableLockEnabled;
+    cbHideFreeSides->Checked = TGlobalSettings::Instance().HideFreeSides;
     CustomizeCloudEFTPOS();
     DisableOtherEFTPOS();
     FormResize(this);
@@ -4810,6 +4812,27 @@ void __fastcall TfrmGeneralMaintenance::cbEnableTableLockClick(TObject *Sender)
 
 	tr.StartTransaction();
 	ref_mv.SetProfileBool(tr, isTableLockEnabled, vmIsTableLockEnabled, ref_gs.IsTableLockEnabled);
+	tr.Commit();
+}
+//------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbHideFreeSidesClick(TObject *Sender)
+{
+    TGlobalSettings  &ref_gs = TGlobalSettings::Instance();
+	TManagerVariable &ref_mv = TManagerVariable::Instance();
+
+    int hideFreeSides;
+    Database::TDBTransaction tr(DBControl);
+    tr.StartTransaction();
+#pragma warn -pia
+	if (!(hideFreeSides = ref_mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	hideFreeSides = ref_mv.SetProfile(tr, eSystemProfiles, "Globals");
+#pragma warn .pia
+	tr.Commit();
+
+	ref_gs.HideFreeSides = cbHideFreeSides->Checked;
+
+	tr.StartTransaction();
+	ref_mv.SetProfileBool(tr, hideFreeSides, vmHideFreeSides, ref_gs.HideFreeSides);
 	tr.Commit();
 }
 

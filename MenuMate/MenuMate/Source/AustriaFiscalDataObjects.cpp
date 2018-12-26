@@ -88,6 +88,9 @@ TReceiptResponseAustriaFiscal::TReceiptResponseAustriaFiscal()
 	Signatures.clear();
 	State = "";
 	StateData = "";
+    IsDataNull = false;
+    UnableToConnectToMenumateService = false;
+    UnableToConnectToFiscalService = false;
 }
 TReceiptResponseAustriaFiscal::~TReceiptResponseAustriaFiscal()
 {
