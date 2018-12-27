@@ -205,6 +205,7 @@ private:	// User declarations
     bool DuplicateEntryInTable;
     void SettleEFTPOSBills();
     void UpdateMaxZedTime(int fieldindex);
+    void UploadMallFilesToFTP();
 
 public:		// User declarations
 	bool ZedCancel;

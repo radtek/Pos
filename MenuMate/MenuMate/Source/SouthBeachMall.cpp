@@ -187,6 +187,7 @@ TMallExportPrepareData TSouthBeachMall::PrepareDataForExport(int zKey)
           int terminalNumber;
           GetTerminalSettings(MachineID, terminalNumber);
           fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+
           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
           int MaxZed = GetMaxZedKeyInSales();
           int BatchId_Data;
@@ -312,6 +313,8 @@ UnicodeString TSouthBeachMall::GetFileName(Database::TDBTransaction &dBTransacti
          UnicodeString Validatedateformat="";
          PrepareDataforFilename(zKey,MachineID,dateformat,TimeFormat,Validatedateformat) ;
          fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+         TGlobalSettings::Instance().mallInfo.FileName = fileName + ".txt";
+
      }
      catch(Exception &E)
      {
@@ -1552,6 +1555,7 @@ UnicodeString TSouthBeachMall::GetQueryForSalesData()
 
      return  queryForSalesData;
 }
+
 
 
 

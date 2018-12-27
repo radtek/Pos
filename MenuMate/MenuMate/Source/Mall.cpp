@@ -34,3 +34,8 @@ void TMall::SetActiveMall(UnicodeString isActive)
     _mallSettings = mallSettings;
 }
 //-----------------------------------------------------------------------------
+ void TMall::SetFileName(UnicodeString fileName)
+{
+    _fileName = fileName;
+}
+//-----------------------------------------------------------------------------
