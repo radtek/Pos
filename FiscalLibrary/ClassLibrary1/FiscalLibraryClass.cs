@@ -7,6 +7,8 @@ using System.IO;
 using System.Text;
 //using System.Threading.Tasks;
 using FiscalLibraries.Domain;
+using System.Timers;
+using System.Diagnostics;
 
 namespace FiscalLibraries
 {
@@ -281,7 +283,7 @@ namespace FiscalLibraries
         public bool CheckPortOpenAndRetry()
         {
             bool checkPortStatus =false;
-
+            
             try
             {
                 //  stringList.Add(fiscalprinter.State.ToString());
@@ -318,13 +320,13 @@ namespace FiscalLibraries
         public string PrintReceipt()
         {
             string printResponseString = "";
-
+            bool isEndReceiptCalled = false;
             try
             {
                 string ReceiptNo = "        Receipt No. " + InvoiceNumber;
                 bool isNormalSale = true;
 
-                if(!CheckPortOpenAndRetry())
+                if (!CheckPortOpenAndRetry())
                 { return "Printer is not responding or might be busy"; }
                 fiscalprinter.ResetPrinter();
                 stringList.Add("Printer reset ");
@@ -337,7 +339,7 @@ namespace FiscalLibraries
                     else
                         fiscalprinter.FiscalReceiptType = FiscalReceiptType.Refund;
                 }
-                 
+
                 stringList.Add("receipt type " + Saletype);
                 stringList.Add("Invoice Number is  " + InvoiceNumber);
                 stringList.Add("Before beginning fiscal receipt ");
@@ -396,7 +398,7 @@ namespace FiscalLibraries
                     foreach (FiscalPayment paymentInfo in PaymentList)
                     {
                         decimal total = (Convert.ToDecimal(paymentInfo.Amount) * multiplier);
-                        stringList.Add("total amount for payment type: "+ paymentInfo.Description + " " + total);
+                        stringList.Add("total amount for payment type: " + paymentInfo.Description + " " + total);
                         totalPaymentcollected += total;
                         total = (Convert.ToDecimal(paymentInfo.PaymentSurcharge) * multiplier);
                         totalPaymentSurcharge += total;
@@ -509,13 +511,15 @@ namespace FiscalLibraries
                     stringList.Add(" After payment section iteration  ");
 
                     fiscalprinter.EndFiscalReceipt(false);
+                    isEndReceiptCalled = true;
+                    printResponseString = "OK";
                     stringList.Add("EndFiscalReceipt ");
 
                     if (OpenCD)
                     {
                         stringList.Add("Inside open cashdrawer check ");
                         OpenCashDrawer();
-                        stringList.Add("After opening cashdrawer fundction. ");
+                        stringList.Add("After opening cashdrawer function. ");
                     }
                     stringList.Add("End of print receipt function. ");
                     WriteToFile(stringList);
@@ -528,7 +532,7 @@ namespace FiscalLibraries
                     stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
                     stringList.Add("printResponseString is: " + printResponseString);
                     WriteToFile(stringList);
-                    stringList.Clear();                    
+                    stringList.Clear();
                     //fiscalprinter.ResetPrinter();
                     fiscalprinter.Close();
                     throw;
@@ -536,22 +540,68 @@ namespace FiscalLibraries
                 stringList.Add("After first try completion " + DateTime.Now.ToString("hh:mm:ss tt"));
                 WriteToFile(stringList);
                 stringList.Clear();
-                fiscalprinter.Close();
-                stringList.Add("printer closed in print receipt ");
-                printResponseString = "OK";
+                // ******************************************************** // 
+                bool isCloseCalled = false;
+                Stopwatch watch = new Stopwatch();
+                watch.Reset();
+                watch.Start();
+                while (true)
+                {
+                    if (watch.Elapsed.Seconds >= 15)
+                    {
+                        stringList.Add("Seconds Elapsed are " + watch.Elapsed.Seconds.ToString() + ". Wait is terminated now.");
+                        WriteToFile(stringList);
+                        stringList.Clear();                        
+                        break;
+                    }
+                    if (!isCloseCalled)
+                    {
+                        try
+                        {
+                            stringList.Add("Calling printer closed in print receipt "); // write time
+                            WriteToFile(stringList);
+                            stringList.Clear();
+                            fiscalprinter.Close();
+                            isCloseCalled = true;
+                            stringList.Add("printer closed in print receipt ");
+                            WriteToFile(stringList);
+                            stringList.Clear();
+                        }
+                        catch (Exception ex)
+                        {                           
+                            throw;
+                        }
+                        break;
+                    }
+                    //EnableTimer = false;
+                }
+                 
+                //fiscalprinter.Close();
+                //stringList.Add("printer closed in print receipt ");
+                //WriteToFile(stringList);
+                //stringList.Clear();
+                // ******************************************************** //
+                //printResponseString = "OK";
                 stringList.Add("printResponseString: " + printResponseString);
                 WriteToFile(stringList);
-                stringList.Clear();                
+                stringList.Clear();
             }
             catch (Exception Ex)
             {
-                printResponseString = Ex.Message;
+                if (!isEndReceiptCalled)
+                    printResponseString = Ex.Message.Length > 50 ? Ex.Message.Substring(1, 50) : Ex.Message;
                 stringList.Add("catch block of second Try block" + Ex.Message);
                 stringList.Add(DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add(Ex.Message);
                 WriteToFile(stringList);
                 stringList.Clear();
                 //fiscalprinter.Close();
+            }
+            finally 
+            {
+                stringList.Add("In Finally,  print receipt executed.: ");
+                WriteToFile(stringList);
+                stringList.Clear();
             }
             return printResponseString;
         }
@@ -647,8 +697,13 @@ namespace FiscalLibraries
             try
             {
                 if (!CheckPortOpenAndRetry())
-                { return "Printer is not responding or might be busy in CheckPrinterAvailable Method"; }
-                else { printerState = "OK"; }
+                { 
+                    return "Printer is not responding or might be busy in CheckPrinterAvailable Method"; 
+                }
+                else 
+                { 
+                    printerState = "OK"; 
+                }
                 fiscalprinter.Close();
             }
             catch (Exception Ex)
