@@ -278,7 +278,7 @@ UnicodeString TFiscalPrinterAdapter::FiscalZReportSettlement()
 UnicodeString TFiscalPrinterAdapter::PrintFiscalReceipt(TFiscalBillDetails receiptData)
 {
     UnicodeString response = "";
-    TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(frmMain);
+    TFiscalLibraryClass *fpclass = new TFiscalLibraryClass(NULL);
     try
     {
         fpclass->Billno = WideString(receiptData.Billno).c_bstr();
