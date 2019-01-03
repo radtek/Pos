@@ -47,7 +47,6 @@
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
 #include "DBGroups.h"
-#include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
 #include "ExportCSV.h"
 #include "StringTools.h"
@@ -2860,22 +2859,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 	else
 	{
 		bool UpdateingStock = false;
-        if(TGlobalSettings::Instance().MallIndex == 7)
-        {
-            TIBSQL *IBSelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
-            IBSelectQuery->Close();
-            IBSelectQuery->SQL->Text = "SELECT A.ME_HOURLY_KEY "
-                                          "FROM MALLEXPORT_HOURLY A";
-
-            IBSelectQuery->ExecQuery();
-
-            if(!IBSelectQuery->RecordCount)
-            {
-                MessageBox("Zed Cannot be Processed as there is No Sales Data ", "Zed Processing",MB_OK + MB_ICONERROR);
-                return;
-            }
-
-        }
 		std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
 		Processing->Message = "Please Wait...";
 		Processing->Show();
@@ -3105,7 +3088,7 @@ Zed:
                 TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
                 zedLogsList->Add("After chit reset. ");
                 Processing->Message = "Processing End Of Day...";
-                UpdateSalesForce(); //update sales force
+
                 ClearParkedSale(DBTransaction); // clear parked sale
                 Processing->Close();
 				Processing->Message = "Updating Clock...";
@@ -8462,27 +8445,8 @@ void TfrmAnalysis::SyncCompanyDetails()
 
 }
 
-void TfrmAnalysis::UpdateSalesForce()
-{
-  zedLogsList->Add("Before updating salesforce ");
-   Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-   DBTransaction1.StartTransaction();
-   try
-   {
-        AnsiString CompanyName = GetCompanyName(DBTransaction1);
-        DBTransaction1.Commit();
-        std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
-        sfComm->PVCommunication(CompanyName);
-        sfComm->SalesForceCommunication(CompanyName);
-    }
-    catch(Exception & E)
-    {   zedLogsList->Add("Exception in updating salesforce ");
-        DBTransaction1.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-    }
-    zedLogsList->Add("After updating salesforce ");
-}
+
+
 
 void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
 {
