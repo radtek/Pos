@@ -3121,7 +3121,7 @@ Zed:
                 zedLogsList->Add("Inside Zed completed flag");
 			   DefaultItemQuantities(DBTransaction);
                zedLogsList->Add("After  DefaultItemQuantities execution");
-               UpdateContactTimeZedStatus(DBTransaction);
+                UpdateContactTimeZedStatus(DBTransaction);
                if(TGlobalSettings::Instance().CashDenominationEntry)
                 {
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
@@ -3131,8 +3131,9 @@ Zed:
             //create CSV
             if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
             {
+
                 TExportCSV exportCSV;
-                exportCSV.PostDateToCSV();
+               exportCSV.PostDateToCSV();
             }
 
 			DBTransaction.Commit();
@@ -3182,7 +3183,7 @@ Zed:
 
 			if(CompleteZed)
 			{
-                UpdateMallExportDetails();
+               UpdateMallExportDetails();
 
                 //Method for mall Design According to newly pattern
 
@@ -3191,6 +3192,7 @@ Zed:
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
                     {
+
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
                     else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3 || TGlobalSettings::Instance().mallInfo.MallId == 4)
@@ -3203,7 +3205,7 @@ Zed:
                         }
                         else
                         {
-                         UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                            UpdateZKeyForMallExportSales(isMasterterminal, 19);
                         }
                         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
                             UpdateStallCodeForEviaMall(2);
@@ -3211,6 +3213,11 @@ Zed:
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
+
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                    {
+                        UploadMallFilesToFTP();
+                    }
                     delete mallExport;
                 }
 
@@ -3242,10 +3249,11 @@ Zed:
       }
         if(CompleteZed)
         {
+
             // For Mall Export
-            SyncCompanyDetails();
+           SyncCompanyDetails();
             // For Mall Export
-            UpdateDLFMall();
+             UpdateDLFMall();
             zedLogsList->Add("Z Completed at " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
             MakeZEDLogFile(zedLogsList);
 
@@ -3256,7 +3264,7 @@ Zed:
 }
 
  void TfrmAnalysis::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName)
-{    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+{    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
     TManagerVariable::Instance().SetProfileStr(DBTransaction, TManagerVariable::Instance().DeviceProfileKey, vmVar, CompName);
@@ -3324,7 +3332,7 @@ Zed:
 void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
                                            const char * userPassword, const char * userPath,
                                            UnicodeString LocalPathFileName, UnicodeString LocalFileName,
-                                           int FCount)
+                                           int FCount, bool showMessage)
 {
     const char * pathFileName = LocalPathFileName.t_str();
     const char * fileName = LocalFileName.t_str();
@@ -3341,6 +3349,7 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
     }
     else
     {
+       
         hFtpSession = InternetConnect(hInternet, hostName, INTERNET_DEFAULT_FTP_PORT, userName, userPassword, 1, INTERNET_FLAG_PASSIVE, 0);
         if (hFtpSession == NULL)
         {
@@ -3354,19 +3363,23 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
             // Changing dicrectory is necessary
             FtpSetCurrentDirectory( hFtpSession, userPath );
             //  FtpCreateDirectory( hFtpSession, "/Menumate/Beta/PosDroid/DLF" );
+            bool isFileUploaded = true;
 
             if (!FtpPutFile(hFtpSession, pathFileName, fileName, FTP_TRANSFER_TYPE_BINARY, 0))
             {
 
-                if (FCount == 0)
+                if (FCount == 0 && showMessage)
                 {
 
                     MessageBox( "File was not successfully uploaded!", "File Transfer Failed!", MB_OK );
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                        isFileUploaded = false;
                 }
             }
 
-            if (FCount == 0)
+            if (FCount == 0 && showMessage && isFileUploaded)
             {
+
                 MessageBox( "File was sent successfully!", "File Transfer Success!", MB_OK );
             }
         }
@@ -8783,7 +8796,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int field
     try
     {
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
-            UpdateAccumulatedSales(DBTransaction);
+                UpdateAccumulatedSales(DBTransaction);
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
@@ -9242,6 +9255,56 @@ void TfrmAnalysis::UpdateMaxZedTime(int fieldindex)
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
   }
+}
+//-----------------------------------------------------------------------------------------------------------
+void TfrmAnalysis::UploadMallFilesToFTP()
+{
+    try
+    {
+     for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)
+        {
+        std::list<TMallExportSettings> ::iterator itUISettings;
+         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";
+        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+        {
+            if(itUISettings->Value != "" )
+            {
+                if(itUISettings->ControlName == "edMallFTPServer")
+                    HostName = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPPath")
+                    FtpPath = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPUserName")
+                    FtpUserName = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPPassword")
+                    FtpPassword = itUISettings->Value;
+                else if(itUISettings->ControlName == "edNewMallPath")
+                    LocalPathFileName = itUISettings->Value + TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().SouthBeachFileName;
+
+            }
+        }
+
+        if(HostName.Trim() != "" && FtpUserName.Trim() != "" && FtpPassword.Trim() != "")
+        {
+
+                LocalFileName = TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
+                int FCount=0;
+                const char * hostName = HostName.t_str();
+                const char * userPath = FtpPath.t_str();
+                const char * userName = FtpUserName.t_str();
+                const char * userPassword = FtpPassword.t_str();
+                if(index == (TGlobalSettings::Instance().mallInfo.FileNameList.size()-1))
+                    FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
+                else
+                    FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount, false);
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
 }
 
 
