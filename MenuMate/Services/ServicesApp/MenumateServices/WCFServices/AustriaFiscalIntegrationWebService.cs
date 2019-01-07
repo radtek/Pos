@@ -60,7 +60,7 @@ namespace MenumateServices.WCFServices
             WriteToFile(logsList);
             return retValue;
         }
-        public int SendZeroReceipt(string url, string cashBoxId, string terminalId, string accessToken)
+        public bool SendZeroReceipt(string url, string cashBoxId, string terminalId, string accessToken)
         {
             bool retValue = false;
             List<string> logsList = new List<string>();
