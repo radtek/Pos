@@ -399,6 +399,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         }
         if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
         {
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
             std::auto_ptr<TManagerAustriaFiscal> managerAustriaFiscal(new TManagerAustriaFiscal());
 
             if(TGlobalSettings::Instance().AustriaFiscalUrl != "")
@@ -407,8 +408,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
                 {
                     if(managerAustriaFiscal->GetEchoResponseFromMain())
                     {
-                        if(managerAustriaFiscal->SendZeroReceipt())
-                           TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = true;
+                        TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = managerAustriaFiscal->SendZeroReceipt();
                         if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
                            MessageBox("Could not communicate with Austria Fiscal.\rAustria Fiscal reporting is disabled.","Error",MB_OK+MB_ICONERROR);
                     }
