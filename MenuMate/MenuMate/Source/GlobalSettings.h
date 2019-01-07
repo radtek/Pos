@@ -553,6 +553,7 @@ public:
     bool IsTableLockEnabled;
     int MallBatchID;
     bool HideFreeSides;
+    bool IsAustriaFiscalCommissioned;
 };
 
 #endif
