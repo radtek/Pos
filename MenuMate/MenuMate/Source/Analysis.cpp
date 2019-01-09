@@ -3380,6 +3380,7 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
             // Changing dicrectory is necessary
             FtpSetCurrentDirectory( hFtpSession, userPath );
             //  FtpCreateDirectory( hFtpSession, "/Menumate/Beta/PosDroid/DLF" );
+            bool isFileUploaded = true;
 
             if (!FtpPutFile(hFtpSession, pathFileName, fileName, FTP_TRANSFER_TYPE_BINARY, 0))
             {
@@ -3388,11 +3389,14 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
                 {
 
                     MessageBox( "File was not successfully uploaded!", "File Transfer Failed!", MB_OK );
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                        isFileUploaded = false;
                 }
             }
 
-            if (FCount == 0 && showMessage)
+            if (FCount == 0 && showMessage && isFileUploaded)
             {
+
                 MessageBox( "File was sent successfully!", "File Transfer Success!", MB_OK );
             }
         }
@@ -9290,7 +9294,7 @@ void TfrmAnalysis::UpdateMaxZedTime(int fieldindex)
 }
 //-----------------------------------------------------------------------------------------------------------
 void TfrmAnalysis::UploadMallFilesToFTP()
-{    try    {        std::list<TMallExportSettings> ::iterator itUISettings;         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)        {
+{    try    {       MessageBox("Hi","",MB_OK);        std::list<TMallExportSettings> ::iterator itUISettings;         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)        {
             if(itUISettings->Value != "" )
             {
                 if(itUISettings->ControlName == "edMallFTPServer")
@@ -9313,10 +9317,12 @@ void TfrmAnalysis::UploadMallFilesToFTP()
                 const char * userPath = FtpPath.t_str();
                 const char * userName = FtpUserName.t_str();
                 const char * userPassword = FtpPassword.t_str();
+
                 if(index == (TGlobalSettings::Instance().mallInfo.FileNameList.size()-1))
                     FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
                 else
                     FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount, false);
+
             }
         }
     }
