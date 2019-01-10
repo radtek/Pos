@@ -1087,4 +1087,24 @@ void TPaymentTransaction::makeLogFile(UnicodeString str)
     List->Add(" "+ str +  "\n");
     List->SaveToFile(fileName );
 }
+//-------------------------------------------------------------------------------------------------
+bool TPaymentTransaction::IsPaymentDoneForFiscal(TPaymentTransaction *OtherTransaction,ePaymentAttribute attributeIndex)   //ePaymentAttribute attributeIndex
+{
+    bool retVal = false;
+
+    for (int i = 0; i < OtherTransaction->PaymentList->Count; i++)
+	{
+
+		TPayment *payment = OtherTransaction->PaymentGet(i);
+        if(payment->GetPaymentAttribute(attributeIndex))
+		{
+
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
+}
+
+
 

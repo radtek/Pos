@@ -448,7 +448,8 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
         TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
         TGlobalSettings::Instance().HideFreeSides = TManagerVariable::Instance().GetBool(DBTransaction, vmHideFreeSides, false);
-}
+        TGlobalSettings::Instance().IsFiscalPostingDisable = TManagerVariable::Instance().GetBool(DBTransaction, vmUseforfiscalposting, true);
+        }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
 {
