@@ -3608,28 +3608,13 @@ void TfrmMaintain::SetUpAustriaFiscal()
     DBTransaction.StartTransaction();
     try
     {
-        TMMContactInfo TempUserInfo;
-        std::auto_ptr<TContactStaff> Staff(new TContactStaff(DBTransaction));
-        TLoginSuccess Result = Staff->Login(this,DBTransaction,TempUserInfo, CheckMaintenance);
-        DBTransaction.Commit();
-        if (Result == lsAccepted)
-        {
-            DBTransaction.StartTransaction();
-            std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
-            frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
-            frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
-            frmsetUpPosPlus->StorageType = AustriaFiscal;
-            frmsetUpPosPlus->ConfigureForMode();
-            frmsetUpPosPlus->ShowModal();
-        }
-        else if (Result == lsDenied)
-        {
-            MessageBox("You do not have access to the interface settings.", "Error", MB_OK + MB_ICONERROR);
-        }
-        else if (Result == lsPINIncorrect)
-        {
-            MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
-        }
+        DBTransaction.StartTransaction();
+        std::auto_ptr<TfrmSetUpPosPlus> frmsetUpPosPlus(TfrmSetUpPosPlus::Create<TfrmSetUpPosPlus>(this));
+        frmsetUpPosPlus->Left = (Screen->Width - frmsetUpPosPlus->Width)/2;
+        frmsetUpPosPlus->Top = (Screen->Height - frmsetUpPosPlus->Height)/2;
+        frmsetUpPosPlus->StorageType = AustriaFiscal;
+        frmsetUpPosPlus->ConfigureForMode();
+        frmsetUpPosPlus->ShowModal();
     }
     catch (Exception &Exc)
     {

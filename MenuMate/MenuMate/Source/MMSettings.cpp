@@ -226,6 +226,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,              TGlobalSettings::Instance().ApplyRoundingTax);
             TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,         TGlobalSettings::Instance().RoundingTaxProfileKey);
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsAustriaFiscalCommissioned, TGlobalSettings::Instance().IsAustriaFiscalCommissioned);
         }
 
         TGlobalSettings::Instance().XeroMachineName	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroMachineName,"");

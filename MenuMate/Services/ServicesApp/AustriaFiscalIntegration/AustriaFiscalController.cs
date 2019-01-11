@@ -31,9 +31,9 @@ namespace AustriaFiscalIntegration
                 {
 
                     string jsonForRequest = "";
-                    jsonForRequest = JSonUtility.Serialize<ReceiptRequest>(receiptRequest);
-                    logsList.Add("Receipt Data is:-                         " + jsonForRequest);
-                    logsList.Add("Sending request at:-                      " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    //jsonForRequest = JSonUtility.Serialize<ReceiptRequest>(receiptRequest);
+                    //logsList.Add("Receipt Data is:-                         " + jsonForRequest);
+                    //logsList.Add("Sending request at:-                      " + DateTime.Now.ToString("hh:mm:ss tt"));
                     //var response = AustriaFiscalAppManager.Instance.proxy.Sign(receiptRequest);
                     var response = SignJson(receiptRequest,url,cashBoxId,accessToken,logsList);
                     logsList.Add("Response received at:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -168,7 +168,7 @@ namespace AustriaFiscalIntegration
 
                 var jsonSettings = new JsonSerializerSettings() { DateFormatHandling = DateFormatHandling.MicrosoftDateFormat };
                 var reqjson = JsonConvert.SerializeObject(request, jsonSettings);
-
+                logsList.Add("Receipt Data is:-                         " + reqjson);
                 webRequest = (HttpWebRequest)HttpWebRequest.Create(url + "json/sign");
                 webRequest.Method = "POST";
                 webRequest.ContentType = "application/json;charset=utf-8";
@@ -178,6 +178,7 @@ namespace AustriaFiscalIntegration
                 logsList.Add("Added Headers");
                 byte[] reqbytes = Encoding.UTF8.GetBytes(reqjson);
                 webRequest.ContentLength = reqbytes.Length;
+                logsList.Add("Sending request at:-                      " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (var reqStream = webRequest.GetRequestStream())
                 {
                     reqStream.Write(reqbytes, 0, reqbytes.Length);

@@ -17,6 +17,7 @@ class TManagerAustriaFiscal
         bool PostDataToAustriaFiscal();
         bool ExportData(TPaymentTransaction &paymentTransaction);
         void UnsetPostingFlag();
+        bool SendZeroReceipt();
     private:
         bool WasSignatureReceivedInLastSale();
         void LogFiscalAustriaEnabling(std::auto_ptr<TStringList> list,bool isEnabled);
@@ -41,5 +42,6 @@ class TManagerAustriaFiscal
         void GetInvoiceDetails(std::vector<TReceiptRequestAustriaFiscal> &receiptsPending,Database::TDBTransaction &DBTransaction);
         void UpdateInvoiceDetails(Database::TDBTransaction &DBTransaction,TReceiptRequestAustriaFiscal receipt,TReceiptResponseAustriaFiscal response);
         TDateTime GetMomentForReceipt(UnicodeString invoiceNumber,Database::TDBTransaction &DBTransaction);
+        void WriteFiscalAustriaLogs(std::auto_ptr<TStringList> list);
 };
 #endif
