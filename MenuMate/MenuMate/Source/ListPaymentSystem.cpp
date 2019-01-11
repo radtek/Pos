@@ -4483,7 +4483,7 @@ int TListPaymentSystem::GetPartialPayment(TPaymentTransaction &PaymentTransactio
 	frmTouchNumpad->btnSurcharge->Visible = true;
 	frmTouchNumpad->Mode = pmCurrency;
 	if (frmTouchNumpad->ShowModal() == mrOk)
-	{   MessageBox(TotalCost, "TotalCost", MB_OK);
+	{
 		if (frmTouchNumpad->CURResult > TotalCost)
 		{
 			MessageBox("This amount is larger than what is owed.", "Error", MB_ICONERROR + MB_OK);
@@ -4941,18 +4941,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 
 		 if (frmPaymentType->Execute() == mrOk)
 		{
-//               for (int i = 0; i < PaymentTransaction.PaymentsCount(); i++)
-//          {
-//                 TPayment *SubPayment = PaymentTransaction.PaymentGet(i);
-//                 if(SubPayment->GetPay()!=0)
-//                 {
-//                 String abc = SubPayment->GetPropertyString();
-//                 MessageBox(abc,"SubPayment->GetPropertyString()",MB_OK);
-//                 }
-//            }
 
-
-//              MessageBox(a,"GG",MB_OK);
             isPaymentProcessed = true;
              bool RetrieveUserOptions = false;
              if((TGlobalSettings::Instance().IsDrinkCommandEnabled) && (PaymentTransaction.Orders->Count >0 ) && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->TabName == "DC_ITEMS_ZED")
