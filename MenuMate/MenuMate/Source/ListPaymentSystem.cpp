@@ -7158,7 +7158,7 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
 //---------------------------------------------------------------------
 bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction)
 {
-	bool retVal = false;
+	bool retVal = true;
     try
     {
         if(TGlobalSettings::Instance().IsFiscalPostingDisable)
@@ -7166,14 +7166,14 @@ bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransac
 
             if(IsPaymentDoneForFiscal(PaymentTransaction))
             {
-               retVal = true;
+               retVal = false;
             }
         }
     }
     catch(Exception &err)
 	{
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
-        retVal = false;
+        retVal = true;
     }
 	return retVal;
 }
