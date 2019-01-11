@@ -307,7 +307,7 @@ object frmTaxMaintenance: TfrmTaxMaintenance
         end
         object cbPostsaletofiscal: TCheckBox
           Left = 32
-          Top = 584
+          Top = 565
           Width = 377
           Height = 25
           Caption = 'Restrict Room Sales To Fiscal'
