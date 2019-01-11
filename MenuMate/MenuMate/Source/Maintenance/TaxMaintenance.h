@@ -44,6 +44,7 @@ __published:	// IDE-managed Components
     TEdit *edLogicalName;
     TLabel *lbPrinterName;
     TLabel *lbLogicalName;
+    TCheckBox *cbPostsaletofiscal;
 
 
     void __fastcall FormShow(TObject *Sender);
@@ -63,6 +64,7 @@ __published:	// IDE-managed Components
     void __fastcall cbUseItalyFiscalPrinterClick(TObject *Sender);
     void __fastcall edPrinterNameClick(TObject *Sender);
     void __fastcall edLogicalNameClick(TObject *Sender);
+     void __fastcall cbPostRoomSaleToFiscalClick(TObject *Sender);
 public:		// User declarations
     __fastcall TfrmTaxMaintenance(TComponent* Owner,Database::TDBControl &inDBControl);
 

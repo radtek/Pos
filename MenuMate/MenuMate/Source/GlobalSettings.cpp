@@ -458,6 +458,6 @@ TGlobalSettings::TGlobalSettings()
     IsTableLockEnabled = false;
     MallBatchID = 0;
     HideFreeSides = false;
-    IsFiscalPostingDisable = true;
+    IsFiscalPostingDisable = false;
 }
 

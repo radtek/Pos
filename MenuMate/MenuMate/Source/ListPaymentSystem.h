@@ -240,7 +240,8 @@ protected:
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
      bool IsMewsConfigured();
      bool TryToEnableMews();
-     bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction &PaymentTransaction);
+     bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
+     bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
 };
 
 #endif

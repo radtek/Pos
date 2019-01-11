@@ -3918,11 +3918,12 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
     {
 
-        std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
         if(CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+        {
+
+           std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
            managerAustria->ExportData(PaymentTransaction);
-
-
+        }
     }
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
@@ -7166,21 +7167,17 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
 	return retVal;
 }
 //---------------------------------------------------------------------
-bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction &PaymentTransaction)
+bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction)
 {
 	bool retVal = false;
-
     try
     {
-        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-        DBTransaction.StartTransaction();
-        std::auto_ptr <TPaymentTransaction> TempTransaction(new TPaymentTransaction(DBTransaction));
-        if(!TGlobalSettings::Instance().IsFiscalPostingDisable)
+        if(TGlobalSettings::Instance().IsFiscalPostingDisable)
         {
-            if(TempTransaction->IsPaymentDoneForFiscal(&PaymentTransaction, ePayTypeRoomInterface))
+
+            if(IsPaymentDoneForFiscal(PaymentTransaction))
             {
                retVal = true;
-               return retVal;
             }
         }
     }
@@ -7189,6 +7186,20 @@ bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransac
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
         retVal = false;
     }
-
 	return retVal;
+}
+//-----------------------------------------------------------------------
+bool TListPaymentSystem::IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
 }

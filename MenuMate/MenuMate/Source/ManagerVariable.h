@@ -171,7 +171,7 @@ enum vmVariables
    vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,vmGiftCardGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
-    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,vmUseforfiscalposting,
+    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,vmIsFiscalPostingDisable,
 
    // MallExport ------------------------------------------------------------
     vmMallPath = 9000, vmMallIndex, vmTenantNo, vmMallLocation, vmClassCode, vmTradeCode, vmOutletCode, vmBranchCode,

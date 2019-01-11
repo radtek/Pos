@@ -305,6 +305,23 @@ object frmTaxMaintenance: TfrmTaxMaintenance
           TabOrder = 10
           OnChange = cbRoundingTaxProfileChange
         end
+        object cbPostsaletofiscal: TCheckBox
+          Left = 32
+          Top = 584
+          Width = 377
+          Height = 25
+          Caption = 'Restrict Room Sales To Fiscal'
+          Ctl3D = False
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentCtl3D = False
+          ParentFont = False
+          TabOrder = 12
+          OnClick = cbPostRoomSaleToFiscalClick
+        end
       end
     end
   end

@@ -2283,9 +2283,9 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         else
         {
             if (CurrentTransaction.Money.GrandTotal != 0 || CurrentTransaction.Orders->Count > 0  )
-            {    MessageBox("ixi","ixi",MB_OK);
+            {
                 ModalResult = mrOk;
-                MessageBox("ii","ii",MB_OK);
+               
             }
             else if (CurrentTransaction.Money.Change != 0 && CurrentTransaction.Money.PaymentCashOut != 0)
             { // Cashout.
@@ -2800,6 +2800,8 @@ bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {
+
+
 	if (SecurePaymentAccess(Payment))
 	{
 		if(Payment->GetPaymentAttribute(ePayTypePoints) && !Payment->RefundPoints)
