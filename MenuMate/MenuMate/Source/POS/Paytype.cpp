@@ -2003,14 +2003,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
 
-//              for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
-//          {
-//                 TPayment *SubPayment = CurrentTransaction.PaymentGet(i);
-//
-//                 String abc = SubPayment->GetPropertyString();
-//                 MessageBox(abc,"SubPayment->GetPropertyString()",MB_OK);
-//
-//            }
+
 
             bool GuestMasterOk = true;
             AnsiString TabName = "";
