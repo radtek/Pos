@@ -144,6 +144,30 @@ namespace SiHotIntegration.Utility
             bytesList.Add(groupSeparator);
 
             return bytesList;
-        }      
+        }
+        public List<byte> GetStoreTicketContent(StoreTicketDetails storeTicketDetails)
+        {
+            byte fileSeparator = 28;
+            byte groupSeparator = 29;
+            List<byte> bytesList = new List<byte>();
+            bytesList.AddRange(Encoding.UTF8.GetBytes("transno:" + storeTicketDetails.TransNo).ToList<byte>());
+            bytesList.Add(groupSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("storeticket:" + storeTicketDetails.StoreTicket).ToList<byte>());
+            bytesList.Add(groupSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("block:document").ToList<byte>());
+            bytesList.Add(fileSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("billno:" + storeTicketDetails.Billno).ToList<byte>());
+            bytesList.Add(fileSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("cashno:" + storeTicketDetails.Cashno).ToList<byte>());
+            bytesList.Add(fileSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("signature:" + storeTicketDetails.Signature).ToList<byte>());
+            bytesList.Add(fileSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("type:" + storeTicketDetails.Type).ToList<byte>());
+            bytesList.Add(fileSeparator);
+            bytesList.AddRange(Encoding.UTF8.GetBytes("document:" + Convert.ToBase64String(Encoding.UTF8.GetBytes(storeTicketDetails.Document))).ToList<byte>());
+            bytesList.Add(groupSeparator);
+
+            return bytesList;
+        }
     }
 }

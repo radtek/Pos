@@ -187,6 +187,9 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbOracleInterfacePort->Enabled = cbNoTaxToSihot->Checked;
         cbEnableItemDetailsPosting->Enabled = true;
         cbEnableItemDetailsPosting->Checked = TGlobalSettings::Instance().EnableItemDetailsPosting;
+        cbEnableStoreTicketPosting->Enabled = true;
+        cbEnableStoreTicketPosting->Checked = TGlobalSettings::Instance().EnableStoreTicketPosting;
+
 
     }
     else if(PMSType == oracle)
@@ -206,6 +209,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbTimeOut->Enabled = false;
         cbNoTaxToSihot->Enabled = false;
         cbEnableItemDetailsPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Enabled = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -257,6 +261,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbRoundingCategory->Enabled = false;
         cbEnableItemDetailsPosting->Enabled = false;
         cbEnableItemDetailsPosting->Checked = false;
+        cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
         TouchBtn1->Caption = "Get Details";
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         //tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
@@ -307,6 +313,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbTimeOut->Enabled = false;
         cbNoTaxToSihot->Enabled = false;
         cbEnableItemDetailsPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Enabled = false;
     }
 	tbRoundingCategory->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
@@ -1068,3 +1075,14 @@ void __fastcall TfrmPHSConfiguration::cbEnableItemDetailsPostingClick(TObject *S
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableItemDetailsPosting, TGlobalSettings::Instance().EnableItemDetailsPosting);
     DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbEnableStoreTicketPostingClick(TObject *Sender)
+
+{
+    TGlobalSettings::Instance().EnableStoreTicketPosting = cbEnableStoreTicketPosting->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableStoreTicketPosting, TGlobalSettings::Instance().EnableStoreTicketPosting);
+    DBTransaction.Commit();
+}
+

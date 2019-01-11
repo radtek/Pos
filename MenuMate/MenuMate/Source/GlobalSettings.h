@@ -553,6 +553,9 @@ public:
     bool IsTableLockEnabled;
     int MallBatchID;
     bool HideFreeSides;
+    bool EnableStoreTicketPosting;
+    bool PMSPostRequired;
+    bool PMSPostSuccessful;
 };
 
 #endif

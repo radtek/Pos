@@ -458,5 +458,8 @@ TGlobalSettings::TGlobalSettings()
     IsTableLockEnabled = false;
     MallBatchID = 0;
     HideFreeSides = false;
+    EnableStoreTicketPosting = false;
+    PMSPostRequired = false;
+    PMSPostSuccessful = false;
 }
 

@@ -230,7 +230,7 @@ enum vmVariables
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
     vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
 	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,
-    vmEnableItemDetailsPosting,vmBatchIdForSouthBeachMall};
+    vmEnableItemDetailsPosting,vmBatchIdForSouthBeachMall, vmEnableStoreTicketPosting};
 
 // ---------------------------------------------------------------------------
 class TManagerVariable

@@ -16,5 +16,7 @@ namespace MenumateServices.WCFServices
         RoomChargeResponse PostRoomCharge(RoomChargeDetails roomChargeDetails, int timeOut, string apiKey, bool isItemsDetailsPosting);
         [OperationContract]
         bool ValidateCreadentials(string address, int port, int transno);
+        [OperationContract]
+        RoomChargeResponse PostStoreTicket(StoreTicketDetails storeTicketDetails, int timeOut, string apiKey);
     }
 }

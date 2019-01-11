@@ -846,6 +846,17 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 			break;
 		}
 
+        //Calling Post Ticket method
+        if(TGlobalSettings::Instance().EnableStoreTicketPosting && TGlobalSettings::Instance().PMSType == SiHot)
+        {
+            std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
+	        receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
+	        receiptStream->Position = 0;
+            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+            if(TGlobalSettings::Instance().PMSPostRequired && TGlobalSettings::Instance().PMSPostSuccessful)
+                TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction, ReceiptData);
+        }
+
 		transactionRecovery.ClearRecoveryInfo();
         SetCashDrawerStatus(PaymentTransaction);
 
@@ -1033,6 +1044,10 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
     TSaveLogs::RecordFiscalLogs(logList);
     delete logList;
     logList = NULL;
+
+    //Unsetting the Global settings used for Store Ticket Post
+    TGlobalSettings::Instance().PMSPostSuccessful = false;
+    TGlobalSettings::Instance().PMSPostRequired = false;
 
 	return PaymentComplete;
 }

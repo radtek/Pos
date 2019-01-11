@@ -57,6 +57,11 @@ void TApplyParser::upgrade6_58Tables()
 {
     update6_58Tables();
 }
+//--------------------------------------------------------------------------
+void TApplyParser::upgrade6_59Tables()
+{
+    update6_59Tables();
+}
 //::::::::::::::::::::::::Version 6.50:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_50Tables()
 {
@@ -125,6 +130,12 @@ void TApplyParser::update6_58Tables()
     int settingID[14] = {1, 2, 7, 9, 10, 11, 12, 13, 16, 18, 19, 20, 24, 25};
     InsertInTo_MallExport_Settings_Mapping(_dbControl, settingID, 14, 4);
     AlterTable6_49MallExportSales(_dbControl);
+}
+//------------------------------------------------------------------------------
+void TApplyParser::update6_59Tables()
+{
+    Create6_59Generator(_dbControl );
+    Create6_59Table(_dbControl);
 }
 //------------------------------------------------------------------------------
 void TApplyParser::Create6_50Generator(TDBControl* const inDBControl)
@@ -1032,6 +1043,30 @@ void TApplyParser::UpdateTableLoyaltyPending6_58(TDBControl* const inDBControl)
     {
         transaction.Rollback();
     }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_59Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "PMSTICKETS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE PMSTICKETS "
+        "( "
+        "  PMSTICKETS_ID INTEGER NOT NULL PRIMARY KEY, "
+        "  INVOICE_NUMBER VARCHAR(50),                     "
+        "  IS_TICKET_POSTED CHAR(1) DEFAULT 'F'        "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_59Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_PMSTICKETS_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_PMSTICKETS_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_PMSTICKETS_ID TO 0;", inDBControl);
+	}
 }
 //------------------------------------------------------------------------------
 }

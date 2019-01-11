@@ -57,6 +57,7 @@ class TBasePMS
         void virtual GetRoomStatus(AnsiString _roomNumber, TRoomInquiryResult &_roomResult);//std::auto_ptr<TRoomInquiryResult> _roomResult);
         void virtual LogPMSEnabling(TriggerLocation triggerType);
         void virtual UnsetPostingFlag();
+        void virtual StoreTicketPost(TPaymentTransaction &_paymentTransaction, AnsiString receiptData);
 };
 //extern TBasePMS *BasePMS;
 #endif

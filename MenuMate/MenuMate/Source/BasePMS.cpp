@@ -82,3 +82,7 @@ void TBasePMS::UnsetPostingFlag()
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::StoreTicketPost(TPaymentTransaction &_paymentTransaction, AnsiString receiptData)
+{
+}
+//---------------------------------------------------------------------------

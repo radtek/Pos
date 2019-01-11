@@ -91,9 +91,23 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     object lblEnableItemDetailsPosting: TLabel
       Left = 16
       Top = 649
-      Width = 217
-      Height = 66
+      Width = 181
+      Height = 44
       Caption = 'Enable Item Details Posting'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      WordWrap = True
+    end
+    object lblEnableStoreTicketPosting: TLabel
+      Left = 310
+      Top = 649
+      Width = 186
+      Height = 44
+      Caption = 'Enable Store Ticket Posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -467,6 +481,14 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = tbOracleInterfacePortMouseClick
+    end
+    object cbEnableStoreTicketPosting: TCheckBox
+      Left = 558
+      Top = 664
+      Width = 11
+      Height = 17
+      TabOrder = 20
+      OnClick = cbEnableStoreTicketPostingClick
     end
     object tbTimeOut: TTouchBtn
       Left = 16
