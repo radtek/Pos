@@ -1179,7 +1179,7 @@ void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 {
     bool canProceed = true;
     if(TGlobalSettings::Instance().IsFiscalPostingDisable && (TGlobalSettings::Instance().UseItalyFiscalPrinter ||
-    TGlobalSettings::Instance().IsFiscalStorageEnabled)|| TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+       TGlobalSettings::Instance().IsFiscalStorageEnabled || TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled))
     {
         for(int i= 0; i<CurrentTransaction.PaymentsCount(); i++)
         {
