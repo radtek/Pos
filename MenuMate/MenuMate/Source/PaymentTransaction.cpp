@@ -1087,4 +1087,8 @@ void TPaymentTransaction::makeLogFile(UnicodeString str)
     List->Add(" "+ str +  "\n");
     List->SaveToFile(fileName );
 }
+//-------------------------------------------------------------------------------------------------
+
+
+
 

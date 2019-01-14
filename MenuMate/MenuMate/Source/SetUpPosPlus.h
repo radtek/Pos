@@ -28,15 +28,19 @@ __published:	// IDE-managed Components
     TTouchBtn *tbtnOrganizationNumber;
     TLabel *labelTerminalId;
     TTouchBtn *tbtnTerminalId;
+    TTouchBtn *tbtnCommission;
+    TLabel *labelCommission;
     void __fastcall tbtnPortNumberMouseClick(TObject *Sender);
     void __fastcall tbtnConfigureMouseClick(TObject *Sender);
     void __fastcall tbtnValidateMouseClick(TObject *Sender);
     void __fastcall tbtnCloseMouseClick(TObject *Sender);
     void __fastcall tbtnOrganizationNumberMouseClick(TObject *Sender);
     void __fastcall tbtnTerminalIdMouseClick(TObject *Sender);
+    void __fastcall tbtnCommissionMouseClick(TObject *Sender);
 private:	// User declarations
     UnicodeString ShowKeyBoard(int maxLength,UnicodeString value,UnicodeString caption);
     bool AreDetailsProvidedForAustria();
+    bool GetDBValueForCommission(Database::TDBTransaction &DBTransaction,int profileKey);
 public:		// User declarations
     __fastcall TfrmSetUpPosPlus(TComponent* Owner);
     void __fastcall FormShow(TObject *Sender);

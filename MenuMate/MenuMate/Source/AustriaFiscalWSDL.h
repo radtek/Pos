@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8748/MenumateServices/AustriaService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (18/12/2018 11:52:31 p.m. - - $Rev: 25127 $)
+// (4/01/2019 6:29:05 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   AustriaFiscalWSDLH

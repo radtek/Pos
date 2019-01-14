@@ -119,6 +119,7 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool IsSiHotConfigured();
      //settle th eeftpos bills after zed performed..
     bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
+ 
 
 protected:
 
@@ -239,6 +240,8 @@ protected:
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
      bool IsMewsConfigured();
      bool TryToEnableMews();
+     bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
+     bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
 };
 
 #endif

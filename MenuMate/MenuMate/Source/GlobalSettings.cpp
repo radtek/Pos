@@ -458,6 +458,8 @@ TGlobalSettings::TGlobalSettings()
     IsTableLockEnabled = false;
     MallBatchID = 0;
     HideFreeSides = false;
+    IsAustriaFiscalCommissioned = false;
+    IsFiscalPostingDisable = false;
     EnableStoreTicketPosting = false;
     PMSPostRequired = false;
     PMSPostSuccessful = false;

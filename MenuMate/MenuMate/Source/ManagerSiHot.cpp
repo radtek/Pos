@@ -516,7 +516,7 @@ void TManagerSiHot::UnsetPostingFlag()
     }
 }
 //---------------------------------------------------------------------------
-void TManagerSiHot::StoreTicketPost(TPaymentTransaction &_paymentTransaction, AnsiString receiptData)
+void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, AnsiString receiptData)
 {
     bool response = false;
     std::auto_ptr<TfrmProcessing>
@@ -530,7 +530,7 @@ void TManagerSiHot::StoreTicketPost(TPaymentTransaction &_paymentTransaction, An
         TStoreTicket storeTicket;
         TRoomChargeResponse  roomResponse;
 
-        siHotDataProcessor->CreateStoreTicketPost(_paymentTransaction.InvoiceNumber, storeTicket, receiptData);
+        siHotDataProcessor->CreateStoreTicketPost(invoiceNumber, storeTicket, receiptData);
         std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
         roomResponse = siHotInterface->SendStoreTicketPost(storeTicket,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
         
@@ -540,7 +540,7 @@ void TManagerSiHot::StoreTicketPost(TPaymentTransaction &_paymentTransaction, An
             response = false;
 
         //Saving response in PMSTicket table
-        SavePMSTicketStatus(_paymentTransaction.InvoiceNumber, response);
+        SavePMSTicketStatus(invoiceNumber, response);
     
         //Getting List of Invoice no. having failed status
         std::vector<UnicodeString> invoiceNumbers;

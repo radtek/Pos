@@ -553,6 +553,8 @@ public:
     bool IsTableLockEnabled;
     int MallBatchID;
     bool HideFreeSides;
+    bool IsAustriaFiscalCommissioned;
+    bool IsFiscalPostingDisable;
     bool EnableStoreTicketPosting;
     bool PMSPostRequired;
     bool PMSPostSuccessful;

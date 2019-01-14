@@ -20,33 +20,32 @@ bool TManagerAustriaFiscal::GetEchoResponseFromConfig()
 {
     bool retValue = false;
     UnsetPostingFlag();
-    std::auto_ptr<TStringList> list(new TStringList);
-    list->Add("Note- "+ (AnsiString)"Enabling Austria Fiscal as Selected from UI" +"\n");
-    list->Add((AnsiString)"Time:-   " +Now().CurrentTime().FormatString("hh:nn:ss am/pm")+"\n");
-    if(IsEchoSuccessful())
+    TMMProcessingState State(Screen->ActiveForm, "Setting up Austria Fiscal. Please Wait...", "Austria Fiscal Set Up");
+    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+    try
     {
-        list->Add((AnsiString)"ECHO was successful" +"\n");
-        if(!WasSignatureReceivedInLastSale())
+        std::auto_ptr<TStringList> list(new TStringList);
+        list->Add("Note- "+ (AnsiString)"Enabling Austria Fiscal as Selected from UI" +"\n");
+        list->Add((AnsiString)"Time:-   " +Now().CurrentTime().FormatString("hh:nn:ss am/pm")+"\n");
+        WriteFiscalAustriaLogs(list);
+        list.reset(new TStringList);
+        if(IsEchoSuccessful())
         {
-            list->Add((AnsiString)"Commisioning is required." +"\n");
-            if(CommissionAustriaFiscal())
-            {
-                retValue = true;
-                list->Add((AnsiString)"Commisioning is successful." +"\n");
-            }
-            else
-            {
-                retValue = false;
-                list->Add((AnsiString)"Commisioning is unsuccessful." +"\n");
-            }
+            list->Add((AnsiString)"ECHO was successful" +"\n");
+            retValue = true;
         }
         else
         {
-            retValue = true;
-            list->Add((AnsiString)"Commisioning is not required." +"\n");
+            list->Add((AnsiString)"ECHO was unsuccessful" +"\n");
         }
+        list->Add("=================================================================================");
+        WriteFiscalAustriaLogs(list);
     }
-    LogFiscalAustriaEnabling(list,retValue);
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+    }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
     return retValue;
 }
 bool TManagerAustriaFiscal::GetEchoResponseFromMain()
@@ -62,7 +61,7 @@ bool TManagerAustriaFiscal::GetEchoResponseFromMain()
         list->Add((AnsiString)"Echo was successful" +"\n");
     else
         list->Add((AnsiString)"Echo was unsuccessful" +"\n");
-    LogFiscalAustriaEnabling(list,retValue);
+    WriteFiscalAustriaLogs(list);
     return retValue;
 }
 bool TManagerAustriaFiscal::IsZeroReceiptSuccessful()
@@ -70,11 +69,22 @@ bool TManagerAustriaFiscal::IsZeroReceiptSuccessful()
     bool retValue = false;
     try
     {
+        std::auto_ptr<TStringList> list(new TStringList);
+        list->Add("Note- "+ (AnsiString)"Sending Zero Receipt Austria Fiscal as Selected from UI" +"\n");
+        list->Add((AnsiString)"Time:-   " +Now().CurrentTime().FormatString("hh:nn:ss am/pm")+"\n");
+        WriteFiscalAustriaLogs(list);
+        list.reset(new TStringList);
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
         retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                         TGlobalSettings::Instance().AustriaFiscalCashBoxId,
                                                         TGlobalSettings::Instance().AustriaFiscalTerminalId,
                                                         TGlobalSettings::Instance().AustriaFiscalAccessToken);
+        if(retValue)
+            list->Add((AnsiString)"Zero Receipt Austria Fiscal was successful"+"\n");
+        else
+            list->Add((AnsiString)"Zero Receipt Austria Fiscal was unsuccessful"+"\n");
+        list->Add("=================================================================================");
+        WriteFiscalAustriaLogs(list);
     }
     catch(Exception &ex)
     {
@@ -85,21 +95,62 @@ bool TManagerAustriaFiscal::IsZeroReceiptSuccessful()
 // Make Call to Fiscal API for commisioning
 bool TManagerAustriaFiscal::CommissionAustriaFiscal()
 {
+    TMMProcessingState State(Screen->ActiveForm, "Running Commission command for Austria Fiscal. Please Wait...", "Austria Fiscal Set Up");
+    TDeviceRealTerminal::Instance().ProcessingController.Push(State);
     bool retValue = false;
+    std::auto_ptr<TStringList> list(new TStringList);
+    list->Add("Note- "+ (AnsiString)"Commissioning Austria Fiscal as Selected from UI" +"\n");
+    list->Add((AnsiString)"Time:-   " +Now().CurrentTime().FormatString("hh:nn:ss am/pm")+"\n");
+    WriteFiscalAustriaLogs(list);
+    list.reset(new TStringList);
     try
     {
         std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
-        bool isSuccessful = fiscalInterface->CommissionAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
+        retValue = fiscalInterface->CommissionAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
                                                         TGlobalSettings::Instance().AustriaFiscalCashBoxId,
                                                         TGlobalSettings::Instance().AustriaFiscalTerminalId,
                                                         TGlobalSettings::Instance().AustriaFiscalAccessToken);
-        if(isSuccessful)
+        if(retValue)
+            list->Add((AnsiString)"Commissioning Austria Fiscal was successful"+"\n");
+        else
+            list->Add((AnsiString)"Commissioning for Fiscal Austria was unsuccessful"+"\n");
+        list->Add("=================================================================================");
+        WriteFiscalAustriaLogs(list);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
+    }
+    TDeviceRealTerminal::Instance().ProcessingController.Pop();
+    return retValue;
+}
+bool TManagerAustriaFiscal::SendZeroReceipt()
+{
+    bool retValue = false;
+    std::auto_ptr<TStringList> list(new TStringList);
+    list->Add("Note- "+ (AnsiString)"Sending Zero Receipt to Austria Fiscal" +"\n");
+    list->Add((AnsiString)"Time:-   " +Now().CurrentTime().FormatString("hh:nn:ss am/pm")+"\n");
+    WriteFiscalAustriaLogs(list);
+    list.reset(new TStringList);
+    try
+    {
+        std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
+        retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                    TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                    TGlobalSettings::Instance().AustriaFiscalTerminalId,
+                                                    TGlobalSettings::Instance().AustriaFiscalAccessToken);
+        if(retValue)
         {
-            retValue = fiscalInterface->SendZeroReceipt(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                        TGlobalSettings::Instance().AustriaFiscalTerminalId,
-                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
+            list->Add((AnsiString)"Zero Receipt operation was successful" + "\n");
+            list->Add("<<<Austria Fiscal is enabled>>>");
         }
+        else
+        {
+            list->Add((AnsiString)"Zero Receipt operation was unsuccessful" + "\n");
+            list->Add("<<<Austria Fiscal is disabled>>>");
+        }
+        list->Add("=================================================================================");
+        WriteFiscalAustriaLogs(list);
     }
     catch(Exception &ex)
     {
@@ -215,23 +266,30 @@ bool TManagerAustriaFiscal::WasSignatureReceivedInLastSale()
 bool TManagerAustriaFiscal::IsEchoSuccessful()
 {
     bool retValue = false;
-    std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
-    UnicodeString response = fiscalInterface->InitAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
-                                                        TGlobalSettings::Instance().AustriaFiscalCashBoxId,
-                                                        TGlobalSettings::Instance().AustriaFiscalAccessToken);
-    if(response.Pos("Echo is Successful for details provided.") != 0)
-        retValue = true;
-    else
+    try
     {
-        retValue = false;
-        response += "\rAustria fiscal is not enabled.\r";
-        if(response.Pos("Echo failed") != 0)
-            response += "Please check the system is connected to network and verify the details are correct.";
-        MessageBox(response,"Error",MB_OK+MB_ICONINFORMATION);
+        std::auto_ptr<TAustriaFiscalInterface> fiscalInterface(new TAustriaFiscalInterface());
+        UnicodeString response = fiscalInterface->InitAustriaFiscal(TGlobalSettings::Instance().AustriaFiscalUrl,
+                                                            TGlobalSettings::Instance().AustriaFiscalCashBoxId,
+                                                            TGlobalSettings::Instance().AustriaFiscalAccessToken);
+        if(response.Pos("Echo is Successful for details provided.") != 0)
+            retValue = true;
+        else
+        {
+            retValue = false;
+            response += "\rAustria fiscal is not enabled.\r";
+            if(response.Pos("Echo failed") != 0)
+                response += "Please check the system is connected to network and verify the details are correct.";
+            MessageBox(response,"Error",MB_OK+MB_ICONINFORMATION);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
     }
     return retValue;
 }
-void TManagerAustriaFiscal::LogFiscalAustriaEnabling(std::auto_ptr<TStringList> list,bool isEnabled)
+void TManagerAustriaFiscal::WriteFiscalAustriaLogs(std::auto_ptr<TStringList> list)
 {
     try
     {
@@ -244,11 +302,6 @@ void TManagerAustriaFiscal::LogFiscalAustriaEnabling(std::auto_ptr<TStringList> 
             AnsiString value = list->operator [](i);
             listLocal->Add(value);
         }
-        if(isEnabled)
-            listLocal->Add((AnsiString)"<<< Austria Fiscal is enabled. >>>"+"\n");
-        else
-            listLocal->Add((AnsiString)"<<< Austria Fiscal is not enabled. >>>"+"\n");
-        listLocal->Add("=================================================================================");
         listLocal->SaveToFile(fileName );
     }
     catch(Exception &Exc)

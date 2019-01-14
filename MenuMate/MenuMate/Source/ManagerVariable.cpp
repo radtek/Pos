@@ -3424,7 +3424,10 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmIsTableLockEnabled,"Enable Table Lock", "Table will be accessed by that staff only who have save first orders on it.\r", vmgPOS, false);
         SetVarInt(DBTransaction,vmBatchIdForSouthBeachMall, "SouthBeach Batch No","Getting the Batch number of SouthBeachMall",vmgPOS, 0);
         SetVarBool(DBTransaction,vmHideFreeSides,"Hide Free Sides", "This setting will hide the Sides having price zero from Receipt", vmgPOS, false);
-        SetVarBool(DBTransaction,vmEnableStoreTicketPosting,"Enable Store Ticket Posting", "This setting will Enable Store Ticket Postings to SiHot", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmIsAustriaFiscalCommissioned,"Commission of Austria Fiskal", "Stores value for Austria commission", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction, vmIsFiscalPostingDisable,"Use Fiscal Printer", "This setting will stop the posting to fiscal", vmgTax, false);
+		SetVarBool(DBTransaction,vmEnableStoreTicketPosting,"Enable Store Ticket Posting", "This setting will Enable Store Ticket Postings to SiHot", vmg3rdPartyInterface, false);
+
 	}
 	catch(Exception &E)
 	{

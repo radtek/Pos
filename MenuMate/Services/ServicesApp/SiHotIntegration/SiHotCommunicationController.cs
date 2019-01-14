@@ -522,7 +522,8 @@ namespace SiHotIntegration
                     {
                         stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
                         stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
-                  
+                        GetStoreTicketDetails(storeTicketDetails, stringList);
+
                         // to clear existing data if any
                         if (tc.Available > 0)
                         {
@@ -601,7 +602,7 @@ namespace SiHotIntegration
             }
             finally
             {
-                stringList.Add("Posting Details for Bill no:              " + storeTicketDetails.Billno);
+                stringList.Add("Posting Store Ticket for Invoice Number:  " + storeTicketDetails.Billno);
                 stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
                 stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 stringList.Add("Post Status:                              " + responseText);
@@ -615,6 +616,26 @@ namespace SiHotIntegration
                 WriteToFile(stringList);
             }
             return response;
+        }
+        private void GetStoreTicketDetails(StoreTicketDetails storeTicketDetails, List<string> stringList)
+        {
+            try
+            {
+                stringList.Add("*********Start Of Items In Store Ticket Post**************");
+                stringList.Add("Transaction Number:                       " + storeTicketDetails.TransNo);
+                stringList.Add("Store Ticket:                             " + storeTicketDetails.StoreTicket);
+                stringList.Add("Bill Number:                              " + storeTicketDetails.Billno);
+                stringList.Add("Cash Number:                              " + storeTicketDetails.Cashno);
+                stringList.Add("Signature:                                " + storeTicketDetails.Signature);
+                stringList.Add("Type:                                     " + storeTicketDetails.Type);
+                stringList.Add("Document:                                 " + storeTicketDetails.Document);
+                stringList.Add("*********End Of Items In Store Ticket Post**************");
+
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in preparing data for LOG" + ex.Message);
+            }
         }
     }
 }

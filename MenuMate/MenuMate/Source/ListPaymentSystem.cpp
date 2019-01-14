@@ -849,12 +849,14 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         //Calling Post Ticket method
         if(TGlobalSettings::Instance().EnableStoreTicketPosting && TGlobalSettings::Instance().PMSType == SiHot)
         {
-            std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
-	        receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
-	        receiptStream->Position = 0;
-            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
             if(TGlobalSettings::Instance().PMSPostRequired && TGlobalSettings::Instance().PMSPostSuccessful)
-                TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction, ReceiptData);
+            {
+                std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
+	            receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
+	            receiptStream->Position = 0;
+                AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+                TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction.InvoiceNumber, ReceiptData);
+            }
         }
 
 		transactionRecovery.ClearRecoveryInfo();
@@ -3688,7 +3690,7 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
         TStringList* logList = new TStringList();
         logList->Add("----------------------------------------------New BILL-------------------------------------------");
@@ -3702,7 +3704,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
             || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
                 TGlobalSettings::Instance().PrintSignatureWithRoomSales &&
-                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))))
+                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))) )
         {
             PrintReceipt(RequestEFTPOSReceipt);
             logList->Add("Print to normal receipt printer has been sent.");
@@ -3920,7 +3922,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if(!PhoenixHSOk)
 	   return RetVal;
 
-    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled && CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
         std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
         AnsiString fiscalData = dataUtility->GetPOSPlusData(PaymentTransaction);
@@ -3932,8 +3934,13 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         return RetVal;
     if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
     {
-        std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
-        managerAustria->ExportData(PaymentTransaction);
+
+        if(CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+        {
+
+           std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+           managerAustria->ExportData(PaymentTransaction);
+        }
     }
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
@@ -3986,6 +3993,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(TGlobalSettings::Instance().LoyaltyMateEnabled)
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
+
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
              GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction && FiscalTransaction;
@@ -4950,6 +4958,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 
 		 if (frmPaymentType->Execute() == mrOk)
 		{
+
             isPaymentProcessed = true;
              bool RetrieveUserOptions = false;
              if((TGlobalSettings::Instance().IsDrinkCommandEnabled) && (PaymentTransaction.Orders->Count >0 ) && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->TabName == "DC_ITEMS_ZED")
@@ -4975,6 +4984,8 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
   			    PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
+
+
 				if (PaymentComplete)
 				{
 					if (PaymentTransaction.CreditTransaction)
@@ -4998,7 +5009,9 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
+
 					ArchiveTransaction(PaymentTransaction);
+                   
 					if(PaymentTransaction.TypeOfSale == RegularSale)
 					{
 						exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
@@ -5357,6 +5370,7 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
         }
         PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
+
         if(PaymentComplete)
         {
             if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
@@ -7157,4 +7171,41 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
     }
 
 	return retVal;
+}
+//---------------------------------------------------------------------
+bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction)
+{
+	bool retVal = true;
+    try
+    {
+        if(TGlobalSettings::Instance().IsFiscalPostingDisable)
+        {
+
+            if(IsPaymentDoneForFiscal(PaymentTransaction))
+            {
+               retVal = false;
+            }
+        }
+    }
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = true;
+    }
+	return retVal;
+}
+//-----------------------------------------------------------------------
+bool TListPaymentSystem::IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
 }

@@ -171,7 +171,7 @@ enum vmVariables
    vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,vmGiftCardGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
-    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,
+    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,vmIsFiscalPostingDisable,
 
    // MallExport ------------------------------------------------------------
     vmMallPath = 9000, vmMallIndex, vmTenantNo, vmMallLocation, vmClassCode, vmTradeCode, vmOutletCode, vmBranchCode,
@@ -230,7 +230,7 @@ enum vmVariables
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
     vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
 	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,
-    vmEnableItemDetailsPosting,vmBatchIdForSouthBeachMall, vmEnableStoreTicketPosting};
+    vmEnableItemDetailsPosting,vmBatchIdForSouthBeachMall,vmIsAustriaFiscalCommissioned = 9646, vmEnableStoreTicketPosting};
 
 // ---------------------------------------------------------------------------
 class TManagerVariable

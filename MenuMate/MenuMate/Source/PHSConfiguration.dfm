@@ -105,9 +105,9 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     object lblEnableStoreTicketPosting: TLabel
       Left = 310
       Top = 649
-      Width = 186
+      Width = 201
       Height = 44
-      Caption = 'Enable Store Ticket Posting'
+      Caption = 'POS Receipt Posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
@@ -484,7 +484,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object cbEnableStoreTicketPosting: TCheckBox
       Left = 558
-      Top = 664
+      Top = 655
       Width = 11
       Height = 17
       TabOrder = 20

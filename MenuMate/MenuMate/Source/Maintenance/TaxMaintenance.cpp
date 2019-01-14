@@ -39,7 +39,7 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
     cbCalculateServiceChargePreDiscount->Checked  = !TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount && usingServiceCharge;
     cbCalculateServiceChargePostDiscount->Checked = TGlobalSettings::Instance().ReCalculateServiceChargePostDiscount && usingServiceCharge;
     cbApplyTaxToServiceCharge->Checked            = TGlobalSettings::Instance().ApplyServiceChargeTax;
-
+    cbPostsaletofiscal->Checked                   = TGlobalSettings::Instance().IsFiscalPostingDisable;
     if(cbCalculateServiceChargePostDiscount->Checked)
     {
         cbCalculateServiceChargePreDiscount->Checked = false;
@@ -408,5 +408,14 @@ void TfrmTaxMaintenance::SyncTaxSettingWithWeb()
      {
         frmSelectDish->SyncTaxSetting();
      }
+}
+//-------------------------------------------------------------------------------
+void __fastcall TfrmTaxMaintenance::cbPostRoomSaleToFiscalClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().IsFiscalPostingDisable = cbPostsaletofiscal->Checked;
+    Database::TDBTransaction DBTransaction(DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsFiscalPostingDisable,TGlobalSettings::Instance().IsFiscalPostingDisable);
+    DBTransaction.Commit();
 }
 

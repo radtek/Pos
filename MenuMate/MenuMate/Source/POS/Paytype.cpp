@@ -1177,9 +1177,39 @@ void __fastcall TfrmPaymentType::FormClose(TObject *Sender, TCloseAction &Action
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPayment(TPayment *Payment)
 {
+    bool canProceed = true;
+    if(TGlobalSettings::Instance().IsFiscalPostingDisable && (TGlobalSettings::Instance().UseItalyFiscalPrinter ||
+       TGlobalSettings::Instance().IsFiscalStorageEnabled || TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled))
+    {
+        for(int i= 0; i<CurrentTransaction.PaymentsCount(); i++)
+        {
+            TPayment *paymentLocal = CurrentTransaction.PaymentGet(i);
+            if(Payment->GetPaymentAttribute(ePayTypeRoomInterface))
+            {
+
+                if(!paymentLocal->GetPaymentAttribute(ePayTypeRoomInterface) && paymentLocal->GetPayTendered() != 0)
+                {
+                    MessageBox("You can not select this payment type.\rPlease pay completely using non Room Charge.","Error",MB_OK+MB_ICONERROR);
+                    canProceed = false;
+                    break;
+                }
+            }
+            else
+            {
+                    if(paymentLocal->GetPaymentAttribute(ePayTypeRoomInterface) && paymentLocal->GetPayTendered() != 0)
+                    {
+                        MessageBox("You can not select this payment type.\rPlease pay completely using Room Charge.","Error",MB_OK+MB_ICONERROR);
+                        canProceed = false;
+                        break;
+                    }
+                }
+            }
+        }
+    //}
+    if(!canProceed)
+        return;
 	if (SecurePaymentAccess(Payment))
 	{
-
 		bool proceed = true;
 		if (Payment->GetPaymentAttribute(ePayTypeChargeToAccount))
 		{
@@ -1424,6 +1454,8 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
 
         if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
+          
+
             bool GuestMasterOk = true;
             AnsiString TabName = "";
             int RoomNumber = 0;
@@ -1557,6 +1589,7 @@ void TfrmPaymentType::ProcessCreditPayment(TPayment *Payment)
                                 CurrentTransaction.Phoenix.AccountName = CurrentTransaction.Phoenix.FirstName + " " +
                                                                          CurrentTransaction.Phoenix.LastName;
                                 CurrentTransaction.Phoenix.RoomNumber = ((TItemComplete*)CurrentTransaction.Orders->Items[orderIndex])->RoomNo;
+
 //                                CurrentTransaction.WasSavedSales = true;
                                 break;
                             }
@@ -1677,6 +1710,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         Payment->AdjustmentReason = Payment->Name;
         Payment->SetAdjustment(wrkPayAmount);
         ShowPaymentTotals();
+
     }
     else
     {
@@ -1968,6 +2002,9 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
 
         if (Payment->GetPaymentAttribute(ePayTypeRoomInterface))
         {
+
+
+
             bool GuestMasterOk = true;
             AnsiString TabName = "";
             int RoomNumber = 0;
@@ -2167,6 +2204,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
                     }
                 }
             }
+
         }
 
         if (Payment->GetPaymentAttribute(ePayTypeRMSInterface))
@@ -2215,6 +2253,7 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
         else
         {
+
             ShowPaymentTotals(false);
         }
 
@@ -2236,9 +2275,10 @@ void TfrmPaymentType::ProcessNormalPayment(TPayment *Payment)
         }
         else
         {
-            if (CurrentTransaction.Money.GrandTotal != 0 || CurrentTransaction.Orders->Count > 0)
+            if (CurrentTransaction.Money.GrandTotal != 0 || CurrentTransaction.Orders->Count > 0  )
             {
                 ModalResult = mrOk;
+               
             }
             else if (CurrentTransaction.Money.Change != 0 && CurrentTransaction.Money.PaymentCashOut != 0)
             { // Cashout.
@@ -2753,6 +2793,8 @@ bool TfrmPaymentType::ValidateWalletAccount(TPayment *Payment)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmPaymentType::BtnPaymentAlt(TPayment *Payment)
 {
+
+
 	if (SecurePaymentAccess(Payment))
 	{
 		if(Payment->GetPaymentAttribute(ePayTypePoints) && !Payment->RefundPoints)

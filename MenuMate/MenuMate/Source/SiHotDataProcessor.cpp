@@ -970,8 +970,6 @@ void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStri
 //----------------------------------------------------------------------------
 void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TStoreTicket &_storeTicket, AnsiString receiptData)
 {
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    DBTransaction.StartTransaction();
     try
     {
     _storeTicket.TransNo       =     GetTransNumber();
@@ -983,13 +981,9 @@ void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TSt
     _storeTicket.Document      =     receiptData;
     _storeTicket.IPAddress     =     TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
     _storeTicket.PortNumber    =     TDeviceRealTerminal::Instance().BasePMS->TCPPort;
-
-
-    DBTransaction.Commit();
     }
     catch(Exception &Exc)
     {
-        DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }

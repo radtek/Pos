@@ -226,6 +226,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
             TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmApplyRoundingTax,              TGlobalSettings::Instance().ApplyRoundingTax);
             TManagerVariable::Instance().GetProfileInt( DBTransaction, GlobalProfileKey, vmRoundingTaxProfileKey,         TGlobalSettings::Instance().RoundingTaxProfileKey);
             TManagerVariable::Instance().GetProfileNum( DBTransaction, GlobalProfileKey, vmRoundingTaxRate,               TGlobalSettings::Instance().RoundingTaxRate);
+            TManagerVariable::Instance().GetProfileBool(DBTransaction, GlobalProfileKey, vmIsAustriaFiscalCommissioned, TGlobalSettings::Instance().IsAustriaFiscalCommissioned);
         }
 
         TGlobalSettings::Instance().XeroMachineName	= TManagerVariable::Instance().GetStr(DBTransaction, vmXeroMachineName,"");
@@ -448,8 +449,10 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().EnableItemDetailsPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableItemDetailsPosting, false);
         TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
         TGlobalSettings::Instance().HideFreeSides = TManagerVariable::Instance().GetBool(DBTransaction, vmHideFreeSides, false);
-        TGlobalSettings::Instance().EnableStoreTicketPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableStoreTicketPosting, false);
-}
+        TGlobalSettings::Instance().IsFiscalPostingDisable = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFiscalPostingDisable, false);
+		TGlobalSettings::Instance().EnableStoreTicketPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableStoreTicketPosting, false);
+
+        }
 
 void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransaction)
 {

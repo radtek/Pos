@@ -210,6 +210,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbNoTaxToSihot->Enabled = false;
         cbEnableItemDetailsPosting->Enabled = false;
         cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -314,6 +315,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbNoTaxToSihot->Enabled = false;
         cbEnableItemDetailsPosting->Enabled = false;
         cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
     }
 	tbRoundingCategory->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
