@@ -313,12 +313,8 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\PaymentSenseIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\MewsIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AustriaFiscalIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\BouncyCastle.Crypto.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion; 
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.TwoDCode.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.Utilities.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\zxing.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\zxing.presentation.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 
 ; Menumate Customer Display
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe";   DestDir: "{app}\Customer Display" ; Flags:ignoreversion;
