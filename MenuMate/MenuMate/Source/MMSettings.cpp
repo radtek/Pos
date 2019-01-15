@@ -450,6 +450,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsTableLockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsTableLockEnabled, false);
         TGlobalSettings::Instance().HideFreeSides = TManagerVariable::Instance().GetBool(DBTransaction, vmHideFreeSides, false);
         TGlobalSettings::Instance().IsFiscalPostingDisable = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFiscalPostingDisable, false);
+        TGlobalSettings::Instance().IsRegistrationVerified = TManagerVariable::Instance().GetBool(DBTransaction, vmIsRegistrationVerified, false);
 
         }
 

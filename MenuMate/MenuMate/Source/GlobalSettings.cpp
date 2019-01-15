@@ -460,5 +460,6 @@ TGlobalSettings::TGlobalSettings()
     HideFreeSides = false;
     IsAustriaFiscalCommissioned = false;
     IsFiscalPostingDisable = false;
+    IsRegistrationVerified = false;
 }
 

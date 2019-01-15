@@ -555,6 +555,7 @@ public:
     bool HideFreeSides;
     bool IsAustriaFiscalCommissioned;
     bool IsFiscalPostingDisable;
+    bool IsRegistrationVerified;
 };
 
 #endif
