@@ -613,8 +613,9 @@ void __fastcall TfrmSetup::tbtnReconfigMMDBMouseClick(TObject *Sender)
 
 void __fastcall TfrmSetup::tbtnReconfigMemDBMouseClick(TObject *Sender)
 {
-   if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-   {
+//   if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//   {
+
        AnsiString OldIP 	= TGlobalSettings::Instance().MembershipDatabaseIP;
        AnsiString OldDB 	= TGlobalSettings::Instance().MembershipDatabasePath;
        int OldPort			= TGlobalSettings::Instance().MembershipDatabasePort;
@@ -630,11 +631,11 @@ void __fastcall TfrmSetup::tbtnReconfigMemDBMouseClick(TObject *Sender)
            if(!Proceed) Application->Terminate();
        }
        tbtnIPSettingsRefreshMouseClick(Sender);
-   }
-   else
-   {
-		MessageBox("System Not Registered for membership", "Not Registered",MB_OK + MB_ICONERROR);
-   }
+//   }
+//   else
+//   {
+//		MessageBox("System Not Registered for membership", "Not Registered",MB_OK + MB_ICONERROR);
+//   }
 }
 //---------------------------------------------------------------------------
 

@@ -48,10 +48,14 @@ void __fastcall TfrmSmartCardConfiguration::TouchBtn2MouseClick(
 void __fastcall TfrmSmartCardConfiguration::FormShow(TObject *Sender)
 {
 	FormResize(NULL);
-   tbtnFormatCard->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
-   tbtnRestoreCard->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
-   tbtnExploreCard->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
-   tbtnReassignCard->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
+   tbtnFormatCard->Enabled = true;
+//   static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
+   tbtnRestoreCard->Enabled =  true;
+//   static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
+   tbtnExploreCard->Enabled =  true;
+//   static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
+   tbtnReassignCard->Enabled =  true;
+//   static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]);
 }
 //---------------------------------------------------------------------------
 

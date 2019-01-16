@@ -4238,8 +4238,8 @@ void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message)
 		ApplyDiscount(ManagerDiscount->GetDiscount(CurrentTransaction.DBTransaction, Data.SubString(1, 80)),
 		TDeviceRealTerminal::Instance().User.ContactKey);
 	}
-    else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-    {
+//    else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//    {
         if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate
            && TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
@@ -4258,7 +4258,7 @@ void __fastcall TfrmPaymentType::CardSwipe(Messages::TMessage& Message)
                 MessageBox("Account Blocked " + TempUserInfo.Name + " " + TempUserInfo.AccountInfo, "Account Blocked", MB_OK + MB_ICONINFORMATION);
             }
         }
-    }
+//    }
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::GetMemberByBarcode(Database::TDBTransaction &DBTransaction,AnsiString Barcode)
@@ -4650,11 +4650,11 @@ void TfrmPaymentType::OnSmartCardInserted(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::OnSmartCardRemoved(TSystemEvents *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//	{
 		RemoveMembership();
 		TDeviceRealTerminal::Instance().ManagerMembership->EndMemberTransaction();
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 void TfrmPaymentType::makeLogFile(UnicodeString str)

@@ -493,15 +493,15 @@ void __fastcall TfrmPOSMain::tbTableManagerMouseClick(TObject *Sender)
 	Item1.CloseSelection = true;
 	SelectionForm->Items.push_back(Item1);
 
-	if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
+//	{
 		TVerticalSelection Item2;
 		Item2.Title = "Rooms";
 		Item2.Properties["Action"] = IntToStr(2);
 		Item2.Properties["Color"] = IntToStr(clNavy);
 		Item2.CloseSelection = true;
 		SelectionForm->Items.push_back(Item2);
-	}
+//	}
 
 	SelectionForm->ShowModal();
 	TVerticalSelection SelectedItem;

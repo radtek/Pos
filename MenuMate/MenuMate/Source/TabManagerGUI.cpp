@@ -81,8 +81,10 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	btnShowNormalTabs->Caption = "Tabs";
 	btnStaffTabs->Caption = "Staff Tabs";
 
-	btnMemberTabs->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
-	btnMemberTabs->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	btnMemberTabs->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	btnMemberTabs->Visible = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 	btnShowNormalTabs->Enabled = TGlobalSettings::Instance().TabsEnabled;
 	btnShowNormalTabs->Visible = TGlobalSettings::Instance().TabsEnabled;
 	btnManInvoice->Enabled = false;
@@ -90,17 +92,17 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	lbePartyName->Caption = "";
 	btnChangeDetails->Caption = "Change Details";
 
-	if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]) && !static_cast <bool>
-				(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
-	{
+//	if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]) && !static_cast <bool>
+//				(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
+//	{
 		btnAddNewTab->Enabled = true;
 		btnChangeDetails->Enabled = true;
-	}
-	else
-	{
-		btnAddNewTab->Enabled = false;
-		btnChangeDetails->Enabled = false;
-	}
+//	}
+//	else
+//	{
+//		btnAddNewTab->Enabled = false;
+//		btnChangeDetails->Enabled = false;
+//	}
 
 	SelectedTable = 0;
 	SelectedSeat = 0;
@@ -142,8 +144,8 @@ void __fastcall TfrmTabManager::btnShowNormalTabsClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	{
 		TempUserInfo.Clear();
 		eMemberSource MemberSource;
 		Database::TDBTransaction DBTransaction(DBControl);
@@ -159,17 +161,17 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 			SelectedSeat = 0;
 			SelectedTab = 0;
 			SelectedRoomNo = 0;
-			if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-						&& !static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
-			{
+//			if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//						&& !static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
+//			{
 				btnAddNewTab->Enabled = true;
 				btnChangeDetails->Enabled = true;
-			}
-			else
-			{
-				btnAddNewTab->Enabled = false;
-				btnChangeDetails->Enabled = false;
-			}
+//			}
+//			else
+//			{
+//				btnAddNewTab->Enabled = false;
+//				btnChangeDetails->Enabled = false;
+//			}
 
 			btnManInvoice->Enabled = true;
 			btnAddNewTab->Caption = "Create Member";
@@ -187,11 +189,11 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 		{
 			lbePartyName->Caption = "Access Declined";
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 
 // ---------------------------------------------------------------------------

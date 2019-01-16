@@ -861,22 +861,22 @@ bool start_with_caps)
 
 void __fastcall TfrmGeneralMaintenance::cbSaleAndMakeTimesClick(TObject *Sender)
 {
-	if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
+//	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
 		DBTransaction.Commit();
-	}
-	else if (cbSaleAndMakeTimes->Checked)
-	{
-		cbSaleAndMakeTimes->Checked = false;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
-		DBTransaction.Commit();
-		MessageBox("The 'Sale' and 'Make Time' tracking module has not been registered", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else if (cbSaleAndMakeTimes->Checked)
+//	{
+//		cbSaleAndMakeTimes->Checked = false;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
+//		DBTransaction.Commit();
+//		MessageBox("The 'Sale' and 'Make Time' tracking module has not been registered", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 //---------------------------------------------------------------------------
 

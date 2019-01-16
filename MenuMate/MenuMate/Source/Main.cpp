@@ -241,17 +241,17 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		bool Registered = false;
 		UnicodeString pRegisteredName = "";
 		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
-		if(!Registered)
-		{
-			frmDBMod->SetRegCaption("Unregistered");
-			lbeRegistration->Caption = pRegisteredName;
-		}
-		else
-		{
+//		if(!Registered)
+//		{
+//			frmDBMod->SetRegCaption("Unregistered");
+//			lbeRegistration->Caption = pRegisteredName;
+//		}
+//		else
+//		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
 			frmDBMod->SetRegCaption(pRegisteredName);
 			lbeRegistration->Caption = pRegisteredName;
-		}
+//		}
 
 		frmDBMod->SetCaption("Updating Clock...");
 		TDeviceRealTerminal::Instance().UpdateClockSyncInfo();
@@ -288,34 +288,35 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Tabs Enabled");
 		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-		{
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Members Mod Registered");
-		}
+//		}
 		frmDBMod->SetCaption("Loading Rooms Interface...");
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
-		{
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
+//		{
 			TRooms::Instance().Initialise(DBBootTransaction);
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Rooms Mod Registered");
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
-		{
+//		}
+//		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
+//		{
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
             ReFormatIpToUrl();
             TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eBoot);
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])
-		{
+//		}
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])
+//		{
 			TDeviceRealTerminal::Instance().KitchenMod->Enabled = true;
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Kitchen Mod Registered");
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
-		{
+//		}
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
+//		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Sale Time Mod Registered");
-		}
-		bool EftPosRegiestered = TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
+//		}
+		bool EftPosRegiestered = true;
+//        TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
         bool IsSyncroEftPosEnabled = false;
 
 		if(EftPosRegiestered)
@@ -384,13 +385,13 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             EftPos = new TEftPosSyncro();
 			EftPos->Initialise();
         }
-        TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
-		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
-		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-		{   	
+//        TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
+//		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
+//		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+//		{
 			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
-			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
-		}
+//			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
+//		}
 
         //Posting CSV at specified IP
         if(TGlobalSettings::Instance().IsEnabledPeachTree)

@@ -254,7 +254,8 @@ void __fastcall TfrmSelectDish::FormCreate(TObject *Sender)
 	CurrentServingCourse.Reset(TDeviceRealTerminal::Instance().Menus->DefaultServingCourse);
 	tbtnSelectTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
 	tbtnSelectTable->Visible = TGlobalSettings::Instance().TablesEnabled;
-	tbtnMembership->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	tbtnMembership->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 	lbeTotalCost->Caption = CurrToStrF(0, ffNumber, CurrencyDecimals) + " ";
 	lbeChange->Caption    = CurrToStrF(0, ffNumber, CurrencyDecimals) + " ";
 	TSeatOrders *Temp = new TSeatOrders(0);
@@ -386,8 +387,8 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
         if(TGlobalSettings::Instance().EnablePhoneOrders)
         TDeviceRealTerminal::Instance().ManagerMembership->SetPhoneOrderFlowMemberSelection(true);
 
-        if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-        {
+//        if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//        {
             // If there is a card inserted go stright to editing that user.
             if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
             {
@@ -428,9 +429,9 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
                 CustAddress = TempUserInfo.LocationAddress;
                 frmProcessWebOrder->MemberInfo = TempUserInfo;
             }
-        }
-        else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        {
+//        }
+//        else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        {
             TMMContactInfo TempUserInfo;
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -448,11 +449,11 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
             frmProcessWebOrder->MemberInfo = TempUserInfo;
             //MM-1647: Ask for chit if it is enabled for every order.
             NagUserToSelectChit();
-        }
-        else
-        {
-            MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-        }
+//        }
+//        else
+//        {
+//            MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//        }
     }
    if(ChitNumber.PromptForPickUpDeliveryTime && IsChitPromptFormActive)
     {
@@ -4817,8 +4818,8 @@ void __fastcall TfrmSelectDish::tbtnRunProgramClick()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnLuckyMemberClick()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	{
 		TMMContactInfo LuckyMember;
 		UnicodeString LocationFilter = "";
 		if (TGlobalSettings::Instance().LuckyDrawByLocationOnly)
@@ -4839,11 +4840,11 @@ void __fastcall TfrmSelectDish::tbtnLuckyMemberClick()
 		{
 			MessageBox("The Lucky Member is\rName : " + LuckyMember.Name + "\rKnown As : " + LuckyMember.Alias + "\rNo. " + LuckyMember.MembershipNumber, "Lucky Member", MB_OK + MB_ICONINFORMATION);
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnCallAwayClick()
@@ -6096,8 +6097,10 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		}
 
 
-        if (ButtonsSet.Contains(eBTDChangeBarcode) &&
-            TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]  &&
+        if (ButtonsSet.Contains(eBTDChangeBarcode)                                                    /*
+                                                       &&
+                                                                   TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]
+                                                   */  &&
             TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate  &&
             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
 		{
@@ -8571,8 +8574,8 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
         if(TGlobalSettings::Instance().EnablePhoneOrders)
            TDeviceRealTerminal::Instance().ManagerMembership->SetPhoneOrderFlowMemberSelection(true);
 
-     	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-    	{
+//     	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//    	{
 	 	// If there is a card inserted go stright to editing that user.
 	    	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	    	{
@@ -8609,9 +8612,10 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 		    	DBTransaction.Commit();
 
 	    	}
-	    }
-        	else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        	{
+//	    }
+//        	else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        	{
+
 	        	TMMContactInfo TempUserInfo;
 	        	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	        	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -8661,11 +8665,11 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                     AutoLogOut();
                 }
                 NagUserToSelectChit();
-            }
-        	else
-            {
-                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-            }
+//            }
+//        	else
+//            {
+//                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//            }
     }
 }
 // ---------------------------------------------------------------------------
@@ -10077,8 +10081,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                    case TabMember:
 	                        {   if(!TGlobalSettings::Instance().IsThorlinkSelected)
 	                            {
-	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	                            {
+//	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	                            {
 	                                TMMContactInfo TempUserInfo;
 	                                if (SeatOrders[0]->Orders->AppliedMembership.ContactKey != 0)
 	                                {
@@ -10167,11 +10171,11 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                        }
 	                                    }
 	                                }
-	                            }
-	                            else
-	                            {
-	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	                            }
+//	                            }
+//	                            else
+//	                            {
+//	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	                            }
 	                        }
 	                        else
 	                        {
@@ -10276,8 +10280,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                        {
 	                            if(!TGlobalSettings::Instance().IsThorlinkSelected)
 	                            {
-	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	                            {
+//	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	                            {
 	                                TMMContactInfo TempUserInfo;
 	                                eMemberSource MemberSource;
 	                                std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
@@ -10346,11 +10350,11 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                            {
 	                                Retval = mrAbort;
 	                            }
-							}
-	                            else
-	                            {
-	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	                            }
+//							}
+//	                            else
+//	                            {
+//	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	                            }
 	                         }
 	                        else
 	                        {
@@ -14980,8 +14984,8 @@ void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//	{
 		for (int i = 0; i < lbDisplay->Items->Count; i++)
 		{
 			TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[i];
@@ -14995,14 +14999,16 @@ void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
 		}
 
 		ignore_preloaded_card = false;
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
 {
     try
     {
-        if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+        if (            /*
+                bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+            */
                  TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
         {
             MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);

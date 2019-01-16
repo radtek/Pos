@@ -111,10 +111,12 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	Height = Screen->Height;
 	btnChangeRooms->Enabled = TRooms::Instance().Enabled;
 	btnChangeTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
-	btnLoyalty->Enabled = static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"]) &&
-	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
+	btnLoyalty->Enabled =  true;
+//    static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"]) &&
+//	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
 	tbtnLocations->Caption  = "Location \r" + TDeviceRealTerminal::Instance().ID.Location;
-	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
+	tbPHSInterface->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
         if(TGlobalSettings::Instance().PMSType == SiHot)
@@ -127,7 +129,9 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
 	}
-	else if(!TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
+	else if(            /*
+                !TDeviceRealTerminal::Instance().BasePMS->Enabled &&
+            */ tbPHSInterface->Enabled)
 	{
 		tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
         tbPHSInterface->ButtonColor = clRed;
@@ -136,15 +140,16 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	if (TGlobalSettings::Instance().ReservationsEnabled)
 	btnChangeTable->Caption = "Edit Tables";
 
-	tbtnSmartCards->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Registered"]);
-    if(TDeviceRealTerminal::Instance().Modules.Status[eAccounting]["Registered"] )
-    {
+	tbtnSmartCards->Enabled =  true;
+//    static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Registered"]);
+//    if(TDeviceRealTerminal::Instance().Modules.Status[eAccounting]["Registered"] )
+//    {
         btnAccountingInterface->Enabled=true;
-    }
-    else
-    {
-        btnAccountingInterface->Enabled=false;
-    }
+//    }
+//    else
+//    {
+//        btnAccountingInterface->Enabled=false;
+//    }
 
 	Pages->ActivePage = tsMaintenance;
 	RedrawButtons(tbtnMaintenance);
@@ -250,8 +255,8 @@ void __fastcall TfrmMaintain::btnLoyaltyClick(TObject *Sender)
 	{
 		TMMContactInfo ContactInfo;
 
-		if(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-		{
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//		{
 			//If there is a card inserted go stright to editing that user.
 			if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 			{
@@ -277,20 +282,20 @@ void __fastcall TfrmMaintain::btnLoyaltyClick(TObject *Sender)
 			{
 				MessageBox("No Smart Card inserted.", "Error", MB_OK + MB_ICONERROR);
 			}
-		}
-		else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-		{
+//		}
+//		else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
 			eMemberSource MemberSource;
 			TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction,ContactInfo,MemberSource);
 			DBTransaction.Commit();
-		}
-		else
-		{
-			MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-		}
+//		}
+//		else
+//		{
+//			MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -661,13 +666,13 @@ void __fastcall TfrmMaintain::TouchBtn1MouseClick(TObject *Sender)
 void __fastcall TfrmMaintain::ResetWebMate()
 {
 	TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
-	TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
+//	TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 {
-	if( TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-	{
+//	if( TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+//	{
 		if(TGlobalSettings::Instance().WebMateEnabled )
 		{
 			tchbtnWebMate->ButtonColor = clGreen;
@@ -680,12 +685,12 @@ void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 
 			tchbtnWebMate->Caption = "WebMate \r[Disabled]";
 		}
-	}
-	else
-	{
-		tchbtnWebMate->ButtonColor = clRed;
-		tchbtnWebMate->Caption = "WebMate \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		tchbtnWebMate->ButtonColor = clRed;
+//		tchbtnWebMate->Caption = "WebMate \r[Unregistered]";
+//	}
 
 }
 //---------------------------------------------------------------------------
@@ -724,8 +729,8 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 const SELDIRHELP = 1000;
 void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 {
-	if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+//	{
 		TMMContactInfo TempUserInfo;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -1031,11 +1036,11 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 		{
 			MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 		}
-	}
-	else
-	{
-		MessageBox("You are not registered for WebMate", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("You are not registered for WebMate", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnGUIMouseClick(TObject *Sender)
@@ -1115,8 +1120,8 @@ void __fastcall TfrmMaintain::WriteOffMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		TMMContactInfo TempUserInfo;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -1356,13 +1361,13 @@ void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 		{
 			MessageBox("You are not registered for Floor Plan", "Error", MB_OK + MB_ICONERROR);
 		}
-	}
+//	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshReservationBtnColor()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().ReservationsEnabled)
 		{
 			TouchBtnReservations->ButtonColor = clGreen;
@@ -1375,12 +1380,12 @@ void __fastcall TfrmMaintain::RefreshReservationBtnColor()
 
 			TouchBtnReservations->Caption = "Floor Plan \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnReservations->ButtonColor = clRed;
-		TouchBtnReservations->Caption = "Floor Plan \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnReservations->ButtonColor = clRed;
+//		TouchBtnReservations->Caption = "Floor Plan \r[Unregistered]";
+//	}
 
 }
 //---------------------------------------------------------------------------
@@ -2457,8 +2462,8 @@ bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransa
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().BarExchangeEnabled)
 		{
 			TouchBtnBarExchange->ButtonColor = clGreen;
@@ -2471,18 +2476,18 @@ void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 
 			TouchBtnBarExchange->Caption = "Bar Exchange \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnBarExchange->ButtonColor = clRed;
-		TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnBarExchange->ButtonColor = clRed;
+//		TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
+//	}
 }
 //--------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshRunRateBoard()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().IsRunRateBoardEnabled)
 		{
 			TouchBtnRunRateBoard->ButtonColor = clGreen;
@@ -2495,12 +2500,12 @@ void __fastcall TfrmMaintain::RefreshRunRateBoard()
 
 			TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnRunRateBoard->ButtonColor = clRed;
-		TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnRunRateBoard->ButtonColor = clRed;
+//		TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Unregistered]";
+//	}
 }
 
 void __fastcall TfrmMaintain::RefreshDrinkCommandButtonColor()
@@ -2992,7 +2997,7 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
     Item1.Title = "Panasonic ";
     Item1.Properties["Action"] = IntToStr(1);
     Item1.Properties["Color"] = IntToStr(clGreen);
-    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+//    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     Item1.CloseSelection = true;
     SelectionForm1->Items.push_back(Item1);
 

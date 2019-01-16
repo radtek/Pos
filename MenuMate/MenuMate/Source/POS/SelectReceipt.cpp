@@ -294,11 +294,11 @@ void __fastcall TfrmSelectReceipt::btnSearchMouseClick(TObject *Sender)
 	Item.Title = "Receipt No.";	Item.Properties["RefKey"] = 0; Item.Properties["Color"] = clInfoBk; Item.CloseSelection = true;
 	SelectionForm->Items.push_back(Item);
 
-	if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	{
 		Item.Title = "Member Receipts";	Item.Properties["RefKey"] = -1; Item.Properties["Color"] = clInfoBk; Item.CloseSelection = true;
 		SelectionForm->Items.push_back(Item);
-	}
+//	}
 
 	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	DBTransaction.StartTransaction();

@@ -2108,8 +2108,8 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
     {
         btnApplyMembership->ButtonColor = clPurple;    //mm-5145
 
-        if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        {
+//        if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        {
             if (SelectedTabs.empty() && CurrentDisplayMode == eTabs && CurrentTabType == TabMember)
             {
                 MessageBox("No Tabs selected to Apply!", "Error", MB_OK + MB_ICONERROR);
@@ -2178,11 +2178,11 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
 				}
 			}
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 
    }
 }
@@ -4499,8 +4499,9 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			{
                 if(!TGlobalSettings::Instance().IsThorlinkSelected )
                 {
-                    if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-                    {
+                   MessageBox("Tt","Thor",MB_OK);
+//                    if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//                    {
                         CurrentDisplayMode = eTabs;
                         CurrentTabType = TabMember;
                         CurrentInvoiceKey = 0;
@@ -4534,11 +4535,11 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                          * persistent while viewing the "Member" zone.
                     */
                         ResetForm();
-				}
-				else
-				{
-					MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-				}
+//				}
+//				else
+//				{
+//					MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//				}
                 }
                 else
                 {
@@ -5134,8 +5135,8 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::OnSmartCardRemoved(TSystemEvents *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
@@ -5143,7 +5144,7 @@ void TfrmBillGroup::OnSmartCardRemoved(TSystemEvents *Sender)
 		DBTransaction.Commit();
 		TDeviceRealTerminal::Instance().ManagerMembership->EndMemberTransaction();
         ShowReceipt();
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 int TfrmBillGroup::extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction)
