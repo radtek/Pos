@@ -5,32 +5,32 @@
 //---------------------------------------------------------------------------
 enum eEFTPOS
 {
-eEftpostNZ, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom, eDPSPaymentExpress, eEFTPOSSmartpay,
+eEftpostNZ = 1, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom, eDPSPaymentExpress, eEFTPOSSmartpay,
 eEFTPOSSmartConnect, eEFTPOSAdyen, eEFTPOSPaymentSense
 };
 //------------------------------------------------------------------------------
 enum eLoyalty
 {
-eMenumateLoyaltyLocal, eMenumateLoyaltyLocalSubscription, eMenumateLoyaltyMateWeb, eMenuMateClubMembership, eEBetGamingMembership, eCasinoExternalMembership
+eMenumateLoyaltyLocal = 1, eMenumateLoyaltyLocalSubscription, eMenumateLoyaltyMateWeb, eMenuMateClubMembership, eEBetGamingMembership, eCasinoExternalMembership
 };
 //------------------------------------------------------------------------------
 enum eAccounting
 {
-eXero, eMYOB, ePeachtree
+eXero = 1, eMYOB, ePeachtree
 };
 //------------------------------------------------------------------------------
 enum ePropertyManagement
 {
-eMotelMate, eSihot, eOracle, eMews
+eMotelMate = 1, eSihot, eOracle, eMews
 };
 //------------------------------------------------------------------------------
 enum eRooms
 {
-eStrait, eNewBook
+eStrait = 1, eNewBook
 };
 //------------------------------------------------------------------------------
 enum eFiscal
 {
-ePOSPlus, eFiscalPrinter, eAustriaPrinter
+ePOSPlus = 1, eFiscalPrinter, eAustriaPrinter
 };
 #endif
