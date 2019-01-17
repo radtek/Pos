@@ -556,7 +556,6 @@ public:
     bool IsAustriaFiscalCommissioned;
     bool IsFiscalPostingDisable;
     bool EnableStoreTicketPosting;
-    bool PMSPostRequired;
     bool PMSPostSuccessful;
 };
 

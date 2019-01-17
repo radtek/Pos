@@ -283,8 +283,7 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
-{
-    TGlobalSettings::Instance().PMSPostRequired = true;
+{   
     bool roomChargeSelected = false;
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
     {

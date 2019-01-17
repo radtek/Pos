@@ -461,7 +461,6 @@ TGlobalSettings::TGlobalSettings()
     IsAustriaFiscalCommissioned = false;
     IsFiscalPostingDisable = false;
     EnableStoreTicketPosting = false;
-    PMSPostRequired = false;
     PMSPostSuccessful = false;
 }
 

@@ -11,6 +11,7 @@
 #include "Invoice.h"
 #include "ReceiptManager.h"
 //#include "ManagerPanasonic.h"
+#include "ManagerAustriaFiscal.h"
 
 //---------------------------------------------------------------------------
 
@@ -52,10 +53,21 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 		}
 
 		transactionRecovery.ClearRecoveryInfo();
+        //Calling Post Ticket method
+        if(TGlobalSettings::Instance().EnableStoreTicketPosting && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().PMSPostSuccessful)
+        {
+            std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
+            receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
+            receiptStream->Position = 0;
+            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(MasterPaymentTransaction.InvoiceNumber, ReceiptData);
+        }
 	}
 
 	if (PaymentComplete)
 	{
+    	// once the receipt details are in the database, clear the archived receipt in memory
+	    _clearArchivedReceipt();
 		// all the payments are done. hence print the receipt and remove any empty tabs using MasterTransaction
 		PerformPostTransactionOperations( MasterPaymentTransaction );
 	}
@@ -70,6 +82,16 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 	Reset(MasterPaymentTransaction);
 	TDeviceRealTerminal::Instance().ProcessingController.Pop();
 	OnAfterTransactionComplete.Occured();
+    //Unsetting the Global settings used for Store Ticket Post
+    TGlobalSettings::Instance().PMSPostSuccessful = false;
+    if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+        managerAustria->UnsetPostingFlag();
+    }
 
 //    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled && PaymentComplete)
 //    {
@@ -305,19 +327,6 @@ void TMMInvoicePaymentSystem::_processMultipleInvoiceSplitPayTransaction( TPayme
                 }
          }
 
-          //  MasterPaymentTransaction.RequestPartialPayment = MasterPaymentTransaction.SplitMoney.PaymentAmount;
-          //  MasterPaymentTransaction.Money.Recalc(MasterPaymentTransaction);
-
-			/*TDBOrder::CloneOrdersPartialPaymentDifference(
-									MasterPaymentTransaction.DBTransaction,
-									MasterPaymentTransaction.Orders,
-									ClonedOrdersList.get(),
-									SplitPercentage,
-									MasterPaymentTransaction.SplitMoney.PaymentAmount);*/
-		//}
-
-		//MasterPaymentTransaction.Money.Recalc(MasterPaymentTransaction);
-
 		TManagerPatron::Instance().SetDefaultPatrons(
 								MasterPaymentTransaction.DBTransaction,
 								MasterPaymentTransaction.Patrons,
@@ -473,7 +482,7 @@ void TMMInvoicePaymentSystem::_performPostInvoiceTransactionOperations( TPayment
 	AdjustCredit(paymentTransaction);
 
 	// once the receipt details are in the database, clear the archived receipt in memory
-	_clearArchivedReceipt();
+   //	_clearArchivedReceipt();
 }
 //---------------------------------------------------------------------------
 
