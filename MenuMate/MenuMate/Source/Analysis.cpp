@@ -8779,7 +8779,8 @@ UnicodeString TfrmAnalysis::CheckRegistered()
     UnicodeString emailSubject = "Zed Report";
     bool Registered = false;
     UnicodeString pRegisteredName = "";
-    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+//    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    Registered = TGlobalSettings::Instance().IsRegistrationVerified;
     if(Registered)
     {
         emailSubject = pRegisteredName;
