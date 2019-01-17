@@ -240,18 +240,19 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 		bool Registered = false;
 		UnicodeString pRegisteredName = "";
-		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
-//		if(!Registered)
-//		{
-//			frmDBMod->SetRegCaption("Unregistered");
-//			lbeRegistration->Caption = pRegisteredName;
-//		}
-//		else
-//		{
+//		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+        Registered = TGlobalSettings::Instance().IsRegistrationVerified;
+		if(Registered)
+		{
+			frmDBMod->SetRegCaption("Unregistered");
+			lbeRegistration->Caption = pRegisteredName;
+		}
+		else
+		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
 			frmDBMod->SetRegCaption(pRegisteredName);
 			lbeRegistration->Caption = pRegisteredName;
-//		}
+		}
 
 		frmDBMod->SetCaption("Updating Clock...");
 		TDeviceRealTerminal::Instance().UpdateClockSyncInfo();

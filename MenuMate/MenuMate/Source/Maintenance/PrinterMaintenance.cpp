@@ -257,7 +257,8 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 			   }
 			}
 			cbReceiptPrinter->ItemIndex = PrinterIndex;
-          TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//          TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+         IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
          if(IsDBRegistered)
          {
              memHeader->Text = TGlobalSettings::Instance().Header->Text;
@@ -2853,7 +2854,8 @@ void __fastcall TfrmPrinterMaintenance::memHeaderChange(TObject *Sender)
 void __fastcall TfrmPrinterMaintenance::memHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 
-  TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//  TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+   IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
    if(IsDBRegistered)
    {
        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
@@ -2873,7 +2875,8 @@ void __fastcall TfrmPrinterMaintenance::memHeaderMouseUp(TObject *Sender, TMouse
 
 void __fastcall TfrmPrinterMaintenance::memPHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+    IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
    if(IsDBRegistered)
    {
        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
