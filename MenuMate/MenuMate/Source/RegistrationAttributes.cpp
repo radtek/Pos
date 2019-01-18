@@ -3,7 +3,7 @@
 
 #pragma hdrstop
 
-#include "RegistrationEnums.h"
+#include "RegistrationAttributes.h"
 
 //---------------------------------------------------------------------------
 
