@@ -1641,6 +1641,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UploadRegistrationInfo(TTerminal
         wcfInfo->Name = terminalInfo.Name;
         wcfInfo->SiteCode = terminalInfo.SiteCode;
         wcfInfo->SiteProfileId = terminalInfo.SiteProfileId;
+        wcfInfo->Terminals
 
         if(!taxSettingsInfo.SiteTaxSettings.empty())
         {

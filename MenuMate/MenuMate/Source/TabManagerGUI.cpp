@@ -118,6 +118,7 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	RefreshTabDetails();
 	SetGridColors(tgDiscounts);
 	btnSubsidisedProfile->Enabled = false;
+   	btnTabCredit->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 }
 
 // ---------------------------------------------------------------------------
@@ -172,7 +173,7 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 //				btnAddNewTab->Enabled = false;
 //				btnChangeDetails->Enabled = false;
 //			}
-
+            if(TGlobalSettings::Instance().IsRegistrationVerified)
 			btnManInvoice->Enabled = true;
 			btnAddNewTab->Caption = "Create Member";
 
@@ -438,6 +439,7 @@ void TfrmTabManager::ShowTabsDetails()
 		}
 		DBTransaction.Commit();
 	}
+   
 }
 
 void __fastcall TfrmTabManager::btnCloseClick(TObject *Sender)
@@ -1114,7 +1116,7 @@ void TfrmTabManager::RefreshTabDetails()
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
-		if (CurrentTabType == TabNormal)
+		if (CurrentTabType == TabNormal && TGlobalSettings::Instance().IsRegistrationVerified)
 		{
 			btnSubsidisedProfile->Enabled = true;
 		}
@@ -1200,6 +1202,7 @@ void TfrmTabManager::RefreshTabDetails()
 		}
 		DBTransaction.Commit();
         CustomizeForOnlineOrderingTabs(SelectedTab);
+
 	}
 }
 
@@ -1886,14 +1889,18 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
     }
     else
     {
+     if(TGlobalSettings::Instance().IsRegistrationVerified)
+        {
+          btnSubsidisedProfile->Enabled   = true;
+          btnTabCredit->Enabled           = true;
+        }
         btnChangeDetails->Enabled       = true;
         TouchButton1->Enabled           = true;
-        btnTabCredit->Enabled           = true;
         btnPINTab->Enabled              = true;
         btnLockTab->Enabled             = true;
         btnRemoveTab->Enabled           = true;
-        btnSubsidisedProfile->Enabled   = true;
         btnPermanent->Enabled      = true;
+
     }
 }
 //---------------------------------------------------------------------------

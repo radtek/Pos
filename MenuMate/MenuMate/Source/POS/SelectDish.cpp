@@ -135,7 +135,6 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "OnlineOrderDocketPrinter.h"
-#include "RegistrationAttributes.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -9548,6 +9547,7 @@ void TfrmSelectDish::ResetPOS()
   InitializeChit(); // initialize default chit...
   IsAutoLogOutInSelectDish = true;
   TGlobalSettings::Instance().DiningBal = 0;
+  CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -14418,7 +14418,11 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-
+                if((CurrentDiscount.IsComplimentaryDiscount() || CurrentDiscount.IsNonChargableDiscount()) && !TGlobalSettings::Instance().IsRegistrationVerified)
+                {
+                         MessageBox("You can't apply Complimentary discount until your pos is registered ","Error",MB_OK);
+                         return;
+                }
                if(CurrentDiscount.IsComplimentaryDiscount())
                {
                   TypeOfSale = ComplimentarySale;
@@ -16533,7 +16537,18 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
     }
     return retVal;
 }
-//---------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------
+void TfrmSelectDish::CheckRegisteration()
+{
+    tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+}
+
 void TfrmSelectDish::UploadRegistrationInfo()
 {
     try
