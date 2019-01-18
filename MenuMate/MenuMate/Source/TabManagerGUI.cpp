@@ -438,6 +438,7 @@ void TfrmTabManager::ShowTabsDetails()
 		}
 		DBTransaction.Commit();
 	}
+     CheckRegisterationOfPos();
 }
 
 void __fastcall TfrmTabManager::btnCloseClick(TObject *Sender)
@@ -1200,6 +1201,7 @@ void TfrmTabManager::RefreshTabDetails()
 		}
 		DBTransaction.Commit();
         CustomizeForOnlineOrderingTabs(SelectedTab);
+        CheckRegisterationOfPos();
 	}
 }
 
@@ -1897,4 +1899,10 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
     }
 }
 //---------------------------------------------------------------------------
+ void TfrmTabManager::CheckRegisterationOfPos()
+ {
+       btnSubsidisedProfile->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+       btnTabCredit->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+       btnManInvoice->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 
+ }

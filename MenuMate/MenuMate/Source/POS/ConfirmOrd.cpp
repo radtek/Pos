@@ -68,6 +68,7 @@ void __fastcall TfrmConfirmOrder::FormClose(TObject *Sender,
 void __fastcall TfrmConfirmOrder::FormShow(TObject *Sender)
 {
 	FormResize(Sender);
+    tbSavePrint->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
     lbTabLimit->Visible = (lbTabLimit->Caption == "") ? false : true;
     lbLimitBal->Visible = (lbLimitBal->Caption == "") ? false : true;
 
