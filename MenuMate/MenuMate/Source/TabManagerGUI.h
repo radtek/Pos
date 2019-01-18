@@ -108,7 +108,7 @@ private:	// User declarations
     void RedrawDiscounts();
     AnsiString CheckDiscountApplicability(int discountKey);
     void CustomizeForOnlineOrderingTabs(int SelectedTabs);
-    void CheckRegisterationOfPos();
+
 public:		// User declarations
 
     TTouchBtn *CurrentTabBtn;
