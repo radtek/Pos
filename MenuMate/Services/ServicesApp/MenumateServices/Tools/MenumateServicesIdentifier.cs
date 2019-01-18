@@ -20,6 +20,7 @@ namespace MenumateServices
         AdyenIntegration,
         PaymentSense,
         MewsIntegration,
-        AustriaFiscalIntegration
+        AustriaFiscalIntegration,
+        RegistrationIntegration
     };
 }

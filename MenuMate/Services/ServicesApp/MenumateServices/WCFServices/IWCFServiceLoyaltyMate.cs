@@ -68,7 +68,7 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
 
-        [OperationContract]
-        void UpdateRegistrationDetails(Site siteInfo);
+        //[OperationContract]
+        //void UpdateRegistrationDetails(Site siteInfo);
     }
 }

@@ -115,6 +115,8 @@
     <Compile Include="Model\PointQuery.cs" />
     <Compile Include="Model\PointsDetail.cs" />
     <Compile Include="Model\PointsTransactionViewModel.cs" />
+    <Compile Include="Model\RegistrationModels\ApiLicenseSetting.cs" />
+    <Compile Include="Model\RegistrationModels\ApiTerminalViewModel.cs" />
     <Compile Include="Model\TierLevelViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sevices\ILoyaltymateService.cs" />
