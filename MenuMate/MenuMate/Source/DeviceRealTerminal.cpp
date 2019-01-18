@@ -84,7 +84,8 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
-   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+//   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+   Registered = TGlobalSettings::Instance().IsRegistrationVerified;
    if (Registered)
    {
 	  if (Receipt)
@@ -135,7 +136,8 @@ void TDeviceRealTerminal::SaveZedHeader(TStrings *inZedHeader)
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
-   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+//   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+   Registered = TGlobalSettings::Instance().IsRegistrationVerified;
    if (Registered)
    {
 	  if (Receipt)

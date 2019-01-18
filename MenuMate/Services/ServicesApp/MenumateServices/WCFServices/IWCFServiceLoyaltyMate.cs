@@ -8,6 +8,7 @@ using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.DTO.OnlineOrdering;
 using MenumateServices.DTO.OnlineOrdering.OrderModels;
 using MenumateServices.DTO.OnlineOrdering.MenuModels;
+using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
 {
@@ -66,5 +67,8 @@ namespace MenumateServices.WCFServices
         
         [OperationContract]
         bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
+
+        [OperationContract]
+        void UpdateRegistrationDetails(Site siteInfo);
     }
 }

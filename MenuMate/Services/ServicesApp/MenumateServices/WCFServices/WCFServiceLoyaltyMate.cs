@@ -13,6 +13,7 @@ using MenumateServices.DTO.OnlineOrdering.MenuModels;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using System.Collections.Generic;
 using MenumateServices.Tools;
+using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
 {
@@ -326,6 +327,10 @@ namespace MenumateServices.WCFServices
                 WriteAndClearStringList();
             }
             return false;
+        }
+
+        public void UpdateRegistrationDetails(Site siteInfo)
+        {
         }
 
         private void WriteAndClearStringList()

@@ -6328,7 +6328,8 @@ void TPrintSection::PrintReceiptHeader(TReqPrintJob *PrintJob)
 	pPrinter->Line->Columns[0]->Alignment = taCenter;
 
     IsDBRegistered = false;
-    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+    IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
     if(!IsDBRegistered)
     {
         PrintTextForUnRegisteredDatabase();

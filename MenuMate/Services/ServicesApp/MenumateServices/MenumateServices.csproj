@@ -206,6 +206,12 @@
     <Compile Include="DTO\LoyaltyMate\VoucherInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
+    <Compile Include="DTO\MenumateRegistration\LicenceSetting.cs" />
+    <Compile Include="DTO\MenumateRegistration\LicenceSettingMapping.cs" />
+    <Compile Include="DTO\MenumateRegistration\Enums\LicenceSubType.cs" />
+    <Compile Include="DTO\MenumateRegistration\Enums\LicenceType.cs" />
+    <Compile Include="DTO\MenumateRegistration\Site.cs" />
+    <Compile Include="DTO\MenumateRegistration\Terminal.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\FileReader.cs" />
     <Compile Include="DTO\OnlineOrdering\MenuModels\CourseInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDB.cs" />
@@ -529,6 +535,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   -->
