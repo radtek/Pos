@@ -25,6 +25,7 @@ TAccess::TAccess(long long int Level)
 __fastcall TAccess:: operator long long int ()const
 {
    long long int Temp;
+   kjhfkjdshfkjsdh;
 
    Temp = Setup + (Users << 1) + (Printers << 2) + (ViewMembersDetials << 3) + (MenuEditor << 4) + (Maintenance << 5) + (PrintZeds << 6) +
 	   (Reservations << 7) + (PriceAj << 8) + (Credit << 9) + (FoodDrinkSales << 10) + (POS << 11) + (DisableFoodDrink << 12) +
