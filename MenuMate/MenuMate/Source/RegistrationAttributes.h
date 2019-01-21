@@ -5,8 +5,8 @@
 #include <Classes.hpp>
 #include <list>
 //---------------------------------------------------------------------------
-enum eLicenceType {eEftpos, eLoyalty, eAccounting, eTimeTracking, eChefmate, ePropertyManagement, eRooms, eFloorPlan, ePosCashier, ePosOrder,
-                    ePosHandHeld, eFiscal, eWebMate, ePocketVoucher, eBarExchange, eRunRateBoard, eOnlineOrdering};
+enum eLicenceType {eEftpos, eLoyalty, eAccounts, eTimeTracking, eChefmate, ePropertyManagement, eRoom, eFloorPlan, ePosCashier, ePosOrder,
+                    ePosHandHeld, eFiscal, eWebMat, ePocketVoucher, eBarExchange, eRunRateBoard, eOnlineOrdering};
 
 //License Sub Types
 enum eEFTPOS { eEftpostNZ = 1, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom,
@@ -15,7 +15,7 @@ enum eEFTPOS { eEftpostNZ = 1, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmus
 enum eLoyalty {eMenumateLoyaltyLocal = 1, eMenumateLoyaltyLocalSubscription, eMenumateLoyaltyMateWeb, eMenuMateClubMembership,
                 eEBetGamingMembership, eCasinoExternalMembership };
 
-enum eAccounting { eXero = 1, eMYOB, ePeachtree  };
+enum eAccounts { eXero = 1, eMYOB, ePeachtree  };
 
 enum ePropertyManagement { eMotelMate = 1, eSihot, eOracle, eMews };
 
@@ -23,7 +23,7 @@ enum eRooms { eStrait = 1, eNewBook };
 
 enum eFiscal {  ePOSPlus = 1, eFiscalPrinter, eAustriaPrinter };
 
-struct LicenceSetting
+struct TLicenceSetting
 {
      AnsiString Name;
      AnsiString Description;
@@ -32,18 +32,18 @@ struct LicenceSetting
      int SettingSubType;
 };
 
-struct LicenceSettingMapping
+struct TLicenceSettingMapping
 {
      long TerminalId;
     // Terminal Terminal;
      long LicenceSettingId;
-     LicenceSetting LicenceSettingSetting;
+     TLicenceSetting LicenceSettingSetting;
      bool IsEnabled;
      AnsiString Value;
      AnsiString Text;
 };
 
-struct Terminal
+struct TTerminal
 {
      AnsiString Name;
      AnsiString Description;
@@ -55,16 +55,16 @@ struct Terminal
      long SiteId;
     // Site Site;
      long TerminalProfileId;
-     std::list<LicenceSettingMapping> LicenceSettingMappings;
+     std::list<TLicenceSettingMapping> LicenceSettingMappings;
 };
 
-struct Site
+struct TSite
 {
      AnsiString Name;
      AnsiString Description;
      long SiteCode;
      long CompanyId;
-     std::list<Terminal> Terminals;
+     std::list<TTerminal> Terminals;
      long SiteProfileId;
 };
 

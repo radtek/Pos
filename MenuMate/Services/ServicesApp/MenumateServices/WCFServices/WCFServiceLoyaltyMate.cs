@@ -329,10 +329,6 @@ namespace MenumateServices.WCFServices
             return false;
         }
 
-        public void UpdateRegistrationDetails(Site siteInfo)
-        {
-        }
-
         private void WriteAndClearStringList()
         {
             FileWriter.WriteToFile(stringList);

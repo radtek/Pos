@@ -206,10 +206,10 @@
     <Compile Include="DTO\LoyaltyMate\VoucherInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionInfo.cs" />
     <Compile Include="DTO\LoyaltyMate\VoucherTransactionResponse.cs" />
-    <Compile Include="DTO\MenumateRegistration\LicenceSetting.cs" />
-    <Compile Include="DTO\MenumateRegistration\LicenceSettingMapping.cs" />
     <Compile Include="DTO\MenumateRegistration\Enums\LicenceSubType.cs" />
     <Compile Include="DTO\MenumateRegistration\Enums\LicenceType.cs" />
+    <Compile Include="DTO\MenumateRegistration\LicenceSetting.cs" />
+    <Compile Include="DTO\MenumateRegistration\LicenceSettingMapping.cs" />
     <Compile Include="DTO\MenumateRegistration\Site.cs" />
     <Compile Include="DTO\MenumateRegistration\Terminal.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\FileReader.cs" />
@@ -242,10 +242,17 @@
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyOnlineOrdering.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
+    <Compile Include="MenumateServiceRegistrationIntegration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceRegistrationIntegration.Designer.cs">
+      <DependentUpon>MenumateServiceRegistrationIntegration.cs</DependentUpon>
+    </Compile>
     <Compile Include="MenumateRunners\AdeynServiceRunner.cs" />
     <Compile Include="MenumateRunners\AustriaFiscalServiceRunner.cs" />
     <Compile Include="MenumateRunners\MewsIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\PaymentSenseRunner.cs" />
+    <Compile Include="MenumateRunners\RegistrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\SiHotIntegrationServiceRunner.cs" />
     <Compile Include="MenumateRunners\SmartConnectRunner.cs" />
     <Compile Include="MenumateServiceAdyenIntegration.cs">
@@ -405,6 +412,7 @@
     <Compile Include="WCFServices\IAustriaFiscalIntegrationWebService.cs" />
     <Compile Include="WCFServices\IMewsIntegrationWebService.cs" />
     <Compile Include="WCFServices\IPocketVoucherWebService.cs" />
+    <Compile Include="WCFServices\IRegistrationIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\ISiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\IWCFServicePaymentSense.cs" />
@@ -412,6 +420,7 @@
     <Compile Include="WCFServices\IWCFSmartConnect.cs" />
     <Compile Include="WCFServices\MewsIntegrationWebService.cs" />
     <Compile Include="WCFServices\PocketVoucherWebService.cs" />
+    <Compile Include="WCFServices\RegistrationIntegrationWebService.cs" />
     <Compile Include="WCFServices\SalesForceIntegrationWebService.cs" />
     <Compile Include="WCFServices\SiHotIntegrationWebService.cs" />
     <Compile Include="WCFServices\WCFServiceLoyaltyMate.cs" />

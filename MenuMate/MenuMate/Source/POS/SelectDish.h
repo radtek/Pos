@@ -705,6 +705,7 @@ public: // User declarations
     bool CheckForServingCoursePrompt(int item_key);
     void SyncSiteMenus();
     void SyncTaxSetting();
+    void UploadRegistrationInfo();
  };
 // ---------------------------------------------------------------------------
 
