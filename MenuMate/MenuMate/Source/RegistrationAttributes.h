@@ -47,11 +47,11 @@ struct TTerminal
 {
      AnsiString Name;
      AnsiString Description;
-     AnsiString TerminalCode;
+     AnsiString StaffName;
      AnsiString MacAdress;
      AnsiString ComputerName;
      AnsiString OperatingSystemName;
-     AnsiString MenumateVersionSystemName;
+     AnsiString MenumateVersion;
      long SiteId;
     // Site Site;
      long TerminalProfileId;

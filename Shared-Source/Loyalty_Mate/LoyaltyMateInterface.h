@@ -15,7 +15,7 @@
 #include "Discount.h"
 #include "LoyaltyMateUtilities.h"
 #include "OnlineOrderingAttributes.h"
-#include "RegistrationAttributes.h"
+
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------
@@ -170,7 +170,6 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
         bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
         void SendEmail(AnsiString emailBody);
-        MMLoyaltyServiceResponse UploadRegistrationInfo(TTerminal terminalInfo);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceModel;
+using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
 {
@@ -11,6 +12,6 @@ namespace MenumateServices.WCFServices
     {
         //public UpdateRegistrationDetails(Site siteInfo);
         [OperationContract]
-        void show();
+        RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, Terminal terminalRegistrationInfo);
     }
 }
