@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (5/12/2018 8:22:27 p.m. - - $Rev: 25127 $)
+// (8/01/2019 7:19:32 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   SiHotWSDLH
@@ -57,6 +57,7 @@ class SOAP_REMOTABLE_CLASS RoomChargeDetails;
 class SOAP_REMOTABLE_CLASS SiHotService;
 class SOAP_REMOTABLE_CLASS SiHotPayment;
 class SOAP_REMOTABLE_CLASS RoomChargeResponse;
+class SOAP_REMOTABLE_CLASS StoreTicketDetails;
 class SOAP_REMOTABLE_CLASS RoomRequest2;
 class SOAP_REMOTABLE_CLASS RoomDetails2;
 class SOAP_REMOTABLE_CLASS GuestDetails2;
@@ -64,6 +65,7 @@ class SOAP_REMOTABLE_CLASS RoomChargeDetails2;
 class SOAP_REMOTABLE_CLASS SiHotService2;
 class SOAP_REMOTABLE_CLASS SiHotPayment2;
 class SOAP_REMOTABLE_CLASS RoomChargeResponse2;
+class SOAP_REMOTABLE_CLASS StoreTicketDetails2;
 
 
 
@@ -770,6 +772,81 @@ __published:
 
 
 // ************************************************************************ //
+// XML       : StoreTicketDetails, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
+// ************************************************************************ //
+class StoreTicketDetails : public TRemotable {
+private:
+  UnicodeString   FBillno;
+  bool            FBillno_Specified;
+  UnicodeString   FCashno;
+  bool            FCashno_Specified;
+  UnicodeString   FDocument;
+  bool            FDocument_Specified;
+  UnicodeString   FIPAddress;
+  bool            FIPAddress_Specified;
+  int             FPortNumber;
+  bool            FPortNumber_Specified;
+  UnicodeString   FSignature;
+  bool            FSignature_Specified;
+  UnicodeString   FStoreTicket;
+  bool            FStoreTicket_Specified;
+  UnicodeString   FTransNo;
+  bool            FTransNo_Specified;
+  UnicodeString   FType;
+  bool            FType_Specified;
+  void __fastcall SetBillno(int Index, UnicodeString _prop_val)
+  {  FBillno = _prop_val; FBillno_Specified = true;  }
+  bool __fastcall Billno_Specified(int Index)
+  {  return FBillno_Specified;  } 
+  void __fastcall SetCashno(int Index, UnicodeString _prop_val)
+  {  FCashno = _prop_val; FCashno_Specified = true;  }
+  bool __fastcall Cashno_Specified(int Index)
+  {  return FCashno_Specified;  } 
+  void __fastcall SetDocument(int Index, UnicodeString _prop_val)
+  {  FDocument = _prop_val; FDocument_Specified = true;  }
+  bool __fastcall Document_Specified(int Index)
+  {  return FDocument_Specified;  } 
+  void __fastcall SetIPAddress(int Index, UnicodeString _prop_val)
+  {  FIPAddress = _prop_val; FIPAddress_Specified = true;  }
+  bool __fastcall IPAddress_Specified(int Index)
+  {  return FIPAddress_Specified;  } 
+  void __fastcall SetPortNumber(int Index, int _prop_val)
+  {  FPortNumber = _prop_val; FPortNumber_Specified = true;  }
+  bool __fastcall PortNumber_Specified(int Index)
+  {  return FPortNumber_Specified;  } 
+  void __fastcall SetSignature(int Index, UnicodeString _prop_val)
+  {  FSignature = _prop_val; FSignature_Specified = true;  }
+  bool __fastcall Signature_Specified(int Index)
+  {  return FSignature_Specified;  } 
+  void __fastcall SetStoreTicket(int Index, UnicodeString _prop_val)
+  {  FStoreTicket = _prop_val; FStoreTicket_Specified = true;  }
+  bool __fastcall StoreTicket_Specified(int Index)
+  {  return FStoreTicket_Specified;  } 
+  void __fastcall SetTransNo(int Index, UnicodeString _prop_val)
+  {  FTransNo = _prop_val; FTransNo_Specified = true;  }
+  bool __fastcall TransNo_Specified(int Index)
+  {  return FTransNo_Specified;  } 
+  void __fastcall SetType(int Index, UnicodeString _prop_val)
+  {  FType = _prop_val; FType_Specified = true;  }
+  bool __fastcall Type_Specified(int Index)
+  {  return FType_Specified;  } 
+__published:
+  __property UnicodeString     Billno = { index=(IS_OPTN|IS_NLBL), read=FBillno, write=SetBillno, stored = Billno_Specified };
+  __property UnicodeString     Cashno = { index=(IS_OPTN|IS_NLBL), read=FCashno, write=SetCashno, stored = Cashno_Specified };
+  __property UnicodeString   Document = { index=(IS_OPTN|IS_NLBL), read=FDocument, write=SetDocument, stored = Document_Specified };
+  __property UnicodeString  IPAddress = { index=(IS_OPTN|IS_NLBL), read=FIPAddress, write=SetIPAddress, stored = IPAddress_Specified };
+  __property int        PortNumber = { index=(IS_OPTN), read=FPortNumber, write=SetPortNumber, stored = PortNumber_Specified };
+  __property UnicodeString  Signature = { index=(IS_OPTN|IS_NLBL), read=FSignature, write=SetSignature, stored = Signature_Specified };
+  __property UnicodeString StoreTicket = { index=(IS_OPTN|IS_NLBL), read=FStoreTicket, write=SetStoreTicket, stored = StoreTicket_Specified };
+  __property UnicodeString    TransNo = { index=(IS_OPTN|IS_NLBL), read=FTransNo, write=SetTransNo, stored = TransNo_Specified };
+  __property UnicodeString       Type = { index=(IS_OPTN|IS_NLBL), read=FType, write=SetType, stored = Type_Specified };
+};
+
+
+
+
+// ************************************************************************ //
 // XML       : RoomRequest, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
 // ************************************************************************ //
@@ -852,6 +929,18 @@ __published:
 
 
 
+
+// ************************************************************************ //
+// XML       : StoreTicketDetails, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain
+// ************************************************************************ //
+class StoreTicketDetails2 : public StoreTicketDetails {
+private:
+__published:
+};
+
+
+
 // ************************************************************************ //
 // Namespace : http://tempuri.org/
 // soapAction: http://tempuri.org/ISiHotIntegrationWebService/%operationName%
@@ -868,6 +957,7 @@ public:
   virtual RoomDetails*    GetRoomDetails(const RoomRequest* roomRequest, const int timeOut, const UnicodeString apiKey) = 0; 
   virtual RoomChargeResponse* PostRoomCharge(const RoomChargeDetails* roomChargeDetails, const int timeOut, const UnicodeString apiKey, const bool isItemsDetailsPosting) = 0; 
   virtual bool            ValidateCreadentials(const UnicodeString address, const int port, const int transno) = 0; 
+  virtual RoomChargeResponse* PostStoreTicket(const StoreTicketDetails* storeTicketDetails, const int timeOut, const UnicodeString apiKey) = 0; 
 };
 typedef DelphiInterface<ISiHotIntegrationWebService> _di_ISiHotIntegrationWebService;
 

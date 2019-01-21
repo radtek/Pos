@@ -7,6 +7,7 @@
 #include "Math.h"
 #include "MMMessageBox.h"
 #include "GeneratorManager.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -966,3 +967,25 @@ void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStri
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }
+//----------------------------------------------------------------------------
+void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TStoreTicket &_storeTicket, AnsiString receiptData)
+{
+    try
+    {
+    _storeTicket.TransNo       =     GetTransNumber();
+    _storeTicket.StoreTicket   =     "";
+    _storeTicket.Billno        =     invoiceNumber;
+    _storeTicket.Cashno        =     TDeviceRealTerminal::Instance().BasePMS->POSID;
+    _storeTicket.Signature     =     "";
+    _storeTicket.Type          =     "TXT";
+    _storeTicket.Document      =     receiptData;
+    _storeTicket.IPAddress     =     TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    _storeTicket.PortNumber    =     TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------
+

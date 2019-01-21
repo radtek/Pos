@@ -1635,34 +1635,34 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UploadRegistrationInfo(TTerminal
     LoyaltyResponse *wcfResponse;
     try
     {
-        Site *wcfInfo = new Site();
-        wcfInfo->CompanyId = terminalInfo.CompanyId;
-        wcfInfo->Description = terminalInfo.Description;
-        wcfInfo->Name = terminalInfo.Name;
-        wcfInfo->SiteCode = terminalInfo.SiteCode;
-        wcfInfo->SiteProfileId = terminalInfo.SiteProfileId;
-        wcfInfo->Terminals
-
-        if(!taxSettingsInfo.SiteTaxSettings.empty())
-        {
-            ArrayOfTaxSettingsInfo taxSettingsinfo;
-
-            for(std::list<TTaxSettingsInfo>::iterator itTaxSettingInfo = taxSettingsInfo.SiteTaxSettings.begin();
-                    itTaxSettingInfo != taxSettingsInfo.SiteTaxSettings.end(); ++itTaxSettingInfo)
-            {
-                TaxSettingsInfo* taxSetting = new TaxSettingsInfo;
-                taxSetting->SettingType = itTaxSettingInfo->SettingType;
-                taxSetting->Value = itTaxSettingInfo->Value;
-                taxSettingsinfo.Length = (taxSettingsinfo.Length + 1);
-                taxSettingsinfo[taxSettingsinfo.Length - 1] = taxSetting;
-            }
-            wcfInfo->SiteTaxSettings = taxSettingsinfo;
-        }
-        CoInitialize(NULL);
-        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
-        wcfResponse = loyaltymateClient->SyncTaxSettings(SyndicateCode, wcfInfo);
-        delete wcfInfo;
-        wcfInfo = NULL;
+//        Site *wcfInfo = new Site();
+//        wcfInfo->CompanyId = terminalInfo.CompanyId;
+//        wcfInfo->Description = terminalInfo.Description;
+//        wcfInfo->Name = terminalInfo.Name;
+//        wcfInfo->SiteCode = terminalInfo.SiteCode;
+//        wcfInfo->SiteProfileId = terminalInfo.SiteProfileId;
+//        wcfInfo->Terminals
+//
+//        if(!taxSettingsInfo.SiteTaxSettings.empty())
+//        {
+//            ArrayOfTaxSettingsInfo taxSettingsinfo;
+//
+//            for(std::list<TTaxSettingsInfo>::iterator itTaxSettingInfo = taxSettingsInfo.SiteTaxSettings.begin();
+//                    itTaxSettingInfo != taxSettingsInfo.SiteTaxSettings.end(); ++itTaxSettingInfo)
+//            {
+//                TaxSettingsInfo* taxSetting = new TaxSettingsInfo;
+//                taxSetting->SettingType = itTaxSettingInfo->SettingType;
+//                taxSetting->Value = itTaxSettingInfo->Value;
+//                taxSettingsinfo.Length = (taxSettingsinfo.Length + 1);
+//                taxSettingsinfo[taxSettingsinfo.Length - 1] = taxSetting;
+//            }
+//            wcfInfo->SiteTaxSettings = taxSettingsinfo;
+//        }
+//        CoInitialize(NULL);
+//        AnsiString SyndicateCode = GetSyndCodeForOnlineOrdering();
+//        wcfResponse = loyaltymateClient->SyncTaxSettings(SyndicateCode, wcfInfo);
+//        delete wcfInfo;
+//        wcfInfo = NULL;
         return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )

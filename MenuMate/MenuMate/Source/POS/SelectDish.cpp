@@ -135,6 +135,7 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "OnlineOrderDocketPrinter.h"
+#include "DBRegistration.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -16566,7 +16567,8 @@ void TfrmSelectDish::UploadRegistrationInfo()
             AnsiString ErrorMessage;
             TTerminal terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
             TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
-            MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->SendMenu(menuInfo);
+            //MMLoyaltyServiceResponse createResponse =
+            loyaltyMateInterface->UploadRegistrationInfo(terminalInfo);
             TDeviceRealTerminal::Instance().ProcessingController.Pop();
             if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
             {
