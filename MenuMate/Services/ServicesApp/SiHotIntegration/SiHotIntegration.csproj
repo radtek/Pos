@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Domain\StoreTicketDetails.cs" />
     <Compile Include="Domain\SiHotPayment.cs" />
     <Compile Include="Domain\SiHotService.cs" />
     <Compile Include="SiHotCommunicationController.cs" />

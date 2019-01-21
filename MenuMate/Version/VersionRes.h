@@ -2,8 +2,8 @@
 #define PRE_RELEASE_BUILD 1
 
 // define version strings. Keep VERSTR as 4 digits, You can change STRVERSTR as required
-#define VERSTR		6,58,0,7
-#define STRVERSTR	"6.58.0.7"
+#define VERSTR		6,59,0,0
+#define STRVERSTR	"6.59.0.0"
 
 
 #define FILEVER        VERSTR

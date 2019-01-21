@@ -131,7 +131,18 @@ struct TSiHotAccounts
 
     std::vector<TAccountDetails> AccountDetails;
 };
-
+struct TStoreTicket
+{
+    UnicodeString TransNo;
+    UnicodeString StoreTicket;
+    UnicodeString Billno;
+    UnicodeString Cashno;
+    UnicodeString Signature;
+    UnicodeString Type;
+    UnicodeString Document;
+    UnicodeString IPAddress;
+    int PortNumber;
+};
 
 
 #endif

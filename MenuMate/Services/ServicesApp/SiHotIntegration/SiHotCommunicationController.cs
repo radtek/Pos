@@ -485,5 +485,157 @@ namespace SiHotIntegration
             if (roomDetails.GuestDetailsList.Count == 0)
                 stringListLogs.Add("Guest List:                               " + "0"); 
         }
+        public RoomChargeResponse PostStoreTicket(StoreTicketDetails storeTicketDetails, int retryCount, int timeOut, string apiKey)
+        {
+            List<string> stringList = new List<string>();
+            RoomChargeResponse response = new RoomChargeResponse();
+            SiHotSerializer serializer = new SiHotSerializer();
+            SiHotDesrializer deserializer = new SiHotDesrializer();
+            string responseText = "Unsuccessful";
+            string exceptionMessage = "";
+            string strCompleteResponse = "";
+            string strSiHotResponse = "";
+            string exceptionTime = "";
+            bool IsSecured = false;
+            int portNumber = 0;
+            try
+            {
+                string uri = URIRoomChargePost(storeTicketDetails.IPAddress, storeTicketDetails.PortNumber);
+                stringList.Add("Url Used:-                                " + uri);
+                stringList.Add("ApiKey Used:-                             " + apiKey);
+                stringList.Add("TimeOut used:-                            " + timeOut.ToString() + " milliseconds");
+                Uri myUri = new Uri(uri);
+                var host = Dns.GetHostAddresses(myUri.Host)[0];
+                IsSecured = uri.Contains("https:");
+                using (var tc = new TcpClient())
+                {
+                    stringList.Add("TCP Client created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    int clientTimeOut = timeOut + 1000;
+                    tc.ReceiveTimeout = clientTimeOut;
+                    if (myUri.Port != -1)
+                        portNumber = myUri.Port;
+                    else
+                        portNumber = IsSecured ? 443 : 80;
+                    stringList.Add("Trying to connect At Time:-               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                    tc.Connect(host, portNumber);
+                    if (tc.Connected)
+                    {
+                        stringList.Add("Connection Created On:-                   " + DateTime.Now.ToString("ddMMMyyyy"));
+                        stringList.Add("Connection Created At Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        GetStoreTicketDetails(storeTicketDetails, stringList);
+
+                        // to clear existing data if any
+                        if (tc.Available > 0)
+                        {
+                            stringList.Add("Found existing data " + tc.Available);
+                            Stream old = tc.GetStream();
+                            byte[] oldBytes = new byte[2000];
+                            int l = old.Read(oldBytes, 0, oldBytes.Length);
+                            stringList.Add("Existing data is     " + System.Text.Encoding.ASCII.GetString(oldBytes, 0, l));
+                        }
+                        using (var ns = tc.GetStream())
+                        {
+                            ns.ReadTimeout = timeOut;
+                            List<byte> bytesList = serializer.GetStoreTicketContent(storeTicketDetails);
+                            byte[] bytes = bytesList.ToArray<byte>();
+                            var strHttpRequest = GetHttpRequest(myUri, bytes.Length, apiKey);
+                            strHttpRequest += System.Text.Encoding.UTF8.GetString(bytes).Trim();
+                            if (IsSecured)
+                            {
+                                using (var ssl = new SslStream(ns, false, ValidateServerCertificate, null))
+                                {
+                                    ssl.AuthenticateAsClient(host.ToString(), null, SslProtocols.Tls, false);
+                                    using (var sw = new System.IO.StreamWriter(ssl))
+                                    {
+                                        using (var sr = new System.IO.StreamReader(ssl))
+                                        {
+                                            stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                            sw.Write(strHttpRequest);
+                                            sw.Flush();
+                                            strCompleteResponse = sr.ReadToEnd();
+                                            if (strCompleteResponse.Contains("transno:"))
+                                                strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                                   strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                using (var sw = new System.IO.StreamWriter(ns))
+                                {
+                                    using (var sr = new System.IO.StreamReader(ns))
+                                    {
+                                        stringList.Add("Data writing at Time:-                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+                                        sw.Write(strHttpRequest);
+                                        sw.Flush();
+                                        strCompleteResponse = sr.ReadToEnd();
+                                        if (strCompleteResponse.Contains("transno:"))
+                                            strSiHotResponse = strCompleteResponse.Substring(strCompleteResponse.IndexOf("transno:"),
+                                                               strCompleteResponse.Length - strCompleteResponse.IndexOf("transno:"));
+                                    }
+                                }
+                            }
+                            response = deserializer.DesrializeRoomPostResponse(strSiHotResponse);
+                            stringList.Add("SiHot Response Received :-                " + strSiHotResponse);
+                            if (response.IsSuccessful)
+                                responseText = "Successful";
+                            if (response.Response.Trim() == "")
+                                response.Response = siHotUnavailable;
+                        }
+                    }
+                    else
+                    {
+                        stringList.Add(connectFailedMessage);
+                        stringList.Add("Connection Failure at Time:-              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        response.Response = connectFailedMessage;
+                        response.IsSuccessful = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in sending Store Ticket Post " + ex.Message);
+                exceptionMessage = ex.Message;
+                exceptionTime = DateTime.Now.ToString("hh:mm:ss tt");
+                response.IsSuccessful = false;
+            }
+            finally
+            {
+                stringList.Add("Posting Store Ticket for Invoice Number:  " + storeTicketDetails.Billno);
+                stringList.Add("Post Response Date:                       " + DateTime.Now.ToString("ddMMMyyyy"));
+                stringList.Add("Post Response Time:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Post Status:                              " + responseText);
+                stringList.Add("No of Times tried:                        " + retryCount);
+                if (exceptionMessage.Length != 0)
+                    stringList.Add("Post Exception message:                   " + exceptionMessage);
+                if (exceptionTime.Length != 0)
+                    stringList.Add("Post Exception Time:                      " + exceptionTime);
+                if (!response.IsSuccessful)
+                    stringList.Add("Unsuccessful reason:                      " + response.Response);
+                WriteToFile(stringList);
+            }
+            return response;
+        }
+        private void GetStoreTicketDetails(StoreTicketDetails storeTicketDetails, List<string> stringList)
+        {
+            try
+            {
+                stringList.Add("*********Start Of Items In Store Ticket Post**************");
+                stringList.Add("Transaction Number:                       " + storeTicketDetails.TransNo);
+                stringList.Add("Store Ticket:                             " + storeTicketDetails.StoreTicket);
+                stringList.Add("Bill Number:                              " + storeTicketDetails.Billno);
+                stringList.Add("Cash Number:                              " + storeTicketDetails.Cashno);
+                stringList.Add("Signature:                                " + storeTicketDetails.Signature);
+                stringList.Add("Type:                                     " + storeTicketDetails.Type);
+                stringList.Add("Document:                                 " + storeTicketDetails.Document);
+                stringList.Add("*********End Of Items In Store Ticket Post**************");
+
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in preparing data for LOG" + ex.Message);
+            }
+        }
     }
 }

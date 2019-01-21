@@ -131,5 +131,46 @@ namespace MenumateServices.WCFServices
                 ServiceLogger.Log("Exception in Making File" + ex.Message);
             }
         }
+        public RoomChargeResponse PostStoreTicket(StoreTicketDetails storeTicketDetails, int timeOut, string apiKey)
+        {
+            int retryCount = 1;
+            bool retryPosting = true;
+            RoomChargeResponse roomChargeReponse = new RoomChargeResponse();
+            try
+            {
+                while (retryPosting)
+                {
+                    roomChargeReponse = new RoomChargeResponse();
+                    SiHotCommunicationController siCommController = new SiHotCommunicationController();
+                    roomChargeReponse = siCommController.PostStoreTicket(storeTicketDetails, retryCount, timeOut, apiKey);
+                    if (!roomChargeReponse.IsSuccessful &&
+                        (roomChargeReponse.Response == "" || roomChargeReponse.Response == null ||
+                        roomChargeReponse.Response == siCommController.connectFailedMessage || roomChargeReponse.Response == siCommController.siHotUnavailable) &&
+                        retryCount < 3)
+                    {
+                        retryCount += 1;
+                        retryPosting = true;
+                        roomChargeReponse = new RoomChargeResponse();
+                        System.Threading.Thread.Sleep(500);
+                        List<string> stringList = new List<string>();
+                        stringList.Add("==============================================================================");
+                        stringList.Add("Retry detected:                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        stringList.Add("==============================================================================");
+                        WriteToFile(stringList);
+                    }
+                    else
+                    {
+                        retryPosting = false;
+                        if (retryCount >= 3 || roomChargeReponse.IsSuccessful)
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ServiceLogger.Log("Exception in Posting Store Ticket" + ex.Message);
+            }
+            return roomChargeReponse;
+        }
     }
 }

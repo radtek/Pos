@@ -460,5 +460,7 @@ TGlobalSettings::TGlobalSettings()
     HideFreeSides = false;
     IsAustriaFiscalCommissioned = false;
     IsFiscalPostingDisable = false;
+    EnableStoreTicketPosting = false;
+    PMSPostSuccessful = false;
 }
 

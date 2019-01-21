@@ -21,6 +21,7 @@ class TSiHotDataProcessor
        bool GetRoundingAccounting(AnsiString TCPIPAddress,AnsiString TCPPort, AnsiString apiKey);
        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
        void AddRoundingAsService(TRoomCharge &_roomcharge, UnicodeString billNo, TPaymentTransaction &_paymentTransaction);
+       void CreateStoreTicketPost(UnicodeString invoiceNumber, TStoreTicket &_storeTicket, AnsiString receiptData);
     private:
        double QtyServiceCharge;
        double totalBill;
