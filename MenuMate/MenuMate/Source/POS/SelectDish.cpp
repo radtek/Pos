@@ -4161,6 +4161,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             Request->Transaction = PrintTransaction.get();
                             Request->Printouts->Print(devPC);
                             ManagerDockets->Archive(DBTransaction,Request.get());
+                            if(TGlobalSettings::Instance().IsRegistrationVerified)
                             completeOrderToChefMate( PrintTransaction.get() );
 
                             logList->Clear();

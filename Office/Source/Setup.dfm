@@ -29,7 +29,7 @@ object frmSetup: TfrmSetup
     OwnerDraw = True
     TabOrder = 0
     Tabs.Strings = (
-      'Company Name')
+      'Menumate office')
     TabIndex = 0
     OnChange = tcCompanyNamesChange
     OnChanging = tcCompanyNamesChanging
@@ -1560,75 +1560,48 @@ object frmSetup: TfrmSetup
     end
     object btnConnectCompany: TButton
       Left = 368
-      Top = 152
+      Top = 32
       Width = 129
       Height = 33
       Caption = 'Connect'
       TabOrder = 1
       OnClick = btnConnectCompanyClick
     end
-    object btnDeleteCompany: TBitBtn
-      Left = 368
-      Top = 112
-      Width = 129
-      Height = 33
-      Caption = 'Delete Company'
-      TabOrder = 2
-      OnClick = btnDeleteCompanyClick
-    end
-    object btnEditCompany: TBitBtn
-      Left = 368
-      Top = 72
-      Width = 129
-      Height = 33
-      Caption = 'Edit Name'
-      TabOrder = 3
-      OnClick = btnEditCompanyClick
-    end
-    object btnAddCompany: TBitBtn
-      Left = 368
-      Top = 32
-      Width = 129
-      Height = 33
-      Caption = 'Add Company'
-      TabOrder = 4
-      OnClick = btnAddCompanyClick
-    end
     object btnAddRAS: TButton
       Left = 368
-      Top = 408
+      Top = 192
       Width = 129
       Height = 33
       Caption = 'New Phonebook Entry'
-      TabOrder = 5
+      TabOrder = 2
       Visible = False
       OnClick = btnAddRASClick
     end
     object Button3: TButton
       Left = 368
-      Top = 208
+      Top = 72
       Width = 129
       Height = 33
       Caption = 'Users'
-      TabOrder = 6
+      TabOrder = 3
       OnClick = Button3Click
     end
     object btnSecurityRoles: TButton
       Left = 368
-      Top = 248
+      Top = 112
       Width = 129
       Height = 33
       Caption = 'Roles'
-      TabOrder = 7
+      TabOrder = 4
       OnClick = btnSecurityRolesClick
     end
     object btnTaxProfiles: TButton
       Left = 368
-      Top = 288
+      Top = 152
       Width = 129
       Height = 33
       Caption = 'Tax Profiles'
-      TabOrder = 8
+      TabOrder = 5
       OnClick = btnTaxProfilesClick
     end
   end
