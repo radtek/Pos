@@ -40,5 +40,9 @@ class TSiHotDataProcessor
        AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
        void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
        AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
+       void GetItemIdentifiersForSihot(TItemComplete* itemComplete);
+       void ErrorCorrectionForItemDetails(TItemComplete* itemComplete , UnicodeString invoiceNumber);
+       void LogErrorDetectioninFile(int revenueCode, int itemSizeIdentifier, UnicodeString menuName, TItemComplete* itemComplete,UnicodeString invoiceNumber);
+       AnsiString GetLogFileName();
 };
 #endif
