@@ -14,7 +14,7 @@
 void TRegistrationManager::CheckRegistrationStatus()
 {
     try
-    {
+    {     
         //Checking POS Resgistration Status
         if(TGlobalSettings::Instance().IsRegistrationVerified)
         {
@@ -56,7 +56,7 @@ void TRegistrationManager::UploadRegistrationInfo()
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
-            throw Exception("Authentication failed with Loyaltymate Service");
+            throw Exception("Authentication failed with Registration Service");
         }
         else
         {

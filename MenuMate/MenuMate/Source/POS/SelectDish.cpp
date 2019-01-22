@@ -135,7 +135,6 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "OnlineOrderDocketPrinter.h"
-//#include "DBRegistration.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
