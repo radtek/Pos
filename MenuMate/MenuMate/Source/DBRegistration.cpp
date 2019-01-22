@@ -53,46 +53,46 @@ TLicenceSettingMapping TDBRegistration::GetLicenseSettingsMapping(Database::TDBT
     TLicenceSettingMapping licenseSettingMapping;
     try
     {
-        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = true;//todo
-        licenseSettingMapping.Value = "";//todo
-        licenseSettingMapping.Text = "";//todo
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction);
-
-        switch()
-        {
-            case eEftpos:
-                {
-                    licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-                    licenseSettingMapping.LicenceSettingId = 1;//todo
-                    licenseSettingMapping.IsEnabled = true;//todo
-                    licenseSettingMapping.Value = "";//todo
-                    licenseSettingMapping.Text = "";//todo
-                    licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction);
-                    break;
-                }
-            case eLoyalty:
-            case eAccounts:
-            case eTimeTracking
-            case eChefmate:
-            case ePropertyManagement:
-            case eRoom:
-            case eFloorPlan:
-            case ePosCashier:
-            case ePosOrder:
-            case ePosHandHeld:
-            case eFiscal:
-            case eWebMat:
-            case ePocketVoucher:
-            case eBarExchange:
-            case eRunRateBoard:
-            case eOnlineOrdering:
-            case default:
-                {
-                break;
-                }
-        }
+//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
+//        licenseSettingMapping.LicenceSettingId = 1;//todo
+//        licenseSettingMapping.IsEnabled = true;//todo
+//        licenseSettingMapping.Value = "";//todo
+//        licenseSettingMapping.Text = "";//todo
+//        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction);
+//
+//        switch(1)  //todo
+//        {
+//            case eEftpos:
+//                {
+//                    licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
+//                    licenseSettingMapping.LicenceSettingId = 1;//todo
+//                    licenseSettingMapping.IsEnabled = true;//todo
+//                    licenseSettingMapping.Value = "";//todo
+//                    licenseSettingMapping.Text = "";//todo
+//                    licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction);
+//                    break;
+//                }
+//            case eLoyalty:
+//            case eAccounts:
+//            case eTimeTracking :
+//            case eChefmate:
+//            case ePropertyManagement:
+//            case eRoom:
+//            case eFloorPlan:
+//            case ePosCashier:
+//            case ePosOrder:
+//            case ePosHandHeld:
+//            case eFiscal:
+//            case eWebMat:
+//            case ePocketVoucher:
+//            case eBarExchange:
+//            case eRunRateBoard:
+//            case eOnlineOrdering:
+//            case default:
+//                {
+//                break;
+//                }
+//        }
     }
     catch(Exception &E)
 	{

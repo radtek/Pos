@@ -10,7 +10,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (21/01/2019 10:04:03 p.m. - - $Rev: 25127 $)
+// (22/01/2019 10:06:41 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -23,6 +23,7 @@
 
 
 namespace NS__RegistrationWSDL {
+
 
 _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
