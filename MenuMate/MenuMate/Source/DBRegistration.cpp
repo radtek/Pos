@@ -3,9 +3,8 @@
 
 #pragma hdrstop
 
-#include "DBRegistration.h"
-#include "DeviceRealTerminal.h"
 #include "MMLogging.h"
+#include "DBRegistration.h"
 
 //---------------------------------------------------------------------------
 

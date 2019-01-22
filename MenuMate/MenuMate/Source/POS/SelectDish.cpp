@@ -16551,46 +16551,4 @@ void TfrmSelectDish::CheckRegisteration()
     tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 }
 
-void TfrmSelectDish::UploadRegistrationInfo()
-{
-    try
-    {
-//        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-//	    dBTransaction.StartTransaction();
-////        if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(dBTransaction))
-////        {
-////            MessageBox("There are no menus to sync. Add One to the Database.", "Error", MB_OK + MB_ICONERROR);
-////        }
-////        else
-////        {
-//            TMMProcessingState State(Screen->ActiveForm, "Depicting registration verification in process Please Wait...", "Registration verification");
-//            TDeviceRealTerminal::Instance().ProcessingController.Push(State);
-//            AnsiString ErrorMessage;
-//            TTerminal terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
-//            TRegistrationIntegrationManager* registrationManager = new TRegistrationIntegrationManager();
-//            MMLoyaltyServiceResponse createResponse;
-//            registrationManager->UploadRegistrationInfo(terminalInfo);
-//            TDeviceRealTerminal::Instance().ProcessingController.Pop();
-//            if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
-//            {
-//                throw Exception("Authentication failed with Loyaltymate Service");
-//            }
-//            else
-//            {
-//                if(createResponse.Description == "Failed to update menu to server.")
-//                  ErrorMessage = "Failed to update menu to server.";
-//                else
-//                  ErrorMessage = "Failed to update menu to server.";
-//                throw Exception(ErrorMessage);
-//            }
-//            delete loyaltyMateInterface;
-//            loyaltyMateInterface = NULL;
-////        }
-//        dBTransaction.Commit();
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
+

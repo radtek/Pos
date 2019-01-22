@@ -2,8 +2,10 @@
 
 
 #pragma hdrstop
+
 #include "DeviceRealTerminal.h"
 #include "RegistrationInterface.h"
+
 
 
 //---------------------------------------------------------------------------

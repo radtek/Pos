@@ -103,6 +103,7 @@
 #pragma link "IdBaseComponent"
 #pragma link "IdComponent"
 #pragma link "IdIPWatch"
+#include "RegistrationManager.h"
 
 #pragma link "C:\\Program Files (x86)\\Embarcadero\RAD Studio\\7.0\\lib\\psdk\\oleacc.lib"
 
@@ -241,6 +242,11 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		bool Registered = false;
 		UnicodeString pRegisteredName = "";
 //		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+
+        //Checking POS Resgistration Status
+        std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+        mmRegistrationManager->CheckRegistrationStatus();
+
         Registered = TGlobalSettings::Instance().IsRegistrationVerified;
 		if(Registered)
 		{

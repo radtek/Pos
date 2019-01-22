@@ -6,6 +6,7 @@
 #include "RegistrationAttributes.h"
 
 
+
 enum MMRegistrationResponseCode
 {
   Successful = 1,
