@@ -18,11 +18,11 @@ TTerminal TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransacti
     {
         terminalInfo.Name = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.Description = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.TerminalCode = TDeviceRealTerminal::Instance().ID.Name;
+        terminalInfo.StaffName = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.MacAdress = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.ComputerName = TDeviceRealTerminal::Instance().ID.Name;;
         terminalInfo.OperatingSystemName = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.MenumateVersionSystemName = TDeviceRealTerminal::Instance().ID.Name;
+        terminalInfo.MenumateVersion = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.SiteId = 1;
         terminalInfo.TerminalProfileId = 1;
         terminalInfo.LicenceSettingMappings = GetLicenseSettingMappingList(dbTransaction);
