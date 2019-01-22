@@ -1892,14 +1892,15 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
      if(TGlobalSettings::Instance().IsRegistrationVerified)
         {
           btnSubsidisedProfile->Enabled   = true;
-          btnTabCredit->Enabled           = true;
+
         }
         btnChangeDetails->Enabled       = true;
         TouchButton1->Enabled           = true;
         btnPINTab->Enabled              = true;
         btnLockTab->Enabled             = true;
         btnRemoveTab->Enabled           = true;
-        btnPermanent->Enabled      = true;
+        btnPermanent->Enabled           = true;
+        btnTabCredit->Enabled           = true;
 
     }
 }
