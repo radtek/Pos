@@ -3448,6 +3448,10 @@
 				<DependentOn>RegistrationAttributes.h</DependentOn>
 				<BuildOrder>783</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="RegistrationManager.cpp">
+				<DependentOn>RegistrationManager.h</DependentOn>
+				<BuildOrder>786</BuildOrder>
+			</CppCompile>
 			<FormResources Include="TierLevels.dfm"/>
 			<FormResources Include="DelayedPaymentTabs.dfm"/>
 			<FormResources Include="SendForm.dfm"/>
