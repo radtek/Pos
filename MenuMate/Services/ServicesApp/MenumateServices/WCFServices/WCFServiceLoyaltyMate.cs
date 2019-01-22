@@ -331,7 +331,7 @@ namespace MenumateServices.WCFServices
 
         private void WriteAndClearStringList()
         {
-            FileWriter.WriteToFile(stringList);
+            FileWriter.WriteToFile(stringList, "Online Ordering Logs", "OnlineOrderingLogs ");
             stringList.Clear();
         }
     }

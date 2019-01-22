@@ -9,19 +9,19 @@ enum eLicenceType {eEftpos, eLoyalty, eAccounts, eTimeTracking, eChefmate, eProp
                     ePosHandHeld, eFiscal, eWebMat, ePocketVoucher, eBarExchange, eRunRateBoard, eOnlineOrdering};
 
 //License Sub Types
-enum eEFTPOS { eEftpostNZ = 1, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom,
+enum eEFTPOS { eEftpostNZ, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom,
                 eDPSPaymentExpress, eEFTPOSSmartpay,eEFTPOSSmartConnect, eEFTPOSAdyen, eEFTPOSPaymentSense};
 
-enum eLoyalty {eMenumateLoyaltyLocal = 1, eMenumateLoyaltyLocalSubscription, eMenumateLoyaltyMateWeb, eMenuMateClubMembership,
+enum eLoyalty {eMenumateLoyaltyLocal, eMenumateLoyaltyLocalSubscription, eMenumateLoyaltyMateWeb, eMenuMateClubMembership,
                 eEBetGamingMembership, eCasinoExternalMembership };
 
-enum eAccounts { eXero = 1, eMYOB, ePeachtree  };
+enum eAccounts { eXero, eMYOB, ePeachtree  };
 
-enum ePropertyManagement { eMotelMate = 1, eSihot, eOracle, eMews };
+enum ePropertyManagement { eMotelMate, eSihot, eOracle, eMews };
 
-enum eRooms { eStrait = 1, eNewBook };
+enum eRooms { eStrait, eNewBook };
 
-enum eFiscal {  ePOSPlus = 1, eFiscalPrinter, eAustriaPrinter };
+enum eFiscal {  ePOSPlus, eFiscalPrinter, eAustriaPrinter };
 
 struct TLicenceSetting
 {
@@ -47,11 +47,11 @@ struct TTerminal
 {
      AnsiString Name;
      AnsiString Description;
-     AnsiString TerminalCode;
+     AnsiString StaffName;
      AnsiString MacAdress;
      AnsiString ComputerName;
      AnsiString OperatingSystemName;
-     AnsiString MenumateVersionSystemName;
+     AnsiString MenumateVersion;
      long SiteId;
     // Site Site;
      long TerminalProfileId;

@@ -1,4 +1,4 @@
-﻿namespace MenumateServices.DTO.MenumateRegistration.Enums
+﻿namespace RegistrationIntegration.Enums
 {
     public enum Eftpos
     {

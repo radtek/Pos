@@ -210,6 +210,7 @@
     <Compile Include="DTO\MenumateRegistration\Enums\LicenceType.cs" />
     <Compile Include="DTO\MenumateRegistration\LicenceSetting.cs" />
     <Compile Include="DTO\MenumateRegistration\LicenceSettingMapping.cs" />
+    <Compile Include="DTO\MenumateRegistration\RegistrationResponse.cs" />
     <Compile Include="DTO\MenumateRegistration\Site.cs" />
     <Compile Include="DTO\MenumateRegistration\Terminal.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\FileReader.cs" />
@@ -242,6 +243,8 @@
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyOnlineOrdering.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
+    <Compile Include="Internal Classes\Registration\TerminalRegistrationResponsive.cs" />
+    <Compile Include="Internal Classes\Registration\TerminalRegistration.cs" />
     <Compile Include="MenumateServiceRegistrationIntegration.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -491,6 +494,10 @@
     <ProjectReference Include="..\PocketVoucherIntegration\PocketVoucherIntegration.csproj">
       <Project>{FDC94DD6-180E-4E83-9D28-091BDDFC13DE}</Project>
       <Name>PocketVoucherIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RegistrationIntegration\RegistrationIntegration.csproj">
+      <Project>{62C5705D-07E1-4916-8113-8B15172A279B}</Project>
+      <Name>RegistrationIntegration</Name>
     </ProjectReference>
     <ProjectReference Include="..\SalesForceCommunication\SalesForceCommunication.csproj">
       <Project>{FD3662F2-D048-4ECA-86C6-A44611DE5B4B}</Project>
