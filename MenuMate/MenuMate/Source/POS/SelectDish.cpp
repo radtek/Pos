@@ -135,8 +135,7 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "OnlineOrderDocketPrinter.h"
-#include "DBRegistration.h"
-#include "RegistrationIntegrationManager.h"
+//#include "DBRegistration.h"
 // ---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -16554,8 +16553,8 @@ void TfrmSelectDish::CheckRegisteration()
 
 void TfrmSelectDish::UploadRegistrationInfo()
 {
-//    try
-//    {
+    try
+    {
 //        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
 //	    dBTransaction.StartTransaction();
 ////        if (!TDeviceRealTerminal::Instance().Menus->GetMenusExist(dBTransaction))
@@ -16588,10 +16587,10 @@ void TfrmSelectDish::UploadRegistrationInfo()
 //            loyaltyMateInterface = NULL;
 ////        }
 //        dBTransaction.Commit();
-//    }
-//    catch(Exception &E)
-//	{
-//		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//		throw;
-//	}
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
 }

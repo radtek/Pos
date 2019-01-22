@@ -3,31 +3,31 @@
 
 #pragma hdrstop
 #include "DeviceRealTerminal.h"
-#include "RegistrationIntegrationManager.h"
+#include "RegistrationInterface.h"
 
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
-TRegistrationIntegrationManager::TRegistrationIntegrationManager()
+TRegistrationInterface::TRegistrationInterface()
 {
     InitRegClient();
 }
 //---------------------------------------------------------------------------
-TRegistrationIntegrationManager::~TRegistrationIntegrationManager()
+TRegistrationInterface::~TRegistrationInterface()
 {
 //
 }
 //------------------------------------------------------------------------
-void TRegistrationIntegrationManager::InitRegClient()
+void TRegistrationInterface::InitRegClient()
 {
     bool useWSDL = false;
     AnsiString registrationURL = "http://localhost:8749/MenumateServices/RegistrationService";
     registrationClient = GetIRegistrationIntegrationWebService(useWSDL, registrationURL, NULL );
 }
 //-----------------------------------------------------------------------
-bool TRegistrationIntegrationManager::UploadRegistrationInfo(TTerminal terminalInfo)
+MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTerminal terminalInfo)
 {
     RegistrationResponse *wcfResponse;
     try
@@ -78,16 +78,15 @@ bool TRegistrationIntegrationManager::UploadRegistrationInfo(TTerminal terminalI
         wcfResponse = registrationClient->UpdateTerminalRegistrationInfo(SyndicateCode, wcfInfo);
         delete wcfInfo;
         wcfInfo = NULL;
-        return true;//CreateMMResponse( wcfResponse );
+        return CreateMMResponse( wcfResponse );
     }
     catch( Exception& exc )
     {
        // return CreateExceptionFailedResponse( exc.Message );
     }
 }
-
 //-------------------------------------------------------------------------------------
-AnsiString TRegistrationIntegrationManager::GetSyndCodeForRegistration()
+AnsiString TRegistrationInterface::GetSyndCodeForRegistration()
 {
     AnsiString syndicateCode = "";
 
@@ -112,3 +111,13 @@ AnsiString TRegistrationIntegrationManager::GetSyndCodeForRegistration()
     }
     return syndicateCode;
 }
+//-----------------------------------------------------------------------------
+MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(RegistrationResponse* inWCFResponse )
+{
+    return MMRegistrationServiceResponse(
+                inWCFResponse->Successful,
+                AnsiString( inWCFResponse->Message.t_str() ),
+                AnsiString( inWCFResponse->Description.t_str() ),
+                ( MMRegistrationResponseCode )inWCFResponse->ResponseCode);
+}
+//---------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 {
     public enum LicenceType
     {
-        Eftpos,
+        Eftpos = 1,
         Loyalty,
         Accounting,
         TimeTracking,
