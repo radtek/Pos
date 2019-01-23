@@ -58,11 +58,14 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
                 licenseSetting->TerminalId = itLicenseSettingInfo->TerminalId;
                 licenseSetting->Text = itLicenseSettingInfo->Text;
                 licenseSetting->Value = itLicenseSettingInfo->Value;
-
+                   MessageBox(itLicenseSettingInfo->LicenceSettingSetting.Description,"1.3.1",MB_OK);
               //  LicenceSetting* setting = new LicenseSetting;
                 licenseSetting->LicenceSettingSetting->Description =  itLicenseSettingInfo->LicenceSettingSetting.Description;
+                MessageBox("1.3.2","1.3.2",MB_OK);
                 licenseSetting->LicenceSettingSetting->IsEnabledByDefault = itLicenseSettingInfo->LicenceSettingSetting.IsEnabledByDefault;
+                MessageBox("1.3.3","1.3.3",MB_OK);
                 licenseSetting->LicenceSettingSetting->Name =  itLicenseSettingInfo->LicenceSettingSetting.Name;
+                MessageBox("1.3.4","1.3.4",MB_OK);
                 licenseSetting->LicenceSettingSetting->SettingSubType = itLicenseSettingInfo->LicenceSettingSetting.SettingSubType;
                 licenseSetting->LicenceSettingSetting->SettingType =  itLicenseSettingInfo->LicenceSettingSetting.SettingType;
                 //itLicenseSettingInfo->LicenceSettingSetting.SettingType.;
@@ -77,7 +80,9 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
         }
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForRegistration();
+        MessageBox(SyndicateCode,"1.4",MB_OK);
         wcfResponse = registrationClient->UpdateTerminalRegistrationInfo(SyndicateCode, wcfInfo);
+        MessageBox("1.5","1.5",MB_OK);
         delete wcfInfo;
         wcfInfo = NULL;
         return CreateMMResponse( wcfResponse );

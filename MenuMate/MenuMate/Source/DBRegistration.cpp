@@ -38,13 +38,12 @@ TTerminal TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransacti
 //-----------------------------------------------------------------------------------------------
 std::list<TLicenceSettingMapping> TDBRegistration::GetLicenseSettingMappingList(Database::TDBTransaction &dbTransaction)
 {
+    std::list<TLicenceSettingMapping> licenseSettingMappingList;
     for(int i = eEftpos; i <= eOnlineOrdering; i++)
     {
-        std::list<TLicenceSettingMapping> licenseSettingMappingList;
-
         licenseSettingMappingList.push_back(GetLicenseSettingsMapping(dbTransaction));
     }
-
+    return licenseSettingMappingList;
 }
 //-------------------------------------------------------------------------------------------------
 TLicenceSettingMapping TDBRegistration::GetLicenseSettingsMapping(Database::TDBTransaction &dbTransaction)
