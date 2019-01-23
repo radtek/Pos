@@ -10,7 +10,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (21/01/2019 10:04:03 p.m. - - $Rev: 25127 $)
+// (22/01/2019 10:06:41 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -98,24 +98,7 @@ enum class RegistrationResponseCode   /* "http://schemas.datacontract.org/2004/0
 {
   Successful, 
   AuthenticationFailed, 
-  CreateMemberFailed, 
-  UpdateMemberFailed, 
-  DeleteMemberFailed, 
-  GetMemberFailed, 
-  PostTransactionFailed, 
-  MemberNotExist, 
-  CompanySyncFailed, 
-  InvalidGiftVoucher, 
-  InvalidPocketVoucher, 
-  TransactionFailed, 
-  GetGiftCardFailed, 
-  GetPocketVoucherFailed, 
-  MenuSyncingFailed, 
-  TaxSettingSyncingFailed, 
-  UpdateOnlineOrderStatusFailed, 
-  PostOnlineOrderInvoiceInfoFailed, 
-  MultipleGUIDExist, 
-  GUIDNotFound
+  RegistrationUpdateFailed
 };
 
 class RegistrationResponseCode_TypeInfoHolder : public TObject {

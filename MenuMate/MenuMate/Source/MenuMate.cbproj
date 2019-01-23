@@ -1204,10 +1204,6 @@
 				<DependentOn>RegistrationInterface.h</DependentOn>
 				<BuildOrder>785</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="RegistrationWSDL.cpp">
-				<DependentOn>RegistrationWSDL.h</DependentOn>
-				<BuildOrder>784</BuildOrder>
-			</CppCompile>
 			<CppCompile Include="RunRateTcpStreamSenderSettings.cpp">
 				<DependentOn>RunRateTcpStreamSenderSettings.h</DependentOn>
 				<BuildOrder>802</BuildOrder>
@@ -3451,6 +3447,10 @@
 			<CppCompile Include="RegistrationManager.cpp">
 				<DependentOn>RegistrationManager.h</DependentOn>
 				<BuildOrder>786</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="RegistrationWSDL.cpp">
+				<DependentOn>RegistrationWSDL.h</DependentOn>
+				<BuildOrder>787</BuildOrder>
 			</CppCompile>
 			<FormResources Include="TierLevels.dfm"/>
 			<FormResources Include="DelayedPaymentTabs.dfm"/>

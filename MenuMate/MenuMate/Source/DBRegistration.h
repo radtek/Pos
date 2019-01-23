@@ -3,9 +3,7 @@
 #ifndef DBRegistrationH
 #define DBRegistrationH
 #include "RegistrationAttributes.h"
-#include <IBDatabase.hpp>
-#include <IBQuery.hpp>
-#include "MM_DBCore.h"
+#include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 class TDBRegistration
 {

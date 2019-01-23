@@ -3,9 +3,8 @@
 
 #pragma hdrstop
 
-#include "DBRegistration.h"
-#include "DeviceRealTerminal.h"
 #include "MMLogging.h"
+#include "DBRegistration.h"
 
 //---------------------------------------------------------------------------
 
@@ -45,7 +44,7 @@ std::list<TLicenceSettingMapping> TDBRegistration::GetLicenseSettingMappingList(
     {
         licenseSettingMappingList.push_back(GetLicenseSettingsMapping(dbTransaction, i));
     }
-
+    return licenseSettingMappingList;
     return  licenseSettingMappingList;
 }
 //-------------------------------------------------------------------------------------------------

@@ -82,11 +82,11 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 {
 	FormResize(NULL);
 	pcSettings->ActivePage = tsMMConnection;
-  // LoadSettings();
+     LoadSettings();
   
    	tcCompanyNames->TabIndex = tcCompanyNames->Tabs->IndexOf(CurrentConnection.CompanyName);
-   	if (tcCompanyNames->TabIndex == -1) tcCompanyNames->TabIndex = 0;
-    tcCompanyNamesChange(NULL);
+   if (tcCompanyNames->TabIndex == -1) tcCompanyNames->TabIndex = 0;
+   tcCompanyNamesChange(NULL);
 }
 //---------------------------------------------------------------------------
 void TfrmSetup::LoadSettings()
@@ -100,18 +100,16 @@ void TfrmSetup::LoadSettings()
 	TStringList *CompanyNames = new TStringList;
 	try
 	{
-		if (RegistryGetKeys(OfficeKey, CompanyNames))
-		{
-			for (int i=0; i<CompanyNames->Count; i++)
-			{
-				tcCompanyNames->Tabs->Add(CompanyNames->Strings[i]);
+	 
+
+			  	tcCompanyNames->Tabs->Add("Menumate Office");
 
 				TConnectionDetails *CompanyDetails = new TConnectionDetails;
-				CompanyDetails->CompanyName = CompanyNames->Strings[i];
+				CompanyDetails->CompanyName = "Menumate Office";
 			  	LoadSettings(CompanyDetails);
-				CompanyDetailsList->Add(CompanyDetails);
-			}
-		}
+			   	CompanyDetailsList->Add(CompanyDetails);
+
+		
 	}
 	__finally
 	{

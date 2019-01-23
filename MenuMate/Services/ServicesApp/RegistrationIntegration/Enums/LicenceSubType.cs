@@ -2,7 +2,7 @@
 {
     public enum Eftpos
     {
-        Eftposnz = 1,
+        Eftposnz,
         Provenco,
         IngenicoandPceftposAustralia,
         CadmusKeylinkOneWay,
@@ -18,7 +18,7 @@
 
     public enum Loyalty
     {
-        MenumateLoyaltyLocal = 1,
+        MenumateLoyaltyLocal,
         MenumateLoyaltyLocalSubscription,
         MenumateLoyaltyMateWeb,
         MenuMateClubMembership,
@@ -28,14 +28,14 @@
 
     public enum Accounting
     {
-        Xero = 1,
+        Xero,
         Myob,
         Peachtree,
     }
 
     public enum PropertyManagement
     {
-        MotelMate = 1,
+        MotelMate,
         Sihot,
         Oracle,
         Mews
@@ -43,13 +43,13 @@
 
     public enum Rooms
     {
-        Strait = 1,
+        Strait,
         NewBook,
     }
 
     public enum Fiscal
     {
-        PosPlus = 1,
+        PosPlus,
         FiscalPrinter,
         AustriaPrinter,
     }

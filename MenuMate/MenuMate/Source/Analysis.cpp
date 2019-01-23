@@ -65,6 +65,7 @@
 
 #include <Math.hpp>
 #include "ServicesManager.h"
+#include "RegistrationManager.h"
 // ---------------------------------------------------------------------------
 #pragma comment(lib, "wininet")
 #pragma package(smart_init)
@@ -3183,6 +3184,10 @@ Zed:
 
 			if(CompleteZed)
 			{
+                //Checking POS Resgistration Status
+               std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+               mmRegistrationManager->CheckRegistrationStatus();
+
                UpdateMallExportDetails();
 
                 //Method for mall Design According to newly pattern
