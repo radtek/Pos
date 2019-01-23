@@ -30,6 +30,7 @@ struct TLicenceSetting
      bool IsEnabledByDefault;
      eLicenceType SettingType;
      int SettingSubType;
+     TLicenceSetting(): Name(""), Description(""),  IsEnabledByDefault(false),  SettingType(0), SettingSubType(0) {}
 };
 
 struct TLicenceSettingMapping
@@ -41,6 +42,7 @@ struct TLicenceSettingMapping
      bool IsEnabled;
      AnsiString Value;
      AnsiString Text;
+     TLicenceSettingMapping(): TerminalId(0), LicenceSettingId(0),  IsEnabled(false), Value(""),  Text(""){}
 };
 
 struct TTerminal
@@ -56,6 +58,8 @@ struct TTerminal
     // Site Site;
      long TerminalProfileId;
      std::list<TLicenceSettingMapping> LicenceSettingMappings;
+     TTerminal(): Name(""), Description(""), StaffName(""), MacAdress(""), ComputerName(""), OperatingSystemName(""), MenumateVersion(""),
+                  SiteId(0), TerminalProfileId(0){}
 };
 
 struct TSite
@@ -66,6 +70,7 @@ struct TSite
      long CompanyId;
      std::list<TTerminal> Terminals;
      long SiteProfileId;
+     TSite(): Name(""), Description(""), SiteCode(0), CompanyId(0), SiteProfileId(0){}
 };
 
 #endif
