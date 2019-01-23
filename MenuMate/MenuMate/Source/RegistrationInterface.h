@@ -11,7 +11,8 @@ enum MMRegistrationResponseCode
 {
   Successful = 1,
   AuthenticationFailed,
-  RegistrationUpdateFailed
+  RegistrationUpdateFailed,
+  FailedDueToException
 };
 
 
@@ -37,12 +38,15 @@ private:
     // initiates the registration  Client
     void InitRegClient();
     MMRegistrationServiceResponse CreateMMResponse(RegistrationResponse* inWCFResponse );
+    MMRegistrationServiceResponse CreateMMResponse(RegistrationWebResponse* inWCFResponse );
+    MMRegistrationServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
     AnsiString GetSyndCodeForRegistration();
 
 public:
     TRegistrationInterface();
     ~TRegistrationInterface();
     MMRegistrationServiceResponse UploadRegistrationInfo(TTerminalModel terminalInfo);
+    MMRegistrationServiceResponse ValidateCompanyInfo();
 };
 
 #endif

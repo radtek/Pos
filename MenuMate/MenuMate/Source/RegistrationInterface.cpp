@@ -106,10 +106,35 @@ AnsiString TRegistrationInterface::GetSyndCodeForRegistration()
 //-----------------------------------------------------------------------------
 MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(RegistrationResponse* inWCFResponse )
 {
-    return MMRegistrationServiceResponse(
-                inWCFResponse->Successful,
-                AnsiString( inWCFResponse->Message.t_str() ),
-                AnsiString( inWCFResponse->Description.t_str() ),
-                ( MMRegistrationResponseCode )inWCFResponse->ResponseCode);
+    return MMRegistrationServiceResponse(inWCFResponse->Successful, AnsiString( inWCFResponse->Message.t_str() ),
+                        AnsiString( inWCFResponse->Description.t_str() ), ( MMRegistrationResponseCode )inWCFResponse->ResponseCode);
 }
 //---------------------------------------------------------------------------
+MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(RegistrationWebResponse* inWCFResponse )
+{
+    return MMRegistrationServiceResponse(inWCFResponse->IsSuccessful, AnsiString( inWCFResponse->ResponseText.t_str() ), "", Successful);
+}
+//---------------------------------------------------------------------------
+MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo()
+{
+    try
+    {
+        RegistrationWebResponse* response;
+        CoInitialize(NULL);
+        AnsiString SyndicateCode = GetSyndCodeForRegistration();
+        response = registrationClient->ValidateCompanyInfo(SyndicateCode,TGlobalSettings::Instance().SiteID);
+        return CreateMMResponse( response );
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionFailedResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMRegistrationServiceResponse TRegistrationInterface::CreateExceptionFailedResponse(AnsiString inMessage )
+{
+   if(inMessage.Pos("XML") > 0 || inMessage.Pos("The handle") > 0 )
+   return MMRegistrationServiceResponse(false,"Not able to connect with server.","",FailedDueToException );
+   else
+     return MMRegistrationServiceResponse(false,inMessage,"",FailedDueToException );
+}

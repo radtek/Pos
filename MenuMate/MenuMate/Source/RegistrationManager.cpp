@@ -77,3 +77,40 @@ void TRegistrationManager::UploadRegistrationInfo()
 		throw;
 	}
 }
+//-----------------------------------------------------------------------
+void TRegistrationManager::ValidateCompanyInfo()
+{
+    try
+    {
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+	    dBTransaction.StartTransaction();
+
+        TMMProcessingState State(Screen->ActiveForm, "Validating Company Info Please Wait...", "Validating Company Info");
+        TDeviceRealTerminal::Instance().ProcessingController.Push(State);
+        AnsiString ErrorMessage;
+        TRegistrationInterface* registrationInterface = new TRegistrationInterface();
+        MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo();
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Registration Service");
+        }
+        else
+        {
+            if(createResponse.Description == "Failed to validate company info to server.")
+              ErrorMessage = "Failed to validate company to server.";
+            else
+              ErrorMessage = "Failed to validate company  to server.";
+            throw Exception(ErrorMessage);
+        }
+        delete registrationInterface;
+        registrationInterface = NULL;
+
+        dBTransaction.Commit();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
