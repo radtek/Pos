@@ -29,54 +29,39 @@ void TRegistrationInterface::InitRegClient()
     registrationClient = GetIRegistrationIntegrationWebService(useWSDL, registrationURL, NULL );
 }
 //-----------------------------------------------------------------------
-MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTerminal terminalInfo)
+MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTerminalModel terminalInfo)
 {
     RegistrationResponse *wcfResponse;
     try
     {
-        Terminal *wcfInfo = new Terminal();
+        TerminalModel *wcfInfo = new TerminalModel;
         wcfInfo->ComputerName = terminalInfo.ComputerName;
-        wcfInfo->Description = terminalInfo.Description;
         wcfInfo->MacAdress = terminalInfo.MacAdress;
         wcfInfo->MenumateVersion = terminalInfo.MenumateVersion;
-        wcfInfo->Name = terminalInfo.Name;
         wcfInfo->OperatingSystemName = terminalInfo.OperatingSystemName;
-        wcfInfo->SiteId = terminalInfo.SiteId;
         wcfInfo->StaffName = terminalInfo.StaffName;
-        wcfInfo->TerminalProfileId = terminalInfo.TerminalProfileId;
+        wcfInfo->SiteCode = terminalInfo.SiteCode;
+        wcfInfo->SyndicateCode = terminalInfo.SyndicateCode;
+        wcfInfo->TerminalDescription = terminalInfo.TerminalDescription;
+        wcfInfo->TerminalName = terminalInfo.TerminalName;
 
-        if(!terminalInfo.LicenceSettingMappings.empty())
+        if(!terminalInfo.LicenceSettingsModel.empty())
         {
-            ArrayOfLicenceSettingMapping licenseSettingMappingArray;
+            ArrayOfLicenceSettingModel licenseSettingModelArray;
 
-            for(std::list<TLicenceSettingMapping>::iterator itLicenseSettingInfo = terminalInfo.LicenceSettingMappings.begin();
-                    itLicenseSettingInfo != terminalInfo.LicenceSettingMappings.end(); ++itLicenseSettingInfo)
+            for(std::list<TLicenceSettingModel>::iterator itLicenseSettingInfo = terminalInfo.LicenceSettingsModel.begin();
+                    itLicenseSettingInfo != terminalInfo.LicenceSettingsModel.end(); ++itLicenseSettingInfo)
             {
-                LicenceSettingMapping* licenseSetting = new LicenceSettingMapping;
-                licenseSetting->IsEnabled = itLicenseSettingInfo->IsEnabled;
-                licenseSetting->LicenceSettingId = itLicenseSettingInfo->LicenceSettingId;
-                licenseSetting->TerminalId = itLicenseSettingInfo->TerminalId;
-                licenseSetting->Text = itLicenseSettingInfo->Text;
-                licenseSetting->Value = itLicenseSettingInfo->Value;
-                   MessageBox(itLicenseSettingInfo->LicenceSettingSetting.Description,"1.3.1",MB_OK);
-              //  LicenceSetting* setting = new LicenseSetting;
-                licenseSetting->LicenceSettingSetting->Description =  itLicenseSettingInfo->LicenceSettingSetting.Description;
-                MessageBox("1.3.2","1.3.2",MB_OK);
-                licenseSetting->LicenceSettingSetting->IsEnabledByDefault = itLicenseSettingInfo->LicenceSettingSetting.IsEnabledByDefault;
-                MessageBox("1.3.3","1.3.3",MB_OK);
-                licenseSetting->LicenceSettingSetting->Name =  itLicenseSettingInfo->LicenceSettingSetting.Name;
-                MessageBox("1.3.4","1.3.4",MB_OK);
-                licenseSetting->LicenceSettingSetting->SettingSubType = itLicenseSettingInfo->LicenceSettingSetting.SettingSubType;
-                licenseSetting->LicenceSettingSetting->SettingType =  itLicenseSettingInfo->LicenceSettingSetting.SettingType;
-                //itLicenseSettingInfo->LicenceSettingSetting.SettingType.;
-               // licenseSetting->LicenceSettingSetting = setting;
+                LicenceSettingModel* licenseSetting = new LicenceSettingModel;
 
-                licenseSetting->Terminal = new Terminal;
+                licenseSetting->IsActive = itLicenseSettingInfo->IsActive;
+                licenseSetting->SettingSubType = itLicenseSettingInfo->SettingSubType;
+                licenseSetting->SettingType = itLicenseSettingInfo->SettingType;
 
-                licenseSettingMappingArray.Length = (licenseSettingMappingArray.Length + 1);
-                licenseSettingMappingArray[licenseSettingMappingArray.Length - 1] = licenseSetting;
+                licenseSettingModelArray.Length = (licenseSettingModelArray.Length + 1);
+                licenseSettingModelArray[licenseSettingModelArray.Length - 1] = licenseSetting;
             }
-            wcfInfo->LicenceSettingMappings = licenseSettingMappingArray;
+            wcfInfo->LicenceSettingsModel = licenseSettingModelArray;
         }
         CoInitialize(NULL);
         AnsiString SyndicateCode = GetSyndCodeForRegistration();

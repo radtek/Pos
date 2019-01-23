@@ -6,11 +6,10 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd0
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd2
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd3
-//  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd4
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (22/01/2019 10:06:41 p.m. - - $Rev: 25127 $)
+// (23/01/2019 9:21:20 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -23,7 +22,6 @@
 
 
 namespace NS__RegistrationWSDL {
-
 
 _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(bool useWSDL, AnsiString addr, THTTPRIO* HTTPRIO)
 {
@@ -51,25 +49,11 @@ _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(boo
 }
 
 
-__fastcall Terminal::~Terminal()
+__fastcall TerminalModel::~TerminalModel()
 {
-  delete FSite;
-  for(int i=0; i<FLicenceSettingMappings.Length; i++)
-    if (FLicenceSettingMappings[i])
-      delete FLicenceSettingMappings[i];
-}
-
-__fastcall LicenceSettingMapping::~LicenceSettingMapping()
-{
-  delete FLicenceSettingSetting;
-  delete FTerminal;
-}
-
-__fastcall Site::~Site()
-{
-  for(int i=0; i<FTerminals.Length; i++)
-    if (FTerminals[i])
-      delete FTerminals[i];
+  for(int i=0; i<FLicenceSettingsModel.Length; i++)
+    if (FLicenceSettingsModel[i])
+      delete FLicenceSettingsModel[i];
 }
 
 // ************************************************************************ //
@@ -79,48 +63,36 @@ static void RegTypes()
 {
   /* IRegistrationIntegrationWebService */
   InvRegistry()->RegisterInterface(__delphirtti(IRegistrationIntegrationWebService), L"http://tempuri.org/", L"utf-8");
-  InvRegistry()->RegisterDefaultSOAPAction(__delphirtti(IRegistrationIntegrationWebService), L"http://tempuri.org/IRegistrationIntegrationWebService/UpdateTerminalRegistrationInfo");
+  InvRegistry()->RegisterDefaultSOAPAction(__delphirtti(IRegistrationIntegrationWebService), L"http://tempuri.org/IRegistrationIntegrationWebService/%operationName%");
   InvRegistry()->RegisterInvokeOptions(__delphirtti(IRegistrationIntegrationWebService), ioDocument);
-  /* LicenceType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(LicenceType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration.Enums", L"LicenceType");
   /* MMServiceResponse */
   RemClassRegistry()->RegisterXSClass(__classid(MMServiceResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO", L"MMServiceResponse");
   /* MMServiceResponse */
   RemClassRegistry()->RegisterXSClass(__classid(MMServiceResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO", L"MMServiceResponse2", L"MMServiceResponse");
-  /* ArrayOfLicenceSettingMapping */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingMapping), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingMapping");
-  /* Terminal */
-  RemClassRegistry()->RegisterXSClass(__classid(Terminal), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"Terminal");
-  /* LicenceSettingMapping */
-  RemClassRegistry()->RegisterXSClass(__classid(LicenceSettingMapping), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSettingMapping");
-  /* LicenceSetting */
-  RemClassRegistry()->RegisterXSClass(__classid(LicenceSetting), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSetting");
-  /* ArrayOfTerminal */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTerminal), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfTerminal");
-  /* Site */
-  RemClassRegistry()->RegisterXSClass(__classid(Site), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"Site");
+  /* ArrayOfLicenceSettingModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingModel");
+  /* TerminalModel */
+  RemClassRegistry()->RegisterXSClass(__classid(TerminalModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"TerminalModel");
+  /* LicenceSettingModel */
+  RemClassRegistry()->RegisterXSClass(__classid(LicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSettingModel");
   /* RegistrationResponseCode */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(RegistrationResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponseCode");
   /* RegistrationResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RegistrationResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponse");
-  /* Terminal */
-  RemClassRegistry()->RegisterXSClass(__classid(Terminal2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"Terminal2", L"Terminal");
-  /* LicenceSettingMapping */
-  RemClassRegistry()->RegisterXSClass(__classid(LicenceSettingMapping2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSettingMapping2", L"LicenceSettingMapping");
-  /* LicenceSetting */
-  RemClassRegistry()->RegisterXSClass(__classid(LicenceSetting2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSetting2", L"LicenceSetting");
-  /* Site */
-  RemClassRegistry()->RegisterXSClass(__classid(Site2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"Site2", L"Site");
+  /* RegistrationWebResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(RegistrationWebResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationWebResponse");
+  /* TerminalModel */
+  RemClassRegistry()->RegisterXSClass(__classid(TerminalModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"TerminalModel2", L"TerminalModel");
+  /* LicenceSettingModel */
+  RemClassRegistry()->RegisterXSClass(__classid(LicenceSettingModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSettingModel2", L"LicenceSettingModel");
   /* RegistrationResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RegistrationResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponse2", L"RegistrationResponse");
-  /* LicenceType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(LicenceType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration.Enums", L"LicenceType");
-  /* ArrayOfTerminal */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTerminal), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfTerminal");
+  /* RegistrationWebResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(RegistrationWebResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationWebResponse2", L"RegistrationWebResponse");
+  /* ArrayOfLicenceSettingModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingModel");
   /* RegistrationResponseCode */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(RegistrationResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponseCode");
-  /* ArrayOfLicenceSettingMapping */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingMapping), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingMapping");
 }
 #pragma startup RegTypes 32
 

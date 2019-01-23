@@ -8,7 +8,7 @@
 class TDBRegistration
 {
 public:
-    static TTerminal GetTerminalInfo(Database::TDBTransaction &dbTransaction);
+    static TTerminalModel GetTerminalInfo(Database::TDBTransaction &dbTransaction);
 private:
     static std::list<TLicenceSettingMapping> GetLicenseSettingMappingList(Database::TDBTransaction &dbTransaction);
     static TLicenceSettingMapping GetLicenseSettingsMapping(Database::TDBTransaction &dbTransaction, int licenceType);

@@ -10,22 +10,22 @@
 
 #pragma package(smart_init)
 
-TTerminal TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransaction)
+TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransaction)
 {
-    TTerminal terminalInfo;
+    TTerminalModel terminalInfo;
     try
     {
-        terminalInfo.Name = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.Description = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.StaffName = TDeviceRealTerminal::Instance().User.Name;
-//        terminalInfo.MacAdress = TDeviceRealTerminal::Instance();  to do
-        terminalInfo.ComputerName = TDeviceRealTerminal::Instance().ID.ComputerName;
-//        terminalInfo.OperatingSystemName = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
-        terminalInfo.MenumateVersion = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
-        terminalInfo.SiteId = TGlobalSettings::Instance().SiteID;
-        terminalInfo.TerminalProfileId = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        terminalInfo.LicenceSettingMappings = GetLicenseSettingMappingList(dbTransaction);
-//        terminalInfo.
+//        terminalInfo.Name = TDeviceRealTerminal::Instance().ID.Name;
+//        terminalInfo.Description = TDeviceRealTerminal::Instance().ID.Name;
+//        terminalInfo.StaffName = TDeviceRealTerminal::Instance().User.Name;
+////        terminalInfo.MacAdress = TDeviceRealTerminal::Instance();  to do
+//        terminalInfo.ComputerName = TDeviceRealTerminal::Instance().ID.ComputerName;
+////        terminalInfo.OperatingSystemName = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
+//        terminalInfo.MenumateVersion = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
+//        terminalInfo.SiteId = TGlobalSettings::Instance().SiteID;
+//        terminalInfo.TerminalProfileId = TDeviceRealTerminal::Instance().ID.ProfileKey;
+//        terminalInfo.LicenceSettingMappings = GetLicenseSettingMappingList(dbTransaction);
+////        terminalInfo.
 //        TGlobalSettings::Instance().SiteID;
     }
     catch(Exception &E)

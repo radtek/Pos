@@ -42,7 +42,7 @@ private:
 public:
     TRegistrationInterface();
     ~TRegistrationInterface();
-    MMRegistrationServiceResponse UploadRegistrationInfo(TTerminal terminalInfo);
+    MMRegistrationServiceResponse UploadRegistrationInfo(TTerminalModel terminalInfo);
 };
 
 #endif

@@ -73,5 +73,29 @@ struct TSite
      TSite(): Name(""), Description(""), SiteCode(0), CompanyId(0), SiteProfileId(0){}
 };
 
+struct TLicenceSettingModel
+{
+    AnsiString SettingType;
+    AnsiString SettingSubType;
+    bool IsActive;
+    TLicenceSettingModel(): SettingType(""), SettingSubType(""), IsActive(false){}
+};
+
+struct TTerminalModel
+{
+    long SiteCode;
+    AnsiString SyndicateCode;
+    AnsiString TerminalName;
+    AnsiString TerminalDescription;
+    AnsiString StaffName;
+    AnsiString MacAdress;
+    AnsiString ComputerName;
+    AnsiString OperatingSystemName;
+    AnsiString MenumateVersion;
+    std::list<TLicenceSettingModel> LicenceSettingsModel;
+    TTerminalModel(): SiteCode(0), SyndicateCode(""), TerminalName(""), TerminalDescription(""), StaffName(""), MacAdress(""),
+                        ComputerName(""), OperatingSystemName(""), MenumateVersion(""){}
+};
+
 #endif
 

@@ -210,9 +210,12 @@
     <Compile Include="DTO\MenumateRegistration\Enums\LicenceType.cs" />
     <Compile Include="DTO\MenumateRegistration\LicenceSetting.cs" />
     <Compile Include="DTO\MenumateRegistration\LicenceSettingMapping.cs" />
+    <Compile Include="DTO\MenumateRegistration\LicenseSettingModel.cs" />
+    <Compile Include="DTO\MenumateRegistration\RegistrationWebResponse.cs" />
     <Compile Include="DTO\MenumateRegistration\RegistrationResponse.cs" />
     <Compile Include="DTO\MenumateRegistration\Site.cs" />
     <Compile Include="DTO\MenumateRegistration\Terminal.cs" />
+    <Compile Include="DTO\MenumateRegistration\TerminalModel.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\FileReader.cs" />
     <Compile Include="DTO\OnlineOrdering\MenuModels\CourseInfo.cs" />
     <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDB.cs" />

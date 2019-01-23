@@ -11,7 +11,7 @@ namespace MenumateServices.WCFServices
     public class RegistrationIntegrationWebService : IRegistrationIntegrationWebService
     {
         private List<string> stringList = new List<string>();
-        public RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, Terminal terminalRegistrationInfo)
+        public RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, TerminalModel terminalRegistrationInfo)
         {
             try
             {
@@ -23,6 +23,23 @@ namespace MenumateServices.WCFServices
             {
                 ServiceLogger.LogException(exc.Message, exc);
                 stringList.Add("Exception in UpdateTerminalRegistrationInfo     " + exc.Message);
+                WriteAndClearStringList();
+            }
+            return null;
+        }
+
+        public RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
+        {
+            try
+            {
+                stringList.Add("-------------------------------------------------------Inside UpdateTerminalRegistrationInfo-------------------------------------------------------...");
+                WriteAndClearStringList();
+                return TerminalRegistration.Instance.ValidateCompanyInfo(inSyndicateCode, siteCode);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                stringList.Add("Exception in ValidateCompanyInfo     " + exc.Message);
                 WriteAndClearStringList();
             }
             return null;

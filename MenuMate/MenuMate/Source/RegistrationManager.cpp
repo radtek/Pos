@@ -50,7 +50,7 @@ void TRegistrationManager::UploadRegistrationInfo()
         TMMProcessingState State(Screen->ActiveForm, "Depicting registration verification in process Please Wait...", "Registration verification");
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
-        TTerminal terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
+        TTerminalModel terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
