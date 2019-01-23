@@ -452,6 +452,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsFiscalPostingDisable = TManagerVariable::Instance().GetBool(DBTransaction, vmIsFiscalPostingDisable, false);
 		TGlobalSettings::Instance().EnableStoreTicketPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableStoreTicketPosting, false);
         TGlobalSettings::Instance().IsRegistrationVerified = TManagerVariable::Instance().GetBool(DBTransaction, vmIsRegistrationVerified, false);
+        TGlobalSettings::Instance().IsCloudSyncRequired = TManagerVariable::Instance().GetBool(DBTransaction, vmIsCloudSyncRequired, false);
 
         }
 
