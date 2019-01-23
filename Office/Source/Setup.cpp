@@ -1528,7 +1528,7 @@ bool TfrmSetup::InitialiseCompanies()
 			RegistryGetKeys(OfficeKey, CompanyNames);
 			if (CompanyNames->Count == 0)
 			{
-				AnsiString NewName = InputBox("Company Name?", "Please enter the name or your company.", "");
+				AnsiString NewName = InputBox("Company Name?", "Please enter the name or your company.", "Menumate Office");
 				if (NewName != "")
 				{
 					if (CreateKey(OfficeKey + "\\" + NewName))
