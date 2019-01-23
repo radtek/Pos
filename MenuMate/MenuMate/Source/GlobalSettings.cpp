@@ -463,5 +463,6 @@ TGlobalSettings::TGlobalSettings()
     EnableStoreTicketPosting = false;
     PMSPostSuccessful = false;
     IsRegistrationVerified = false;
+    IsCloudSyncRequired = false;
 }
 

@@ -558,6 +558,7 @@ public:
     bool EnableStoreTicketPosting;
     bool PMSPostSuccessful;
     bool IsRegistrationVerified;
+    bool IsCloudSyncRequired;
 };
 
 #endif

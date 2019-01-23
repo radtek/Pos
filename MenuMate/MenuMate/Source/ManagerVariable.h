@@ -64,7 +64,7 @@ enum vmVariables
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,
 
 	// Kiosk ----------------------------------------------------------------
-	vmKioskDisplayMode = 2300,vmKioskMembershipMode = 2301,vmIsRegistrationVerified,
+	vmKioskDisplayMode = 2300,vmKioskMembershipMode = 2301,vmIsRegistrationVerified,vmIsCloudSyncRequired,
 
 	// Misc Equip   ----------------------------------------------------------------
 	vmPoleDisplayTopLine = 3000, vmPoleDisplayBottomLine, vmPoleDisplayPort, vmPoleDisplayEmulationMode, vmSerialKickPort,
