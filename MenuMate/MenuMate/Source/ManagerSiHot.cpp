@@ -179,25 +179,18 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-//        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
-//        {
-            AnsiString responseString = "";
-            responseString = roomResponse.ResponseMessage;
-            if(roomResponse.ResponseMessage == "")
-                responseString = "Sale could not get processed.Press OK to  process sale again";
-            if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
-               responseString.Pos("accountclosed") != 0)
-            {
-                responseString += "\rPlease try again or check your Default Room configuration.";
-                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-            }
-            if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
-                retValue = false;
-//        }
-//        else
-//        {
-//            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
-//        }
+        AnsiString responseString = "";
+        responseString = roomResponse.ResponseMessage;
+        if(roomResponse.ResponseMessage == "")
+            responseString = "Sale could not get processed.Press OK to  process sale again";
+        if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
+           responseString.Pos("accountclosed") != 0)
+        {
+            responseString += "\rPlease try again or check your Default Room configuration.";
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+        }
+        if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+            retValue = false;
     }
     return retValue;
 }
@@ -287,6 +280,10 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
 {   
     bool roomChargeSelected = false;
+
+    if(!CheckSihotPostingValidity(paymentTransaction))
+        return true;
+
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
     {
        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
@@ -635,7 +632,8 @@ UnicodeString TManagerSiHot::FormatStoreTicket(TMemoryStream *receipt)
                         receiptData += "";
                    }
                    else
-                        receiptData += Line[j];
+                        if((Line[j] >= 0x20 &&  Line[j] <= 0x7F))
+                            receiptData += Line[j];
                 }
             }
         }
@@ -788,4 +786,34 @@ AnsiString TManagerSiHot::GetReceiptForStoreTicket(UnicodeString invoiceNumber)
     }
 
     return receiptData;
+}
+bool TManagerSiHot::CheckSihotPostingValidity(TPaymentTransaction paymentTransaction)
+{
+    bool isNotCompleteCancel = false;
+    bool isOnlyPointsTransaction = false;
+    try
+    {
+        if(paymentTransaction.Orders->Count == 0 &&
+           (paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() != 0 || paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0))
+        {
+            isOnlyPointsTransaction = true;
+        }
+        if(!isOnlyPointsTransaction)
+        {
+            for(int indexOrder = 0; indexOrder < paymentTransaction.Orders->Count; indexOrder++)
+            {
+                TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[indexOrder];
+                if(itemComplete->OrderType != CanceledOrder)
+                {
+                   isNotCompleteCancel = true;
+                   break;
+                }
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return  !isOnlyPointsTransaction && isNotCompleteCancel;
 }

@@ -37,5 +37,6 @@ class TManagerSiHot : public TBasePMS
        void UpdatePMSTicketStatus(UnicodeString invoiceNumber, bool response);
        AnsiString GetReceiptForStoreTicket(UnicodeString invoiceNumber);
        UnicodeString FormatStoreTicket(TMemoryStream *receipt);
+       bool CheckSihotPostingValidity(TPaymentTransaction paymentTransaction);
 };
 #endif
