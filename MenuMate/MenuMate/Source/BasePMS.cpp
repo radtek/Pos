@@ -20,6 +20,7 @@ TBasePMS::TBasePMS() :fPhoenixNet(new TPhoenixNetTCPManager)
 //---------------------------------------------------------------------------
 TBasePMS::~TBasePMS()
 {
+
 }
 //---------------------------------------------------------------------------
 void TBasePMS::Initialise()
