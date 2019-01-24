@@ -32,7 +32,7 @@ TfrmSetup *frmSetup;
 __fastcall TfrmSetup::TfrmSetup(TComponent* Owner)
 	: TForm(Owner)
 {
-   	CompanyDetailsList	= new TList;
+	CompanyDetailsList	= new TList;
 	ServersList				= new TStringList;
 	RetrieveNamesThread	= new TRetrieveNamesThread(true);
 }
@@ -82,11 +82,10 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 {
 	FormResize(NULL);
 	pcSettings->ActivePage = tsMMConnection;
-     LoadSettings();
-  
-   	tcCompanyNames->TabIndex = tcCompanyNames->Tabs->IndexOf(CurrentConnection.CompanyName);
-   if (tcCompanyNames->TabIndex == -1) tcCompanyNames->TabIndex = 0;
-   tcCompanyNamesChange(NULL);
+	LoadSettings();
+	tcCompanyNames->TabIndex = tcCompanyNames->Tabs->IndexOf(CurrentConnection.CompanyName);
+	if (tcCompanyNames->TabIndex == -1) tcCompanyNames->TabIndex = 0;
+	tcCompanyNamesChange(NULL);
 }
 //---------------------------------------------------------------------------
 void TfrmSetup::LoadSettings()
@@ -100,16 +99,18 @@ void TfrmSetup::LoadSettings()
 	TStringList *CompanyNames = new TStringList;
 	try
 	{
-	 
-
-			  	tcCompanyNames->Tabs->Add("Menumate Office");
+		if (RegistryGetKeys(OfficeKey, CompanyNames))
+		{
+			for (int i=0; i<CompanyNames->Count; i++)
+			{
+				tcCompanyNames->Tabs->Add(CompanyNames->Strings[i]);
 
 				TConnectionDetails *CompanyDetails = new TConnectionDetails;
-				CompanyDetails->CompanyName = "Menumate Office";
-			  	LoadSettings(CompanyDetails);
-			   	CompanyDetailsList->Add(CompanyDetails);
-
-		
+				CompanyDetails->CompanyName = CompanyNames->Strings[i];
+				LoadSettings(CompanyDetails);
+				CompanyDetailsList->Add(CompanyDetails);
+			}
+		}
 	}
 	__finally
 	{
@@ -1062,9 +1063,88 @@ void __fastcall TfrmSetup::btnHangUpStockClick(TObject *Sender)
 		}
 	}
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnAddCompanyClick(TObject *Sender)
+{
+	AnsiString NewName = InputBox("Company Name?", "Please enter the name of the company.", "");
+	if (NewName != "")
+	{
+		if (!RegistryKeyExists(OfficeKey + "\\" + NewName))
+		{
+			if (!CreateKey(OfficeKey + "\\" + NewName))
+			{
+				Application->MessageBox("Could not add this company.", "Error", MB_OK + MB_ICONERROR);
+				return;
+			}
+		}
+		else
+		{
+			Application->MessageBox("This company already exists.", "Error", MB_OK + MB_ICONERROR);
+		}
+		SaveSettings();
+		LoadSettings();
+		for (int i=0; i<tcCompanyNames->Tabs->Count; i++)
+		{
+			if (tcCompanyNames->Tabs->Strings[i] == NewName)
+			{
+				tcCompanyNames->TabIndex = i;
+				break;
+			}
+		}
+		tcCompanyNamesChange(NULL);
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnEditCompanyClick(TObject *Sender)
+{
+	TConnectionDetails *CurrentCompany = GetCurrentCompany();
+	if (CurrentCompany)
+	{
+		AnsiString NewCompanyName = InputBox("Company Name?", "Please enter the new name of the company.", CurrentCompany->CompanyName);
+		if (NewCompanyName != "" && NewCompanyName != CurrentCompany->CompanyName)
+		{
+			SaveCurrentCompany();
+			if (!RegistryKeyExists(OfficeKey + "\\" + NewCompanyName))
+			{
+				SaveSettings();
+				RegistryMoveKey(OfficeKey + "\\" + CurrentCompany->CompanyName, OfficeKey + "\\" + NewCompanyName);
+				LoadSettings();
+				for (int i=0; i<tcCompanyNames->Tabs->Count; i++)
+				{
+					if (tcCompanyNames->Tabs->Strings[i] == NewCompanyName)
+					{
+						tcCompanyNames->TabIndex = i;
+						break;
+					}
+				}
+				tcCompanyNamesChange(NULL);
+			}
+			else
+			{
+				Application->MessageBox("This company already exists.", "Error", MB_OK + MB_ICONERROR);
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmSetup::btnDeleteCompanyClick(TObject *Sender)
+{
+	if (Application->MessageBox("This will perminantly remove this company's details.\r"
+										 "Are you sure you wish to continue?",
+										 "Delete?", MB_OKCANCEL + MB_ICONQUESTION) == ID_OK)
+	{
+		TConnectionDetails *CompanyDetails = GetCurrentCompany();
+		if (CompanyDetails)
+		{
+			if (RegistryDelete(OfficeKey + "\\" + CompanyDetails->CompanyName))
+			{
+				LoadSettings();
+				tcCompanyNamesChange(NULL);
+			}
+		}
+	}
 
-
-
+}
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
 {
@@ -1289,7 +1369,6 @@ void __fastcall TfrmSetup::btnConnectCompanyClick(TObject *Sender)
         TConnectionDetails *CurrentCompany = GetCurrentCompany();
         if (CurrentCompany)
         {
-            
             SaveSettings(CurrentCompany);
             CurrentConnection.CompanyName = CurrentCompany->CompanyName;
             CurrentConnection.LoadSettings();
@@ -1528,7 +1607,7 @@ bool TfrmSetup::InitialiseCompanies()
 			RegistryGetKeys(OfficeKey, CompanyNames);
 			if (CompanyNames->Count == 0)
 			{
-				AnsiString NewName = InputBox("Company Name?", "Please enter the name or your company.", "Menumate Office");
+				AnsiString NewName = InputBox("Company Name?", "Please enter the name or your company.", "");
 				if (NewName != "")
 				{
 					if (CreateKey(OfficeKey + "\\" + NewName))
@@ -2328,4 +2407,5 @@ bool TfrmSetup::ShowNoOfPriceLevelMessage()
     }
     return false;
 }
+
 
