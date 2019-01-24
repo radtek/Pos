@@ -34,7 +34,7 @@ void TRegistrationManager::CheckRegistrationStatus()
                 if(TGlobalSettings::Instance().IsCloudSyncRequired)
                 {
                     if(UploadRegistrationInfo(syndCode))
-                        TDBRegistration::UnSetIsCloudSyncRequiredFlag();
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
                 }
             }
             else
@@ -44,7 +44,7 @@ void TRegistrationManager::CheckRegistrationStatus()
                     TDBRegistration::SetIsIsRegistrationVerifiedFlag();
 
                     if(UploadRegistrationInfo(syndCode))
-                        TDBRegistration::UnSetIsCloudSyncRequiredFlag();
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
                 }
 
             }

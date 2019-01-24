@@ -4726,7 +4726,7 @@ void TfrmGeneralMaintenance::EnableOrDisableEFTPOS(bool Value)
 
     //Tracking Setting Changes In IsCloudSyncRequiredFlag
     if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-        TDBRegistration::SetIsCloudSyncRequiredFlag();
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 }
 //-----------------------------------------------------------------
 void TfrmGeneralMaintenance::SaveEFTPOSSettings()

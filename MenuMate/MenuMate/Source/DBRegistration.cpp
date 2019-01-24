@@ -766,32 +766,13 @@ AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
     return syndicateCode;
 }
 //---------------------------------------------------------------------------
-void TDBRegistration::SetIsCloudSyncRequiredFlag()
+void TDBRegistration::UpdateIsCloudSyncRequiredFlag(bool status)
 {
     Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
     tr.StartTransaction();
     try
     {
-        TGlobalSettings::Instance().IsCloudSyncRequired = true;
-        TManagerVariable::Instance().SetDeviceBool(tr,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
-        tr.Commit();
-
-    }
-    catch(Exception &Exc)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
-        tr.Rollback();
-        throw;
-    }
-}
-//---------------------------------------------------------------------------
-void TDBRegistration::UnSetIsCloudSyncRequiredFlag()
-{
-    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
-    tr.StartTransaction();
-    try
-    {
-        TGlobalSettings::Instance().IsCloudSyncRequired = false;
+        TGlobalSettings::Instance().IsCloudSyncRequired = status;
         TManagerVariable::Instance().SetDeviceBool(tr,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
         tr.Commit();
 
