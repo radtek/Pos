@@ -40,13 +40,11 @@ private:
     MMRegistrationServiceResponse CreateMMResponse(RegistrationResponse* inWCFResponse );
     MMRegistrationServiceResponse CreateMMResponse(RegistrationWebResponse* inWCFResponse );
     MMRegistrationServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
-    AnsiString GetSyndCodeForRegistration();
-
 public:
     TRegistrationInterface();
     ~TRegistrationInterface();
-    MMRegistrationServiceResponse UploadRegistrationInfo(TTerminalModel terminalInfo);
-    MMRegistrationServiceResponse ValidateCompanyInfo();
+    MMRegistrationServiceResponse UploadRegistrationInfo(TTerminalModel terminalInfo, AnsiString syndicateCode);
+    MMRegistrationServiceResponse ValidateCompanyInfo(AnsiString syndicateCode, int siteId);
 };
 
 #endif

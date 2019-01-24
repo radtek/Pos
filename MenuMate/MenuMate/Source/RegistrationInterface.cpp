@@ -29,7 +29,7 @@ void TRegistrationInterface::InitRegClient()
     registrationClient = GetIRegistrationIntegrationWebService(useWSDL, registrationURL, NULL );
 }
 //-----------------------------------------------------------------------
-MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTerminalModel terminalInfo)
+MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTerminalModel terminalInfo, AnsiString syndicateCode)
 {
     RegistrationResponse *wcfResponse;
     try
@@ -64,9 +64,7 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
             wcfInfo->LicenceSettingsModel = licenseSettingModelArray;
         }
         CoInitialize(NULL);
-        AnsiString SyndicateCode = GetSyndCodeForRegistration();
-        MessageBox(SyndicateCode,"1.4",MB_OK);
-        wcfResponse = registrationClient->UpdateTerminalRegistrationInfo(SyndicateCode, wcfInfo);
+        wcfResponse = registrationClient->UpdateTerminalRegistrationInfo(syndicateCode, wcfInfo);
         MessageBox("1.5","1.5",MB_OK);
         delete wcfInfo;
         wcfInfo = NULL;
@@ -78,32 +76,6 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
     }
 }
 //-------------------------------------------------------------------------------------
-AnsiString TRegistrationInterface::GetSyndCodeForRegistration()
-{
-    AnsiString syndicateCode = "";
-
-    //Register the database transaction..
-    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
-
-    try
-    {
-        TManagerSyndCode ManagerSyndicateCode;
-        ManagerSyndicateCode.Initialise(dbTransaction);
-        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
-        syndicateCode = currentSyndicateCode.GetSyndCode();
-        dbTransaction.Commit();
-    }
-    catch( Exception& exc )
-    {
-        dbTransaction.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
-		throw;
-    }
-    return syndicateCode;
-}
-//-----------------------------------------------------------------------------
 MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(RegistrationResponse* inWCFResponse )
 {
     return MMRegistrationServiceResponse(inWCFResponse->Successful, AnsiString( inWCFResponse->Message.t_str() ),
@@ -115,14 +87,13 @@ MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(Registrat
     return MMRegistrationServiceResponse(inWCFResponse->IsSuccessful, AnsiString( inWCFResponse->ResponseText.t_str() ), "", Successful);
 }
 //---------------------------------------------------------------------------
-MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo()
+MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
 {
     try
     {
         RegistrationWebResponse* response;
         CoInitialize(NULL);
-        AnsiString SyndicateCode = GetSyndCodeForRegistration();
-        response = registrationClient->ValidateCompanyInfo(SyndicateCode,TGlobalSettings::Instance().SiteID);
+        response = registrationClient->ValidateCompanyInfo(syndicateCode, siteId);
         return CreateMMResponse( response );
     }
     catch( Exception& exc )

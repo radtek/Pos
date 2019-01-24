@@ -245,10 +245,6 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
         //Checking POS Resgistration Status and company validation
         std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
-
-        if(!TGlobalSettings::Instance().IsRegistrationVerified)
-            mmRegistrationManager->ValidateCompanyInfo();
-
         mmRegistrationManager->CheckRegistrationStatus();
 
         Registered = TGlobalSettings::Instance().IsRegistrationVerified;
