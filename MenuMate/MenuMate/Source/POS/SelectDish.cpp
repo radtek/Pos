@@ -1324,6 +1324,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               }
 		}
 	}
+    CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeString inBarcode)

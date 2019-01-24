@@ -1139,7 +1139,8 @@ void TfrmTabManager::RefreshTabDetails()
 			if(LoginSuccess == LoginSuccess)
 			{
 				lbeTotalPoints->Caption = FloatToStrF(Member.Points.getPointsBalance(), ffFixed, 15, 2);
-				btnManInvoice->Enabled = true;
+                if(TGlobalSettings::Instance().IsRegistrationVerified)
+                    btnManInvoice->Enabled = true;
 			}
 		}
 		else
@@ -1892,6 +1893,7 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
      if(TGlobalSettings::Instance().IsRegistrationVerified)
         {
           btnSubsidisedProfile->Enabled   = true;
+           btnTabCredit->Enabled           = true;
 
         }
         btnChangeDetails->Enabled       = true;
@@ -1900,7 +1902,7 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
         btnLockTab->Enabled             = true;
         btnRemoveTab->Enabled           = true;
         btnPermanent->Enabled           = true;
-        btnTabCredit->Enabled           = true;
+
 
     }
 }
