@@ -13,12 +13,12 @@
 
 void TRegistrationManager::CheckRegistrationStatus()
 {
+    //Register the database transaction..
+    Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
     try
     {
-        //Register the database transaction..
-        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
-        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-        dbTransaction.StartTransaction();
         AnsiString syndCode = "";
 
         if(TGlobalSettings::Instance().SiteID)
@@ -41,7 +41,7 @@ void TRegistrationManager::CheckRegistrationStatus()
             {
                 if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
                 {
-                    TDBRegistration::SetIsIsRegistrationVerifiedFlag();
+                    TDBRegistration::SetIsIsRegistrationVerifiedFlag(dbTransaction);
 
                     if(UploadRegistrationInfo(syndCode))
                         TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
@@ -58,6 +58,8 @@ void TRegistrationManager::CheckRegistrationStatus()
     catch(Exception &Exc)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        dbTransaction.Rollback();
+        throw;
     }
 }
 //-----------------------------------------------------------------------

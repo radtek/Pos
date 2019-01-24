@@ -785,21 +785,17 @@ void TDBRegistration::UpdateIsCloudSyncRequiredFlag(bool status)
     }
 }
 //---------------------------------------------------------------------------
-void TDBRegistration::SetIsIsRegistrationVerifiedFlag()
+void TDBRegistration::SetIsIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction)
 {
-    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
-    tr.StartTransaction();
     try
     {
         TGlobalSettings::Instance().IsRegistrationVerified = true;
-        TManagerVariable::Instance().SetDeviceBool(tr,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
-        tr.Commit();
+        TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
 
     }
     catch(Exception &Exc)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
-        tr.Rollback();
         throw;
     }
 }
