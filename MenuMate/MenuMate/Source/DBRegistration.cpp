@@ -17,7 +17,7 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
     try
     {
         terminalInfo.SiteCode             = TGlobalSettings::Instance().SiteID;
-//        terminalInfo.SyndicateCode        = ;TO DO
+        terminalInfo.SyndicateCode        = GetSyndCode(dbTransaction);
         terminalInfo.TerminalName         = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.TerminalDescription  = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.StaffName            = TDeviceRealTerminal::Instance().User.Name;
@@ -742,5 +742,27 @@ bool TDBRegistration::GetPocketVoucherSetting(Database::TDBTransaction &dbTransa
 
 
 	return (status && URL != "");
+}
+//-------------------------------------------------------------------------------------
+AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
+{
+    AnsiString syndicateCode = "";
+
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(dbTransaction);
+        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        syndicateCode = currentSyndicateCode.GetSyndCode();
+    }
+    catch( Exception& exc )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
+		throw;
+    }
+    return syndicateCode;
 }
 
