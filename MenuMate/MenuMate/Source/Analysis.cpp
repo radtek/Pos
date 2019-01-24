@@ -3186,6 +3186,10 @@ Zed:
 			{
                 //Checking POS Resgistration Status
                std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+
+               if(!TGlobalSettings::Instance().IsRegistrationVerified)
+                    mmRegistrationManager->ValidateCompanyInfo();
+
                mmRegistrationManager->CheckRegistrationStatus();
 
                UpdateMallExportDetails();
