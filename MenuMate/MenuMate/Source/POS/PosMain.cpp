@@ -82,6 +82,7 @@ void __fastcall TfrmPOSMain::FormShow(TObject *Sender)
         tbtnTransfer->Enabled = false;
     MenuEdited = false;
     TransferSelected = false;
+    tbtnTransfer->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPOSMain::CardSwipe(Messages::TMessage& Message)

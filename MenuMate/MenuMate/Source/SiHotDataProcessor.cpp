@@ -66,11 +66,12 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     {
 
         TItemComplete *itemComplete = ((TItemComplete*)_paymentTransaction.Orders->Items[i]);
-//        double currentVAT = GetVATpercentage(itemComplete);
 
         // Cancelled orders should not get posted
         if(itemComplete->OrderType == CanceledOrder)
             continue;
+
+        ErrorCorrectionForItemDetails(itemComplete, billNo);
 
         bool AddDiscountPart        = AddItemToSiHotService(itemComplete,billNo,_roomCharge);
         if(AddDiscountPart)
@@ -84,6 +85,8 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
             // Cancelled orders should not get posted
             if(subItemComplete->OrderType ==  CanceledOrder)
                continue;
+
+            ErrorCorrectionForItemDetails(subItemComplete,billNo);
 
             bool AddDiscountPart = AddItemToSiHotService(subItemComplete,billNo,_roomCharge);
             if(AddDiscountPart)
@@ -130,10 +133,8 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
         }
     }
 
-    UnicodeString categoryCode        = itemComplete->RevenueCode;
+    UnicodeString categoryCode        = IntToStr(itemComplete->RevenueCode);
 
-    if(categoryCode == "")
-        categoryCode = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
     TSiHotService siHotService;
     siHotService.SuperCategory        = categoryCode;
     siHotService.SuperCategory_Desc   = "";
@@ -142,7 +143,8 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     if(TGlobalSettings::Instance().EnableItemDetailsPosting)
     {
         int alphaNumericCheck = 0;
-        if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+        if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 &&
+            itemComplete->ItemSizeIdentifierKey != NULL  /*&& TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck)*/)
         {
             siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
         }
@@ -297,7 +299,7 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         if(TGlobalSettings::Instance().EnableItemDetailsPosting)
         {
             int alphaNumericCheck = 0;
-            if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+            if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  /*&& TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck)*/)
             {
                 siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
             }
@@ -995,3 +997,105 @@ void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TSt
 }
 //----------------------------------------------------------------------------
 
+void TSiHotDataProcessor::ErrorCorrectionForItemDetails(TItemComplete* itemComplete, UnicodeString invoiceNumber)
+{
+    try
+    {
+        int revenueCode = itemComplete->RevenueCode;
+        int itemSizeIdentifier = itemComplete->ItemSizeIdentifierKey;
+        UnicodeString menuName = itemComplete->MenuName;
+        GetItemIdentifiersForSihot(itemComplete);
+        if(revenueCode != itemComplete->RevenueCode || itemSizeIdentifier != itemComplete->ItemSizeIdentifierKey ||
+            menuName.Trim() != itemComplete->MenuName.Trim())
+        {
+            LogErrorDetectioninFile(revenueCode, itemSizeIdentifier, menuName, itemComplete, invoiceNumber);
+        }
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+void TSiHotDataProcessor::GetItemIdentifiersForSihot(TItemComplete* itemComplete)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT a.REVENUECODE, a.ITEMSIZE_IDENTIFIER, m.MENU_NAME "
+                                 "FROM ITEMSIZE a "
+                                 "LEFT JOIN ITEM i on a.ITEM_KEY = i.ITEM_KEY "
+                                 "LEFT JOIN COURSE c on i.COURSE_KEY = c.COURSE_KEY "
+                                 "LEFT JOIN MENU m on c.MENU_KEY = m.MENU_KEY "
+                                 "WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME = :SIZE_NAME ";
+        SelectQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
+        SelectQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
+        SelectQuery->ExecQuery();
+
+        if(SelectQuery->RecordCount > 0)
+        {
+            itemComplete->RevenueCode = SelectQuery->FieldByName("REVENUECODE")->AsInteger;
+            UnicodeString identifierStr = SelectQuery->FieldByName("ITEMSIZE_IDENTIFIER")->AsString;
+            int identifierInt = 0;
+            bool isConverted = TryStrToInt(identifierStr, identifierInt);
+
+            if(isConverted)
+                itemComplete->ItemSizeIdentifierKey = identifierInt;
+            else
+                itemComplete->ItemSizeIdentifierKey = 0;
+            itemComplete->MenuName = SelectQuery->FieldByName("MENU_NAME")->AsString;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &Exc)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+void TSiHotDataProcessor::LogErrorDetectioninFile(int revenueCode, int itemSizeIdentifier, UnicodeString menuName,
+                                                    TItemComplete* itemComplete, UnicodeString invoiceNumber)
+{
+    try
+    {
+        AnsiString fileName = GetLogFileName();
+        std::auto_ptr<TStringList> List(new TStringList);
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+        UnicodeString itemName = itemComplete->Item + " (" + itemComplete->Size + ") ";
+        List->Add((AnsiString)"Invoice Number : " + (AnsiString)invoiceNumber);
+        List->Add((AnsiString)"Item Name :      " + (AnsiString)itemName);
+        List->Add("******Original Values******");
+        List->Add((AnsiString)"RevenuCode:                 " + (AnsiString)revenueCode);
+        List->Add((AnsiString)"ItemSizeIdentifier:         " + (AnsiString)itemSizeIdentifier);
+        List->Add((AnsiString)"MenuName:                   " + (AnsiString)menuName);
+        List->Add("******New Values******");
+        List->Add((AnsiString)"RevenuCode:                 " + (AnsiString)itemComplete->RevenueCode);
+        List->Add((AnsiString)"ItemSizeIdentifier:         " + (AnsiString)itemComplete->ItemSizeIdentifierKey);
+        List->Add((AnsiString)"MenuName:                   " + (AnsiString)itemComplete->MenuName);
+        List->Add("******************************************************");
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+AnsiString TSiHotDataProcessor::GetLogFileName()
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\Sihot Error Detection Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "ErrorDetection " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "\\" + name;
+    return fileName;
+}

@@ -87,7 +87,7 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
         else
         {
             if(createResponse.Description == "Failed to update registration info to server.")
-              ErrorMessage = "Failed to update registration to server.";
+              ErrorMessage = "Failed to update registration to server.";          //message to be changed..
             else
               ErrorMessage = "Failed to update registration to server.";
             throw Exception(ErrorMessage);
@@ -129,7 +129,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         else
         {
             if(createResponse.Description == "Failed to validate company info to server.")
-              ErrorMessage = "Failed to validate company to server.";
+              ErrorMessage = "Failed to validate company to server.";   //message to be changed..
             else
               ErrorMessage = "Failed to validate company  to server.";
             throw Exception(ErrorMessage);

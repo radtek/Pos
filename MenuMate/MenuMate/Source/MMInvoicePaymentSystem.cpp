@@ -58,9 +58,9 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
         {
             std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
             receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
-            receiptStream->Position = 0;
-            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
-            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(MasterPaymentTransaction.InvoiceNumber, ReceiptData);
+            //receiptStream->Position = 0;
+            //AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(MasterPaymentTransaction.InvoiceNumber, receiptStream.get());
         }
 	}
 

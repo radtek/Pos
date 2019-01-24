@@ -91,6 +91,9 @@ __published:	// IDE-managed Components
 	TTabSheet *tsPayrollSettings;
 	TPanel *Panel7;
 	TButton *btnConnectCompany;
+	TBitBtn *btnDeleteCompany;
+	TBitBtn *btnEditCompany;
+	TBitBtn *btnAddCompany;
 	TButton *btnAddRAS;
 	TButton *Button1;
 	TButton *btnSweepStock;
@@ -211,7 +214,7 @@ TButton *SyncStockLocation;
 	void __fastcall btnDialMMClick(TObject *Sender);
 	void __fastcall btnHangUpMMClick(TObject *Sender);
 	void __fastcall btnHangUpStockClick(TObject *Sender);
-
+	void __fastcall btnAddCompanyClick(TObject *Sender);
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall StaticText2Click(TObject *Sender);
 	void __fastcall StaticText1Click(TObject *Sender);
@@ -220,8 +223,8 @@ TButton *SyncStockLocation;
 	void __fastcall tcCompanyNamesChanging(TObject *Sender,
           bool &AllowChange);
 	void __fastcall btnConnectClick(TObject *Sender);
-
-
+	void __fastcall btnDeleteCompanyClick(TObject *Sender);
+	void __fastcall btnEditCompanyClick(TObject *Sender);
 	void __fastcall btnSelectSysDestPathClick(TObject *Sender);
 	void __fastcall Button1Click(TObject *Sender);
 	void __fastcall pcSettingsChange(TObject *Sender);
@@ -296,4 +299,5 @@ public:		// User declarations
 extern PACKAGE TfrmSetup *frmSetup;
 //---------------------------------------------------------------------------
 #endif
+
 

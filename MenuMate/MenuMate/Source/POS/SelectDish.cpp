@@ -1324,6 +1324,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               }
 		}
 	}
+    CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeString inBarcode)
@@ -13899,7 +13900,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-					        itemComplete->ReturnToAvailability();
+					    itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;
@@ -13959,7 +13960,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-                                                itemComplete->ReturnToAvailability();
+                        itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;
