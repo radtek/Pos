@@ -38,11 +38,18 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
 std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction)
 {
     std::list<TLicenceSettingModel> licenceSettingModelList;
-
-    for(int settingType = eEftpos; settingType <= eOnlineOrdering; settingType++)
+    try
     {
-        LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
+        for(int settingType = eEftpos; settingType <= eOnlineOrdering; settingType++)
+        {
+            LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
+        }
     }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
     return licenceSettingModelList;
 }
 //-------------------------------------------------------------------------------------------------
@@ -84,10 +91,10 @@ void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbT
                 {
                     LoadFloorPlanSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-////            case ePosCashier:
-////                {
-////                    LoadPosCashierSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
-////                }break;
+            case ePosCashier:
+                {
+                    LoadPosCashierSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
             case ePosOrder:
                 {
                     LoadPosOrderSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
@@ -298,6 +305,26 @@ void TDBRegistration::LoadFloorPlanSettingsForTerminal(Database::TDBTransaction 
         licenceSettingModel.SettingType       = licenceType;
         licenceSettingModel.SettingSubType    = "0";
         licenceSettingModel.IsActive          = TGlobalSettings::Instance().ReservationsEnabled;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadPosCashierSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = (!TGlobalSettings::Instance().EnableWaiterStation) ? true : false;
 
         licenceSettingModelList.push_back(licenceSettingModel);
 
@@ -749,7 +776,6 @@ AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
     AnsiString syndicateCode = "";
 
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
-    dbTransaction.StartTransaction();
 
     try
     {
@@ -781,15 +807,14 @@ void TDBRegistration::UpdateIsCloudSyncRequiredFlag(bool status)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
         tr.Rollback();
-        throw;
     }
 }
 //---------------------------------------------------------------------------
-void TDBRegistration::SetIsIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction)
+void TDBRegistration::UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction, bool status)
 {
     try
     {
-        TGlobalSettings::Instance().IsRegistrationVerified = true;
+        TGlobalSettings::Instance().IsRegistrationVerified = status;
         TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
 
     }

@@ -10,6 +10,7 @@
 #include "Processing.h"
 #include "PMSHelper.h"
 #include "GeneratorManager.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -188,6 +189,11 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
             {
                 responseString += "\rPlease try again or check your Default Room configuration.";
                 TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
             }
             if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
                 retValue = false;

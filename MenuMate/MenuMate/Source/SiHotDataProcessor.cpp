@@ -7,6 +7,7 @@
 #include "Math.h"
 #include "MMMessageBox.h"
 #include "GeneratorManager.h"
+#include "DBRegistration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -876,6 +877,11 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
                 TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber =
                                TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
                 TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
+
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 DBTransaction.Commit();
                 return true;
             }

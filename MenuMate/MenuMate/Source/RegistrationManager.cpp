@@ -41,7 +41,7 @@ void TRegistrationManager::CheckRegistrationStatus()
             {
                 if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
                 {
-                    TDBRegistration::SetIsIsRegistrationVerifiedFlag(dbTransaction);
+                    TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, true);
 
                     if(UploadRegistrationInfo(syndCode))
                         TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);

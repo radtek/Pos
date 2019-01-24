@@ -11,7 +11,7 @@ public:
     static TTerminalModel GetTerminalInfo(Database::TDBTransaction &dbTransaction);
     static AnsiString GetSyndCode(Database::TDBTransaction &dbTransaction);
     static void UpdateIsCloudSyncRequiredFlag(bool status);
-    static void SetIsIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction);
+    static void UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction, bool status);
 private:
     static std::list<TLicenceSettingModel>  GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction);
     static void LoadLicenseSettingsModelList(Database::TDBTransaction &dbTransaction , int licenceType, std::list<TLicenceSettingModel> &licenceSettingModelList);
@@ -29,7 +29,7 @@ private:
     static void LoadRoomSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static bool GetRoomSetting(int roomSubType);
     static void LoadFloorPlanSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
-//    static void LoadPosCashierSettingsForTerminal(Database::TDBTransaction &dbTransaction, TLicenceSettingMapping &licenseSettingMapping);
+    static void LoadPosCashierSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static void LoadPosOrderSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static void LoadPosHandHeldSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static bool GetPosHandHeldSetting(Database::TDBTransaction &dbTransaction);

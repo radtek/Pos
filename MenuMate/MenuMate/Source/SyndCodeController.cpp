@@ -6,6 +6,8 @@
 #include "SyndCodeController.h"
 #include "SyndCodeGui.h"
 #include "MMMessageBox.h"
+#include "DeviceRealTerminal.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -75,7 +77,15 @@ void TSyndCodeController::OnEdit(int SyndKey, int ColIndex)
    TModalResult Result = frmSyndCodeGui->ShowModal();
    if(Result == mrOk)
    {
+
+      if(ManagerSyndCode.CheckIfSynCodeEnabled(frmSyndCodeGui->SyndCode.SyndCodeKey) && !(frmSyndCodeGui->SyndCode.Enabled))
+      {   
+        //Unsetting IsRegistrationVerified Flag To Unregister POS
+        if(TGlobalSettings::Instance().IsRegistrationVerified)
+            TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
+      }
       ManagerSyndCode.UpdateCode(DBTransaction,frmSyndCodeGui->SyndCode);
+
       PopulateListManager();
    }
 }

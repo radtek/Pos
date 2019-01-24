@@ -9,6 +9,7 @@
 #include "MMTouchKeyboard.h"
 #include "FiscalPrinterAdapter.h"
 #include "SelectDish.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -127,6 +128,11 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
                 Database::TDBTransaction DBTransaction(DBControl);
                 DBTransaction.StartTransaction();
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 DBTransaction.Commit();
             }
             SyncTaxSettingWithWeb();
@@ -350,6 +356,11 @@ void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender
     Database::TDBTransaction DBTransaction(DBControl);
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
     DBTransaction.Commit();
     if(cbUseItalyFiscalPrinter->Checked)
     {

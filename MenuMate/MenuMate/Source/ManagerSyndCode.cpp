@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include <iterator>
 #include "blowfish.h"
+#include "DeviceRealTerminal.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -68,7 +69,7 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
    inSyndCode.SyndCodeKey = IBInternalQuery->Fields[0]->AsInteger;
 
    SyndCodes[inSyndCode.SyndCodeKey] = inSyndCode;
-   UpdateEncryptCode(DBTransaction,inSyndCode);   
+   UpdateEncryptCode(DBTransaction,inSyndCode);
 
    IBInternalQuery->Close();
    IBInternalQuery->SQL->Clear();
@@ -445,4 +446,66 @@ void TManagerSyndCode::ExportToFile(Database::TDBTransaction &DBTransaction,int 
     SyndStream->Write(Data.c_str(),Data.Length());
 	SyndStream->Position = 0;
     SyndStream->SaveToFile(FileName);
+}
+//-----------------------------------------------------------------------
+bool TManagerSyndCode::CheckIfAnySynCodeEnabled()
+{
+    bool retVal = true;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT ENABLED FROM SYNDCODES WHERE ENABLED = :STATUS ";
+
+        IBInternalQuery->ParamByName("STATUS")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount > 0)
+            retVal = false;
+
+         DBTransaction.Commit();
+
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+
+
+	return retVal;
+}
+//-----------------------------------------------------------------------
+bool TManagerSyndCode::CheckIfSynCodeEnabled(int key)
+{
+    bool retVal = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT ENABLED FROM SYNDCODES WHERE SYNDCODES_KEY = :KEY ";
+
+        IBInternalQuery->ParamByName("KEY")->AsInteger = key;
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->FieldByName("ENABLED")->AsString == "T")
+            retVal = true;
+
+         DBTransaction.Commit();
+
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+
+
+	return retVal;
 }

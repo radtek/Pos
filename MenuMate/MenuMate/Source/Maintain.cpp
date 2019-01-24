@@ -63,6 +63,7 @@
 #include "ManagerCloudSync.h"
 #include "SignalRUtility.h"
 #include "ManagerLocations.h"
+#include "DBRegistration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -883,6 +884,11 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 							}
 
 							TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmWebMateEnabled,TGlobalSettings::Instance().WebMateEnabled);
+
+                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 							DBTransaction.Commit();
 
 							//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1243,6 +1249,11 @@ void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 							DBTransaction.StartTransaction();
 							TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmReservationsEnabled,
 							TGlobalSettings::Instance().ReservationsEnabled);
+
+                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 							DBTransaction.Commit();
 
 							// ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1523,6 +1534,11 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
                     if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
                     pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
                     mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                     DBTransaction.Commit();
 					RefreshLoyaltyMateBtnColor();
 				}
@@ -2116,6 +2132,11 @@ bool TfrmMaintain::DisplayBarExchangeSettings(Database::TDBTransaction &DBTransa
 
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmBarExchangeEnabled,TGlobalSettings::Instance().BarExchangeEnabled);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 					DBTransaction.Commit();
 
 					//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2379,6 +2400,11 @@ bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransa
 
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmRunRateBoardEnabled,TGlobalSettings::Instance().IsRunRateBoardEnabled);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 					DBTransaction.Commit();
 
 					//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2693,6 +2719,8 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
                 TGlobalSettings::Instance().IsEnabledPeachTree = false;
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
+
+
             }
             else if(accountingType == eAccountingMYOB)
             {
@@ -2735,6 +2763,11 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 MessageBox("Failed to save MYOB Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
         }
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 	}
 	catch( Exception & Exc )
@@ -2916,6 +2949,11 @@ void TfrmMaintain::PeachTreeSettings()
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
+
+                        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                         DBTransaction.Commit();
                     }
                 }  break;
@@ -3231,6 +3269,11 @@ void TfrmMaintain::SelectPMSType()
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction1.StartTransaction();
         TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         DBTransaction1.Commit();
     }
 }
@@ -3432,6 +3475,11 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
 
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
     if(TGlobalSettings::Instance().EnableOnlineOrdering)
     {
         TManagerLocations locationManager;
@@ -3510,6 +3558,11 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
             MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
         }
         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         DBTransaction.Commit();
     }
     catch(Exception &Ex)
