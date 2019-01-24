@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (23/01/2019 9:21:20 p.m. - - $Rev: 25127 $)
+// (24/01/2019 11:43:58 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -357,7 +357,7 @@ typedef DelphiInterface<IRegistrationIntegrationWebService> _di_IRegistrationInt
 _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__
+};     // NS__RegistrationWSDL
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__RegistrationWSDL;
