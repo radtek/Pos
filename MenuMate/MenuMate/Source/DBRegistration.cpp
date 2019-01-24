@@ -743,7 +743,7 @@ bool TDBRegistration::GetPocketVoucherSetting(Database::TDBTransaction &dbTransa
 
 	return (status && URL != "");
 }
-//-------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
 {
     AnsiString syndicateCode = "";
@@ -764,5 +764,24 @@ AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
 		throw;
     }
     return syndicateCode;
+}
+//---------------------------------------------------------------------------
+void TDBRegistration::SetIsCloudSyncRequiredFlag()
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings::Instance().IsCloudSyncRequired = true;
+        TManagerVariable::Instance().SetDeviceBool(tr,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+        tr.Commit();
+
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        tr.Rollback();
+        throw;
+    }
 }
 

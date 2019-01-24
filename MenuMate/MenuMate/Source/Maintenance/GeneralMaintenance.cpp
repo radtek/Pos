@@ -39,6 +39,7 @@
 #include "PrintOut.h"
 #include "Comms.h"
 #include "EFTPOSConfiguration.h"
+#include "DBRegistration.h"
 #define semi_colon 0x3B
 
 //---------------------------------------------------------------------------
@@ -4722,6 +4723,10 @@ void TfrmGeneralMaintenance::EnableOrDisableEFTPOS(bool Value)
     else
         EnableOtherEFTPOS();
     SaveEFTPOSSettings();
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::SetIsCloudSyncRequiredFlag();
 }
 //-----------------------------------------------------------------
 void TfrmGeneralMaintenance::SaveEFTPOSSettings()

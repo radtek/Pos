@@ -9,6 +9,7 @@ class TDBRegistration
 {
 public:
     static TTerminalModel GetTerminalInfo(Database::TDBTransaction &dbTransaction);
+    static void SetIsCloudSyncRequiredFlag();
 private:
     static std::list<TLicenceSettingModel>  GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction);
     static void LoadLicenseSettingsModelList(Database::TDBTransaction &dbTransaction , int licenceType, std::list<TLicenceSettingModel> &licenceSettingModelList);
@@ -39,5 +40,6 @@ private:
     static void LoadRunRateBoardSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static void LoadOnlineOrderingSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static AnsiString GetSyndCode(Database::TDBTransaction &dbTransaction);
+
 };
 #endif
