@@ -10,8 +10,9 @@ namespace MenumateServices.WCFServices
     [ServiceContract]
     public interface IRegistrationIntegrationWebService
     {
-        //public UpdateRegistrationDetails(Site siteInfo);
         [OperationContract]
-        RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, Terminal terminalRegistrationInfo);
+        RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, TerminalModel terminalRegistrationInfo);
+        [OperationContract]
+        RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode);
     }
 }

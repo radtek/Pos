@@ -12,7 +12,8 @@ namespace MenumateServices.DTO.MenumateRegistration
     {
         Successful,
         AuthenticationFailed,
-        RegistrationUpdateFailed
+        RegistrationUpdateFailed,
+        CompanyInfoValidationFailed
     };
 
     [DataContract]

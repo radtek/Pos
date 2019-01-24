@@ -243,7 +243,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		UnicodeString pRegisteredName = "";
 //		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
 
-        //Checking POS Resgistration Status
+        //Checking POS Resgistration Status and company validation
         std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
         mmRegistrationManager->CheckRegistrationStatus();
 

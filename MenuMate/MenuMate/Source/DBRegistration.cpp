@@ -5,28 +5,27 @@
 
 #include "MMLogging.h"
 #include "DBRegistration.h"
+#include "ManagerPhysicalPrinter.h"
 
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
-TTerminal TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransaction)
+TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransaction)
 {
-    TTerminal terminalInfo;
+    TTerminalModel terminalInfo;
     try
     {
-        terminalInfo.Name = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.Description = TDeviceRealTerminal::Instance().ID.Name;
-        terminalInfo.StaffName = TDeviceRealTerminal::Instance().User.Name;
-//        terminalInfo.MacAdress = TDeviceRealTerminal::Instance();  to do
-        terminalInfo.ComputerName = TDeviceRealTerminal::Instance().ID.ComputerName;
-//        terminalInfo.OperatingSystemName = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
-        terminalInfo.MenumateVersion = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
-        terminalInfo.SiteId = TGlobalSettings::Instance().SiteID;
-        terminalInfo.TerminalProfileId = TDeviceRealTerminal::Instance().ID.ProfileKey;
-        terminalInfo.LicenceSettingMappings = GetLicenseSettingMappingList(dbTransaction);
-//        terminalInfo.
-//        TGlobalSettings::Instance().SiteID;
+        terminalInfo.SiteCode             = TGlobalSettings::Instance().SiteID;
+        terminalInfo.SyndicateCode        = GetSyndCode(dbTransaction);
+        terminalInfo.TerminalName         = TDeviceRealTerminal::Instance().ID.Name;
+        terminalInfo.TerminalDescription  = TDeviceRealTerminal::Instance().ID.Name;
+        terminalInfo.StaffName            = TDeviceRealTerminal::Instance().User.Name;
+//        terminalInfo.MacAdress            = GetMacAddress(); TO DO
+        terminalInfo.ComputerName         = TDeviceRealTerminal::Instance().ID.ComputerName;
+//        terminalInfo.OperatingSystemName  =  TO DO
+        terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
+        terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
     }
     catch(Exception &E)
 	{
@@ -36,92 +35,90 @@ TTerminal TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTransacti
     return terminalInfo;
 }
 //-----------------------------------------------------------------------------------------------
-std::list<TLicenceSettingMapping> TDBRegistration::GetLicenseSettingMappingList(Database::TDBTransaction &dbTransaction)
+std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction)
 {
-    std::list<TLicenceSettingMapping> licenseSettingMappingList;
+    std::list<TLicenceSettingModel> licenceSettingModelList;
 
-    for(int i = eEftpos; i <= eOnlineOrdering; i++)
+    for(int settingType = eEftpos; settingType <= eOnlineOrdering; settingType++)
     {
-        licenseSettingMappingList.push_back(GetLicenseSettingsMapping(dbTransaction, i));
+        LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
     }
-    return licenseSettingMappingList;
-    return  licenseSettingMappingList;
+    return licenceSettingModelList;
 }
 //-------------------------------------------------------------------------------------------------
-TLicenceSettingMapping TDBRegistration::GetLicenseSettingsMapping(Database::TDBTransaction &dbTransaction , int licenceType)
+void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbTransaction , int licenceType, std::list<TLicenceSettingModel> &licenceSettingModelList)
 {
-    TLicenceSettingMapping licenseSettingMapping;
     try
     {
         switch(licenceType)
         {
             case eEftpos:
                 {
-                    LoadEFTPosSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadEFTPosSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             case eLoyalty:
                 {
-                    LoadLoyaltySettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadLoyaltySettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             case eAccounts:
                 {
-                    LoadAccountsSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadAccountsSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             case eTimeTracking:
                 {
-                    LoadTimeTrackingSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadTimeTrackingSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-//            case eChefmate:
-//                {
-//                    LoadChefmateSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
+            case eChefmate:
+                {
+                    LoadChefmateSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
             case ePropertyManagement:
                 {
-                    LoadPropertyManagementSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadPropertyManagementSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-//            case eRoom:
-//                {
-//                    LoadeRoomSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
+            case eRoom:
+                {
+                    LoadRoomSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
             case eFloorPlan:
                 {
-                    LoadFloorPlanSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadFloorPlanSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-//            case ePosCashier:
-//                {
-//                    LoadPosCashierSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
+////            case ePosCashier:
+////                {
+////                    LoadPosCashierSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+////                }break;
             case ePosOrder:
                 {
-                    LoadPosOrderSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadPosOrderSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-//            case ePosHandHeld:
-//                {
-//                    LoadPosHandHeldSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
-//            case eFiscal:
-//                {
-//                    LoadFiscalSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
+            case ePosHandHeld:
+                {
+                    LoadPosHandHeldSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
+            case eFiscal:
+                {
+                    LoadFiscalSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
             case eWebMat:
                 {
-                    LoadWebMatSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadWebMatSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
-//            case ePocketVoucher:
-//                {
-//                    LoadPocketVoucherSettingsForTerminal(dbTransaction, licenseSettingMapping);
-//                }break;
+            case ePocketVoucher:
+                {
+                    LoadPocketVoucherSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
             case eBarExchange:
                 {
-                    LoadBarExchangeSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadBarExchangeSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             case eRunRateBoard:
                 {
-                    LoadRunRateBoardSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadRunRateBoardSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             case eOnlineOrdering:
                 {
-                    LoadOnlineOrderingSettingsForTerminal(dbTransaction, licenseSettingMapping);
+                    LoadOnlineOrderingSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             default:
             {
@@ -134,123 +131,23 @@ TLicenceSettingMapping TDBRegistration::GetLicenseSettingsMapping(Database::TDBT
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return licenseSettingMapping;
 }
 //---------------------------------------------------------------------
-TLicenceSetting TDBRegistration::GetLicenseSettings(Database::TDBTransaction &dbTransaction, AnsiString name, AnsiString description, bool status, int subType)
-{
-    TLicenceSetting licenseSetting;
-    try
-    {
-        licenseSetting.Name = name;
-        licenseSetting.Description = description;
-        licenseSetting.IsEnabledByDefault = status;
-        licenseSetting.SettingType = subType;
-       // licenseSetting.SettingSubTyp = 0;
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-    return licenseSetting;
-}
-//---------------------------------------------------------------------
-void TDBRegistration::LoadEFTPosSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadEFTPosSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
+        for(int eftposSubType = eEftpostNZ; eftposSubType <= eEFTPOSPaymentSense; eftposSubType++)
+        {
+            TLicenceSettingModel licenceSettingModel;
 
-        if(TGlobalSettings::Instance().EnableEftPosANZ)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS ANZ", "EFTPOS ANZ", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosSyncro)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS Provenco", "EFTPOS Provenco", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosIngenico)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS INGENICO", "EFTPOS INGENICO", false, eEftpos);
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = eftposSubType;
+            licenceSettingModel.IsActive          = GetEFTPosSetting(eftposSubType);
 
+            licenceSettingModelList.push_back(licenceSettingModel);
         }
-        else if(TGlobalSettings::Instance().EnableEftPosCadmus)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS CADMUS", "EFTPOS CADMUS", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosCadmusCronos)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS CADMUS CRONOS", "EFTPOS CADMUS CRONOS", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosIceLink)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS ICE LINK", "EFTPOS ICE LINK", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosDPS)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS DPS", "EFTPOS DPS", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosSmartPay)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS SMARTPAY", "EFTPOS SMARTPAY", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosSmartConnect)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS SMARTCONNECT", "EFTPOS SMARTCONNECT", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosAdyen)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS ADYEN", "EFTPOS ADYEN", false, eEftpos);
-        }
-        else if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "EFTPOS PAYMENT SENSE", "EFTPOS PAYMENT SENSE", false, eEftpos);
-        }
+
     }
     catch(Exception &E)
 	{
@@ -260,93 +157,19 @@ void TDBRegistration::LoadEFTPosSettingsForTerminal(Database::TDBTransaction &db
 
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadLoyaltySettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadLoyaltySettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
+        for(int loyaltySubType = eMenumateLoyaltyLocal; loyaltySubType <= eCasinoExternalMembership; loyaltySubType++)
+        {
+            TLicenceSettingModel licenceSettingModel;
 
-        if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-//            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eLoyalty);
-        }
-        else if(TGlobalSettings::Instance().MembershipType == MembershipTypeERS && TGlobalSettings::Instance().LoyaltyMateEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-//            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eLoyalty);
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = loyaltySubType;
+            licenceSettingModel.IsActive          = GetLoyaltySetting(loyaltySubType);
 
-        }
-        else if(TGlobalSettings::Instance().MembershipType == MembershipTypeEBet && TGlobalSettings::Instance().LoyaltyMateEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-//            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eLoyalty);
-        }
-        else if(TGlobalSettings::Instance().MembershipType == MembershipTypeExternal && TGlobalSettings::Instance().LoyaltyMateEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-//            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eLoyalty);
-        }
-//        else if(TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled)
-//        {
-//                   licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;
-//            licenseSettingMapping.Value = "";
-//            licenseSettingMapping.Text = "";
-//            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eLoyalty);
-//        }
-
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-//---------------------------------------------------------------------
-void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-{
-    try
-    {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-
-        if(TGlobalSettings::Instance().IsXeroEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Xero", "Xero", false, eAccounts);
-        }
-        else if(TGlobalSettings::Instance().IsMYOBEnabled)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "MYOB", "MYOB", false, eAccounts);
-
-        }
-        else if(TGlobalSettings::Instance().IsEnabledPeachTree)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Peach Tree", "Peach Tree", false, eAccounts);
-
+            licenceSettingModelList.push_back(licenceSettingModel);
         }
 
     }
@@ -357,104 +180,19 @@ void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadTimeTrackingSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;
-        licenseSettingMapping.IsEnabled = TManagerVariable::Instance().GetBool(dbTransaction,vmTrackSaleAndMakeTimes,false);
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Time Tracking", "Time Tracking", true, eTimeTracking);
-
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-////---------------------------------------------------------------------
-//void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-//{
-//    try
-//    {
-//        if(TGlobalSettings::Instance().IsXeroEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//        }
-//        else if(TGlobalSettings::Instance().IsMYOBEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//        else if(TGlobalSettings::Instance().IsEnabledPeachTree)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//
-//    }
-//    catch(Exception &E)
-//	{
-//		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//		throw;
-//	}
-//}
-//---------------------------------------------------------------------
-void TDBRegistration::LoadPropertyManagementSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-{
-    try
-    {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Phoenix)
+        for(int accountSubType = eXero; accountSubType <= ePeachtree; accountSubType++)
         {
-            licenseSettingMapping.LicenceSettingId = 1; //todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Phoenix", "Phoenix", false, ePropertyManagement);
-        }
-        else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
-        {
-            licenseSettingMapping.LicenceSettingId = 1; //todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "SiHot", "SiHot", false, ePropertyManagement);
+            TLicenceSettingModel licenceSettingModel;
 
-        }
-        else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Oracle)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Oracle", "Oracle", false, ePropertyManagement);
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = accountSubType;
+            licenceSettingModel.IsActive          = GetAccountSetting(accountSubType);
 
-        }
-        else if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Mews)
-        {
-            licenseSettingMapping.LicenceSettingId = 1;//todo
-            licenseSettingMapping.IsEnabled = true;
-            licenseSettingMapping.Value = "";
-            licenseSettingMapping.Text = "";
-            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Mews", "Mews", false, ePropertyManagement);
-
+            licenceSettingModelList.push_back(licenceSettingModel);
         }
 
     }
@@ -464,56 +202,18 @@ void TDBRegistration::LoadPropertyManagementSettingsForTerminal(Database::TDBTra
 		throw;
 	}
 }
-////---------------------------------------------------------------------
-//void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-//{
-//    try
-//    {
-//        if(TGlobalSettings::Instance().IsXeroEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//        }
-//        else if(TGlobalSettings::Instance().IsMYOBEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//        else if(TGlobalSettings::Instance().IsEnabledPeachTree)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//
-//    }
-//    catch(Exception &E)
-//	{
-//		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//		throw;
-//	}
-//}
 //---------------------------------------------------------------------
-void TDBRegistration::LoadFloorPlanSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadTimeTrackingSettingsForTerminal(Database::TDBTransaction &dbTransaction,  std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().ReservationsEnabled;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Floor Plan", "Floor Plan", false, eFloorPlan);
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TManagerVariable::Instance().GetBool(dbTransaction,vmTrackSaleAndMakeTimes,false);
+
+        licenceSettingModelList.push_back(licenceSettingModel);
 
     }
     catch(Exception &E)
@@ -523,16 +223,17 @@ void TDBRegistration::LoadFloorPlanSettingsForTerminal(Database::TDBTransaction 
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadPosOrderSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadChefmateSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().EnableWaiterStation;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Waiter Station", "Waiter Station", false, ePosOrder);
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = GetChefmateSetting(dbTransaction);
+
+        licenceSettingModelList.push_back(licenceSettingModel);
 
     }
     catch(Exception &E)
@@ -542,36 +243,20 @@ void TDBRegistration::LoadPosOrderSettingsForTerminal(Database::TDBTransaction &
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadFiscalSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadPropertyManagementSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Austria Fiscal", "Austria Fiscal", false, eFiscal);
-//        }
-//        else if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Italy Fiscal", "Italy Fiscal", false, eFiscal);
-//
-//        }
-//        else if(TGlobalSettings::Instance().)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eFiscal);
-//
-//        }
+        for(int propertySubType = eMotelMate; propertySubType <= eMews; propertySubType++)
+        {
+            TLicenceSettingModel licenceSettingModel;
+
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = propertySubType;
+            licenceSettingModel.IsActive          = GetPropertyManagementSetting(propertySubType);
+
+            licenceSettingModelList.push_back(licenceSettingModel);
+        }
 
     }
     catch(Exception &E)
@@ -581,74 +266,20 @@ void TDBRegistration::LoadFiscalSettingsForTerminal(Database::TDBTransaction &db
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadWebMatSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadRoomSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().WebMateEnabled;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "WebMate", "WebMate", false, eWebMat);
+        for(int roomSubType = eStrait; roomSubType <= eNewBook; roomSubType++)
+        {
+            TLicenceSettingModel licenceSettingModel;
 
-    }
-    catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		throw;
-	}
-}
-////---------------------------------------------------------------------
-//void TDBRegistration::LoadAccountsSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-//{
-//    try
-//    {
-//        if(TGlobalSettings::Instance().IsXeroEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//        }
-//        else if(TGlobalSettings::Instance().IsMYOBEnabled)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//        else if(TGlobalSettings::Instance().IsEnabledPeachTree)
-//        {
-//            licenseSettingMapping.LicenceSettingId = 1;//todo
-//            licenseSettingMapping.IsEnabled = true;//todo
-//            licenseSettingMapping.Value = "";//todo
-//            licenseSettingMapping.Text = "";//todo
-////            licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "", "", false, eAccounts);
-//
-//        }
-//
-//    }
-//    catch(Exception &E)
-//	{
-//		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//		throw;
-//	}
-//}
-//---------------------------------------------------------------------
-void TDBRegistration::LoadBarExchangeSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
-{
-    try
-    {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().BarExchangeEnabled;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Bar Exchange", "Bar Exchange", false, eBarExchange);
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = roomSubType;
+            licenceSettingModel.IsActive          = GetRoomSetting(roomSubType);
+
+            licenceSettingModelList.push_back(licenceSettingModel);
+        }
 
     }
     catch(Exception &E)
@@ -658,16 +289,17 @@ void TDBRegistration::LoadBarExchangeSettingsForTerminal(Database::TDBTransactio
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadRunRateBoardSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadFloorPlanSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().IsRunRateBoardEnabled;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "RunRate", "RunRate", false, eRunRateBoard);
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().ReservationsEnabled;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
 
     }
     catch(Exception &E)
@@ -677,16 +309,17 @@ void TDBRegistration::LoadRunRateBoardSettingsForTerminal(Database::TDBTransacti
 	}
 }
 //---------------------------------------------------------------------
-void TDBRegistration::LoadOnlineOrderingSettingsForTerminal(Database::TDBTransaction &dbTransaction,TLicenceSettingMapping &licenseSettingMapping)
+void TDBRegistration::LoadPosOrderSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
 {
     try
     {
-//        licenseSettingMapping.TerminalId = StrToInt(TDeviceRealTerminal::Instance().ID.TerminalID);
-        licenseSettingMapping.LicenceSettingId = 1;//todo
-        licenseSettingMapping.IsEnabled = TGlobalSettings::Instance().EnableOnlineOrdering;
-        licenseSettingMapping.Value = "";
-        licenseSettingMapping.Text = "";
-        licenseSettingMapping.LicenceSettingSetting = GetLicenseSettings(dbTransaction, "Online Ordering", "Online Ordering", false, eOnlineOrdering);
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().EnableWaiterStation;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
 
     }
     catch(Exception &E)
@@ -695,5 +328,475 @@ void TDBRegistration::LoadOnlineOrderingSettingsForTerminal(Database::TDBTransac
 		throw;
 	}
 }
+//---------------------------------------------------------------------
+void TDBRegistration::LoadPosHandHeldSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
 
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = GetPosHandHeldSetting(dbTransaction);
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadFiscalSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        for(int  fiscalSubType = ePOSPlus; fiscalSubType <= eAustriaPrinter; fiscalSubType++)
+        {
+            TLicenceSettingModel licenceSettingModel;
+
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = fiscalSubType;
+            licenceSettingModel.IsActive          = GetFiscalSetting(fiscalSubType);
+
+            licenceSettingModelList.push_back(licenceSettingModel);
+        }
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadWebMatSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().WebMateEnabled;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadPocketVoucherSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = GetPocketVoucherSetting(dbTransaction);
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadBarExchangeSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().BarExchangeEnabled;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadRunRateBoardSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().IsRunRateBoardEnabled;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//---------------------------------------------------------------------
+void TDBRegistration::LoadOnlineOrderingSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().EnableOnlineOrdering;
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetEFTPosSetting(int eftPosSubType)
+{
+    bool status;
+    switch(eftPosSubType)
+    {
+        case eEftpostNZ:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosANZ;
+            }break;
+        case eProvenco:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosSyncro;
+            }break;
+        case eIngenicoAndPCEFTPOSAustralia:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosIngenico;
+            }break;
+        case eCadmusKeylinkOneWay:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosCadmus;
+            }break;
+        case eCadmusCronos:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosCadmusCronos;
+            }break;
+        case eICELinkICE5000Hyperlcom:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosIceLink;
+            }break;
+        case eDPSPaymentExpress:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosDPS;
+            }break;
+        case eEFTPOSSmartpay:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosSmartPay;
+            }break;
+        case eEFTPOSSmartConnect:
+                    {
+                status = TGlobalSettings::Instance().EnableEftPosSmartConnect;
+            }break;
+        case eEFTPOSAdyen:
+            {
+                status = TGlobalSettings::Instance().EnableEftPosAdyen;
+            }break;
+        case eEFTPOSPaymentSense:
+                    {
+                status = TGlobalSettings::Instance().EnableEftPosPaymentSense;
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetLoyaltySetting(int loyaltySubType)
+{
+    bool status;
+    switch(loyaltySubType)
+    {
+        case eMenumateLoyaltyLocal:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && !TGlobalSettings::Instance().LoyaltyMateEnabled);
+            }break;
+        case eMenumateLoyaltyLocalSubscription:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().UseMemberSubs);
+            }break;
+        case eMenumateLoyaltyMateWeb:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate && TGlobalSettings::Instance().LoyaltyMateEnabled);
+            }break;
+        case eMenuMateClubMembership:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeERS);
+            }break;
+        case eEBetGamingMembership:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeEBet);
+            }break;
+        case eCasinoExternalMembership:
+            {
+                status = (TGlobalSettings::Instance().MembershipType == MembershipTypeExternal);
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetAccountSetting(int accountSubType)
+{
+    bool status;
+    switch(accountSubType)
+    {
+        case eXero:
+            {
+                status = TGlobalSettings::Instance().IsXeroEnabled;
+            }break;
+        case eMYOB:
+            {
+                status = TGlobalSettings::Instance().IsMYOBEnabled;
+            }break;
+        case ePeachtree:
+            {
+                status = TGlobalSettings::Instance().IsEnabledPeachTree;
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetChefmateSetting(Database::TDBTransaction &dbTransaction)
+{
+	TManagerPhysicalPrinter printerManager;
+ 	std::auto_ptr<TStringList>serverNameList(new TStringList);
+	printerManager.GetPrinterServerList(dbTransaction, serverNameList.get(), ptChefMate_Printer);
+
+	return serverNameList->Count > 0;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetPropertyManagementSetting(int propertySubType)
+{
+    bool status;
+    switch(propertySubType)
+    {
+        case eMotelMate:
+            {
+                status = (TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Phoenix);
+            }break;
+        case eSihot:
+            {
+                status = (TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot);
+            }break;
+        case eOracle:
+            {
+                status = (TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Oracle);
+            }break;
+        case eMews:
+            {
+                status = (TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == Mews);
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetRoomSetting(int roomSubType)
+{
+    bool status;
+    switch(roomSubType)
+    {
+        case eStrait:
+            {
+                status = (TGlobalSettings::Instance().NewBook == 1) ? true : false ;
+            }break;
+        case eNewBook:
+            {
+                status = (TGlobalSettings::Instance().NewBook == 2) ? true : false ;
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetPosHandHeldSetting(Database::TDBTransaction &dbTransaction)
+{
+    bool status = false;
+    try
+    {
+        TIBSQL *IBInternalQuery= dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT * FROM DEVICES WHERE DEVICE_TYPE = :POS_HAND_HELD ";
+
+        IBInternalQuery->ParamByName("POS_HAND_HELD")->AsInteger = 2;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount > 0)
+            status = true;
+
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+
+	return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetFiscalSetting(int fiscalSubType)
+{
+    bool status;
+    switch(fiscalSubType)
+    {
+        case ePOSPlus:
+            {
+                status = TGlobalSettings::Instance().IsFiscalStorageEnabled;
+            }break;
+        case eFiscalPrinter:
+            {
+                status = TGlobalSettings::Instance().UseItalyFiscalPrinter;
+            }break;
+        case eAustriaPrinter:
+            {
+                status = TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled;
+            }break;
+        default:
+            {
+                status = false;
+            }
+    }
+
+    return status;
+}
+//-----------------------------------------------------------------------
+bool TDBRegistration::GetPocketVoucherSetting(Database::TDBTransaction &dbTransaction)
+{
+    bool status = false;
+    AnsiString URL = TManagerVariable::Instance().GetStr(dbTransaction, vmPocketVoucherURL,
+     TDeviceRealTerminal::Instance().PocketVouchers->URL);
+    try
+    {
+        TIBSQL *IBInternalQuery= dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT PROPERTIES FROM PAYMENTTYPES ";
+
+
+        IBInternalQuery->ExecQuery();
+
+        for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+        {
+            if(IBInternalQuery->FieldByName("PROPERTIES")->AsString.Pos("-28-"))
+            {
+                status = true;
+                break;
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+
+	return (status && URL != "");
+}
+//---------------------------------------------------------------------------
+AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
+{
+    AnsiString syndicateCode = "";
+
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+
+    try
+    {
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(dbTransaction);
+        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        syndicateCode = currentSyndicateCode.GetSyndCode();
+    }
+    catch( Exception& exc )
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,exc.Message);
+		throw;
+    }
+    return syndicateCode;
+}
+//---------------------------------------------------------------------------
+void TDBRegistration::UpdateIsCloudSyncRequiredFlag(bool status)
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    tr.StartTransaction();
+    try
+    {
+        TGlobalSettings::Instance().IsCloudSyncRequired = status;
+        TManagerVariable::Instance().SetDeviceBool(tr,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+        tr.Commit();
+
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        tr.Rollback();
+        throw;
+    }
+}
+//---------------------------------------------------------------------------
+void TDBRegistration::SetIsIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction)
+{
+    try
+    {
+        TGlobalSettings::Instance().IsRegistrationVerified = true;
+        TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        throw;
+    }
+}
 

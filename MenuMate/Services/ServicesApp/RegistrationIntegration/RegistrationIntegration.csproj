@@ -66,8 +66,9 @@
     <Compile Include="Tools\ServiceLogger.cs" />
     <Compile Include="Utility\JsonUtility.cs" />
     <Compile Include="Utility\WebUtility.cs" />
-    <Compile Include="ViewModels\ApiLicenseSetting.cs" />
-    <Compile Include="ViewModels\ApiTerminalViewModel.cs" />
+    <Compile Include="Models\ApiLicenseSetting.cs" />
+    <Compile Include="Models\ApiRegistrationResponse.cs" />
+    <Compile Include="Models\ApiTerminalViewModel.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

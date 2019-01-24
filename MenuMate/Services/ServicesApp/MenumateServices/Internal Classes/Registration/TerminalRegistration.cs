@@ -41,7 +41,7 @@ namespace MenumateServices.Internal_Classes.Registration
         #region Public
 
 
-        public RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, Terminal terminalRegistrationInfo)
+        public RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, TerminalModel terminalRegistrationInfo)
         {
             try
             {
@@ -50,10 +50,21 @@ namespace MenumateServices.Internal_Classes.Registration
                 if (response)
                     return CreateResponseNoError();
                 else
-                    return CreateResponseError(
-                        "@Failed to registration info to server.",
-                        "",
-                        RegistrationResponseCode.RegistrationUpdateFailed);
+                    return CreateResponseError("@Failed to registration info to server.", "", RegistrationResponseCode.RegistrationUpdateFailed);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
+        {
+            try
+            {
+                IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
+                var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
+                return CreateRegistrationResponseNoError(response.IsSuccessful, response.Message);
             }
             catch (Exception ex)
             {
@@ -66,7 +77,7 @@ namespace MenumateServices.Internal_Classes.Registration
         #region private
 
         //Creating Menu View Models
-        private ApiTerminalViewModel CreateTerminalViewModel(Terminal terminalRegistrationInfo)
+        private ApiTerminalViewModel CreateTerminalViewModel(TerminalModel terminalRegistrationInfo)
         {
             var terminalViewModel = new ApiTerminalViewModel();
             try
@@ -75,15 +86,15 @@ namespace MenumateServices.Internal_Classes.Registration
                 terminalViewModel.MacAdress = terminalRegistrationInfo.MacAdress;
                 terminalViewModel.MenumateVersion = terminalRegistrationInfo.MenumateVersion;
                 terminalViewModel.OperatingSystemName = terminalRegistrationInfo.OperatingSystemName;
-                terminalViewModel.SiteCode = terminalRegistrationInfo.Site.SiteCode;
+                terminalViewModel.SiteCode = terminalRegistrationInfo.SiteCode;
                 //  terminalViewModel.SyndicateCode = terminalRegistrationInfo.Site.sy
                 terminalViewModel.StaffName = terminalRegistrationInfo.StaffName;
-                terminalViewModel.TerminalDescription = terminalRegistrationInfo.Description;
-                terminalViewModel.TerminalName = terminalRegistrationInfo.Name;
+                terminalViewModel.TerminalDescription = terminalRegistrationInfo.TerminalDescription;
+                terminalViewModel.TerminalName = terminalRegistrationInfo.TerminalName;
 
                 if (terminalViewModel.ApiLicenceSettings != null)
                 {
-                    foreach (var terminalSetting in terminalRegistrationInfo.LicenceSettingMappings)
+                    foreach (var terminalSetting in terminalRegistrationInfo.LicenceSettingsModel)
                     {
                         terminalViewModel.ApiLicenceSettings.Add(CreateTerminalSettingViewModel(terminalSetting));
                     }
@@ -97,14 +108,14 @@ namespace MenumateServices.Internal_Classes.Registration
             return terminalViewModel;
         }
 
-        private ApiLicenceSetting CreateTerminalSettingViewModel(LicenceSettingMapping licenseSettingInfo)
+        private ApiLicenceSetting CreateTerminalSettingViewModel(LicenceSettingModel licenseSettingInfo)
         {
             var licenseSettingViewModel = new ApiLicenceSetting();
             try
             {
-                licenseSettingViewModel.IsActive = licenseSettingInfo.LicenceSettingSetting.IsEnabledByDefault;
-                licenseSettingViewModel.SettingSubType = licenseSettingInfo.LicenceSettingSetting.Name;
-                licenseSettingViewModel.SettingType = licenseSettingInfo.Text;// LicenceSettingSetting.SettingType;
+                licenseSettingViewModel.IsActive = licenseSettingInfo.IsActive;
+                licenseSettingViewModel.SettingSubType = licenseSettingInfo.SettingSubType;
+                licenseSettingViewModel.SettingType = licenseSettingInfo.SettingType;// LicenceSettingSetting.SettingType;
             }
             catch (Exception ex)
             {
@@ -112,7 +123,16 @@ namespace MenumateServices.Internal_Classes.Registration
             }
             return licenseSettingViewModel;
         }
-       
+
+        private RegistrationWebResponse CreateRegistrationResponseNoError(bool inSuccesful, string inMessage)
+        {
+            return new RegistrationWebResponse
+            {
+                IsSuccessful = inSuccesful,
+                ResponseText = inMessage
+            };
+        }
+
         #endregion
     }
 }
