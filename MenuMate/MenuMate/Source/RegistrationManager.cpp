@@ -15,6 +15,11 @@ void TRegistrationManager::CheckRegistrationStatus()
 {
     try
     {
+        //Register the database transaction..
+        Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+        TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+        dbTransaction.StartTransaction();
+
         //Checking POS Resgistration Status
         if(TGlobalSettings::Instance().IsRegistrationVerified)
         {
@@ -28,7 +33,7 @@ void TRegistrationManager::CheckRegistrationStatus()
         {
             if(TGlobalSettings::Instance().SiteID)
             {
-                AnsiString syndCode = GetSyndCodeForRegistration();
+                AnsiString syndCode = TDBRegistration::GetSyndCode(dbTransaction);
 
                 if(syndCode.Trim() != "")
                     ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID);
@@ -36,6 +41,7 @@ void TRegistrationManager::CheckRegistrationStatus()
                     MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
             }
         }
+        dbTransaction.Commit();
     }
     catch(Exception &Exc)
     {
