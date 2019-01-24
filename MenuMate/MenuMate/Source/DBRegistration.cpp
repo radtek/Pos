@@ -21,9 +21,9 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
         terminalInfo.TerminalName         = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.TerminalDescription  = TDeviceRealTerminal::Instance().ID.Name;
         terminalInfo.StaffName            = TDeviceRealTerminal::Instance().User.Name;
-//        terminalInfo.MacAdress            = GetMacAddress(); TO DO
+        terminalInfo.MacAdress            = GetMACaddress();
         terminalInfo.ComputerName         = TDeviceRealTerminal::Instance().ID.ComputerName;
-//        terminalInfo.OperatingSystemName  =  TO DO
+        terminalInfo.OperatingSystemName  = GetOperatingSystemName();
         terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
         terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
     }
@@ -823,5 +823,87 @@ void TDBRegistration::UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction 
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
         throw;
     }
+}
+//---------------------------------------------------------------------
+AnsiString TDBRegistration::GetMACaddress()
+{
+    AnsiString retVal;
+    try
+    {
+        char mac_address[18];
+
+        UUID uuid;
+        UuidCreateSequential( &uuid );    // Ask OS to create UUID
+
+        // Bytes 2 through 7 inclusive are MAC address
+        sprintf(mac_address,"%02X:%02X:%02X:%02X:%02X:%02X",uuid.Data4[2],uuid.Data4[3],uuid.Data4[4],uuid.Data4[5],uuid.Data4[6],uuid.Data4[7]);
+
+        retVal = mac_address;
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        throw;
+    }
+  MessageBox(retVal,"Mac Address",MB_OK);
+  return  retVal;
+
+}
+//----------------------------------------------------------------------
+AnsiString TDBRegistration::GetOperatingSystemName()
+{
+    AnsiString retValue = "";
+    try
+    {
+        OSVERSIONINFOEX info;
+        ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
+        info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+        GetVersionEx((LPOSVERSIONINFO)&info);//info requires typecasting
+
+        double version;
+
+        version = info.dwMajorVersion + (info.dwMinorVersion / 10.0);
+
+        if(version == 5)
+            retValue = "Windows 2000";
+        else if(version == 5.1)
+            retValue = "Windows XP";
+        else if(version == 5.2 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows XP Professional x64 Edition";
+        else if(version == 5.2 && (GetSystemMetrics(SM_SERVERR2) == 0))
+            retValue = "Windows Server 2003";
+        else if(version == 5.2 && (info.wSuiteMask & VER_SUITE_WH_SERVER))
+            retValue = "Windows Home Server";
+        else if(version == 5.2 && (GetSystemMetrics(SM_SERVERR2) != 0))
+            retValue = "Windows Server 2003 R2";
+        else if(version == 6.0 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows Vista";
+        else if(version == 6.0 && (info.wProductType != VER_NT_WORKSTATION))
+            retValue = "Windows Server 2008";
+        else if(version == 6.1 && (info.wProductType != VER_NT_WORKSTATION))
+            retValue = "Windows Server 2008 R2";
+        else if(version == 6.1 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows 7";
+        else if(version == 6.2 && (info.wProductType != VER_NT_WORKSTATION))
+            retValue = "Windows Server 2012";
+        else if(version == 6.2 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows 8";
+        else if(version == 6.3 && (info.wProductType != VER_NT_WORKSTATION))
+            retValue = "Windows Server 2012 R2";
+        else if(version == 6.3 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows 8.1";
+        else if(version == 10.0 && (info.wProductType != VER_NT_WORKSTATION))
+            retValue = "Windows Server 2016";
+        else if(version == 10.0 && (info.wProductType == VER_NT_WORKSTATION))
+            retValue = "Windows 10";
+
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+
+    MessageBox(retValue,"",MB_OK);
+    return retValue;
 }
 

@@ -12,6 +12,7 @@ public:
     static AnsiString GetSyndCode(Database::TDBTransaction &dbTransaction);
     static void UpdateIsCloudSyncRequiredFlag(bool status);
     static void UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction, bool status);
+
 private:
     static std::list<TLicenceSettingModel>  GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction);
     static void LoadLicenseSettingsModelList(Database::TDBTransaction &dbTransaction , int licenceType, std::list<TLicenceSettingModel> &licenceSettingModelList);
@@ -41,6 +42,8 @@ private:
     static void LoadBarExchangeSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static void LoadRunRateBoardSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static void LoadOnlineOrderingSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
+    static AnsiString GetMACaddress();
+    static AnsiString GetOperatingSystemName();
 
 };
 #endif
