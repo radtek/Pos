@@ -7,6 +7,7 @@
 #include "GlobalSettings.h"
 #include <SysUtils.hpp>
 #include "Processing.h"
+#include "MMLogging.h"
 
 //---------------------------------------------------------------------------
 
@@ -35,10 +36,17 @@ void TSaveLogs::WriteLogsToFile(AnsiString directoryName, AnsiString fileName, T
 //------------------------------------------------------------------------------------------
 void TSaveLogs::RecordFiscalLogs(TStringList* logList)
 {
-    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    try
     {
-        AnsiString path = ExtractFilePath(Application->ExeName) + "/Fiscal POS Logs";
-        AnsiString fileName = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
-        TSaveLogs::WriteLogsToFile(path, fileName, logList);
+        if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+        {
+            AnsiString path = ExtractFilePath(Application->ExeName) + "/Fiscal POS Logs";
+            AnsiString fileName = Now().CurrentDate().FormatString("DDMMYYYY")+ ".txt";
+            TSaveLogs::WriteLogsToFile(path, fileName, logList);
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, ex.Message);
     }
 }

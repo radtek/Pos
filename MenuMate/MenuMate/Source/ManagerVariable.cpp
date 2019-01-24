@@ -3411,6 +3411,23 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmPrintTipAndSignature, "Display Signature Space On Receipt","Show  Tip And Signature.\r""Default is False",vmgPrinting, false);
         SetVarBool(DBTransaction, vmEnableAdjustAuthorisationOnCards, "Enable Adjust Authorisation on all cards","Card will follow Master or Visa  card process \r""Default is False",vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction,vmForceHappyHour, "Force Happy Hour", "This will force the terminal to apply Happy Hour.\r" "Default is False", vmgHappyHour, false);
+        SetVarBool(DBTransaction,vmIsAustriaFiscalStorageEnabled,"Austria Fiscal Storage Enabling",
+        "When this is enabled, bill details will get stored to Austria Fiscal Cloud.\r"
+        "Default is false",
+        vmg3rdPartyInterface, false);
+        SetVarStr(DBTransaction, vmAustriaFiscalUrl, "Austria Fiscal URL", "Austria Fiscal URL", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalCashBoxId, "Austria Fiscal Cash Box Id", "Austria Fiscal Cash Box Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalTerminalId, "Austria Fiscal Terminal Id", "Austria Fiscal Terminal Id", vmg3rdPartyInterface, "");
+        SetVarStr(DBTransaction, vmAustriaFiscalAccessToken, "Austria Fiscal Access Token", "Austria Fiscal Access Token", vmg3rdPartyInterface, "");
+        SetVarBool(DBTransaction, vmIsAustriaFiscalPostInProgress, "Shows status of posting","Gets true while posting to Austria ",vmgPOS, false);
+        SetVarBool(DBTransaction,vmEnableItemDetailsPosting,"Enable Item Details Posting", "This setting will Enable Postings to SiHot with ProductName", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction,vmIsTableLockEnabled,"Enable Table Lock", "Table will be accessed by that staff only who have save first orders on it.\r", vmgPOS, false);
+        SetVarInt(DBTransaction,vmBatchIdForSouthBeachMall, "SouthBeach Batch No","Getting the Batch number of SouthBeachMall",vmgPOS, 0);
+        SetVarBool(DBTransaction,vmHideFreeSides,"Hide Free Sides", "This setting will hide the Sides having price zero from Receipt", vmgPOS, false);
+        SetVarBool(DBTransaction,vmIsAustriaFiscalCommissioned,"Commission of Austria Fiskal", "Stores value for Austria commission", vmg3rdPartyInterface, false);
+        SetVarBool(DBTransaction, vmIsFiscalPostingDisable,"Use Fiscal Printer", "This setting will stop the posting to fiscal", vmgTax, false);
+		SetVarBool(DBTransaction,vmEnableStoreTicketPosting,"Enable Store Ticket Posting", "This setting will Enable Store Ticket Postings to SiHot", vmg3rdPartyInterface, false);
+
 	}
 	catch(Exception &E)
 	{

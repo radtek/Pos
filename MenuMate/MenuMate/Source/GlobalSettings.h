@@ -544,6 +544,19 @@ public:
     bool PrintTipAndSignature;
     bool EnableAdjustAuthorisationOnCards;
     int HHPriceLevelKey;
+    bool IsAustriaFiscalStorageEnabled;
+    UnicodeString AustriaFiscalUrl;
+    UnicodeString AustriaFiscalCashBoxId;
+    UnicodeString AustriaFiscalTerminalId;
+    UnicodeString AustriaFiscalAccessToken;
+    bool EnableItemDetailsPosting;
+    bool IsTableLockEnabled;
+    int MallBatchID;
+    bool HideFreeSides;
+    bool IsAustriaFiscalCommissioned;
+    bool IsFiscalPostingDisable;
+    bool EnableStoreTicketPosting;
+    bool PMSPostSuccessful;
 };
 
 #endif

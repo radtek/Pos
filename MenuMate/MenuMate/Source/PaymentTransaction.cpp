@@ -71,6 +71,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     WasSavedSales = false;
     IsCashDrawerOpened = false;
     PatronCountFromMenu = 0;
+    IsPatronAdded = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -133,6 +134,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     WasSavedSales = OtherTransaction.WasSavedSales;
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
     PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
+    IsPatronAdded = OtherTransaction.IsPatronAdded;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -185,6 +187,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     WasSavedSales = OtherTransaction.WasSavedSales;
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
     PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
+    IsPatronAdded = OtherTransaction.IsPatronAdded;
 }
 //-----------------------------------------------------------------------------
 bool __fastcall UseDifferentPattern(void *Item1,void *Item2)
@@ -982,7 +985,8 @@ void TPaymentTransaction::CalculatePatronCountFromMenu()
 		TItemMinorComplete *Item = (TItemMinorComplete*)Orders->Items[i];
 		DefaultPatronCount += Item->PatronCount();
 	}
-
+    if((TGlobalSettings::Instance().mallInfo.MallId==4)&&(DefaultPatronCount!=0))             // Added condition to check if the Mall ID is 4 then set IsPatronAdded true
+        IsPatronAdded = true;
 	std::vector<TPatronType>::iterator ptrPatronType;
 	for (ptrPatronType = Patrons.begin(); ptrPatronType != Patrons.end(); ptrPatronType++)
 	{
@@ -1043,6 +1047,7 @@ void TPaymentTransaction::copyBasicDetailsFrom( const TPaymentTransaction *Other
     RedeemGiftVoucherInformation = OtherTransaction->RedeemGiftVoucherInformation;
     PurchasedGiftVoucherInformation = OtherTransaction->PurchasedGiftVoucherInformation;
     IsCopy					= true;
+    IsPatronAdded = OtherTransaction->IsPatronAdded;
 }
 //---------------------------------------------------------------------------
 void TPaymentTransaction::copyOrdersListFrom(TList* OrdersList)
@@ -1082,4 +1087,8 @@ void TPaymentTransaction::makeLogFile(UnicodeString str)
     List->Add(" "+ str +  "\n");
     List->SaveToFile(fileName );
 }
+//-------------------------------------------------------------------------------------------------
+
+
+
 

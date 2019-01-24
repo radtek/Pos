@@ -184,6 +184,9 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
                 ExtractSubTotal(subtotals,discMap,taxMap, serviceChargeMap, itemCompleteSub, portion);
             }
         }
+        //*************************Adjustment for Rounding******************//
+        AdjustRounding(subtotals, discMap, taxMap, serviceChargeMap);
+        //******************************************************************//
 
         AnsiString paymentMethod = "";
         bool isNotRoomPaymentType = false;
@@ -807,15 +810,20 @@ void TOracleDataBuilder::ExtractSubTotal(std::map<int,double> &subtotals, std::m
     }
     discountSurcharge = discountNew + surcharge;
     //*************Data Rounding to 2 decimal places*********//
-    finalPrice      = RoundTo((double)itemComplete->BillCalcResult.FinalPrice * portion,-2);
-//    discount        = RoundTo((double)itemComplete->BillCalcResult.TotalDiscount * portion,-2);
-//    discountSurcharge = RoundTo((double)discountSurcharge * portion,-2);
-    discountNew     = RoundTo((double)discountNew * portion,-2);
-    surcharge       = RoundTo((double)surcharge * portion,-2);
+//    finalPrice      = RoundTo((double)itemComplete->BillCalcResult.FinalPrice * portion,-2);
+//    discountNew     = RoundTo((double)discountNew * portion,-2);
+//    surcharge       = RoundTo((double)surcharge * portion,-2);
+//    discountSurcharge = discountNew + surcharge;
+//    taxValue        = RoundTo((double)itemComplete->BillCalcResult.TotalTax * portion,-2);
+//    serviceCharge   = RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2);
+    //*******************************************************//
+
+    finalPrice      = (double)itemComplete->BillCalcResult.FinalPrice * portion;
+    discountNew     = (double)discountNew * portion;
+    surcharge       = (double)surcharge * portion;
     discountSurcharge = discountNew + surcharge;
-//    discount        = RoundTo(discountNew * portion, -2);
-    taxValue        = RoundTo((double)itemComplete->BillCalcResult.TotalTax * portion,-2);
-    serviceCharge   = RoundTo((double)itemComplete->BillCalcResult.ServiceCharge.Value * portion,-2);
+    taxValue        = (double)itemComplete->BillCalcResult.TotalTax * portion;
+    serviceCharge   = (double)itemComplete->BillCalcResult.ServiceCharge.Value * portion;
     //*******************************************************//
 //    surcharge
     priceExclusive = finalPrice - discountSurcharge;
@@ -1216,6 +1224,42 @@ void TOracleDataBuilder::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStrin
     {
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------
+void TOracleDataBuilder::AdjustRounding(std::map<int,double> &subtotals, std::map<int, double> &discMap,
+                             std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap)
+{
+    std::map<int,double>::iterator itsubtotalsAdjustment = subtotals.begin();
+    for(;itsubtotalsAdjustment != subtotals.end(); advance(itsubtotalsAdjustment,1) )
+    {
+        double value = itsubtotalsAdjustment->second;
+        value = RoundTo(value,-2);
+        itsubtotalsAdjustment->second = value;
+    }
+
+    std::map<int,double>::iterator itdiscAdjustment = discMap.begin();
+    for(;itdiscAdjustment != discMap.end(); advance(itdiscAdjustment,1) )
+    {
+        double value = itdiscAdjustment->second;
+        value = RoundTo(value,-2);
+        itdiscAdjustment->second = value;
+    }
+
+    std::map<int,double>::iterator ittaxAdjustment = taxMap.begin();
+    for(;ittaxAdjustment != taxMap.end(); advance(ittaxAdjustment,1) )
+    {
+        double value = ittaxAdjustment->second;
+        value = RoundTo(value,-2);
+        ittaxAdjustment->second = value;
+    }
+
+    std::map<int,double>::iterator itserviceChargeAdjustment = serviceChargeMap.begin();
+    for(;itserviceChargeAdjustment != serviceChargeMap.end(); advance(itserviceChargeAdjustment,1) )
+    {
+        double value = itserviceChargeAdjustment->second;
+        value = RoundTo(value,-2);
+        itserviceChargeAdjustment->second = value;
     }
 }
 //----------------------------------------------------------------------------

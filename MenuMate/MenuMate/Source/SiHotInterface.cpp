@@ -84,7 +84,7 @@ void TSiHotInterface::ConvertSiHotRoomResponse(RoomDetails* _roomDetails, TRoomR
     }
 }
 //---------------------------------------------------------------------------
-TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey)
+TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge, int timeOut, UnicodeString apiKey, bool isItemDetailsPosting)
 {
     TRoomChargeResponse roomChargeResponse;
     roomChargeResponse.IsSuccessful = false;
@@ -128,7 +128,7 @@ TRoomChargeResponse TSiHotInterface::SendRoomChargePost(TRoomCharge _roomCharge,
         roomChargeDetails->Total = _roomCharge.Total;
         CoInitialize(NULL);
         timeOut = timeOut * 1000;
-        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut,apiKey);
+        roomResponse = siHotClient->PostRoomCharge(roomChargeDetails,timeOut,apiKey,isItemDetailsPosting);
         roomChargeResponse.IsSuccessful = roomResponse->IsSuccessful;
         roomChargeResponse.ResponseMessage = roomResponse->Response;
         return roomChargeResponse;
@@ -188,3 +188,36 @@ bool TSiHotInterface::ValidateIPAddressPort(AnsiString address,int port,int tran
 	}
 }
 //---------------------------------------------------------------------------
+TRoomChargeResponse TSiHotInterface::SendStoreTicketPost(TStoreTicket _storeTicket, int timeOut, UnicodeString apiKey)
+{
+    TRoomChargeResponse roomChargeResponse;
+    roomChargeResponse.IsSuccessful = false;
+    RoomChargeResponse *roomResponse = new RoomChargeResponse;
+    roomResponse->IsSuccessful = false;
+    // Post Store Ticket and get Response
+    StoreTicketDetails *storeTicketDetails = new StoreTicketDetails;
+    try
+    {
+        storeTicketDetails->TransNo = _storeTicket.TransNo;
+        storeTicketDetails->StoreTicket = _storeTicket.StoreTicket;
+        storeTicketDetails->Cashno = _storeTicket.Cashno;
+        storeTicketDetails->Billno = _storeTicket.Billno;
+        storeTicketDetails->Cashno = _storeTicket.Cashno;
+        storeTicketDetails->Signature =_storeTicket.Signature;
+        storeTicketDetails->Type = _storeTicket.Type;
+        storeTicketDetails->Document = _storeTicket.Document;
+        storeTicketDetails->IPAddress = _storeTicket.IPAddress;
+        storeTicketDetails->PortNumber = _storeTicket.PortNumber;
+
+        CoInitialize(NULL);
+        timeOut = timeOut * 1000;
+        roomResponse = siHotClient->PostStoreTicket(storeTicketDetails,timeOut,apiKey);
+        roomChargeResponse.IsSuccessful = roomResponse->IsSuccessful;
+        roomChargeResponse.ResponseMessage = roomResponse->Response;
+        return roomChargeResponse;
+    }
+    catch(Exception & E)
+    {
+       return roomChargeResponse;
+	}
+}

@@ -83,3 +83,7 @@ void TBasePMS::UnsetPostingFlag()
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::StoreTicketPost(UnicodeString invoiceNumber, AnsiString receiptData)
+{
+}
+//---------------------------------------------------------------------------

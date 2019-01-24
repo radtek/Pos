@@ -24,3 +24,9 @@ D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\Fiscalintegration.csprojResolveA
 D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\Fiscalintegration.csproj.CoreCompileInputs.cache
 D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.dll
 D:\shared\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.pdb
+C:\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\ResolveAssemblyReference.cache
+C:\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.dll
+C:\V6-Master\FiscalLibrary\ClassLibrary1\obj\Debug\FiscalIntegration.pdb
+C:\V6-Master\Runtime\FiscalIntegration.dll
+C:\V6-Master\Runtime\FiscalIntegration.pdb
+C:\V6-Master\Runtime\FiscalIntegration.tlb

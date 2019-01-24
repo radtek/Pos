@@ -1925,4 +1925,68 @@ PARSER_ERROR TApplyParser::apply6_57( TDBControl* const inDBControl )
 		return PE_VERSION_UPGRADE_FAILED;
 	}
 }
+//-----------------------------------------------------------------------------
+PARSER_ERROR TApplyParser::apply6_58( TDBControl* const inDBControl )
+{
+  	_dbControl = inDBControl;
+	_errorMsg.clear();
+	current_version  = "6.58";
+	previous_version = "6.57";
+	// Previous Version.
+	if( !updateAlreadyApplied( previous_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Version " + previous_version + " required." );
+		return PE_VERSION_PREVIOUS_NOT_APPLIED;
+	}
+	// Current Version.
+	if( updateAlreadyApplied( current_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Updates already succesfully applied." );
+		return PE_VERSION_ALREADY_APPLIED;
+	}
+	try
+	{
+		upgrade6_58Tables();
+		updateVersionNumber( current_version, _dbControl );
+		_errorMsg.append( "Updates have been succesfully applied." );
+		return PE_VERSION_UPGRADE_SUCCEED;
+	}
+	catch( Exception& exc )
+	{
+		_errorMsg.append( exc.Message.t_str() );
+		return PE_VERSION_UPGRADE_FAILED;
+	}
+}
+//-----------------------------------------------------------------------------
+PARSER_ERROR TApplyParser::apply6_59( TDBControl* const inDBControl )
+{
+  	_dbControl = inDBControl;
+	_errorMsg.clear();
+	current_version  = "6.59";
+	previous_version = "6.58";
+	// Previous Version.
+	if( !updateAlreadyApplied( previous_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Version " + previous_version + " required." );
+		return PE_VERSION_PREVIOUS_NOT_APPLIED;
+	}
+	// Current Version.
+	if( updateAlreadyApplied( current_version,  _dbControl ) )
+	{
+		_errorMsg.append( "Updates already succesfully applied." );
+		return PE_VERSION_ALREADY_APPLIED;
+	}
+	try
+	{
+		upgrade6_59Tables();
+		updateVersionNumber( current_version, _dbControl );
+		_errorMsg.append( "Updates have been succesfully applied." );
+		return PE_VERSION_UPGRADE_SUCCEED;
+	}
+	catch( Exception& exc )
+	{
+		_errorMsg.append( exc.Message.t_str() );
+		return PE_VERSION_UPGRADE_FAILED;
+	}
+}
 }

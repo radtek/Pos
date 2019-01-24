@@ -185,6 +185,12 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbNoTaxToSihot->Enabled = true;
         cbNoTaxToSihot->Checked = TGlobalSettings::Instance().SendNoTaxToSiHot;
         tbOracleInterfacePort->Enabled = cbNoTaxToSihot->Checked;
+        cbEnableItemDetailsPosting->Enabled = true;
+        cbEnableItemDetailsPosting->Checked = TGlobalSettings::Instance().EnableItemDetailsPosting;
+        cbEnableStoreTicketPosting->Enabled = true;
+        cbEnableStoreTicketPosting->Checked = TGlobalSettings::Instance().EnableStoreTicketPosting;
+
+
     }
     else if(PMSType == oracle)
     {
@@ -202,6 +208,9 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableCustomerJourney->Enabled = false;
         tbTimeOut->Enabled = false;
         cbNoTaxToSihot->Enabled = false;
+        cbEnableItemDetailsPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
         if(CanEnablePOSServer())
         {
             cbMakeOracleServer->Enabled = true;
@@ -251,6 +260,10 @@ void TfrmPHSConfiguration::UpdateGUI()
         tbExpensesAccount->Enabled = false;
         tbDefTransAccount->Enabled = false;
         tbRoundingCategory->Enabled = false;
+        cbEnableItemDetailsPosting->Enabled = false;
+        cbEnableItemDetailsPosting->Checked = false;
+        cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
         TouchBtn1->Caption = "Get Details";
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         //tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
@@ -300,6 +313,9 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = false;
         cbNoTaxToSihot->Enabled = false;
+        cbEnableItemDetailsPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Enabled = false;
+        cbEnableStoreTicketPosting->Checked = false;
     }
 	tbRoundingCategory->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
@@ -1053,3 +1069,22 @@ AnsiString TfrmPHSConfiguration::GetMewsName(AnsiString code,eVertSel selectionT
     return name;
 }
 //---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbEnableItemDetailsPostingClick(TObject *Sender)
+{
+    TGlobalSettings::Instance().EnableItemDetailsPosting = cbEnableItemDetailsPosting->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableItemDetailsPosting, TGlobalSettings::Instance().EnableItemDetailsPosting);
+    DBTransaction.Commit();
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::cbEnableStoreTicketPostingClick(TObject *Sender)
+
+{
+    TGlobalSettings::Instance().EnableStoreTicketPosting = cbEnableStoreTicketPosting->Checked;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableStoreTicketPosting, TGlobalSettings::Instance().EnableStoreTicketPosting);
+    DBTransaction.Commit();
+}
+

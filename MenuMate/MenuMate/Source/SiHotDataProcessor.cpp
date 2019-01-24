@@ -7,6 +7,7 @@
 #include "Math.h"
 #include "MMMessageBox.h"
 #include "GeneratorManager.h"
+
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
@@ -137,8 +138,24 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.SuperCategory_Desc   = "";
     siHotService.MiddleCategory       = categoryCode;
     siHotService.MiddleCategory_Desc  = itemComplete->MenuName;
-    siHotService.ArticleCategory      = categoryCode;
-    siHotService.ArticleCategory_Desc = "";
+    if(TGlobalSettings::Instance().EnableItemDetailsPosting)
+    {
+        int alphaNumericCheck = 0;
+        if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+        {
+            siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+        }
+        else
+        {
+            siHotService.ArticleCategory      = "999";
+        }
+        siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
+    }
+    else
+    {
+        siHotService.ArticleCategory      = categoryCode;
+        siHotService.ArticleCategory_Desc = "";
+    }
     siHotService.ArticleNo            = categoryCode;
     siHotService.ArticleNo_Desc       = "";
     if(TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)
@@ -276,8 +293,24 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.MiddleCategory        = categoryCode;
 //        MessageBox(siHotService.MiddleCategory,"AddDiscountPartToService3",MB_OK);
         siHotService.MiddleCategory_Desc   = "Discount";
-        siHotService.ArticleCategory       = categoryCode;
-        siHotService.ArticleCategory_Desc  = "";
+        if(TGlobalSettings::Instance().EnableItemDetailsPosting)
+        {
+            int alphaNumericCheck = 0;
+            if(itemComplete->ItemSizeIdentifierKey > 0 && itemComplete->ItemSizeIdentifierKey <= 999 && itemComplete->ItemSizeIdentifierKey != NULL  && TryStrToInt(itemComplete->ItemSizeIdentifierKey,alphaNumericCheck))
+            {
+                siHotService.ArticleCategory      = IntToStr(itemComplete->ItemSizeIdentifierKey);
+            }
+            else
+            {
+                siHotService.ArticleCategory      = "999";
+            }
+            siHotService.ArticleCategory_Desc = itemComplete->Item + " (" + itemComplete->Size + ")";
+        }
+        else
+        {
+            siHotService.ArticleCategory      = categoryCode;
+            siHotService.ArticleCategory_Desc = "";
+        }
         siHotService.ArticleNo             = categoryCode;
         siHotService.ArticleNo_Desc        = "";
         double pricePerUnit                = fabs(itemComplete->BillCalcResult.TotalDiscount);
@@ -758,7 +791,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             iter                    = paymentSiHot.find(siHotPayment.Type);
             if(iter == paymentSiHot.end())
             {
-                double amountV              = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
+                double amountV              = ((double)(payment->GetPayTendered() - payment->GetChange()));
                 amountV                     = RoundTo(amountV,-2);
                 siHotPayment.Amount         = amountV;//(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange());
                 siHotPayment.Description    = payment->Name;
@@ -770,7 +803,7 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             else
             {
-                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() + payment->GetCashOut()- payment->GetChange()));
+                double amount               = StrToCurr(iter->second.Amount) + ((payment->GetPayTendered() - payment->GetChange()));
                 iter->second.Amount         = amount;
             }
             if(payment->GetPaymentAttribute(ePayTypeCash))
@@ -779,22 +812,26 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
             }
             cashOutStore                    += (double)payment->GetCashOut();
         }
-        if(i + 1 == _paymentTransaction.PaymentsCount())
-        {
-            if(indexcash == "" && cashOutStore != 0.0)
-            {
-                TSiHotPayments siHotPaymentCash;
-                siHotPaymentCash.Type           = cashType;
-                double amountValue              = RoundTo((double)cashOutStore,-2);
-                siHotPaymentCash.Amount         = amountValue;//RoundTo((double)cashOutStore,-2);
-                siHotPaymentCash.Description    = "Cash";
-                siHotPaymentCash.Billno         = billNo;
-                siHotPaymentCash.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
-                siHotPaymentCash.Cashier        = TDeviceRealTerminal::Instance().User.Name;
-                siHotPaymentCash.Source         = "Guest";
-                paymentSiHot[cashType]          = siHotPaymentCash;
-            }
-        }
+//        if(i + 1 == _paymentTransaction.PaymentsCount())
+//        {
+//            if(indexcash == "" && cashOutStore != 0.0)
+//            {
+//                TSiHotPayments siHotPaymentCash;
+////                if(cashType == NULL || cashType == "")
+////                {
+////                    cashType = GetPMSDefaultCode(paymentsMap);
+////                }
+//                siHotPaymentCash.Type           = cashType;
+//                double amountValue              = RoundTo((double)cashOutStore,-2);
+//                siHotPaymentCash.Amount         = amountValue;//RoundTo((double)cashOutStore,-2);
+//                siHotPaymentCash.Description    = "Cash";
+//                siHotPaymentCash.Billno         = billNo;
+//                siHotPaymentCash.Cashno         = TDeviceRealTerminal::Instance().BasePMS->POSID;
+//                siHotPaymentCash.Cashier        = TDeviceRealTerminal::Instance().User.Name;
+//                siHotPaymentCash.Source         = "Guest";
+//                paymentSiHot[cashType]          = siHotPaymentCash;
+//            }
+//        }
         if((payment->GetPaymentAttribute(ePayTypeRoomInterface)) && payment->GetCashOut() != 0)
         {
             AddExpensesToSiHotService(payment,_roomCharge,billNo);
@@ -931,3 +968,24 @@ void TSiHotDataProcessor::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiStri
     }
 }
 //----------------------------------------------------------------------------
+void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TStoreTicket &_storeTicket, AnsiString receiptData)
+{
+    try
+    {
+    _storeTicket.TransNo       =     GetTransNumber();
+    _storeTicket.StoreTicket   =     "";
+    _storeTicket.Billno        =     invoiceNumber;
+    _storeTicket.Cashno        =     TDeviceRealTerminal::Instance().BasePMS->POSID;
+    _storeTicket.Signature     =     "";
+    _storeTicket.Type          =     "TXT";
+    _storeTicket.Document      =     receiptData;
+    _storeTicket.IPAddress     =     TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
+    _storeTicket.PortNumber    =     TDeviceRealTerminal::Instance().BasePMS->TCPPort;
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+}
+//----------------------------------------------------------------------------
+

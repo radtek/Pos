@@ -47,7 +47,6 @@
 #include "ManagerDiscount.h"
 #include "ManagerPatron.h"
 #include "DBGroups.h"
-#include "SalesForceCommAtZed.h"
 #include "CashDenominationController.h"
 #include "ExportCSV.h"
 #include "StringTools.h"
@@ -2860,22 +2859,6 @@ void __fastcall TfrmAnalysis::btnZReportClick(void)
 	else
 	{
 		bool UpdateingStock = false;
-        if(TGlobalSettings::Instance().MallIndex == 7)
-        {
-            TIBSQL *IBSelectQuery = DBTransaction.Query(DBTransaction.AddQuery());
-            IBSelectQuery->Close();
-            IBSelectQuery->SQL->Text = "SELECT A.ME_HOURLY_KEY "
-                                          "FROM MALLEXPORT_HOURLY A";
-
-            IBSelectQuery->ExecQuery();
-
-            if(!IBSelectQuery->RecordCount)
-            {
-                MessageBox("Zed Cannot be Processed as there is No Sales Data ", "Zed Processing",MB_OK + MB_ICONERROR);
-                return;
-            }
-
-        }
 		std::auto_ptr <TfrmProcessing> (Processing)(TfrmProcessing::Create <TfrmProcessing> (this));
 		Processing->Message = "Please Wait...";
 		Processing->Show();
@@ -3105,7 +3088,7 @@ Zed:
                 TManagerChitNumber::Instance().ResetChitNumber(DBTransaction);
                 zedLogsList->Add("After chit reset. ");
                 Processing->Message = "Processing End Of Day...";
-                UpdateSalesForce(); //update sales force
+
                 ClearParkedSale(DBTransaction); // clear parked sale
                 Processing->Close();
 				Processing->Message = "Updating Clock...";
@@ -3138,7 +3121,7 @@ Zed:
                 zedLogsList->Add("Inside Zed completed flag");
 			   DefaultItemQuantities(DBTransaction);
                zedLogsList->Add("After  DefaultItemQuantities execution");
-               UpdateContactTimeZedStatus(DBTransaction);
+                UpdateContactTimeZedStatus(DBTransaction);
                if(TGlobalSettings::Instance().CashDenominationEntry)
                 {
                   TCashDenominationControllerInterface::Instance()->SaveDenominations(DBTransaction,z_key,DeviceName);
@@ -3148,8 +3131,9 @@ Zed:
             //create CSV
             if(TGlobalSettings::Instance().IsEnabledPeachTree && CompleteZed)
             {
+
                 TExportCSV exportCSV;
-                exportCSV.PostDateToCSV();
+               exportCSV.PostDateToCSV();
             }
 
 			DBTransaction.Commit();
@@ -3199,7 +3183,7 @@ Zed:
 
 			if(CompleteZed)
 			{
-                UpdateMallExportDetails();
+               UpdateMallExportDetails();
 
                 //Method for mall Design According to newly pattern
 
@@ -3208,18 +3192,32 @@ Zed:
                     bool isMasterterminal = TGlobalSettings::Instance().EnableDepositBagNum;
                     if(TGlobalSettings::Instance().mallInfo.MallId == 1)
                     {
+
                         UpdateZKeyForMallExportSales(isMasterterminal, 33);
                     }
-                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3)
+                    else if(TGlobalSettings::Instance().mallInfo.MallId == 2 || TGlobalSettings::Instance().mallInfo.MallId == 3 || TGlobalSettings::Instance().mallInfo.MallId == 4)
                     {
                         isMasterterminal = true;
-                        UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                        {
+                          UpdateZKeyForMallExportSales(isMasterterminal, 10);
+                          UpdateMaxZedTime(10);
+                        }
+                        else
+                        {
+                            UpdateZKeyForMallExportSales(isMasterterminal, 19);
+                        }
                         if(TGlobalSettings::Instance().mallInfo.MallId == 3)
                             UpdateStallCodeForEviaMall(2);
                     }
                     //Instantiation is happenning in a factory based on the active mall in database
                     TMallExport* mallExport = TMallFactory::GetMallType();
                     mallExport->Export();
+
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                    {
+                        UploadMallFilesToFTP();
+                    }
                     delete mallExport;
                 }
 
@@ -3251,10 +3249,11 @@ Zed:
       }
         if(CompleteZed)
         {
+
             // For Mall Export
-            SyncCompanyDetails();
+           SyncCompanyDetails();
             // For Mall Export
-            UpdateDLFMall();
+             UpdateDLFMall();
             zedLogsList->Add("Z Completed at " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
             MakeZEDLogFile(zedLogsList);
 
@@ -3265,7 +3264,7 @@ Zed:
 }
 
  void TfrmAnalysis::SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName)
-{    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+{    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
 
     TManagerVariable::Instance().SetProfileStr(DBTransaction, TManagerVariable::Instance().DeviceProfileKey, vmVar, CompName);
@@ -3333,7 +3332,7 @@ Zed:
 void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
                                            const char * userPassword, const char * userPath,
                                            UnicodeString LocalPathFileName, UnicodeString LocalFileName,
-                                           int FCount)
+                                           int FCount, bool showMessage)
 {
     const char * pathFileName = LocalPathFileName.t_str();
     const char * fileName = LocalFileName.t_str();
@@ -3350,6 +3349,7 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
     }
     else
     {
+       
         hFtpSession = InternetConnect(hInternet, hostName, INTERNET_DEFAULT_FTP_PORT, userName, userPassword, 1, INTERNET_FLAG_PASSIVE, 0);
         if (hFtpSession == NULL)
         {
@@ -3363,19 +3363,23 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
             // Changing dicrectory is necessary
             FtpSetCurrentDirectory( hFtpSession, userPath );
             //  FtpCreateDirectory( hFtpSession, "/Menumate/Beta/PosDroid/DLF" );
+            bool isFileUploaded = true;
 
             if (!FtpPutFile(hFtpSession, pathFileName, fileName, FTP_TRANSFER_TYPE_BINARY, 0))
             {
 
-                if (FCount == 0)
+                if (FCount == 0 && showMessage)
                 {
 
                     MessageBox( "File was not successfully uploaded!", "File Transfer Failed!", MB_OK );
+                    if(TGlobalSettings::Instance().mallInfo.MallId == 4)
+                        isFileUploaded = false;
                 }
             }
 
-            if (FCount == 0)
+            if (FCount == 0 && showMessage && isFileUploaded)
             {
+
                 MessageBox( "File was sent successfully!", "File Transfer Success!", MB_OK );
             }
         }
@@ -8454,27 +8458,8 @@ void TfrmAnalysis::SyncCompanyDetails()
 
 }
 
-void TfrmAnalysis::UpdateSalesForce()
-{
-  zedLogsList->Add("Before updating salesforce ");
-   Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-   DBTransaction1.StartTransaction();
-   try
-   {
-        AnsiString CompanyName = GetCompanyName(DBTransaction1);
-        DBTransaction1.Commit();
-        std::auto_ptr<TSalesForceCommAtZed> sfComm(new TSalesForceCommAtZed());
-        sfComm->PVCommunication(CompanyName);
-        sfComm->SalesForceCommunication(CompanyName);
-    }
-    catch(Exception & E)
-    {   zedLogsList->Add("Exception in updating salesforce ");
-        DBTransaction1.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
-    }
-    zedLogsList->Add("After updating salesforce ");
-}
+
+
 
 void TfrmAnalysis::ClearParkedSale(Database::TDBTransaction &DBTransaction)
 {
@@ -8811,7 +8796,7 @@ void TfrmAnalysis::UpdateZKeyForMallExportSales(bool isMasterTerminal, int field
     try
     {
         if(TGlobalSettings::Instance().mallInfo.MallId == 2)
-            UpdateAccumulatedSales(DBTransaction);
+                UpdateAccumulatedSales(DBTransaction);
 
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 
@@ -9233,6 +9218,93 @@ void TfrmAnalysis::SettleEFTPOSBills()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
     }
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateMaxZedTime(int fieldindex)
+{
+  TDateTime CurrentZedTime = Now();
+  Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+  DBTransaction.StartTransaction();
+  try
+  {
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    IBInternalQuery->Close();
+    IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+    IBInternalQuery->ExecQuery();
+    int ZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+    IBInternalQuery->Close();
+
+    IBInternalQuery->SQL->Text = "UPDATE MALLEXPORT_SALES SET MALLEXPORT_SALES.DATE_CREATED = :DATE_CREATED "
+                                 "WHERE MALLEXPORT_SALES.Z_KEY = :Z_KEY "
+                                 "AND  MALLEXPORT_SALES.FIELD_INDEX = :FIELD_INDEX ";
+
+
+    IBInternalQuery->ParamByName("Z_KEY")->AsInteger = ZedKey;
+    IBInternalQuery->ParamByName("FIELD_INDEX")->AsInteger = fieldindex;
+    IBInternalQuery->ParamByName("DATE_CREATED")->AsDateTime = CurrentZedTime;
+
+
+    IBInternalQuery->ExecQuery();
+
+    DBTransaction.Commit();
+
+  }
+  catch(Exception & E)
+  {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+  }
+}
+//-----------------------------------------------------------------------------------------------------------
+void TfrmAnalysis::UploadMallFilesToFTP()
+{
+    try
+    {
+     for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)
+        {
+        std::list<TMallExportSettings> ::iterator itUISettings;
+         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";
+        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+        {
+            if(itUISettings->Value != "" )
+            {
+                if(itUISettings->ControlName == "edMallFTPServer")
+                    HostName = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPPath")
+                    FtpPath = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPUserName")
+                    FtpUserName = itUISettings->Value;
+                else if(itUISettings->ControlName == "edMallFTPPassword")
+                    FtpPassword = itUISettings->Value;
+                else if(itUISettings->ControlName == "edNewMallPath")
+                    LocalPathFileName = itUISettings->Value + TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().SouthBeachFileName;
+
+            }
+        }
+
+        if(HostName.Trim() != "" && FtpUserName.Trim() != "" && FtpPassword.Trim() != "")
+        {
+
+                LocalFileName = TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
+                int FCount=0;
+                const char * hostName = HostName.t_str();
+                const char * userPath = FtpPath.t_str();
+                const char * userName = FtpUserName.t_str();
+                const char * userPassword = FtpPassword.t_str();
+                if(index == (TGlobalSettings::Instance().mallInfo.FileNameList.size()-1))
+                    FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
+                else
+                    FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount, false);
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+
 }
 
 

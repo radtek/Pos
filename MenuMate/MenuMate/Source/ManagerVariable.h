@@ -125,6 +125,8 @@ enum vmVariables
     vmIsBillSplittedByMenuType,
     vmIsAutoLoggedOut,
     vmDiningBal,
+    vmIsTableLockEnabled,
+    vmHideFreeSides,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,
@@ -169,7 +171,7 @@ enum vmVariables
    vmTabDepositCreditRefundedGLCode, vmFloatGLCode,vmEftPosTipGLCode, vmCashWithdrawal, vmCashVariance, vmSurchargeGLCode,vmGiftCardGLCode,
     //Tax
     vmItemPriceIncludeTax = 8000, vmItemPriceIncludeServiceCharge, vmCalculateTaxPostDiscount, vmCalculateServiceChargePostDiscount,
-    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,
+    vmUsingServiceCharge, vmApplyServiceChargeTax, vmServiceChargeTaxProfileKey, vmServiceChargeTaxRate, vmUseItalyFiscalPrinter, vmFPPrinterType, vmFPPrinterLogicalName,vmIsFiscalPostingDisable,
 
    // MallExport ------------------------------------------------------------
     vmMallPath = 9000, vmMallIndex, vmTenantNo, vmMallLocation, vmClassCode, vmTradeCode, vmOutletCode, vmBranchCode,
@@ -226,8 +228,9 @@ enum vmVariables
     vmIsSiHotPostInProgress,vmIsOraclePostInProgress,vmIsOraclePOSServer, vmOracleInterfaceIPAddress,
     vmOracleInterfacePortNumber,vmPMSTimeOut,
     vmEnableEftPosAdyen = 9626,vmEFTPosAPIKey, vmEFTPosDeviceID, vmEFTPosURL, vmAdyenRecoveryTransactionIsRefund ,vmCompanyDetails,
-    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering
-};
+    vmPrintCardHolderReceipt, vmPrintMerchantReceipt, vmRestartServiceAtZED,vmSendNoTaxToSihot,vmRevenueCodeDiscountPart,vmEnableOnlineOrdering,
+	vmIsAustriaFiscalStorageEnabled,vmAustriaFiscalUrl,vmAustriaFiscalCashBoxId,vmAustriaFiscalTerminalId,vmAustriaFiscalAccessToken,vmIsAustriaFiscalPostInProgress,
+    vmEnableItemDetailsPosting,vmBatchIdForSouthBeachMall,vmIsAustriaFiscalCommissioned = 9646, vmEnableStoreTicketPosting};
 
 // ---------------------------------------------------------------------------
 class TManagerVariable

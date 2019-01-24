@@ -113,7 +113,6 @@ private:	// User declarations
     TMemoryStream* FormattedZed(TMemoryStream *ZedToArchive);
     void CheckPocketVoucherPaymentType();
     void SyncCompanyDetails();
-    void UpdateSalesForce();
     void EmailZedReport(int z_key);
     void UpdateMallExportDetails();
     void ClearParkedSale(Database::TDBTransaction &DBTransaction);
@@ -204,6 +203,7 @@ private:	// User declarations
     int UpdateZKeyInArcMallExportForMegaWorld();
     bool DuplicateEntryInTable;
     void SettleEFTPOSBills();
+    void UpdateMaxZedTime(int fieldindex);
 
 public:		// User declarations
 	bool ZedCancel;
@@ -224,8 +224,9 @@ public:		// User declarations
     void FileSubmit(const char * hostName, const char * userName,
                     const char * userPassword, const char * userPath,
                     UnicodeString LocalPathFileName, UnicodeString LocalFileName,
-                    int FCount);
+                    int FCount, bool showMessage = true);
      void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
+     void UploadMallFilesToFTP();
 };
 
 //---------------------------------------------------------------------------

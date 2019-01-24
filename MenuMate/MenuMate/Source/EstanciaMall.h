@@ -242,20 +242,15 @@ private:
     //Store device key
     int deviceKey;
 
-    //Get Total Patron count for a Bill
-    int GetPatronCount(TPaymentTransaction &paymentTransaction);
     //Fetch Mall Setting for file writing
-    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+    void LoadMallSettingsForFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, UnicodeString indexKeysList,
                                 int index, int zKey = 0);
 
-    //store keys in string format seperated by commas
-    UnicodeString GetFieldIndexList(std::set<int> indexKeys);
-
     //Get File Name According to file type.
-    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, std::set<int> keysToSelect, int zKey = 0);
+    UnicodeString GetFileName(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int zKey = 0);
 
     //Load File Setting For Invoice file Writing
-    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, std::set<int> keysToSelect,
+    void LoadMallSettingsForInvoiceFile(Database::TDBTransaction &dBTransaction, TMallExportPrepareData &prepareForDSF, UnicodeString indexKeysList,
                                         int index, int zKey = 0);
 
     //Get all taxes and store seperate each tax
@@ -275,19 +270,17 @@ private:
     void InsertFieldInToList(Database::TDBTransaction &dbTransaction, std::list<TMallExportSalesData> &mallExportSalesData, TEstanciaMallField fieldData, int arcBillKey);
 
      //Prepare data for Invoice Sales File
-    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
+    void PrepareDataForInvoiceSalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, int indexKey2, TMallExportPrepareData &prepareDataForInvoice,
                                             int index, int zKey = 0);
 
     //Fetch Data For Invoice Sales File writing
-    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2, int indexKey3,
+    void PrepareDataForHourlySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, UnicodeString indexKeysList2, int indexKey3,
                                         TMallExportPrepareData &prepareDataForHSF, int index, int zKey = 0);
 
     //Fetch Data For Daily Sales File writing
-    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, std::set<int> indexKeys, std::set<int> indexKeys2,
+    void PrepareDataForDailySalesFile(Database::TDBTransaction &dBTransaction, UnicodeString indexKeysList, UnicodeString indexKeysList2,
                                         TMallExportPrepareData &prepareDataForDSF, int index, int zKey = 0);
 
-    //Insert Array into set.
-    std::set<int> InsertInToSet(int arr[], int size);
 
 protected:
 
@@ -297,8 +290,6 @@ protected:
     //Override TMallExport class 's pure virtual function PrepareDataForExport() according to malltype
     TMallExportPrepareData PrepareDataForExport(int zKey = 0);
 
-    //Override TMallExport class 's pure virtual function CreateExportMedium() according to malltype
-    IExporterInterface* CreateExportMedium();
 public:
 
     //Constructor

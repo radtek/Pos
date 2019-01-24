@@ -9,6 +9,7 @@
 //#include "SiHotInterface.h"
 #include "Processing.h"
 #include "PMSHelper.h"
+#include "GeneratorManager.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -165,7 +166,8 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     TRoomChargeResponse  roomResponse;
     siHotDataProcessor->CreateRoomChargePost(_paymentTransaction, roomCharge);
     std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
-    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+    roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey,
+                                                    TGlobalSettings::Instance().EnableItemDetailsPosting);
     Processing->Close();
     if(roomResponse.IsSuccessful)
     {
@@ -231,7 +233,7 @@ bool TManagerSiHot::RetryDefaultRoomPost(TPaymentTransaction &_paymentTransactio
                 }
                 Order->RoomNoStr = _paymentTransaction.Phoenix.AccountNumber;
             }
-            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+            roomResponse = siHotInterface->SendRoomChargePost(roomCharge,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey,TGlobalSettings::Instance().EnableItemDetailsPosting);
             if(roomResponse.IsSuccessful)
                 retValue = true;
             else
@@ -281,7 +283,7 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 }
 //---------------------------------------------------------------------------
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
-{
+{   
     bool roomChargeSelected = false;
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
     {
@@ -339,9 +341,12 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
         }
         if(checkedCreditLimit && !creditLimitViolated)
           retValue = RoomChargePost(paymentTransaction);
+
     }
+
     if(!retValue)
         UnsetPostingFlag();
+    TGlobalSettings::Instance().PMSPostSuccessful = retValue;
     return retValue;
 }
 //---------------------------------------------------------------------------
@@ -510,3 +515,186 @@ void TManagerSiHot::UnsetPostingFlag()
     }
 }
 //---------------------------------------------------------------------------
+void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, AnsiString receiptData)
+{
+    bool response = false;
+    std::auto_ptr<TfrmProcessing>
+    (Processing)(TfrmProcessing::Create<TfrmProcessing>(NULL));
+    Processing->Message = "Posting Tickets to SiHot , Please Wait...";
+    Processing->Show();
+    try 
+    {
+         // Call to SiHotDataProcessor for making Store Ticket Post
+        std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
+        TStoreTicket storeTicket;
+        TRoomChargeResponse  roomResponse;
+
+        siHotDataProcessor->CreateStoreTicketPost(invoiceNumber, storeTicket, receiptData);
+        std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
+        roomResponse = siHotInterface->SendStoreTicketPost(storeTicket,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+        
+        if(roomResponse.IsSuccessful)
+            response = true;
+        else
+            response = false;
+
+        //Saving response in PMSTicket table
+        SavePMSTicketStatus(invoiceNumber, response);
+    
+        //Getting List of Invoice no. having failed status
+        std::vector<UnicodeString> invoiceNumbers;
+        if(response)
+            invoiceNumbers = GetFailedPMSTicket();
+    
+        //Error handling (Posting of Old failed Store Tickets)
+        if(invoiceNumbers.size() > 0)
+            ManageFailedStoreTicketPost(invoiceNumbers);
+    }
+    catch(Exception &Exc) 
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+    Processing->Close();
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::SavePMSTicketStatus(UnicodeString invoiceNumber, bool response)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        int pmsTicketId = TGeneratorManager::GetNextGeneratorKey(DBTransaction, "GEN_PMSTICKETS_ID");
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text = "INSERT INTO PMSTICKETS (PMSTICKETS_ID, INVOICE_NUMBER, IS_TICKET_POSTED) "
+                                     "VALUES (:PMS_TICKET_ID, :INVOICE_NUMBER, :RESPONSE ) ";
+
+        IBInternalQuery->ParamByName("PMS_TICKET_ID")->AsInteger = pmsTicketId;
+		IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+        if(response)
+		    IBInternalQuery->ParamByName("RESPONSE")->AsString = "T";
+        else
+            IBInternalQuery->ParamByName("RESPONSE")->AsString = "F";
+
+        IBInternalQuery->ExecQuery();
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+std::vector<UnicodeString> TManagerSiHot::GetFailedPMSTicket()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    std::vector<UnicodeString> invoiceNumbers;
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT INVOICE_NUMBER FROM PMSTICKETS WHERE IS_TICKET_POSTED = :STATUS ";
+
+        IBInternalQuery->ParamByName("STATUS")->AsString = "F";
+
+        IBInternalQuery->ExecQuery();
+
+        for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+        {
+            invoiceNumbers.push_back(IBInternalQuery->FieldByName("INVOICE_NUMBER")->AsString);
+        }
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+
+    return invoiceNumbers;
+}
+//---------------------------------------------------------------------------
+void TManagerSiHot::ManageFailedStoreTicketPost(std::vector<UnicodeString> invoiceNumbers)
+{
+    bool response = false;
+    TStoreTicket storeTicket;
+    TRoomChargeResponse  roomResponse;
+    AnsiString receiptData;
+    for(int i = 0; i < invoiceNumbers.size() ; ++i)
+    {
+        receiptData = GetReceiptForStoreTicket(invoiceNumbers[i]);
+        std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
+        siHotDataProcessor->CreateStoreTicketPost(invoiceNumbers[i], storeTicket, receiptData);
+        std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
+        roomResponse = siHotInterface->SendStoreTicketPost(storeTicket,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
+
+        if(roomResponse.IsSuccessful)
+        {
+            response = true;
+            UpdatePMSTicketStatus(invoiceNumbers[i],response);
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+//--------------------------------------------------------------------------
+void TManagerSiHot::UpdatePMSTicketStatus(UnicodeString invoiceNumber, bool response)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text = "UPDATE PMSTICKETS SET IS_TICKET_POSTED = 'T' WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
+
+		IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+
+        IBInternalQuery->ExecQuery();
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+AnsiString TManagerSiHot::GetReceiptForStoreTicket(UnicodeString invoiceNumber)
+{
+    AnsiString receiptData;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT RECEIPT FROM DAYARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER "
+                                      "UNION ALL "
+                                      "SELECT RECEIPT FROM ARCBILL WHERE INVOICE_NUMBER = :INVOICE_NUMBER ";
+
+        IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
+
+        IBInternalQuery->ExecQuery();
+
+        receiptData = IBInternalQuery->FieldByName("RECEIPT")->AsString;
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+
+    return receiptData;
+}

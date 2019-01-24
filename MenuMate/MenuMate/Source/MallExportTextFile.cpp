@@ -50,7 +50,6 @@ void TMallExportTextFile::WriteFileAccordingToIndex(TMallExportPrepareData prepa
         //filePath where the file will be written
         UnicodeString filePath = "";
 
-
         UnicodeString format;
 
         //Iterate the file Settings

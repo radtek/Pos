@@ -345,6 +345,9 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\SmartConnectIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\PaymentSenseIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\MewsIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AustriaFiscalIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.Utilities.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 
 ; Menumate Customer Display
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe";   DestDir: "{app}\Customer Display" ; Flags:ignoreversion;

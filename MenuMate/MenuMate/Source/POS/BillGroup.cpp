@@ -1120,7 +1120,10 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
-                        MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
+
+                        if(TGlobalSettings::Instance().HideFreeSides)
+                            MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
+
 						int mypatroncount = 0;
 						std::map <__int64, TPnMOrder> TabItems;
 						for (std::set <__int64> ::iterator CrntTabKey = SelectedTabs.begin(); CrntTabKey != SelectedTabs.end();
@@ -1306,6 +1309,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
+                        if(TGlobalSettings::Instance().HideFreeSides)
                         MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys);    //Merging the Item keys of Zero Price Sides with Selected Item Keys
                         PatronCount = DeterminePatronCount();
 						SplitItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransPartialPayment);
@@ -1417,6 +1421,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 						{
 							SelectedItemKeys.insert(itItem->first);
 						}
+                        if(TGlobalSettings::Instance().HideFreeSides)
                         MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
 						PatronCount = DeterminePatronCount();
 						splittedItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransSplitPayment);
@@ -3062,18 +3067,30 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 		}
 		std::auto_ptr <TList> SortingList(new TList);
         int sideCount = 0;
-		for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
-		{
-            if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))  //Added condition to exclude Side which has Cost equal to 0
-			  SortingList->Add(&itItem->second);
-            else
-              sideCount++;
-		}
+        if(TGlobalSettings::Instance().HideFreeSides)
+        {
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+            {
+                if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))  //Added condition to exclude Side which has Cost equal to 0
+                  SortingList->Add(&itItem->second);
+                else
+                  sideCount++;
+            }
+        }
+        else
+        {
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = VisibleItems.begin(); itItem != VisibleItems.end(); advance(itItem, 1))
+            {
+                  SortingList->Add(&itItem->second);
+            }
+        }
 		//SortingList->Sort(ComparePickNMix);
 		tgridItemList->RowCount = 0; // Clears all the Latching.
 		tgridItemList->ColCount = 2;
-		tgridItemList->RowCount = VisibleItems.size() - sideCount;  // To reduce the Count of Sides with Zero Price from RowCount
-
+        if(TGlobalSettings::Instance().HideFreeSides)
+		    tgridItemList->RowCount = VisibleItems.size() - sideCount;  // To reduce the Count of Sides with Zero Price from RowCount
+        else
+            tgridItemList->RowCount = VisibleItems.size();
         if(TGlobalSettings::Instance().IsBillSplittedByMenuType &&  VisibleItems.size() != SelectedItems.size() && VisibleItems.size() &&
                 SelectedItems.size() && VisibleItems.size() > 1 )
         {
@@ -3622,12 +3639,21 @@ void TfrmBillGroup::ShowReceipt()
 			TempReceipt->Transaction = &ReceiptTransaction;
 
 			std::set <__int64> ReceiptItemKeys;
-			for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
-			{
-                if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))     //Added condition to exclude Side which has Cost equal to 0
-				    ReceiptItemKeys.insert(itItem->first);
-			}
-
+            if(TGlobalSettings::Instance().HideFreeSides)
+            {
+                for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+                {
+                    if(!(itItem->second.Price == 0 && itItem->second.IsSide == true && itItem->second.IsItemFree == false))     //Added condition to exclude Side which has Cost equal to 0
+                        ReceiptItemKeys.insert(itItem->first);
+                }
+            }
+            else
+            {
+                for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+                {
+                        ReceiptItemKeys.insert(itItem->first);
+                }
+            }
 			TDBOrder::GetOrdersFromOrderKeys(DBTransaction, ReceiptTransaction.Orders, ReceiptItemKeys);
             if (CurrentTabType == TabDelayedPayment)
 			  {
@@ -4224,6 +4250,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
         {
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
             pmsHelper->GetRevenueCode(PaymentTransaction.Orders);
+            pmsHelper->GetItemSizeIdentifierKeys(PaymentTransaction.Orders);
         }
         TMMContactInfo Member;
         if(SelectedDiscount.IsComplimentaryDiscount())
@@ -4444,9 +4471,12 @@ eDisplayMode TfrmBillGroup::SelectedZone()
     RemoveMembership(DBTransaction);
 	DBTransaction.Commit();
 	DBTransaction.StartTransaction();
+
 	if (SelectionForm->ShowModal() != mrCancel)
 	{
-        tbtnSelectZone->Caption = SelectionForm->Title;
+        if(SelectionForm->SelectedTabType != TabTableSeat)
+            tbtnSelectZone->Caption = SelectionForm->Title;
+
 		switch(int(SelectionForm->SelectedTabType))
 		{
 		case TabNormal:
@@ -4533,7 +4563,18 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                 if( floorPlan->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 //				if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
 				{
-
+                    if(TGlobalSettings::Instance().IsTableLockEnabled)
+                    {
+                        UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(DBTransaction, floorPlanReturnParams.TabContainerNumber);
+                        if(StaffName.Trim() != "" && TDeviceRealTerminal::Instance().User.Name.Pos(StaffName) == 0)
+                        {
+                            MessageBox("This Table can only be billed by staff " + StaffName,"Error",MB_OK);
+                            ResetForm();
+                            floorPlan.reset();
+                            break;
+                        }
+                     }
+                     tbtnSelectZone->Caption = SelectionForm->Title;
                     CurrentDisplayMode = eTables;
                     CurrentTabType     = TabTableSeat;
                     UpdateRightButtonDisplay(NULL);
@@ -5548,6 +5589,8 @@ void TfrmBillGroup::GetLoyaltyMemberByEmail(UnicodeString email)
             TDBContacts::GetContactDetails(dbTransaction, contactKey, contactInfo);
             TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
             ManagerLoyaltyVoucher.DisplayMemberVouchers(dbTransaction,contactInfo);
+            TManagerDiscount managerDiscount;
+            managerDiscount.GetMembershipDiscounts(dbTransaction,contactInfo.AutoAppliedDiscounts);
             Membership.Assign(contactInfo, emsManual);
         }
 

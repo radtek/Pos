@@ -88,13 +88,13 @@
 #include "MMCustomerDisplayManager.h"
 #include "ManagerCloudSync.h"
 #include "CSVExportReceiver.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "ManagerPMS.h"
 #include "EftposSmartConnect.h"
 #include "EftposAdyen.h"
 #include "EFTPOSPaymentSense.h"
 #include "SignalRUtility.h"
-
+#include "ManagerAustriaFiscal.h"
 #pragma package(smart_init)
 #pragma link "SHDocVw_OCX"
 #pragma link "TouchControls"
@@ -397,7 +397,29 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         {
             TCSVExportReceiver::Instance().Initialise(TGlobalSettings::Instance().CSVExportIP, TGlobalSettings::Instance().CSVPath, 47001);
         }
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
+            std::auto_ptr<TManagerAustriaFiscal> managerAustriaFiscal(new TManagerAustriaFiscal());
 
+            if(TGlobalSettings::Instance().AustriaFiscalUrl != "")
+            {
+                if(TGlobalSettings::Instance().IsAustriaFiscalCommissioned)
+                {
+                    if(managerAustriaFiscal->GetEchoResponseFromMain())
+                    {
+                        TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = managerAustriaFiscal->SendZeroReceipt();
+                        if(!TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+                           MessageBox("Could not communicate with Austria Fiscal.\rAustria Fiscal reporting is disabled.","Error",MB_OK+MB_ICONERROR);
+                    }
+                }
+                else
+                {
+                    TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled = false;
+                    MessageBox("Austria Fiscal is not commissioned at the moment.\rPlease run Commission command using option available under Configuration.","Info",MB_OK+MB_ICONINFORMATION);
+                }
+            }
+        }
 		// Set up Header and Footer Info.
 		TDeviceRealTerminal::Instance().LoadHdrFtr();
 		FormResize(Sender);
@@ -476,12 +498,12 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
-            TManagerPanasonic::Instance();
-            TManagerPanasonic::Instance()->PrepareTenderTypes();
-            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-        }
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
+//            TManagerPanasonic::Instance();
+//            TManagerPanasonic::Instance()->PrepareTenderTypes();
+//            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
+//        }
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);
@@ -493,6 +515,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             SaveItemPriceIncludeTaxToDatabase(vmItemPriceIncludeTax, TGlobalSettings::Instance().ItemPriceIncludeTax);
        }
        WriteDBPathAndIPToFile();
+       if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+          SetUpAustriaFiscal();
        DBBootTransaction.Commit();
 	}
 	catch(Exception &E)
@@ -510,6 +534,15 @@ void TfrmMain::SyncCompanyDetails()
         TManagerCloudSync ManagerCloudSync;
         ManagerCloudSync.CheckSyndCodes();
         bool isSyncSuccessful = ManagerCloudSync.SyncCompanyDetails();
+
+         AnsiString DirectoryName = ExtractFilePath(Application->ExeName) + "MemberEmails";
+         if (!DirectoryExists(DirectoryName))
+            CreateDir(DirectoryName);
+
+         AnsiString filename = DirectoryName + "\\" + "MemberDetail.txt";
+        std::auto_ptr <TStringList> logList(new TStringList);
+        logList->SaveToFile(filename);
+
         if(isSyncSuccessful && TGlobalSettings::Instance().EnableOnlineOrdering)
         {
             UnloadSignalR();
@@ -1895,3 +1928,8 @@ void TfrmMain::WriteDBPathAndIPToFile()
     logList->SaveToFile(fileName );
 }
 ////------------------------------------------------------------------------------------------
+void TfrmMain::SetUpAustriaFiscal()
+{
+    // Call for Setting up Austria Fiscal
+}
+//------------------------------------------------------------------------------

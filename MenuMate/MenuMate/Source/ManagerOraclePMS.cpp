@@ -346,23 +346,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                         break;
                       }
                    }
-//                   int size = postRequest.Discount.size();
-//                   if(size < 16)
-//                   {
-//                        int paymentSurcharge = 0;
-//                        paymentSurcharge += atoi(strSurcharge.c_str());
-//                        AnsiString str = paymentSurcharge;
-//                        postRequest.Discount.push_back(str);
-//                   }
-//                   else
-//                   {
-//                        int paymentSurcharge = atoi(postRequest.Discount[15].c_str());
-//                        paymentSurcharge += atoi(strSurcharge.c_str());
-//                        AnsiString str = paymentSurcharge;
-//                        postRequest.Discount[15] = str;
-//                   }
                 }
-
                 if(_paymentTransaction.Money.TotalRounding  != 0)
                 {
                     double totalRounding = (double)_paymentTransaction.Money.TotalRounding;
@@ -389,6 +373,32 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                        }
                     }
                 }
+                int totalInt = atoi(postRequest.TotalAmount.c_str());
+                double paymentD = RoundToNearest(
+                    (double)payment->GetPayTendered() -(double)payment->GetSurcharge(),
+                    0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+                paymentD = paymentD * 100;
+                int paymentInt = paymentD;
+                if(paymentInt - totalInt != 0)
+                {
+                    int adjustmentInt = paymentInt - totalInt;
+                    int oldTotal = atoi(postRequest.TotalAmount.c_str());
+                    oldTotal += adjustmentInt;
+                    postRequest.TotalAmount = oldTotal;
+                    for(int index = 0; index < postRequest.Subtotal1.size(); index++)
+                    {
+                       if(postRequest.Subtotal1[index].Trim() != "")
+                       {
+                           int oldSubTotal = atoi(postRequest.Subtotal1[index].c_str());
+                           oldSubTotal += adjustmentInt;
+                           postRequest.Subtotal1[index] = oldSubTotal;
+                           break;
+                       }
+                    }
+                }
+                //Removing values present after decimal point
+                int finalTotal = atoi(postRequest.TotalAmount.c_str());
+                postRequest.TotalAmount = finalTotal;
                 postRequest.CheckNumber = checkNumber;
                 TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
                 AnsiString resultData = "";

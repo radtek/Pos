@@ -114,11 +114,12 @@ class TListPaymentSystem : public TMMPaymentSystem
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
-    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
+//    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
     bool IsOracleConfigured();
     bool IsSiHotConfigured();
      //settle th eeftpos bills after zed performed..
     bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
+ 
 
 protected:
 
@@ -144,9 +145,9 @@ protected:
 	void ArchiveReferences(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
 	void ArchiveRewards(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
 	void ArchiveTransaction(TPaymentTransaction &PaymentTransaction);
-	long ArchiveBill(TPaymentTransaction &PaymentTransaction);
+	long ArchiveBill(TPaymentTransaction &PaymentTransaction, TDateTime transactionDateAndTime);
 	void ArchivePatronCount(TPaymentTransaction &PaymentTransaction,long ArcBillKey);
-	void ArchiveOrder(TPaymentTransaction &PaymentTransaction,long ArcBillLK);
+	void ArchiveOrder(TPaymentTransaction &PaymentTransaction,long ArcBillLK, TDateTime transactionDateAndTime);
     void ArchivePoints(TPaymentTransaction &PaymentTransaction);
     void ArchiveOrderDiscounts(Database::TDBTransaction &DBTransaction,int ArchiveKey,TItemMinorComplete *Order);
     void ArchiveOrderTaxes(Database::TDBTransaction &DBTransaction,int ArchiveKey,TItemMinorComplete *Order);
@@ -239,6 +240,8 @@ protected:
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
      bool IsMewsConfigured();
      bool TryToEnableMews();
+     bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
+     bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
 };
 
 #endif

@@ -8,7 +8,7 @@
 //  >Import : http://localhost:8742/MenumateServices/SiHotService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (4/07/2018 1:04:10 a.m. - - $Rev: 25127 $)
+// (8/01/2019 7:19:32 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -94,6 +94,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SiHotPayment), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotPayment");
   /* RoomChargeResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeResponse), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeResponse");
+  /* StoreTicketDetails */
+  RemClassRegistry()->RegisterXSClass(__classid(StoreTicketDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"StoreTicketDetails");
   /* RoomRequest */
   RemClassRegistry()->RegisterXSClass(__classid(RoomRequest2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomRequest2", L"RoomRequest");
   /* RoomDetails */
@@ -108,6 +110,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SiHotPayment2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"SiHotPayment2", L"SiHotPayment");
   /* RoomChargeResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RoomChargeResponse2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"RoomChargeResponse2", L"RoomChargeResponse");
+  /* StoreTicketDetails */
+  RemClassRegistry()->RegisterXSClass(__classid(StoreTicketDetails2), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"StoreTicketDetails2", L"StoreTicketDetails");
   /* ArrayOfGuestDetails */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfGuestDetails), L"http://schemas.datacontract.org/2004/07/SiHotIntegration.Domain", L"ArrayOfGuestDetails");
   /* ArrayOfSiHotPayment */

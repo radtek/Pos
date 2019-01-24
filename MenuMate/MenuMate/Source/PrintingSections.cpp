@@ -5063,9 +5063,16 @@ void TPrintSection::PrintItemsTotal(TReqPrintJob *PrintJob)
 
 			TOrderBundle *TempBundle = new TOrderBundle();
 			TempBundle->BundleOrders(PrintJob, WorkingOrdersList.get(), i,Format);
+            if(TGlobalSettings::Instance().HideFreeSides)
+            {
+                if(!(CurrentOrder->IsSide && CurrentOrder->PriceEach() == 0))    //Added condition to exclude Side which has Cost equal to 0
+    			    OrderBundle->Add(TempBundle);
+            }
+            else
+            {
+                OrderBundle->Add(TempBundle);
+            }
 
-            if(!(CurrentOrder->IsSide && CurrentOrder->PriceEach() == 0))    //Added condition to exclude Side which has Cost equal to 0
-    			OrderBundle->Add(TempBundle);
 		}
 
 		for (int j = 0; j < OrderBundle->Count; j++)
@@ -6462,7 +6469,13 @@ void TPrintSection::PrintReceiptFooterSecond(TReqPrintJob *PrintJob)
 //-----------------------------------------------------------------------------
 void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 {
+    bool isAustriaSignaturePrinted = true;
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+        PrintFiscalAustriaSignature(PrintJob);
+        isAustriaSignaturePrinted = false;
 
+    }
     if((!TReceiptUtility::CheckRefundCancelTransaction(*PrintJob->Transaction))
          || !TGlobalSettings::Instance().SetVoidFooter)
     {
@@ -6482,7 +6495,8 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
 		}
         if (PrintJob->ReceiptFooter->Count == 0)
         {
-            Empty = true;
+            if(isAustriaSignaturePrinted)
+                Empty = true;
         }
         else
         {
@@ -6502,7 +6516,8 @@ void TPrintSection::PrintReceiptFooter(TReqPrintJob *PrintJob)
     }
     else
     {
-        Empty = true;
+        if(isAustriaSignaturePrinted)
+            Empty = true;
     }
 }
 
@@ -7658,15 +7673,24 @@ TDocketFormat &inFormat)
 		{
 			SideLine = Format.SideHeader;
 		}
+        bool ShowFreeSides;
 
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-           if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
-           && PrintJob->JobType == pjReceiptReceipt)
-           && !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
-           && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
-           || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
-           && PrintJob->JobType == pjKitchen))
+            if(TGlobalSettings::Instance().HideFreeSides)
+            {
+                ShowFreeSides = !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+                       && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0));
+            }
+            else
+            {
+                ShowFreeSides = true;
+            }
+
+            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+                    && PrintJob->JobType == pjReceiptReceipt) && ShowFreeSides)
+                    || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+                    && PrintJob->JobType == pjKitchen))
             {
                UnicodeString ItemName = "";
                UnicodeString SizeName = "";
@@ -7700,7 +7724,7 @@ TDocketFormat &inFormat)
                    TItemSubSection SubItem;
                    SubItem.Caption = SetMenuItemSpacer + Format.BulletSide + ItemName;
                    SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
-                 if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
+                  if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
                   {
                       SubItem.isManuallyWeight=true;
                   }
@@ -7710,7 +7734,7 @@ TDocketFormat &inFormat)
                   }
                   SubItems.push_back(SubItem);
                }
-           }
+            }
 		}
 	}
 }
@@ -8352,11 +8376,7 @@ void TPrintSection::PrintTextForUnRegisteredDatabase()
 
 //----------------------------------------------------------------------------------
 
-void TOrderBundle::BundleOrdersWithSides(
-TReqPrintJob *PrintJob,
-TList *Orders,
-int &CurrentIndex,
-TDocketFormat &inFormat)
+void TOrderBundle::BundleOrdersWithSides(TReqPrintJob *PrintJob, TList *Orders, int &CurrentIndex, TDocketFormat &inFormat)
 {
 	// initializations
 	UnicodeString QtyMultiplier1 	= UnicodeString("x ");
@@ -8834,82 +8854,91 @@ TDocketFormat &inFormat)
 			SideLine = Format.SideHeader;
 		}
 
+        bool ShowFreeSides;
 		for (int i = 0; i < InitialOrder->SubOrders->Count; i++)
         {
-            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
-            && PrintJob->JobType == pjReceiptReceipt)
-            &&!((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
-            && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0)))
-            || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
-            && PrintJob->JobType == pjKitchen))
+            if(TGlobalSettings::Instance().HideFreeSides)
             {
-                UnicodeString ItemName = "";
-                UnicodeString SizeName = "";
-                bool isSameSide = false;
-                if (PrintJob->JobType == pjKitchen)
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
-                }
-                else
-                {
-                    ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
-                    SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
-                }
+                ShowFreeSides = !((((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->PriceEach()==0)
+                       && (((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->TotalDiscountSides()==0));
+            }
+            else
+            {
+                ShowFreeSides = true;
+            }
 
-                if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
-                {
-                    UnicodeString sideName = WideString(QtyMultiplier1) + SizeName + Spacer1 + ItemName;
-                    isSameSide = IsSideAlreadyExist(sideName, countSides);
-
-                    if(!isSameSide)
+            if(((!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForReceipt
+                    && PrintJob->JobType == pjReceiptReceipt) && ShowFreeSides)
+                    || (!((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->printFreeSideForKitchen
+                    && PrintJob->JobType == pjKitchen))
+            {
+                    UnicodeString ItemName = "";
+                    UnicodeString SizeName = "";
+                    bool isSameSide = false;
+                    if (PrintJob->JobType == pjKitchen)
                     {
-
-                        TItemSubSection SubItem;
-                        SubItem.SideQuantity = countSides;
-                        SubItem.Caption = sideName;
-                        SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
-                        SubItem.SideBullets = Format.BulletSide;
-                        if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                          {
-                             SubItem.isManuallyWeight=true;
-                         }
-                           else
-                           {
-                               SubItem.isManuallyWeight=false;
-                           }
-                        SubItems.push_back(SubItem);
+                        ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->ItemKitchenName;
+                        SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->SizeKitchenName;
                     }
-                }
-                else
-                {
-
-
-                    UnicodeString sideName = WideString(QtyMultiplier1) + ItemName;
-                    isSameSide = IsSideAlreadyExist(sideName, countSides);
-
-                    if(!isSameSide)
+                    else
                     {
+                        ItemName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Item;
+                        SizeName = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size;
+                    }
+
+                    if (UpperCase(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->Size) != "DEFAULT")
+                    {
+                        UnicodeString sideName = WideString(QtyMultiplier1) + SizeName + Spacer1 + ItemName;
+                        isSameSide = IsSideAlreadyExist(sideName, countSides);
+
+                        if(!isSameSide)
+                        {
+
                             TItemSubSection SubItem;
                             SubItem.SideQuantity = countSides;
                             SubItem.Caption = sideName;
                             SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
                             SubItem.SideBullets = Format.BulletSide;
                             if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
-                             {
-                                    SubItem.isManuallyWeight=true;
+                              {
+                                 SubItem.isManuallyWeight=true;
                              }
-                             else
-                           {
-                               SubItem.isManuallyWeight=false;
-                           }
+                               else
+                               {
+                                   SubItem.isManuallyWeight=false;
+                               }
                             SubItems.push_back(SubItem);
+                        }
                     }
+                    else
+                    {
 
+
+                        UnicodeString sideName = WideString(QtyMultiplier1) + ItemName;
+                        isSameSide = IsSideAlreadyExist(sideName, countSides);
+
+                        if(!isSameSide)
+                        {
+                                TItemSubSection SubItem;
+                                SubItem.SideQuantity = countSides;
+                                SubItem.Caption = sideName;
+                                SubItem.FontInfo = ((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->FontInfo;
+                                SubItem.SideBullets = Format.BulletSide;
+                                if(((TItemCompleteSub*)(InitialOrder->SubOrders->Items[i]))->GetIsManuallyEnteredWeight() )
+                                 {
+                                        SubItem.isManuallyWeight=true;
+                                 }
+                                 else
+                               {
+                                   SubItem.isManuallyWeight=false;
+                               }
+                                SubItems.push_back(SubItem);
+                        }
+
+                    }
                 }
             }
       }
-	}
 }
 // -----------------------------------------------------------------------------
 //checking if side already added to vector than increase it's quantity only
@@ -9376,6 +9405,107 @@ void TPrintSection::PrintTipAndSignature(TReqPrintJob* PrintJob)
         pPrinter->Line->Columns[0]->Alignment = taLeftJustify;
         pPrinter->Line->Columns[0]->Text  = "Signature :____________________________________________";
         pPrinter->AddLine();
+
+        if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
+            pPrinter->PartialCut();
     }
+}
+void TPrintSection::PrintFiscalAustriaSignature(TReqPrintJob *PrintJob)
+{
+        pPrinter->Line->ColCount = 1;
+        pPrinter->Line->FontInfo.Bold = false;
+        pPrinter->Line->FontInfo.Height = fsNormalSize;
+        pPrinter->Line->FontInfo.Width = fsNormalSize;
+        __int64 status = 99;
+        int responseId = 99;
+        UnicodeString content = "";
+        GetAustriaFiscalSignature(status,responseId,PrintJob->Transaction->InvoiceNumber);
+        if(status == 0x4154000000000000 || status == 0x4154000000000010 || status == 0x4154000000000020)
+        {
+            content = GetSignatureContent(responseId);
+        }
+        else if(status == 0x4154000000000002)
+        {
+            content = "SSCD temporary out of service";
+        }
+        else if(status == 0x4154000000000001)
+        {
+            content = "Security mechanism is out of service";
+        }
+        else
+        {
+            content = "Unknown Status";
+        }
+        pPrinter->Line->Columns[0]->Width = pPrinter->Width;
+        pPrinter->Line->Columns[0]->Alignment = taCenter;
+
+        if(content.Length() > pPrinter->Width)
+        {
+            pPrinter->Line->Columns[0]->Text = "Fiscal Signature";
+            pPrinter->AddLine();
+            int lengthCovered = pPrinter->Width;
+            for(int i = 1; i <= content.Length();)
+            {
+                pPrinter->Line->Columns[0]->Text = content.SubString(i,pPrinter->Width);
+                pPrinter->AddLine();
+                i += pPrinter->Width;
+                lengthCovered += pPrinter->Width;
+            }
+        }
+        else
+        {
+            pPrinter->Line->Columns[0]->Text = content;
+            pPrinter->AddLine();
+        }
+}
+void TPrintSection::GetAustriaFiscalSignature(__int64 &status, int &responseId, UnicodeString invoiveNumber)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT STATE, RESPONSE_ID FROM AUSTRIAFISCALRESPONSE WHERE MMINVOICENUMBER = :MMINVOICENUMBER";
+        IBInternalQuery->ParamByName("MMINVOICENUMBER")->AsString = invoiveNumber;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            UnicodeString state = IBInternalQuery->FieldByName("STATE")->AsString;
+            status = StrToInt64(state);
+            responseId = IBInternalQuery->FieldByName("RESPONSE_ID")->AsInteger;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(ex.Message,"Exception",MB_OK);
+    }
+}
+UnicodeString TPrintSection::GetSignatureContent(int responseId)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    UnicodeString content = "";
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT DATA FROM AUSTRIAFISCALSIGNATURES WHERE RESPONSE_ID = :RESPONSE_ID";
+        IBInternalQuery->ParamByName("RESPONSE_ID")->AsString = responseId;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            content = IBInternalQuery->FieldByName("DATA")->AsString;
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        MessageBox(ex.Message,"Exception",MB_OK);
+    }
+    return content;
 }
 //--------------------------------------------------------------------------------------

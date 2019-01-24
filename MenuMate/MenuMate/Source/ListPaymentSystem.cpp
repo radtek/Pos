@@ -64,7 +64,7 @@
 #include "StringTools.h"
 #include "PointsRulesSetUtils.h"
 #include "MallFactory.h"
-#include "ManagerPanasonic.h"
+//#include "ManagerPanasonic.h"
 #include "WalletPaymentsInterface.h"
 #include "ManagerMallSetup.h"
 #include "FiscalDataUtility.h"
@@ -75,6 +75,8 @@
 #include "SaveLogs.h"
 #include "ManagerMews.h"
 #include "DBAdyen.h"
+#include "AustriaFiscalDataObjects.h"
+#include "ManagerAustriaFiscal.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -500,12 +502,12 @@ void TListPaymentSystem::PaymentSave(Database::TDBTransaction &DBTransaction, in
             SetPaymentWalletAttributes(DBTransaction,PaymentKey,Payment);
             SetPMSPaymentType(DBTransaction,PaymentKey, Payment, true,true);
 		}
-        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-        {
-            std::vector <UnicodeString> PayTypes;
-            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
-            InsertPaymentTypeInPanasonicDB(PayTypes);
-        }
+//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//        {
+//            std::vector <UnicodeString> PayTypes;
+//            PayTypes.push_back("*" + IBInternalQuery->ParamByName("PAYMENT_NAME")->AsString + "*");
+//            InsertPaymentTypeInPanasonicDB(PayTypes);
+//        }
 	}
 	catch(Exception & E)
 	{
@@ -843,6 +845,15 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		default:
 			break;
 		}
+        //Calling Post Ticket method
+        if(TGlobalSettings::Instance().EnableStoreTicketPosting && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().PMSPostSuccessful)
+        {
+            std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
+            receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
+            receiptStream->Position = 0;
+            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction.InvoiceNumber, ReceiptData);
+        }
 
 		transactionRecovery.ClearRecoveryInfo();
         SetCashDrawerStatus(PaymentTransaction);
@@ -990,6 +1001,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		OnAfterTransactionComplete.Occured();
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
         delete logList;
         logList = NULL;
 	}
@@ -1001,6 +1017,12 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
 
+        if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+        {
+            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+            managerAustria->UnsetPostingFlag();
+        }
+
         TStringList* logList = new TStringList();
         logList->Add("Exception in  ProcessTransaction()");
         TSaveLogs::RecordFiscalLogs(logList);
@@ -1011,15 +1033,18 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 	}
 	Busy = false;
 
-    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-    {
-        TManagerPanasonic::Instance()->TriggerTransactionSync();
-    }
+//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
+//    {
+//        TManagerPanasonic::Instance()->TriggerTransactionSync();
+//    }
     TStringList* logList = new TStringList();
     logList->Add("ProcessTransaction() Executed.");
     TSaveLogs::RecordFiscalLogs(logList);
     delete logList;
     logList = NULL;
+
+    //Unsetting the Global settings used for Store Ticket Post
+    TGlobalSettings::Instance().PMSPostSuccessful = false;
 
 	return PaymentComplete;
 }
@@ -1681,12 +1706,13 @@ void TListPaymentSystem::ArchiveTransaction(TPaymentTransaction &PaymentTransact
     {
         CheckPatronByOrderIdentification(PaymentTransaction);
     }
-	long ArcBillKey = ArchiveBill(PaymentTransaction);
+    TDateTime transactionDateAndTime = Now();
+	long ArcBillKey = ArchiveBill(PaymentTransaction,transactionDateAndTime);
 	ArchivePatronCount(PaymentTransaction, ArcBillKey);
 	ArchiveReferences(PaymentTransaction, ArcBillKey);
 	ArchivePoints(PaymentTransaction);
 	SetLastVisit(PaymentTransaction);
-	ArchiveOrder(PaymentTransaction, ArcBillKey);
+	ArchiveOrder(PaymentTransaction, ArcBillKey,transactionDateAndTime);
 	ArchiveRewards(PaymentTransaction, ArcBillKey);
 	ArchiveWebOrders(PaymentTransaction, ArcBillKey);
     TDeviceRealTerminal::Instance().ManagerMembership->SyncBarcodeMemberDetailWithCloud(PaymentTransaction.Membership.Member);
@@ -1835,7 +1861,6 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 {
    if(PaymentTransaction.Membership.Member.ContactKey == 0)
      return;
-
 	try
 	{
 
@@ -1881,9 +1906,9 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			refDate = RecodeYear(activationDate, YearOf(Now()) - 1) ;
 		}
-		if(YearSpan(activationDate,currentDate) >= 1)
+		if(DaysBetween(activationDate,currentDate) >= 365)
 		{
-
+            
 			TDateTime startDate =  RecodeYear(refDate, YearOf(refDate) - 1);
 			if(TGlobalSettings::Instance().LoyaltyMateEnabled)
 			{
@@ -1914,8 +1939,7 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
                 TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->CurrentYearPoints += currentPoint;
 		currentYearTierLevel = TDBTierLevel::GetTierLevelAsPerEarnedPoints(PaymentTransaction.DBTransaction,earnedPoints);
 
-
-		if(currentYearTierLevel < lastYearTierLevel)
+		if(TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, currentYearTierLevel) < TDBTierLevel::GetPointsrequired(PaymentTransaction.DBTransaction, lastYearTierLevel))
 		{
 			tierLevel = lastYearTierLevel ;
 		}
@@ -1923,16 +1947,15 @@ void TListPaymentSystem::CalculateTierLevel(TPaymentTransaction &PaymentTransact
 		{
 			tierLevel = currentYearTierLevel;
 		}
-
-		bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel;
+       bool IsTierLevelChanged = PaymentTransaction.Membership.Member.TierLevel != tierLevel && tierLevel != 0;
 		if(IsTierLevelChanged)
-		{
+		{   
 			TGlobalSettings::Instance().TierLevelChange   = tierLevel;
 			MessageBox(PaymentTransaction.Membership.Member.Name + "'s Tier Level Changed To " +
 			TDBTierLevel::GetTierLevelName(PaymentTransaction.DBTransaction,tierLevel), "Tier Level", MB_OK + MB_ICONINFORMATION);
+            PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		}
 
-		PaymentTransaction.Membership.Member.TierLevel = tierLevel;
 		TDBTierLevel::UpdateMemberTierLevel(PaymentTransaction.DBTransaction,PaymentTransaction.Membership.Member);
     }
 	catch(Exception & E)
@@ -2055,7 +2078,7 @@ void TListPaymentSystem::ArchiveRewards(TPaymentTransaction &PaymentTransaction,
 	}
 }
 
-long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
+long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction, TDateTime transactionDateAndTime)
 {
     long Retval;
     bool isClippGroup = false;
@@ -2105,7 +2128,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 		IBInternalQuery->ParamByName("ARCBILL_KEY")->AsString = Retval;
 		IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
 		IBInternalQuery->ParamByName("STAFF_NAME")->AsString = TDeviceRealTerminal::Instance().User.Name;
-		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+		IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = transactionDateAndTime;
         currentTime = IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime;
 		IBInternalQuery->ParamByName("TOTAL")->AsCurrency = Total;
 		IBInternalQuery->ParamByName("DISCOUNT")->AsCurrency = Discount;
@@ -2206,13 +2229,15 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
                     }
                 }
                 IBInternalQuery->ParamByName("PAY_TYPE")->AsString = payTypeName;
-                if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
-                    ||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
-				    ||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
-					&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
-                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
-                else
-                    IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+				
+				if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
+				||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
+				||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
+				&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
+					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
+				else
+					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
+			
                 if (!PaymentTransaction.CreditTransaction)
                 {
                     IBInternalQuery->ParamByName("SUBTOTAL")->AsCurrency = RoundToNearest(
@@ -2503,7 +2528,7 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction)
 	return Retval;
 }
 
-void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, long ArcBillLK)
+void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, long ArcBillLK, TDateTime transactionDateAndTime)
 {
     /**********************DLF MALL START****************************************/
     if(TGlobalSettings::Instance().MallIndex == DLFMALL )
@@ -2691,7 +2716,7 @@ void TListPaymentSystem::ArchiveOrder(TPaymentTransaction &PaymentTransaction, l
 				IBInternalQuery->ParamByName("POINTS_PERCENT")->AsFloat = Order->PointsPercent;
 				IBInternalQuery->ParamByName("ORDER_LOCATION")->AsString = Order->OrderedLocation;
 				IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Order->TimeStamp;
-				IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = Now();
+				IBInternalQuery->ParamByName("TIME_STAMP_BILLED")->AsDateTime = transactionDateAndTime;
 				IBInternalQuery->ParamByName("HAPPY_HOUR")->AsString = Order->HappyHour ? "T" : "F";
 				IBInternalQuery->ParamByName("NOTE")->AsString = Order->Note.SubString(1, 80);
 				IBInternalQuery->ParamByName("TIME_KEY")->AsInteger = Order->TimeKey;
@@ -3660,7 +3685,7 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-    if(TGlobalSettings::Instance().UseItalyFiscalPrinter)
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
         TStringList* logList = new TStringList();
         logList->Add("----------------------------------------------New BILL-------------------------------------------");
@@ -3674,7 +3699,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
 																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
             || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
                 TGlobalSettings::Instance().PrintSignatureWithRoomSales &&
-                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))))
+                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))) )
         {
             PrintReceipt(RequestEFTPOSReceipt);
             logList->Add("Print to normal receipt printer has been sent.");
@@ -3689,7 +3714,7 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
         logList->Clear();
         logList->Add("Response Message received in ListPaymentSystem is: " + responseMessage);
         TSaveLogs::RecordFiscalLogs(logList);
-        if(responseMessage.Pos("OK") == 0)
+        if(responseMessage != "OK")
         {
             MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
             logList->Clear();
@@ -3707,6 +3732,12 @@ void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, b
                 logList->Add("Control returned after calling Print receipt Function in ReceiptPrint() function.");
                 TSaveLogs::RecordFiscalLogs(logList);
             }
+        }
+        else
+        {
+            logList->Clear();
+            logList->Add("Response message Received from Fiscal printer is OK ");
+            TSaveLogs::RecordFiscalLogs(logList);
         }
         delete logList;
         logList = NULL;
@@ -3778,6 +3809,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     bool LoyaltyVouchers = true;
     bool WalletTransaction = true;
     bool FiscalTransaction = true;
+    bool austriaFiscalTransaction = true;
 
     WalletTransaction = ProcessWalletTransaction(PaymentTransaction);
     if (!WalletTransaction)
@@ -3885,7 +3917,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if(!PhoenixHSOk)
 	   return RetVal;
 
-    if(TGlobalSettings::Instance().IsFiscalStorageEnabled)
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled && CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
         std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
         AnsiString fiscalData = dataUtility->GetPOSPlusData(PaymentTransaction);
@@ -3895,6 +3927,16 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(!FiscalTransaction)
         return RetVal;
+    if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
+    {
+
+        if(CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+        {
+
+           std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
+           managerAustria->ExportData(PaymentTransaction);
+        }
+    }
 
     PocketVoucher =  ProcessPocketVoucherPayment(PaymentTransaction);
     if(!PocketVoucher)
@@ -3946,6 +3988,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 
     if(TGlobalSettings::Instance().LoyaltyMateEnabled)
        LoyaltyVouchers = ProcessLoyaltyVouchers(PaymentTransaction);
+
 
 	RetVal = ChequesOk && EftPosOk && PhoenixHSOk && DialogsOk && PocketVoucher &&
              GeneralLedgerMate && RMSCSVRoomExport && NewBookCSVRoomExport && LoyaltyVouchers && WalletTransaction && FiscalTransaction;
@@ -4910,6 +4953,7 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 
 		 if (frmPaymentType->Execute() == mrOk)
 		{
+
             isPaymentProcessed = true;
              bool RetrieveUserOptions = false;
              if((TGlobalSettings::Instance().IsDrinkCommandEnabled) && (PaymentTransaction.Orders->Count >0 ) && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->TabName == "DC_ITEMS_ZED")
@@ -4935,6 +4979,8 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
   			    PaymentTransaction.ProcessPoints();
 				TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
 				PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
+
+
 				if (PaymentComplete)
 				{
 					if (PaymentTransaction.CreditTransaction)
@@ -4958,7 +5004,9 @@ void TListPaymentSystem::_processOrderSetTransaction( TPaymentTransaction &Payme
 					ReceiptPrepare(PaymentTransaction, RequestEFTPOSReceipt);
 					StoreInfo(PaymentTransaction);
 					ProcessRewardSchemes(PaymentTransaction);
+
 					ArchiveTransaction(PaymentTransaction);
+                   
 					if(PaymentTransaction.TypeOfSale == RegularSale)
 					{
 						exportTransactionInformation( PaymentTransaction ); // update export tables on going through tender screen
@@ -5317,6 +5365,7 @@ void TListPaymentSystem::_processQuickTransaction( TPaymentTransaction &PaymentT
             TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
         }
         PaymentComplete = ProcessThirdPartyModules(PaymentTransaction, RequestEFTPOSReceipt);
+
         if(PaymentComplete)
         {
             if(CaptureSCDOrPWDCustomerDetails(PaymentTransaction) == mrCancel)
@@ -6364,17 +6413,18 @@ void TListPaymentSystem::CheckSubscription( TPaymentTransaction &PaymentTransact
     }
 }
 //-------------------------------------------------------------------------------------
-void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
-{
-    TDBPanasonic* dbPanasonic = new TDBPanasonic();
-    dbPanasonic->UniDataBaseConnection->Open();
-    dbPanasonic->UniDataBaseConnection->StartTransaction();
+//void TListPaymentSystem::InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes)
+//{
+//    TDBPanasonic* dbPanasonic = new TDBPanasonic();
+//    dbPanasonic->UniDataBaseConnection->Open();
+//    dbPanasonic->UniDataBaseConnection->StartTransaction();
+//
+//    dbPanasonic->InsertTenderTypes(PayTypes);
+//
+//    dbPanasonic->UniDataBaseConnection->Commit();
+//    dbPanasonic->UniDataBaseConnection->Close();
+//}
 
-    dbPanasonic->InsertTenderTypes(PayTypes);
-
-    dbPanasonic->UniDataBaseConnection->Commit();
-    dbPanasonic->UniDataBaseConnection->Close();
-}
 //-----------------------------------------------------------------------------------
 void TListPaymentSystem::SaveRoomGuestDetails(TPaymentTransaction &paymentTransaction)
 {
@@ -6637,7 +6687,7 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateR
         LastReceipt->Printouts->Print(0, TDeviceRealTerminal::Instance().ID.Type);
     }
      if(TGlobalSettings::Instance().EnableEftPosAdyen && !TGlobalSettings::Instance().DuplicateEftPosReceipt &&
-        TGlobalSettings::Instance().PrintCardHolderReceipt )
+        TGlobalSettings::Instance().PrintCardHolderReceipt  && !TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
         LastReceipt->Printouts->Print(1, TDeviceRealTerminal::Instance().ID.Type);
 
       if((TGlobalSettings::Instance().DuplicateReceipts || duplicateReceipt) ||
@@ -7116,4 +7166,41 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
     }
 
 	return retVal;
+}
+//---------------------------------------------------------------------
+bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction)
+{
+	bool retVal = true;
+    try
+    {
+        if(TGlobalSettings::Instance().IsFiscalPostingDisable)
+        {
+
+            if(IsPaymentDoneForFiscal(PaymentTransaction))
+            {
+               retVal = false;
+            }
+        }
+    }
+    catch(Exception &err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
+        retVal = true;
+    }
+	return retVal;
+}
+//-----------------------------------------------------------------------
+bool TListPaymentSystem::IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction)
+{
+    bool retVal = false;
+    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
+	{
+		TPayment *payment = paymentTransaction.PaymentGet(i);
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
+		{
+            retVal = true;
+            break;
+        }
+    }
+    return retVal;
 }
