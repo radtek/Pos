@@ -121,6 +121,7 @@ void __fastcall TfrmSelectTable::FormClose(TObject *Sender,
 	ShowAll = false;
 	ChangingName = false;
     tiUpdateTableReq->Enabled = false;
+    tiTimerEnableReq->Enabled = false;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSelectTable::FormResize(TObject *Sender)
@@ -141,7 +142,9 @@ void __fastcall TfrmSelectTable::stCancelClick(TObject *Sender)
 {
 	ModalResult = mrCancel;
     tiUpdateTableReq->Enabled = false;
+    tiTimerEnableReq->Enabled = false;
 }
+
 //---------------------------------------------------------------------------
 void __fastcall TfrmSelectTable::FormCreate(TObject *Sender)
 {
@@ -212,9 +215,20 @@ void __fastcall TfrmSelectTable::tgridTablesMouseClick(TObject *Sender,
 //---------------------------------------------------------------------------
 void __fastcall TfrmSelectTable::tiUpdateTableReqTimer(TObject *Sender)
 {
-  UpdateFloorPlanSheet();
+                 UpdateFloorPlanSheet();
 }
-
+void __fastcall TfrmSelectTable::tiTimerEnableReqTimer(TObject *Sender)
+{
+                MessageBox("3 seconds elapsed","",MB_OK);
+}
+void __fastcall TfrmSelectTable::tMouseDown(TObject *Sender)
+{
+                   tiTimerEnableReq->Enabled = true;
+}
+void __fastcall TfrmSelectTable::tMouseUp(TObject *Sender)
+{
+                   tiTimerEnableReq->Enabled = false;
+}
 void TfrmSelectTable::UpdateFloorPlanSheet()
 {
     SelectedTabContainerName = "";
