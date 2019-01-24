@@ -46,7 +46,7 @@ public:
     TRegistrationInterface();
     ~TRegistrationInterface();
     MMRegistrationServiceResponse UploadRegistrationInfo(TTerminalModel terminalInfo);
-    MMRegistrationServiceResponse ValidateCompanyInfo();
+    MMRegistrationServiceResponse ValidateCompanyInfo(AnsiString syndicateCode, int siteId);
 };
 
 #endif

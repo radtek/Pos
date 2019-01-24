@@ -14,7 +14,7 @@
 void TRegistrationManager::CheckRegistrationStatus()
 {
     try
-    {     
+    {
         //Checking POS Resgistration Status
         if(TGlobalSettings::Instance().IsRegistrationVerified)
         {
@@ -26,12 +26,15 @@ void TRegistrationManager::CheckRegistrationStatus()
         }
         else
         {
-//            if(SyndicateCode && SiteID)
-//            {
-                //Register Pos
-                //Update IsRegistrationVerified flag as per response received
-             //   RegisterTerminal();
-//            }
+            if(TGlobalSettings::Instance().SiteID)
+            {
+                AnsiString syndCode = GetSyndCodeForRegistration();
+
+                if(syndCode.Trim() != "")
+                    ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID);
+                else
+                    MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
+            }
         }
     }
     catch(Exception &Exc)
@@ -78,7 +81,7 @@ void TRegistrationManager::UploadRegistrationInfo()
 	}
 }
 //-----------------------------------------------------------------------
-void TRegistrationManager::ValidateCompanyInfo()
+void TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
 {
     try
     {
@@ -89,7 +92,7 @@ void TRegistrationManager::ValidateCompanyInfo()
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
-        MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo();
+        MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo(syndicateCode, siteId);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
@@ -114,3 +117,5 @@ void TRegistrationManager::ValidateCompanyInfo()
 		throw;
 	}
 }
+//---------------------------------------------------------------------------------------
+

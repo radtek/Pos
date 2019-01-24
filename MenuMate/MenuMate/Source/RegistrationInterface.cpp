@@ -115,14 +115,13 @@ MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(Registrat
     return MMRegistrationServiceResponse(inWCFResponse->IsSuccessful, AnsiString( inWCFResponse->ResponseText.t_str() ), "", Successful);
 }
 //---------------------------------------------------------------------------
-MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo()
+MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
 {
     try
     {
         RegistrationWebResponse* response;
         CoInitialize(NULL);
-        AnsiString SyndicateCode = GetSyndCodeForRegistration();
-        response = registrationClient->ValidateCompanyInfo(SyndicateCode,TGlobalSettings::Instance().SiteID);
+        response = registrationClient->ValidateCompanyInfo(syndicateCode, siteId);
         return CreateMMResponse( response );
     }
     catch( Exception& exc )

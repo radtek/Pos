@@ -10,6 +10,6 @@ private:
     void UploadRegistrationInfo();
 public:
     void CheckRegistrationStatus();
-    void ValidateCompanyInfo();
+    void ValidateCompanyInfo(AnsiString syndicateCode, int siteId);
 };
 #endif
