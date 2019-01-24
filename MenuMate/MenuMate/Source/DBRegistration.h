@@ -11,6 +11,8 @@ public:
     static TTerminalModel GetTerminalInfo(Database::TDBTransaction &dbTransaction);
     static AnsiString GetSyndCode(Database::TDBTransaction &dbTransaction);
 	static void SetIsCloudSyncRequiredFlag();
+    static void UnSetIsCloudSyncRequiredFlag();
+    static void SetIsIsRegistrationVerifiedFlag();
 private:
     static std::list<TLicenceSettingModel>  GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction);
     static void LoadLicenseSettingsModelList(Database::TDBTransaction &dbTransaction , int licenceType, std::list<TLicenceSettingModel> &licenceSettingModelList);

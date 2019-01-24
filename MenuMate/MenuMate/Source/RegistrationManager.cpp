@@ -31,15 +31,22 @@ void TRegistrationManager::CheckRegistrationStatus()
             //Checking POS Resgistration Status
             if(TGlobalSettings::Instance().IsRegistrationVerified)
             {
-    //            if(TGlobalSettings::Instance().IsCloudSyncRequired)
-    //            {
-    //                //Send Updated Settings to the Web
-    //              //  UpdateTerminalSettings();
-                UploadRegistrationInfo(syndCode);
+                if(TGlobalSettings::Instance().IsCloudSyncRequired)
+                {
+                    if(UploadRegistrationInfo(syndCode))
+                        TDBRegistration::UnSetIsCloudSyncRequiredFlag();
+                }
             }
             else
             {
-                ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID);
+                if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
+                {
+                    TDBRegistration::SetIsIsRegistrationVerifiedFlag();
+
+                    if(UploadRegistrationInfo(syndCode))
+                        TDBRegistration::UnSetIsCloudSyncRequiredFlag();
+                }
+
             }
         }
         else
@@ -54,8 +61,9 @@ void TRegistrationManager::CheckRegistrationStatus()
     }
 }
 //-----------------------------------------------------------------------
-void TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
+bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
 {
+    bool retval = false;
     try
     {
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -68,6 +76,8 @@ void TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo, syndicateCode);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(createResponse.IsSuccesful)
+            retval = true;
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
             throw Exception("Authentication failed with Registration Service");
@@ -90,10 +100,13 @@ void TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+
+    return retval;
 }
 //-----------------------------------------------------------------------
-void TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
+bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
 {
+    bool retval = false;
     try
     {
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -105,6 +118,8 @@ void TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo(syndicateCode, siteId);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        if(createResponse.IsSuccesful)
+            retval = true;
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
             throw Exception("Authentication failed with Registration Service");
@@ -127,6 +142,8 @@ void TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+
+    return retval;
 }
 //---------------------------------------------------------------------------------------
 
