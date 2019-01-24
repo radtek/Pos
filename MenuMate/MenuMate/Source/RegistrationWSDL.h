@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (24/01/2019 11:43:58 p.m. - - $Rev: 25127 $)
+// (25/01/2019 12:04:37 a.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -39,7 +39,6 @@
 
 
 namespace NS__RegistrationWSDL {
-
 // ************************************************************************ //
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
