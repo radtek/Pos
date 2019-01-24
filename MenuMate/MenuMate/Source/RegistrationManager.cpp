@@ -19,27 +19,32 @@ void TRegistrationManager::CheckRegistrationStatus()
         Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
+        AnsiString syndCode = "";
 
-        //Checking POS Resgistration Status
-        if(TGlobalSettings::Instance().IsRegistrationVerified)
+        if(TGlobalSettings::Instance().SiteID)
         {
-//            if(TGlobalSettings::Instance().IsCloudSyncRequired)
-//            {
-//                //Send Updated Settings to the Web
-//              //  UpdateTerminalSettings();
-//            }
+            syndCode = TDBRegistration::GetSyndCode(dbTransaction);
+        }
+
+        if(syndCode.Trim() != "")
+        {
+            //Checking POS Resgistration Status
+            if(TGlobalSettings::Instance().IsRegistrationVerified)
+            {
+    //            if(TGlobalSettings::Instance().IsCloudSyncRequired)
+    //            {
+    //                //Send Updated Settings to the Web
+    //              //  UpdateTerminalSettings();
+                UploadRegistrationInfo(syndCode);
+            }
+            else
+            {
+                ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID);
+            }
         }
         else
         {
-            if(TGlobalSettings::Instance().SiteID)
-            {
-                AnsiString syndCode = TDBRegistration::GetSyndCode(dbTransaction);
-
-                if(syndCode.Trim() != "")
-                    ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID);
-                else
-                    MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
-            }
+            MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
         }
         dbTransaction.Commit();
     }
@@ -49,7 +54,7 @@ void TRegistrationManager::CheckRegistrationStatus()
     }
 }
 //-----------------------------------------------------------------------
-void TRegistrationManager::UploadRegistrationInfo()
+void TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
 {
     try
     {
@@ -61,7 +66,7 @@ void TRegistrationManager::UploadRegistrationInfo()
         AnsiString ErrorMessage;
         TTerminalModel terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
-        MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo);
+        MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo, syndicateCode);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
