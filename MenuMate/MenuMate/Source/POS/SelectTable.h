@@ -19,7 +19,6 @@
 
 #include "MM_DBCore.h"
 #include "ZForm.h"
-#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 
 class TfrmSelectTable : public TZForm
@@ -38,8 +37,10 @@ __published:	// IDE-managed Components
     TTimer *tiTimerEnableReq;
     void __fastcall tiUpdateTableReqTimer(TObject *Sender);
     void __fastcall tiTimerEnableReqTimer(TObject *Sender);
-    void __fastcall tMouseDown(TObject *Sender);
-    void __fastcall tMouseUp(TObject *Sender);
+    void __fastcall tMouseDown(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
+    void __fastcall tMouseUp(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
 private:	// User declarations
 //   bool TableScrollUp;
 	__fastcall TfrmSelectTable(TComponent* Owner,Database::TDBControl &IBDatabase);
