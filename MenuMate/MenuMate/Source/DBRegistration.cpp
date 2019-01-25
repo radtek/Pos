@@ -845,7 +845,7 @@ AnsiString TDBRegistration::GetMACaddress()
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
         throw;
     }
-  MessageBox(retVal,"Mac Address",MB_OK);
+
   return  retVal;
 
 }
@@ -903,7 +903,6 @@ AnsiString TDBRegistration::GetOperatingSystemName()
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 
-    MessageBox(retValue,"",MB_OK);
     return retValue;
 }
 
