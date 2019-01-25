@@ -5,8 +5,8 @@ object frmSelectTable: TfrmSelectTable
   BorderIcons = []
   BorderStyle = bsNone
   BorderWidth = 5
-  ClientHeight = 547
-  ClientWidth = 796
+  ClientHeight = 657
+  ClientWidth = 906
   Color = clBlack
   Ctl3D = False
   Font.Charset = DEFAULT_CHARSET
@@ -27,8 +27,8 @@ object frmSelectTable: TfrmSelectTable
   object tgridTables: TTouchGrid
     Left = 0
     Top = 0
-    Width = 796
-    Height = 547
+    Width = 906
+    Height = 657
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clBlack
