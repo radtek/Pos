@@ -82,7 +82,7 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
         IBInternalQuery->ParamByName("CIRCLE")->AsString = "F";
         IBInternalQuery->ParamByName("TEMPORARY")->AsString = "F";
         IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F";
-        IBInternalQuery->ParamByName("ACCEPT_OO")->AsString =  isOOTable == false ? "F" : "T";
+        IBInternalQuery->ParamByName("ACCEPT_OO")->AsString =  isOOTable == true ? "T" : "F";
 
         IBInternalQuery->ExecQuery();
       }
