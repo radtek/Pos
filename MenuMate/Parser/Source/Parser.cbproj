@@ -278,8 +278,7 @@
 			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_3.cpp">
 				<BuildOrder>49</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="MenumateVersionParser6_6.cpp">
-				<DependentOn>MenumateVersionParser6_6.h</DependentOn>
+			<CppCompile Include="..\..\..\Shared-Source\ParserEngines\MenumateVersionParser6_6.cpp">
 				<BuildOrder>53</BuildOrder>
 			</CppCompile>
 			<FormResources Include="main.dfm"/>
