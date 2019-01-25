@@ -7,6 +7,7 @@
 #include "TableManager.h"
 #include "DeviceRealTerminal.h"
 #include "DBTables.h"
+#include "MMMessageBox.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -34,6 +35,7 @@ void __fastcall TfrmSelectTable::FormShow(TObject *Sender)
     else
     {
         tiUpdateTableReq->Enabled = true;
+        tiTimerEnableReq->Enabled = false;
     }
 
     // Reset all the tables.
@@ -217,18 +219,6 @@ void __fastcall TfrmSelectTable::tiUpdateTableReqTimer(TObject *Sender)
 {
                  UpdateFloorPlanSheet();
 }
-void __fastcall TfrmSelectTable::tiTimerEnableReqTimer(TObject *Sender)
-{
-                MessageBox("3 seconds elapsed","",MB_OK);
-}
-void __fastcall TfrmSelectTable::tMouseDown(TObject *Sender)
-{
-                   tiTimerEnableReq->Enabled = true;
-}
-void __fastcall TfrmSelectTable::tMouseUp(TObject *Sender)
-{
-                   tiTimerEnableReq->Enabled = false;
-}
 void TfrmSelectTable::UpdateFloorPlanSheet()
 {
     SelectedTabContainerName = "";
@@ -344,5 +334,20 @@ void TfrmSelectTable::UpdateColor(int tableNo, bool isSelected)
         }
     }
 }
+void __fastcall TfrmSelectTable::tiTimerEnableReqTimer(TObject *Sender)
+{
+                MessageBox("3 seconds elapsed","",MB_OK);
+}
 
+void __fastcall TfrmSelectTable::tMouseDown(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
+{
+                   tiTimerEnableReq->Enabled = true;
+}
+
+void __fastcall TfrmSelectTable::tMouseUp(TObject *Sender,
+    TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
+{
+                   tiTimerEnableReq->Enabled = false;
+}
 
