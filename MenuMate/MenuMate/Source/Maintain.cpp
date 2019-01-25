@@ -714,6 +714,10 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 		{
 			TDeviceRealTerminal::Instance().PocketVouchers->URL = frmTouchKeyboard->KeyboardText;
 			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,TDeviceRealTerminal::Instance().PocketVouchers->URL);
+
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 		}
 	}
 	else if (Result == lsDenied)
