@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------
 
-int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo)
+int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo, bool isOOTable)
 {
 	if(!Valid(inTableNo)) return 0;
 	int RetVal = 0;
@@ -64,7 +64,8 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             "PARTY_NAME,"
                                             "CIRCLE,"
                                             "TEMPORARY,"
-                                            "IS_TABLELOCK) "
+                                            "IS_TABLELOCK, "
+                                            "ACCEPT_OO ) "
                                     "VALUES ("
                                             ":TABLE_KEY,"
                                             ":TABLE_NUMBER,"
@@ -72,7 +73,8 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             ":PARTY_NAME,"
                                             ":CIRCLE,"
                                             ":TEMPORARY,"
-                                            ":IS_TABLELOCK);";
+                                            ":IS_TABLELOCK, "
+                                            ":ACCEPT_OO );";
         IBInternalQuery->ParamByName("TABLE_KEY")->AsInteger = RetVal;
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
         IBInternalQuery->ParamByName("TABLE_NAME")->AsString = "";
@@ -80,6 +82,7 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
         IBInternalQuery->ParamByName("CIRCLE")->AsString = "F";
         IBInternalQuery->ParamByName("TEMPORARY")->AsString = "F";
         IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F";
+        IBInternalQuery->ParamByName("ACCEPT_OO")->AsString =  isOOTable == false ? "F" : "T";
 
         IBInternalQuery->ExecQuery();
       }
@@ -158,14 +161,14 @@ int TDBTables::GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTab
 //---------------------------------------------------------------------------
 // Creates the table if necessary and sets its name.
 //---------------------------------------------------------------------------
-void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName)
+void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName, bool isOOTable)
 {
    if(!Valid(inTableNo)) return;
 
 	try
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		int TableKey = GetOrCreateTable(DBTransaction,inTableNo);
+		int TableKey = GetOrCreateTable(DBTransaction,inTableNo, isOOTable);
 
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text =

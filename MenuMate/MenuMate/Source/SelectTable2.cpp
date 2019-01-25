@@ -441,7 +441,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             DBTransaction.StartTransaction();
             SelectedPartyName = TDBTables::GetPartyName(DBTransaction, SelectedTabContainerNumber);
-            TDBTables::SetTableName(DBTransaction, SelectedTabContainerNumber, SelectedTabContainerName);
+            TDBTables::SetTableName(DBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
             DBTransaction.Commit();
         }
      }
