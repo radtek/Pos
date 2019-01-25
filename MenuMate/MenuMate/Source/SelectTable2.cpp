@@ -296,6 +296,7 @@ void __fastcall TFrmSelectTable2::FormClose(TObject *Sender)
 {
    tiUpdateFloorPlanReq->Enabled = false;
    tiUpdateFloorPlanRefresh->Enabled = false;
+   tiTimerEnableReq->Enabled = false;
 }
 // ---------------------------------------------------------------------------
 void TFrmSelectTable2::DrawMezzanineArea(bool isLoadTime, bool isTableSelected)
@@ -423,4 +424,19 @@ void TFrmSelectTable2::SaveLocationId(int locationId)
     TManagerVariable::Instance().SetDeviceInt(DBTransaction, vmLastSelectedFloorPlanLocationID, TGlobalSettings::Instance().LastSelectedFloorPlanLocationID);
     DBTransaction.Commit();
 }
-
+//--------------------------------------------------------------------------------
+void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
+{
+    MessageBox("3 seconds elapsed","",MB_OK);
+}
+//--------------------------------------------------------------------------------
+void __fastcall TFrmSelectTable2::tMouseDown(TObject *Sender)
+{
+    tiTimerEnableReq->Enabled = true;
+}
+//--------------------------------------------------------------------------------
+void __fastcall TFrmSelectTable2::tMouseUp(TObject *Sender)
+{
+    tiTimerEnableReq->Enabled = false;
+}
+//--------------------------------------------------------------------------------

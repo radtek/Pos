@@ -31,6 +31,9 @@ __published:	// IDE-managed Components
 	TTouchBtn *TouchBtn2;
 	TTouchGrid *tgridLocations;
 	TPanel *PnlLocation;
+    TTimer *tiUpdateFloorPlanReq;
+    TTimer *tiUpdateFloorPlanRefresh;
+    TTimer *tiTimerEnableReq;
 	void __fastcall FormPaint(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
 	void __fastcall imgTablesMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
@@ -38,11 +41,12 @@ __published:	// IDE-managed Components
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall TouchBtn2MouseClick(TObject *Sender);
 	void __fastcall tgridLocationsMouseClick(TObject *Sender, TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
-    TTimer *tiUpdateFloorPlanReq;
-    TTimer *tiUpdateFloorPlanRefresh;
     void __fastcall tiUpdateFloorPlanReqTimer(TObject *Sender);
     void __fastcall tiUpdateFloorPlanRefreshTimer(TObject *Sender);
     void __fastcall FormClose(TObject *Sender);
+    void __fastcall tiTimerEnableReqTimer(TObject *Sender);
+    void __fastcall tMouseDown(TObject *Sender);
+    void __fastcall tMouseUp(TObject *Sender);
 
 private:	// User declarations
 	Database::TDBControl &_iBDatabase;

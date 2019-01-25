@@ -19,7 +19,7 @@
 
 #include "MM_DBCore.h"
 #include "ZForm.h"
-#include "MMMessageBox.h"
+
 //---------------------------------------------------------------------------
 
 class TfrmSelectTable : public TZForm
