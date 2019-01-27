@@ -3429,7 +3429,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		SetVarBool(DBTransaction,vmEnableStoreTicketPosting,"Enable Store Ticket Posting", "This setting will Enable Store Ticket Postings to SiHot", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction, vmIsRegistrationVerified,"Is Registration Verified", "This setting will save the Registration verfication status", vmgPOS, false);
         SetVarBool(DBTransaction, vmIsCloudSyncRequired,"Is Cloud Sync Required", "Is Cloud Sync Required", vmgPOS, false);
-
+        SetVarStr(DBTransaction, vmCompanyName, "Registered Company Name", "Registered Company Name", vmgPOS, "");
 	}
 	catch(Exception &E)
 	{
