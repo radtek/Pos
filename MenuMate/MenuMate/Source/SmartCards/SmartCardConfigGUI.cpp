@@ -53,17 +53,17 @@ void __fastcall TfrmSmartCardConfiguration::FormShow(TObject *Sender)
   DBTransaction.StartTransaction();
   if(TManagerVariable::Instance().GetBool(DBTransaction,vmSmartCardMembership,false))
     {
-        tbtnFormatCard->Enabled =   false;
-        tbtnRestoreCard->Enabled =  false;
-        tbtnExploreCard->Enabled =  false;
-        tbtnReassignCard->Enabled = false;
+        tbtnFormatCard->Enabled =   true;
+        tbtnRestoreCard->Enabled =  true;
+        tbtnExploreCard->Enabled =  true;
+        tbtnReassignCard->Enabled = true;
     }
    else
    {
-        tbtnFormatCard->Enabled =  true;
-        tbtnRestoreCard->Enabled = true;
-        tbtnExploreCard->Enabled = true;
-        tbtnReassignCard->Enabled = true;
+        tbtnFormatCard->Enabled =  false;
+        tbtnRestoreCard->Enabled = false;
+        tbtnExploreCard->Enabled = false;
+        tbtnReassignCard->Enabled = false;
    }
    DBTransaction.Commit();
 }
