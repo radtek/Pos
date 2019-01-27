@@ -116,23 +116,23 @@ namespace RegistrationIntegration.Sevices
                 }
                 else if ((int)webResponse.StatusCode == 300)
                 {
-                    throw new MultipleGUIDException();
+                    throw new BadRequestException();
                 }
-                else if ((int)webResponse.StatusCode == 404)
+                else if ((int)webResponse.StatusCode == 304)
                 {
-                    throw new GUIDNotFoundException();
+                    throw new NoSettingChangeException();
                 }
                 else
                 {
-                    var memberStream = new StreamReader(webResponse.GetResponseStream());
-                    string message = memberStream.ReadToEnd();
+                    var responseStream = new StreamReader(webResponse.GetResponseStream());
+                    string message = responseStream.ReadToEnd();
                     var customException = JsonUtility.Deserialize<CustomException>(message);
-                    throw new LoyaltymateOperationException(customException.ExceptionMessage);
+                    throw new RegistrationUpdateException(customException.ExceptionMessage);
                 }
             }
             else
             {
-                throw new LoyaltymateOperationException("Not able to connect with server.");
+                throw new RegistrationUpdateException("Not able to connect with server.");
             }
         }  
     }

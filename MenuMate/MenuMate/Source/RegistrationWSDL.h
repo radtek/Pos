@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (27/01/2019 7:33:38 p.m. - - $Rev: 25127 $)
+// (27/01/2019 10:28:54 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -67,6 +67,8 @@ enum class RegistrationResponseCode   /* "http://schemas.datacontract.org/2004/0
 {
   Successful, 
   AuthenticationFailed, 
+  NoNewSettingChange, 
+  BadRequestError, 
   RegistrationUpdateFailed, 
   CompanyInfoValidationFailed
 };
@@ -269,16 +271,40 @@ __published:
 // ************************************************************************ //
 class CompanySiteModelResponse : public TRemotable {
 private:
+  __int64         FCompanyId;
+  bool            FCompanyId_Specified;
   UnicodeString   FCompanyName;
   bool            FCompanyName_Specified;
+  bool            FIsCompanyActive;
+  bool            FIsCompanyActive_Specified;
+  bool            FIsSiteActive;
+  bool            FIsSiteActive_Specified;
   bool            FIsSuccessful;
   bool            FIsSuccessful_Specified;
   UnicodeString   FMessage;
   bool            FMessage_Specified;
+  __int64         FSiteCode;
+  bool            FSiteCode_Specified;
+  UnicodeString   FSiteName;
+  bool            FSiteName_Specified;
+  UnicodeString   FSyndicateCode;
+  bool            FSyndicateCode_Specified;
+  void __fastcall SetCompanyId(int Index, __int64 _prop_val)
+  {  FCompanyId = _prop_val; FCompanyId_Specified = true;  }
+  bool __fastcall CompanyId_Specified(int Index)
+  {  return FCompanyId_Specified;  } 
   void __fastcall SetCompanyName(int Index, UnicodeString _prop_val)
   {  FCompanyName = _prop_val; FCompanyName_Specified = true;  }
   bool __fastcall CompanyName_Specified(int Index)
   {  return FCompanyName_Specified;  } 
+  void __fastcall SetIsCompanyActive(int Index, bool _prop_val)
+  {  FIsCompanyActive = _prop_val; FIsCompanyActive_Specified = true;  }
+  bool __fastcall IsCompanyActive_Specified(int Index)
+  {  return FIsCompanyActive_Specified;  } 
+  void __fastcall SetIsSiteActive(int Index, bool _prop_val)
+  {  FIsSiteActive = _prop_val; FIsSiteActive_Specified = true;  }
+  bool __fastcall IsSiteActive_Specified(int Index)
+  {  return FIsSiteActive_Specified;  } 
   void __fastcall SetIsSuccessful(int Index, bool _prop_val)
   {  FIsSuccessful = _prop_val; FIsSuccessful_Specified = true;  }
   bool __fastcall IsSuccessful_Specified(int Index)
@@ -287,10 +313,28 @@ private:
   {  FMessage = _prop_val; FMessage_Specified = true;  }
   bool __fastcall Message_Specified(int Index)
   {  return FMessage_Specified;  } 
+  void __fastcall SetSiteCode(int Index, __int64 _prop_val)
+  {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
+  bool __fastcall SiteCode_Specified(int Index)
+  {  return FSiteCode_Specified;  } 
+  void __fastcall SetSiteName(int Index, UnicodeString _prop_val)
+  {  FSiteName = _prop_val; FSiteName_Specified = true;  }
+  bool __fastcall SiteName_Specified(int Index)
+  {  return FSiteName_Specified;  } 
+  void __fastcall SetSyndicateCode(int Index, UnicodeString _prop_val)
+  {  FSyndicateCode = _prop_val; FSyndicateCode_Specified = true;  }
+  bool __fastcall SyndicateCode_Specified(int Index)
+  {  return FSyndicateCode_Specified;  } 
 __published:
+  __property __int64     CompanyId = { index=(IS_OPTN), read=FCompanyId, write=SetCompanyId, stored = CompanyId_Specified };
   __property UnicodeString CompanyName = { index=(IS_OPTN|IS_NLBL), read=FCompanyName, write=SetCompanyName, stored = CompanyName_Specified };
+  __property bool       IsCompanyActive = { index=(IS_OPTN), read=FIsCompanyActive, write=SetIsCompanyActive, stored = IsCompanyActive_Specified };
+  __property bool       IsSiteActive = { index=(IS_OPTN), read=FIsSiteActive, write=SetIsSiteActive, stored = IsSiteActive_Specified };
   __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
   __property UnicodeString    Message = { index=(IS_OPTN|IS_NLBL), read=FMessage, write=SetMessage, stored = Message_Specified };
+  __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
+  __property UnicodeString   SiteName = { index=(IS_OPTN|IS_NLBL), read=FSiteName, write=SetSiteName, stored = SiteName_Specified };
+  __property UnicodeString SyndicateCode = { index=(IS_OPTN|IS_NLBL), read=FSyndicateCode, write=SetSyndicateCode, stored = SyndicateCode_Specified };
 };
 
 

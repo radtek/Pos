@@ -802,7 +802,7 @@ AnsiString TDBRegistration::GetSyndCode(Database::TDBTransaction &dbTransaction)
     {
         TManagerSyndCode ManagerSyndicateCode;
         ManagerSyndicateCode.Initialise(dbTransaction);
-        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetCommunicationSyndCode();
+        TSyndCode currentSyndicateCode = ManagerSyndicateCode.GetEnabledSyndCode();
         syndicateCode = currentSyndicateCode.GetSyndCode();
     }
     catch( Exception& exc )
