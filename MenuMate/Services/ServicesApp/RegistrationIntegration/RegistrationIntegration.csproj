@@ -52,7 +52,7 @@
     <Compile Include="Exceptions\CustomException.cs" />
     <Compile Include="Exceptions\NoSettingChangeException.cs" />
     <Compile Include="Exceptions\NotAccessibleException.cs" />
-    <Compile Include="Exceptions\NotFoundException.cs" />
+    <Compile Include="Exceptions\CodeNotExistException.cs" />
     <Compile Include="Exceptions\RegistrationUpdateException.cs" />
     <Compile Include="Exceptions\BadRequestException.cs" />
     <Compile Include="Models\ApiCompanySiteViewModel.cs" />

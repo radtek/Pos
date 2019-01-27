@@ -13,7 +13,10 @@ enum MMRegistrationResponseCode
   AuthenticationFailed,
   NoNewSettingChange,
   BadRequestError,
+  SiteCodeNotExist,
+  SiteCodeInAcive,
   RegistrationUpdateFailed,
+  CompanyInfoValidationFailed,
   FailedDueToException
 };
 

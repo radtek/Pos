@@ -74,24 +74,29 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo, syndicateCode);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
+
         if(createResponse.IsSuccesful)
             retval = true;
-        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
-        {
-            ErrorMessage = "Authentication failed with Registration Service.";
-        }
-        else if(!createResponse.IsSuccesful && createResponse.ResponseCode == NoNewSettingChange)
-        {
-             ErrorMessage = "No new Setting found for Update.";
-        }
         else
         {
-            if(createResponse.Description == "Failed to update registration info to server.")
-              ErrorMessage = "Failed to update registration to server.";          //message to be changed..
+            if(createResponse.ResponseCode == AuthenticationFailed)
+            {
+                ErrorMessage = "Authentication failed with Registration Service.";
+            }
+            else if(createResponse.ResponseCode == NoNewSettingChange)
+            {
+                 ErrorMessage = "No new Setting found for Update.";
+            }
             else
-              ErrorMessage = "Failed to update registration to server.";
+            {
+                if(createResponse.Description == "Failed to update registration info to server.")
+                  ErrorMessage = "Failed to update registration to server.";          //message to be changed..
+                else
+                  ErrorMessage = "Failed to update registration to server.";
+            }
+            MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
-        MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
+
         delete registrationInterface;
         registrationInterface = NULL;
 
@@ -126,18 +131,12 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
             TGlobalSettings::Instance().CompanyName = createResponse.Message;
             TManagerVariable::Instance().SetDeviceStr(dBTransaction,vmCompanyName,TGlobalSettings::Instance().CompanyName);
         }
-        if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
-        {
-            ErrorMessage = "Authentication failed with Registration Service";
-        }
         else
         {
-            if(createResponse.Description == "Failed to validate company info to server.")
-              ErrorMessage = "Failed to validate company to server.";   //message to be changed..
-            else
-              ErrorMessage = "Failed to validate company  to server.";
+            ErrorMessage = createResponse.Message;
+            MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
-        MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
+
         delete registrationInterface;
         registrationInterface = NULL;
 

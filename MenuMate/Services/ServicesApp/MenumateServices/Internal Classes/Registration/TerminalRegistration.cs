@@ -65,6 +65,14 @@ namespace MenumateServices.Internal_Classes.Registration
             {
                 return CreateResponseError(@"Bad Request Exception.", ex.Message, RegistrationResponseCode.BadRequestError);
             }
+            catch (CodeNotExistException ex)
+            {
+                return CreateResponseError(@"Site Code doesn't exist.", ex.Message, RegistrationResponseCode.SiteCodeNotExist);
+            }
+            catch (NotAccessibleException ex)
+            {
+                return CreateResponseError(@"Site Code inactive/not found.", ex.Message, RegistrationResponseCode.SiteCodeInAcive);
+            }
             catch (Exception ex)
             {
                 return CreateResponseError("@Registration update failed.", ex.Message, RegistrationResponseCode.RegistrationUpdateFailed);
@@ -77,11 +85,31 @@ namespace MenumateServices.Internal_Classes.Registration
             {
                 IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
                 var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
-                return CreateRegistrationResponseNoError(response);
+                return CreateSiteModelResponseNoError(response);
             }
             catch (AuthenticationFailedException ex)
             {
-                return null;// CreateResponseError(@"Failed to Authenticate", ex.Message, RegistrationResponseCode.AuthenticationFailed);
+                return CreateSiteModelResponseNoError(@"Failed to Authenticate");
+            }
+            catch (NoSettingChangeException ex)
+            {
+                return CreateSiteModelResponseNoError(@"No new Setting found for Update."); 
+            }
+            catch (BadRequestException ex)
+            {
+                return CreateSiteModelResponseNoError(@"Bad Request Exception."); 
+            }
+            catch (CodeNotExistException ex)
+            {
+                return CreateSiteModelResponseNoError(@"Site Code doesn't exist."); 
+            }
+            catch (NotAccessibleException ex)
+            {
+                return CreateSiteModelResponseNoError(@"Site Code inactive/not found."); 
+            }
+            catch (Exception ex)
+            {
+                return CreateSiteModelResponseNoError(@"Registration update failed.");  
             }
         }
 
@@ -138,7 +166,7 @@ namespace MenumateServices.Internal_Classes.Registration
             return licenseSettingViewModel;
         }
 
-        private CompanySiteModelResponse CreateRegistrationResponseNoError(ApiCompanySiteViewModel companyModelResponse)
+        private CompanySiteModelResponse CreateSiteModelResponseNoError(ApiCompanySiteViewModel companyModelResponse)
         {
             return new CompanySiteModelResponse
             {
@@ -154,6 +182,22 @@ namespace MenumateServices.Internal_Classes.Registration
             };
         }
 
+        private CompanySiteModelResponse CreateSiteModelResponseNoError(string message)
+        {
+            return new CompanySiteModelResponse
+            {
+                CompanyName = "",
+                IsSuccessful = false,
+                Message = message,
+                CompanyId = 0,
+                IsCompanyActive = false,
+                IsSiteActive = false,
+                SiteCode = 0,
+                SiteName = "",
+                SyndicateCode = ""
+            };
+        }
+       
         #endregion
     }
 }

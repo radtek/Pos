@@ -92,7 +92,7 @@ namespace RegistrationIntegration.Sevices
                     }
                 }
             }
-            else if (webResponse != null)
+            else 
             {
                 HandleExceptions(webResponse);
             }
@@ -102,7 +102,7 @@ namespace RegistrationIntegration.Sevices
             {
                 if (message.Contains("(406)"))
                     response.Message =
-                        "Registration is Disabled for the site in web.\nPlease Enable it first.";
+                        "Registration could not be synced.\nPlease check site code.";
                 else
                     response.Message =
                         "Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.";
@@ -128,7 +128,7 @@ namespace RegistrationIntegration.Sevices
                 }
                 else if ((int)webResponse.StatusCode == 404)
                 {
-                    throw new NotFoundException();
+                    throw new CodeNotExistException();
                 }
                 else if ((int)webResponse.StatusCode == 406)
                 {

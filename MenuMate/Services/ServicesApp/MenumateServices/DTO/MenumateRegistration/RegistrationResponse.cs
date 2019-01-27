@@ -14,6 +14,8 @@ namespace MenumateServices.DTO.MenumateRegistration
         AuthenticationFailed,
         NoNewSettingChange,
         BadRequestError,
+        SiteCodeNotExist,
+        SiteCodeInAcive,
         RegistrationUpdateFailed,
         CompanyInfoValidationFailed
     };

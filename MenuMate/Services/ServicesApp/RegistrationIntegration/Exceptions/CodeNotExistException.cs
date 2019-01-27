@@ -1,9 +1,9 @@
 ﻿using System;
 namespace RegistrationIntegration.Exceptions
 {
-    public class NotFoundException : Exception
+    public class CodeNotExistException : Exception
     {
-        public NotFoundException()
+        public CodeNotExistException()
             : base("404 : Site code doesn't exist.")
         {
             
