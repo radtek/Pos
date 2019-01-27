@@ -250,14 +250,14 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
         Registered = TGlobalSettings::Instance().IsRegistrationVerified;
 		if(Registered)
 		{
-			frmDBMod->SetRegCaption("Unregistered");
-			lbeRegistration->Caption = pRegisteredName;
+            TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
+			frmDBMod->SetRegCaption(pRegisteredName);
+			lbeRegistration->Caption = TGlobalSettings::Instance().CompanyName;
 		}
 		else
 		{
-			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
-			frmDBMod->SetRegCaption(pRegisteredName);
-			lbeRegistration->Caption = TGlobalSettings::Instance().CompanyName;
+            frmDBMod->SetRegCaption("Unregistered");
+			lbeRegistration->Caption = pRegisteredName;
 		}
 
 		frmDBMod->SetCaption("Updating Clock...");
