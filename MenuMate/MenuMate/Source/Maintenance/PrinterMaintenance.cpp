@@ -764,12 +764,12 @@ void __fastcall TfrmPrinterMaintenance::tgridProfileListMouseClick(TObject *Send
 
 		 for (int i = 0; i < tgridProfileList->RowCount; i++)
 		 {
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
+
 			if (tgridProfileList->Buttons[i][0]->Latched)
 			{
 			   DevicesPrinterProfile[CurrentDeviceKey].insert(tgridProfileList->Buttons[i][0]->Tag);
-
-               Database::TDBTransaction DBTransaction(DBControl);
-               DBTransaction.StartTransaction();
 
 			   TPrinterVirtual *Printer = TManagerVirtualPrinter::GetVirtualPrinterByKey(DBTransaction,tgridProfileList->Buttons[i][0]->Tag);
 			   if (Printer != NULL)
@@ -798,9 +798,35 @@ void __fastcall TfrmPrinterMaintenance::tgridProfileListMouseClick(TObject *Send
 						   " to ensure the window driver has been added.", "Error", MB_ICONWARNING + MB_OK);
 					 }
 				  }
+
+                 //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired && PrinterPhysical.Type == ptChefMate_Printer)
+                {
+                    TGlobalSettings::Instance().IsCloudSyncRequired = true;
+                    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+                }
+
 			   }
-  			   DBTransaction.Commit();
+
 			}
+            else
+            {
+                TPrinterVirtual *Printer = TManagerVirtualPrinter::GetVirtualPrinterByKey(DBTransaction,tgridProfileList->Buttons[i][0]->Tag);
+                if (Printer != NULL)
+			    {
+				  TManagerPhysicalPrinter ManagerPhysicalPrinter;
+				  TPrinterPhysical PrinterPhysical = ManagerPhysicalPrinter.GetPhysicalPrinter(DBTransaction, Printer->PhysicalPrinterKey);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired && PrinterPhysical.Type == ptChefMate_Printer)
+                    {
+                        TGlobalSettings::Instance().IsCloudSyncRequired = true;
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+                    }
+                }
+            }
+
+            DBTransaction.Commit();
 		 }
 	  }
    }

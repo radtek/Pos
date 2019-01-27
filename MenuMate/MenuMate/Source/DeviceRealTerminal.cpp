@@ -91,17 +91,17 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
 	  if (Receipt)
 	  {
 		 bool ShowMessage = false;
-		 if (!ContainsCompanyName(inHeader, pRegisteredName))
-		 {
-			inHeader->Insert(0, pRegisteredName);
-			ShowMessage = true;
-		 }
-
-		 if (!ContainsCompanyName(inPHeader, pRegisteredName))
-		 {
-			inPHeader->Insert(0, pRegisteredName);
-			ShowMessage = true;
-		 }
+//		 if (!ContainsCompanyName(inHeader, pRegisteredName))
+//		 {
+//			inHeader->Insert(0, pRegisteredName);
+//			ShowMessage = true;
+//		 }
+//
+//		 if (!ContainsCompanyName(inPHeader, pRegisteredName))
+//		 {
+//			inPHeader->Insert(0, pRegisteredName);
+//			ShowMessage = true;
+//		 }
 
 		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter, inVoidFooter,inSubHeader);
 		 if (ShowMessage)

@@ -464,5 +464,6 @@ TGlobalSettings::TGlobalSettings()
     PMSPostSuccessful = false;
     IsRegistrationVerified = false;
     IsCloudSyncRequired = false;
+    CompanyName = " ";
 }
 

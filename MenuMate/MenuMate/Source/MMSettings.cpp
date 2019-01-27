@@ -453,6 +453,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
 		TGlobalSettings::Instance().EnableStoreTicketPosting = TManagerVariable::Instance().GetBool(DBTransaction, vmEnableStoreTicketPosting, false);
         TGlobalSettings::Instance().IsRegistrationVerified = TManagerVariable::Instance().GetBool(DBTransaction, vmIsRegistrationVerified, false);
         TGlobalSettings::Instance().IsCloudSyncRequired = TManagerVariable::Instance().GetBool(DBTransaction, vmIsCloudSyncRequired, false);
+        TGlobalSettings::Instance().CompanyName = TManagerVariable::Instance().GetStr(DBTransaction, vmCompanyName, "");
 
         }
 
@@ -495,5 +496,6 @@ void TMMSettings::InitializeMallExportConfig(Database::TDBTransaction &DBTransac
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmDLFMallFileName, TGlobalSettings::Instance().DLFMallFileName);
     TManagerVariable::Instance().GetProfileStr(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmConsolidateReportPaths, TGlobalSettings::Instance().ConsolidateReportPaths);
     TManagerVariable::Instance().GetProfileBool(DBTransaction,TManagerVariable::Instance().DeviceProfileKey,vmEnableConsolidatedReport, TGlobalSettings::Instance().EnableConsolidatedReport);
+
 }
 

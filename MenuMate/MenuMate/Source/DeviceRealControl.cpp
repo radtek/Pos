@@ -823,22 +823,18 @@ void TDeviceRealControl::LoadHdrFtr()
 
 	bool IsRegistered = false;
 	UnicodeString pRegisteredName = "";
-	Registered(&IsRegistered, &pRegisteredName);
-	if (true /*IsRegistered*/)
+
+    bool Registered = false;
+    Registered = TGlobalSettings::Instance().IsRegistrationVerified;
+    if (Registered)
+
 	{
 		if (Receipt)
 		{
-			if (!ContainsCompanyName(TGlobalSettings::Instance().Header.get(), pRegisteredName))
-			{
-				TGlobalSettings::Instance().Header->Insert(0, pRegisteredName);
-			}
 
-			if (!ContainsCompanyName(TGlobalSettings::Instance().PHeader.get(), pRegisteredName))
-			{
-				TGlobalSettings::Instance().PHeader->Insert(0, pRegisteredName);
-			}
-			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get(),
-                                    TGlobalSettings::Instance().SubHeader.get());
+            Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get(),
+            TGlobalSettings::Instance().SubHeader.get());
+
 		}
 	}
 	else
@@ -865,6 +861,7 @@ void TDeviceRealControl::LoadHdrFtr()
 bool TDeviceRealControl::ContainsCompanyName(TStrings *inHeader, UnicodeString CompanyName)
 {
 	UnicodeString WorkingStr = CompanyName.Trim(); // Strip leading and trailing spaces.
+
 	UnicodeString NextStr = "";
 	int CurrentIndex = 1;
 	do
@@ -1640,4 +1637,8 @@ bool TDeviceRealControl::SelectBarStockTurnOver(Database::TDBTransaction &DBTran
 	}
 	return true;
 }
+//--------------------------------------------------------------------------------------
+
+
+
 
