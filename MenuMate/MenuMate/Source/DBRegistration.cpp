@@ -623,11 +623,32 @@ bool TDBRegistration::GetAccountSetting(int accountSubType)
 //-----------------------------------------------------------------------
 bool TDBRegistration::GetChefmateSetting(Database::TDBTransaction &dbTransaction)
 {
-	TManagerPhysicalPrinter printerManager;
- 	std::auto_ptr<TStringList>serverNameList(new TStringList);
-	printerManager.GetPrinterServerList(dbTransaction, serverNameList.get(), ptChefMate_Printer);
+    bool status = false;
+    try
+    {
+        TIBSQL *IBInternalQuery= dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->Close();
 
-	return serverNameList->Count > 0;
+        IBInternalQuery->SQL->Text =  "SELECT a.PHYSICALPRINTER_KEY FROM PHYSICALPRINTER a "
+                                      "INNER JOIN VIRTUALPRINTER b ON a.PHYSICALPRINTER_KEY = b.PHYSICALPRINTER_KEY "
+                                      "INNER JOIN DEVICEVIRTUALPRINTER c ON b.VIRTUALPRINTER_KEY = c.VIRTUALPRINTER_KEY "
+                                      "WHERE a.PRINTER_TYPE = :PRINTER_TYPE ";
+
+        IBInternalQuery->ParamByName("PRINTER_TYPE")->AsInteger = 2;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount > 0)
+            status = true;
+
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+	return status;
 }
 //-----------------------------------------------------------------------
 bool TDBRegistration::GetPropertyManagementSetting(int propertySubType)

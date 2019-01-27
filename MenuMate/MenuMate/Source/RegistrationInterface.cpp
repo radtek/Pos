@@ -65,7 +65,7 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
         }
         CoInitialize(NULL);
         wcfResponse = registrationClient->UpdateTerminalRegistrationInfo(syndicateCode, wcfInfo);
-        MessageBox("1.5","1.5",MB_OK);
+
         delete wcfInfo;
         wcfInfo = NULL;
         return CreateMMResponse( wcfResponse );
