@@ -224,7 +224,7 @@ private:
     bool SetUpMews();
     void SetUpAustriaFiscal();
     void SetUpPosPlus();
-    int ChooseOperation(int selectedNumber);
+    int ChooseOperation(Database::TDBTransaction &DBTransaction, int selectedNumber);
 
     public: // User declarations
 };

@@ -45,8 +45,10 @@ __published:	// IDE-managed Components
     void __fastcall tiUpdateFloorPlanRefreshTimer(TObject *Sender);
     void __fastcall FormClose(TObject *Sender);
     void __fastcall tiTimerEnableReqTimer(TObject *Sender);
-    void __fastcall tMouseDown(TObject *Sender);
-    void __fastcall tMouseUp(TObject *Sender);
+    void __fastcall imgTablesMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+    void __fastcall imgTablesMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
 
 private:	// User declarations
 	Database::TDBControl &_iBDatabase;

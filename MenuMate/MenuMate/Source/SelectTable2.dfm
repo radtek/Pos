@@ -188,7 +188,9 @@ object FrmSelectTable2: TFrmSelectTable2
       Width = 1300
       Height = 1000
       OnClick = imgTablesClick
+      OnMouseDown = imgTablesMouseDown
       OnMouseMove = imgTablesMouseMove
+      OnMouseUp = imgTablesMouseUp
     end
     object PnlLocation: TPanel
       Left = 1
@@ -225,7 +227,7 @@ object FrmSelectTable2: TFrmSelectTable2
   object tiTimerEnableReq: TTimer
     Enabled = False
     Interval = 3000
-    OnTimer = tiTimerEnableReq
+    OnTimer = tiTimerEnableReqTimer
     Left = 300
     Top = 240
   end

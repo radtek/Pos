@@ -29,7 +29,7 @@ class TDBTables
     static void DeleteMezzanineTablesRecord(Database::TDBTransaction &dbTransaction, int tableNumber, TMezzanineTable mezzanineDetails);
 
 	public:
-	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo);
+	static int GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo, bool isOOTable = false);
 	static int GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTableNo,int inSeatNo);
 	static int GetSeatKey(Database::TDBTransaction &DBTransaction,int TabKey);
 	static int GetSeatNo(Database::TDBTransaction &DBTransaction,int SeatKey);
@@ -42,7 +42,7 @@ class TDBTables
 	static void GetOrderKeys(Database::TDBTransaction &DBTransaction,int inTableNo,std::set<__int64> &SelectedOrders);
 	static void GetTabKeysWithOrders(Database::TDBTransaction &DBTransaction,int inTableNo,std::set<__int64> *SelectedTabs);
 	static void GetSeats(Database::TDBTransaction &DBTransaction,TStringList * TabList, int inTableNo);
-	static void SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName);
+	static void SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName, bool isOOTable = false);
 
 	static UnicodeString GetPartyNameShort(Database::TDBTransaction &DBTransaction,int inTableNo);
 	static UnicodeString GetPartyName(Database::TDBTransaction &DBTransaction,int inTableNo);
@@ -93,7 +93,7 @@ class TDBTables
     static UnicodeString GetMemberEmail(int tableNumber);
     static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
     static UnicodeString GetStaffNameForSelectedTable(Database::TDBTransaction &DBTransaction,int TableNumber);
-    static bool IsTableMarked(Database::TDBTransaction &dbTransaction, int selectedTable);
+    static bool IsTableMarked(Database::TDBTransaction &dBTransaction, int selectedTable);
 };
 
 #endif

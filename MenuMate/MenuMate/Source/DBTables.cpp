@@ -17,7 +17,7 @@
 
 //---------------------------------------------------------------------------
 
-int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo)
+int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inTableNo, bool isOOTable)
 {
 	if(!Valid(inTableNo)) return 0;
 	int RetVal = 0;
@@ -64,7 +64,8 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             "PARTY_NAME,"
                                             "CIRCLE,"
                                             "TEMPORARY,"
-                                            "IS_TABLELOCK) "
+                                            "IS_TABLELOCK, "
+                                            "ACCEPT_OO ) "
                                     "VALUES ("
                                             ":TABLE_KEY,"
                                             ":TABLE_NUMBER,"
@@ -72,7 +73,8 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
                                             ":PARTY_NAME,"
                                             ":CIRCLE,"
                                             ":TEMPORARY,"
-                                            ":IS_TABLELOCK);";
+                                            ":IS_TABLELOCK, "
+                                            ":ACCEPT_OO );";
         IBInternalQuery->ParamByName("TABLE_KEY")->AsInteger = RetVal;
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
         IBInternalQuery->ParamByName("TABLE_NAME")->AsString = "";
@@ -80,6 +82,7 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
         IBInternalQuery->ParamByName("CIRCLE")->AsString = "F";
         IBInternalQuery->ParamByName("TEMPORARY")->AsString = "F";
         IBInternalQuery->ParamByName("IS_TABLELOCK")->AsString = "F";
+        IBInternalQuery->ParamByName("ACCEPT_OO")->AsString =  isOOTable == true ? "T" : "F";
 
         IBInternalQuery->ExecQuery();
       }
@@ -158,7 +161,7 @@ int TDBTables::GetOrCreateSeat(Database::TDBTransaction &DBTransaction,int inTab
 //---------------------------------------------------------------------------
 // Creates the table if necessary and sets its name.
 //---------------------------------------------------------------------------
-void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName)
+void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTableNo,UnicodeString TableName, bool isOOTable)
 {
    if(!Valid(inTableNo)) return;
 
@@ -169,13 +172,13 @@ void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTable
 
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text =
-      " UPDATE TABLES "
-      " SET TABLE_NAME = :TABLE_NAME "
-      " WHERE "
-      " TABLE_KEY = :TABLE_KEY ;";
+      "UPDATE TABLES SET TABLE_NAME = :TABLE_NAME, "
+      "ACCEPT_OO = :ACCEPT_OO "
+      "WHERE TABLE_KEY = :TABLE_KEY";
       IBInternalQuery->ParamByName("TABLE_KEY")->AsInteger = TableKey;
-		IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName;
-		IBInternalQuery->ExecQuery();
+      IBInternalQuery->ParamByName("TABLE_NAME")->AsString = TableName;
+      IBInternalQuery->ParamByName("ACCEPT_OO")->AsString = isOOTable ? "T" : "F";
+      IBInternalQuery->ExecQuery();
 	}
 	catch(Exception &Err)
 	{
@@ -1788,7 +1791,7 @@ UnicodeString TDBTables::GetStaffNameForSelectedTable(Database::TDBTransaction &
 }
 
 //=======================================================================================
-bool TDBTables::IsTableMarked(Database::TDBTransaction &dbTransaction, int selectedTable)
+bool TDBTables::IsTableMarked(Database::TDBTransaction &dBTransaction, int selectedTable)
 {
     bool isMarked = false;
     try
@@ -1800,20 +1803,20 @@ bool TDBTables::IsTableMarked(Database::TDBTransaction &dbTransaction, int selec
 		IBInternalQuery->ExecQuery();
 
         if(IBInternalQuery->FieldByName("ACCEPT_OO")->AsString == "T")
-      {
+        {
          isMarked = true;
-      }
+        }
        else
-      {
+        {
          isMarked = false;
-      }
-
+        }
     }
     catch(Exception &Ex)
 	{
         MessageBox(Ex.Message,"Error in IsTableMarked()",MB_OK);
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
 	}
+    return isMarked;
 
 }
 

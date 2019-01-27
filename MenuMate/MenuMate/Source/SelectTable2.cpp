@@ -296,7 +296,6 @@ void __fastcall TFrmSelectTable2::FormClose(TObject *Sender)
 {
    tiUpdateFloorPlanReq->Enabled = false;
    tiUpdateFloorPlanRefresh->Enabled = false;
-   tiTimerEnableReq->Enabled = false;
 }
 // ---------------------------------------------------------------------------
 void TFrmSelectTable2::DrawMezzanineArea(bool isLoadTime, bool isTableSelected)
@@ -427,16 +426,38 @@ void TFrmSelectTable2::SaveLocationId(int locationId)
 //--------------------------------------------------------------------------------
 void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
 {
-    MessageBox("3 seconds elapsed","",MB_OK);
+    if(MessageBox("Do you want to mark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
+    {
+        tiUpdateFloorPlanReq->Enabled = false;
+        tiUpdateFloorPlanRefresh->Enabled = false;
+        AnsiString message(_controller->GetTableDesc());
+        DTOReservable *Table = _controller->GetCurrentTable();
+
+        if (Table != NULL )
+        {
+            SelectedTabContainerName = Table->Name;
+            SelectedTabContainerNumber = Table->Number;
+            // Keep our Tables DB in sync for reports.
+            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+            DBTransaction.StartTransaction();
+            SelectedPartyName = TDBTables::GetPartyName(DBTransaction, SelectedTabContainerNumber);
+            TDBTables::SetTableName(DBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
+            DBTransaction.Commit();
+        }
+     }
 }
 //--------------------------------------------------------------------------------
-void __fastcall TFrmSelectTable2::tMouseDown(TObject *Sender)
+void __fastcall TFrmSelectTable2::imgTablesMouseDown(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
 {
     tiTimerEnableReq->Enabled = true;
 }
-//--------------------------------------------------------------------------------
-void __fastcall TFrmSelectTable2::tMouseUp(TObject *Sender)
+//---------------------------------------------------------------------------
+
+void __fastcall TFrmSelectTable2::imgTablesMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
 {
     tiTimerEnableReq->Enabled = false;
 }
-//--------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+

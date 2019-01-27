@@ -357,7 +357,7 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; )
     {
 		tr.StartTransaction();
-        int selection = ChooseOperation(frm_seltbl->SelectedTabContainerNumber);
+        int selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
         if(selection == 1)
         {
             if(TGlobalSettings::Instance().IsTableLockEnabled)
@@ -3632,10 +3632,10 @@ void TfrmMaintain::SetUpAustriaFiscal()
     }
 }
 //-----------------------------------------------------------------------------
-int TfrmMaintain::ChooseOperation(int selectedNumber)
+int TfrmMaintain::ChooseOperation(Database::TDBTransaction &DBTransaction, int selectedNumber)
 {
     int returnValue = 0;
-    bool isTableAlreadyMarked = TDBTables::IsTableMarked(selectedNumber);
+    bool isTableAlreadyMarked = TDBTables::IsTableMarked(DBTransaction, selectedNumber);
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
 	TVerticalSelection Item;
