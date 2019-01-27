@@ -64,7 +64,7 @@ namespace MenumateServices.Internal_Classes.Registration
             {
                 IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
                 var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
-                return CreateRegistrationResponseNoError(response.CompanyName);
+                return CreateRegistrationResponseNoError(response);
             }
             catch (Exception ex)
             {
@@ -94,6 +94,7 @@ namespace MenumateServices.Internal_Classes.Registration
 
                 if (terminalRegistrationInfo.LicenceSettingsModel != null)
                 {
+                    terminalViewModel.ApiLicenceSettings = new List<ApiLicenceSetting>();
                     foreach (var terminalSetting in terminalRegistrationInfo.LicenceSettingsModel)
                     {
                         terminalViewModel.ApiLicenceSettings.Add(CreateTerminalSettingViewModel(terminalSetting));
@@ -124,12 +125,13 @@ namespace MenumateServices.Internal_Classes.Registration
             return licenseSettingViewModel;
         }
 
-        private CompanySiteModelResponse CreateRegistrationResponseNoError(string companyName)
+        private CompanySiteModelResponse CreateRegistrationResponseNoError(ApiCompanySiteViewModel companyModelResponse)
         {
             return new CompanySiteModelResponse
             {
-                CompanyName = companyName
-                //todo;
+                CompanyName = companyModelResponse.CompanyName,
+                IsSuccessful = companyModelResponse.IsSuccessful,
+                Message = companyModelResponse.Message                
             };
         }
 

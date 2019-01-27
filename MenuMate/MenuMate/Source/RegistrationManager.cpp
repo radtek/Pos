@@ -117,10 +117,10 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo(syndicateCode, siteId);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(createResponse.IsSuccesful)
-        {
+        {  
             retval = true;
             TGlobalSettings::Instance().CompanyName = createResponse.Message;
-            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+            TManagerVariable::Instance().SetDeviceBool(dBTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
         }
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
