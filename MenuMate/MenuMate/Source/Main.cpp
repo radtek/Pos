@@ -257,7 +257,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
 			frmDBMod->SetRegCaption(pRegisteredName);
-			lbeRegistration->Caption = pRegisteredName;
+			lbeRegistration->Caption = TGlobalSettings::Instance().CompanyName;
 		}
 
 		frmDBMod->SetCaption("Updating Clock...");

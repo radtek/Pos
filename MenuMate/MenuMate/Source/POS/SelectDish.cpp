@@ -5193,6 +5193,7 @@ bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)
 			}
 		}
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
+         CheckRegisteration();
 	}
 	return RetVal;
 }
@@ -8044,7 +8045,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
-    CheckRegisteration();
+     CheckRegisteration();
     //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
