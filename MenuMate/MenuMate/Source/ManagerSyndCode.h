@@ -67,6 +67,7 @@ public:
    AnsiString GetCommunicationSyndCodeString();
    bool CheckIfSynCodeEnabled(int key);
    bool CheckIfAnySynCodeEnabled();
+   TSyndCode GetEnabledSyndCode();
 
 };
 
