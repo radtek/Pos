@@ -120,7 +120,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         {  
             retval = true;
             TGlobalSettings::Instance().CompanyName = createResponse.Message;
-            TManagerVariable::Instance().SetDeviceBool(dBTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+            TManagerVariable::Instance().SetDeviceBool(dBTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().CompanyName);
         }
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
