@@ -5,9 +5,9 @@ using System.Text;
 using MenumateServices.Registration;
 using System.Net;
 using MenumateServices.DTO.MenumateRegistration;
-using RegistrationIntegration.ViewModels;
 using RegistrationIntegration.Sevices;
 using RegistrationIntegration.Utility;
+using RegistrationIntegration.Models;
 
 namespace MenumateServices.Internal_Classes.Registration
 {
@@ -58,13 +58,13 @@ namespace MenumateServices.Internal_Classes.Registration
             }
         }
 
-        public RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
+        public CompanySiteModelResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
         {
             try
             {
                 IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
                 var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
-                return CreateRegistrationResponseNoError(response.IsSuccessful, response.Message);
+                return CreateRegistrationResponseNoError(response.CompanyName);
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace MenumateServices.Internal_Classes.Registration
 
         #region private
 
-        //Creating Menu View Models
+       
         private ApiTerminalViewModel CreateTerminalViewModel(TerminalModel terminalRegistrationInfo)
         {
             var terminalViewModel = new ApiTerminalViewModel();
@@ -92,7 +92,7 @@ namespace MenumateServices.Internal_Classes.Registration
                 terminalViewModel.TerminalDescription = terminalRegistrationInfo.TerminalDescription;
                 terminalViewModel.TerminalName = terminalRegistrationInfo.TerminalName;
 
-                if (terminalViewModel.ApiLicenceSettings != null)
+                if (terminalRegistrationInfo.LicenceSettingsModel != null)
                 {
                     foreach (var terminalSetting in terminalRegistrationInfo.LicenceSettingsModel)
                     {
@@ -124,12 +124,12 @@ namespace MenumateServices.Internal_Classes.Registration
             return licenseSettingViewModel;
         }
 
-        private RegistrationWebResponse CreateRegistrationResponseNoError(bool inSuccesful, string inMessage)
+        private CompanySiteModelResponse CreateRegistrationResponseNoError(string companyName)
         {
-            return new RegistrationWebResponse
+            return new CompanySiteModelResponse
             {
-                IsSuccessful = inSuccesful,
-                ResponseText = inMessage
+                CompanyName = companyName
+                //todo;
             };
         }
 

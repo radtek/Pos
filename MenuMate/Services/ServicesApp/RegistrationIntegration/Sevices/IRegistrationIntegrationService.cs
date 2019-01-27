@@ -1,11 +1,10 @@
-﻿using RegistrationIntegration.ViewModels;
-
+﻿using RegistrationIntegration.Models;
 
 namespace RegistrationIntegration.Sevices
 {
     public interface IRegistrationIntegrationService
     {
         bool PostTerminalRegistrationInfo(string inSyndicateCode, ApiTerminalViewModel siteOrderViewModel);
-        ApiRegistrationResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode);
+        ApiCompanySiteViewModel ValidateCompanyInfo(string inSyndicateCode, int siteCode);
     }
 }

@@ -38,7 +38,7 @@ private:
     // initiates the registration  Client
     void InitRegClient();
     MMRegistrationServiceResponse CreateMMResponse(RegistrationResponse* inWCFResponse );
-    MMRegistrationServiceResponse CreateMMResponse(RegistrationWebResponse* inWCFResponse );
+    MMRegistrationServiceResponse CreateMMResponse(CompanySiteModelResponse* inWCFResponse );
     MMRegistrationServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
 public:
     TRegistrationInterface();
