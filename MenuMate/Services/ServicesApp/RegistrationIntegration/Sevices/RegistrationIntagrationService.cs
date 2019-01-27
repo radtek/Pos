@@ -92,6 +92,10 @@ namespace RegistrationIntegration.Sevices
                     }
                 }
             }
+            else if (webResponse != null)
+            {
+                HandleExceptions(webResponse);
+            }
             if (response.IsSuccessful)
                 response.Message = "";
             else
@@ -122,6 +126,14 @@ namespace RegistrationIntegration.Sevices
                 {
                     throw new NoSettingChangeException();
                 }
+                else if ((int)webResponse.StatusCode == 404)
+                {
+                    throw new NotFoundException();
+                }
+                else if ((int)webResponse.StatusCode == 406)
+                {
+                    throw new NotAccessibleException();
+                }
                 else
                 {
                     var responseStream = new StreamReader(webResponse.GetResponseStream());
@@ -132,7 +144,7 @@ namespace RegistrationIntegration.Sevices
             }
             else
             {
-                throw new RegistrationUpdateException("Not able to connect with server.");
+                throw new RegistrationUpdateException("Not able to connect with server.");//message to change
             }
         }  
     }

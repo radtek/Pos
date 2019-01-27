@@ -79,9 +79,9 @@ namespace MenumateServices.Internal_Classes.Registration
                 var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
                 return CreateRegistrationResponseNoError(response);
             }
-            catch (Exception ex)
+            catch (AuthenticationFailedException ex)
             {
-                return null;
+                return null;// CreateResponseError(@"Failed to Authenticate", ex.Message, RegistrationResponseCode.AuthenticationFailed);
             }
         }
 
