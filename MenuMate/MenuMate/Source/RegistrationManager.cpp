@@ -98,6 +98,7 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             else if(createResponse.ResponseCode == SiteCodeInAcive)
             {
                  ErrorMessage = "Site Code inactive/not found.";
+                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
             }
             else
             {
@@ -143,6 +144,10 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         else
         {
             ErrorMessage = createResponse.Message;
+            if(ErrorMessage.Pos("Site Code inactive/not found."))     //company validate info
+            {
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
+            }
             MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
 
