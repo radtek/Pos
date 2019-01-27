@@ -1787,5 +1787,36 @@ UnicodeString TDBTables::GetStaffNameForSelectedTable(Database::TDBTransaction &
    return StaffName;
 }
 
+//=======================================================================================
+bool TDBTables::IsTableMarked(Database::TDBTransaction &dbTransaction, int selectedTable)
+{
+    bool isMarked = false;
+    try
+    {
+        TIBSQL *IBInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " SELECT ACCEPT_OO FROM TABLES WHERE TABLE_NUMBER = :TABLE_NUMBER";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = selectedTable;
+		IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->FieldByName("ACCEPT_OO")->AsString == "T")
+      {
+         isMarked = true;
+      }
+       else
+      {
+         isMarked = false;
+      }
+
+    }
+    catch(Exception &Ex)
+	{
+        MessageBox(Ex.Message,"Error in IsTableMarked()",MB_OK);
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+	}
+
+}
+
+
 
 

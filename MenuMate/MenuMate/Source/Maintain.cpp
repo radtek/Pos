@@ -355,29 +355,38 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 	frm_tchkb->Caption = "Enter Table Name";
 
 	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; )
-    {     
+    {
 		tr.StartTransaction();
-
-        if(TGlobalSettings::Instance().IsTableLockEnabled)
+        int selection = ChooseOperation(frm_seltbl->SelectedTabContainerNumber);
+        if(selection == 1)
         {
-            UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(tr, frm_seltbl->SelectedTabContainerNumber);
-            if(StaffName.Trim() != "" && tmp_ui.Name.Pos(StaffName) == 0)
+            if(TGlobalSettings::Instance().IsTableLockEnabled)
             {
-                MessageBox("This Table name can only be changed by staff " + StaffName,"Error",MB_OK);
-                tr.Commit();
-                must_signal_changes = false;
-                break;
+                UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(tr, frm_seltbl->SelectedTabContainerNumber);
+                if(StaffName.Trim() != "" && tmp_ui.Name.Pos(StaffName) == 0)
+                {
+                    MessageBox("This Table name can only be changed by staff " + StaffName,"Error",MB_OK);
+                    tr.Commit();
+                    must_signal_changes = false;
+                    break;
+                }
+            }
+            frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
+            if (frm_tchkb->ShowModal() == mrOk)
+            {
+                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
+                frm_tchkb->KeyboardText);
+                must_signal_changes |= 1;
             }
         }
-
-		frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
-
-		if (frm_tchkb->ShowModal() == mrOk)
+        else if(selection == 2)
         {
-			TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
-			frm_tchkb->KeyboardText);
-			must_signal_changes |= 1;
-		}
+            UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
+            bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
+            TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
+            tableName, !isTableAlreadyMarked);
+            must_signal_changes |= 1;
+        }
 		tr.Commit();
 
 		frm_seltbl->ShowAll = true;
@@ -3623,3 +3632,39 @@ void TfrmMaintain::SetUpAustriaFiscal()
     }
 }
 //-----------------------------------------------------------------------------
+int TfrmMaintain::ChooseOperation(int selectedNumber)
+{
+    int returnValue = 0;
+    bool isTableAlreadyMarked = TDBTables::IsTableMarked(selectedNumber);
+    std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+	TVerticalSelection Item;
+	Item.Title = "Cancel";
+	Item.Properties["Color"] = "0x000098F5";
+	Item.Properties["FontColor"] = IntToStr(clWhite);
+	Item.CloseSelection = true;
+	SelectionForm->Items.push_back(Item);
+
+	TVerticalSelection Item1;
+	Item1.Title = UnicodeString("Change Table Name \r");
+	Item1.Properties["Action"] = IntToStr(1);
+	Item1.Properties["Color"] = IntToStr(clNavy);
+	Item1.CloseSelection = true;
+	SelectionForm->Items.push_back(Item1);
+
+    TVerticalSelection Item2;
+	Item2.Title = isTableAlreadyMarked ? UnicodeString("Unmark for Online orders") : UnicodeString("Mark for Online Orders");
+	Item2.Properties["Action"] = IntToStr(2);
+    Item2.Properties["Color"] = isTableAlreadyMarked ? IntToStr(clGreen) : IntToStr(clNavy);
+    Item2.CloseSelection = true;
+    SelectionForm->Items.push_back(Item2);
+	SelectionForm->ShowModal();
+
+    TVerticalSelection SelectedItem;
+	if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+	{
+    	int action = StrToIntDef(SelectedItem.Properties["Action"],0);
+        returnValue = action;
+    }
+    return returnValue;
+}

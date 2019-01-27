@@ -93,6 +93,7 @@ class TDBTables
     static UnicodeString GetMemberEmail(int tableNumber);
     static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
     static UnicodeString GetStaffNameForSelectedTable(Database::TDBTransaction &DBTransaction,int TableNumber);
+    static bool IsTableMarked(Database::TDBTransaction &dbTransaction, int selectedTable);
 };
 
 #endif

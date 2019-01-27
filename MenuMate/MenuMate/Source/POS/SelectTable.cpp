@@ -35,7 +35,7 @@ void __fastcall TfrmSelectTable::FormShow(TObject *Sender)
     else
     {
         tiUpdateTableReq->Enabled = true;
-        tiTimerEnableReq->Enabled = false;
+
     }
 
     // Reset all the tables.
@@ -123,7 +123,7 @@ void __fastcall TfrmSelectTable::FormClose(TObject *Sender,
 	ShowAll = false;
 	ChangingName = false;
     tiUpdateTableReq->Enabled = false;
-    tiTimerEnableReq->Enabled = false;
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSelectTable::FormResize(TObject *Sender)
@@ -144,7 +144,7 @@ void __fastcall TfrmSelectTable::stCancelClick(TObject *Sender)
 {
 	ModalResult = mrCancel;
     tiUpdateTableReq->Enabled = false;
-    tiTimerEnableReq->Enabled = false;
+
 }
 
 //---------------------------------------------------------------------------
@@ -334,20 +334,7 @@ void TfrmSelectTable::UpdateColor(int tableNo, bool isSelected)
         }
     }
 }
-void __fastcall TfrmSelectTable::tiTimerEnableReqTimer(TObject *Sender)
-{
-                MessageBox("3 seconds elapsed","",MB_OK);
-}
 
-void __fastcall TfrmSelectTable::tMouseDown(TObject *Sender,
-    TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
-{
-                   tiTimerEnableReq->Enabled = true;
-}
 
-void __fastcall TfrmSelectTable::tMouseUp(TObject *Sender,
-    TMouseButton Button, TShiftState Shift, TGridButton *GridButton)
-{
-                   tiTimerEnableReq->Enabled = false;
-}
+
 

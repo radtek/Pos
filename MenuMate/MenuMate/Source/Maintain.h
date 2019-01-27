@@ -224,6 +224,8 @@ private:
     bool SetUpMews();
     void SetUpAustriaFiscal();
     void SetUpPosPlus();
-public: // User declarations
+    int ChooseOperation(int selectedNumber);
+
+    public: // User declarations
 };
 #endif

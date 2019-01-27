@@ -34,13 +34,7 @@ __published:	// IDE-managed Components
 	void __fastcall tgridTablesMouseClick(TObject *Sender,
     TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
     TTimer *tiUpdateTableReq;
-    TTimer *tiTimerEnableReq;
     void __fastcall tiUpdateTableReqTimer(TObject *Sender);
-    void __fastcall tiTimerEnableReqTimer(TObject *Sender);
-    void __fastcall tMouseDown(TObject *Sender,
-    TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
-    void __fastcall tMouseUp(TObject *Sender,
-    TMouseButton Button, TShiftState Shift, TGridButton *GridButton);
 private:	// User declarations
 //   bool TableScrollUp;
 	__fastcall TfrmSelectTable(TComponent* Owner,Database::TDBControl &IBDatabase);
@@ -53,7 +47,7 @@ private:	// User declarations
     void UpdateColor(int tableNo, bool isSelected);
     std::map<int, std::vector<TMezzanineTable> > MezzanineTables;
     std::set<int> AssignedMezzanineTable;
-    bool IsTableAvailable(Database::TDBTransaction &DBTransaction,int TableNumber);
+
 
 
 protected:
