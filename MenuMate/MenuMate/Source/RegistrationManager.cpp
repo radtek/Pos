@@ -78,7 +78,11 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             retval = true;
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
-            throw Exception("Authentication failed with Registration Service");
+            ErrorMessage = "Authentication failed with Registration Service.";
+        }
+        else if(!createResponse.IsSuccesful && createResponse.ResponseCode == NoNewSettingChange)
+        {
+             ErrorMessage = "No new Setting found for Update.";
         }
         else
         {
@@ -86,8 +90,8 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
               ErrorMessage = "Failed to update registration to server.";          //message to be changed..
             else
               ErrorMessage = "Failed to update registration to server.";
-            throw Exception(ErrorMessage);
         }
+        MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         delete registrationInterface;
         registrationInterface = NULL;
 
@@ -124,7 +128,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         }
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
-            throw Exception("Authentication failed with Registration Service");
+            ErrorMessage = "Authentication failed with Registration Service";
         }
         else
         {
@@ -132,8 +136,8 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
               ErrorMessage = "Failed to validate company to server.";   //message to be changed..
             else
               ErrorMessage = "Failed to validate company  to server.";
-           // throw Exception(ErrorMessage);
         }
+        MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         delete registrationInterface;
         registrationInterface = NULL;
 

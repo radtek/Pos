@@ -9,8 +9,10 @@
 
 enum MMRegistrationResponseCode
 {
-  Successful = 1,
+  Successful,
   AuthenticationFailed,
+  NoNewSettingChange,
+  BadRequestError,
   RegistrationUpdateFailed,
   FailedDueToException
 };

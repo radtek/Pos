@@ -12,6 +12,8 @@ namespace MenumateServices.DTO.MenumateRegistration
     {
         Successful,
         AuthenticationFailed,
+        NoNewSettingChange,
+        BadRequestError,
         RegistrationUpdateFailed,
         CompanyInfoValidationFailed
     };

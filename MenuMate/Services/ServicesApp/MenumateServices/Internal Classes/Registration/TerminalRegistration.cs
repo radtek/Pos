@@ -8,6 +8,7 @@ using MenumateServices.DTO.MenumateRegistration;
 using RegistrationIntegration.Sevices;
 using RegistrationIntegration.Utility;
 using RegistrationIntegration.Models;
+using RegistrationIntegration.Exceptions;
 
 namespace MenumateServices.Internal_Classes.Registration
 {
@@ -52,9 +53,21 @@ namespace MenumateServices.Internal_Classes.Registration
                 else
                     return CreateResponseError("@Failed to registration info to server.", "", RegistrationResponseCode.RegistrationUpdateFailed);
             }
+            catch (AuthenticationFailedException ex)
+            {
+                return CreateResponseError(@"Failed to Authenticate", ex.Message, RegistrationResponseCode.AuthenticationFailed);
+            }
+            catch (NoSettingChangeException ex)
+            {
+                return CreateResponseError(@"No new Setting found for Update.", ex.Message, RegistrationResponseCode.NoNewSettingChange);
+            }
+            catch (BadRequestException ex)
+            {
+                return CreateResponseError(@"Bad Request Exception.", ex.Message, RegistrationResponseCode.BadRequestError);
+            }
             catch (Exception ex)
             {
-                return null;
+                return CreateResponseError("@Registration update failed.", ex.Message, RegistrationResponseCode.RegistrationUpdateFailed);
             }
         }
 
@@ -131,7 +144,13 @@ namespace MenumateServices.Internal_Classes.Registration
             {
                 CompanyName = companyModelResponse.CompanyName,
                 IsSuccessful = companyModelResponse.IsSuccessful,
-                Message = companyModelResponse.Message                
+                Message = companyModelResponse.Message,
+                CompanyId = companyModelResponse.CompanyId,
+                IsCompanyActive = companyModelResponse.IsCompanyActive,
+                IsSiteActive = companyModelResponse.IsSiteActive,
+                SiteCode = companyModelResponse.SiteCode,
+                SiteName = companyModelResponse.SiteName,
+                SyndicateCode = companyModelResponse.SyndicateCode
             };
         }
 
