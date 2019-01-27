@@ -477,3 +477,19 @@ bool TManagerSyndCode::CheckIfAnySynCodeEnabled()
    return retVal;
 }
 
+//---------------------------------------------------------------------
+TSyndCode TManagerSyndCode::GetEnabledSyndCode()
+{
+   TSyndCode retval;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.Enabled)
+      {
+         retval = CurrentSyndCode;
+         break;
+      }
+   }
+   return retval;
+}
+

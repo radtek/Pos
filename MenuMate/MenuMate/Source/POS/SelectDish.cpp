@@ -1324,7 +1324,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               }
 		}
 	}
-    CheckRegisteration();
+
 }
 // ---------------------------------------------------------------------------
 std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeString inBarcode)
@@ -5193,7 +5193,7 @@ bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)
 			}
 		}
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
-         CheckRegisteration();
+        
 	}
 	return RetVal;
 }
@@ -8045,7 +8045,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
-     CheckRegisteration();
+
     //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
@@ -9566,7 +9566,7 @@ void TfrmSelectDish::InitializeQuickPaymentOptions()
     tbtnDollar3->Enabled = enableQuickPayment;
     tbtnDollar4->Enabled = enableQuickPayment;
     tbtnDollar5->Enabled = enableQuickPayment;
-
+    CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ReloadChitNumberStatistics()
