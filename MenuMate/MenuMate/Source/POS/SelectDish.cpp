@@ -8045,7 +8045,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
-     CheckRegisteration();
+
     //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
