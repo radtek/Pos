@@ -87,12 +87,21 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             {
                  ErrorMessage = "No new Setting found for Update.";
             }
+            else if(createResponse.ResponseCode == BadRequestError)
+            {
+                 ErrorMessage = "Bad Request Error.";
+            }
+            else if(createResponse.ResponseCode == SiteCodeNotExist)
+            {
+                 ErrorMessage = "Site Code doesn't exist.";
+            }
+            else if(createResponse.ResponseCode == SiteCodeInAcive)
+            {
+                 ErrorMessage = "Site Code inactive/not found.";
+            }
             else
             {
-                if(createResponse.Description == "Failed to update registration info to server.")
-                  ErrorMessage = "Failed to update registration to server.";          //message to be changed..
-                else
-                  ErrorMessage = "Failed to update registration to server.";
+                ErrorMessage = "Registration update failed.";
             }
             MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
