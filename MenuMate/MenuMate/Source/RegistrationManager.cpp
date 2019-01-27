@@ -49,10 +49,6 @@ void TRegistrationManager::CheckRegistrationStatus()
 
             }
         }
-        else
-        {
-            MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
-        }
         dbTransaction.Commit();
     }
     catch(Exception &Exc)
