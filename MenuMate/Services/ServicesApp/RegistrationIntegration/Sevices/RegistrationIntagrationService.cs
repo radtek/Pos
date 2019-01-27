@@ -1,10 +1,10 @@
 ﻿using RegistrationIntegration.Sevices;
-using RegistrationIntegration.ViewModels;
 using System.Net;
 using RegistrationIntegration.Exceptions;
 using System.IO;
 using RegistrationIntegration.Utility;
 using System;
+using RegistrationIntegration.Models;
 
 namespace RegistrationIntegration.Sevices
 {
@@ -36,10 +36,10 @@ namespace RegistrationIntegration.Sevices
             return response;
         }
 
-        public ApiRegistrationResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
+        public ApiCompanySiteViewModel ValidateCompanyInfo(string inSyndicateCode, int siteCode)
         {
-            ApiRegistrationResponse response = null;
-            string requestAddress = RequestAddress.ValidateCompanyInfo + @"/" + siteCode.ToString();
+            ApiCompanySiteViewModel response = null;
+            string requestAddress = RequestAddress.ValidateCompanyInfo + @"/" + inSyndicateCode + @"/" + siteCode.ToString();
             var request = Utility.WebUtility.CreateRequest(requestAddress, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
@@ -66,14 +66,14 @@ namespace RegistrationIntegration.Sevices
             return response;
         }
 
-        private ApiRegistrationResponse CreateRegistrationIntegrationResponse(HttpWebResponse webResponse, string message)
+        private ApiCompanySiteViewModel CreateRegistrationIntegrationResponse(HttpWebResponse webResponse, string message)
         {
-            ApiRegistrationResponse apiRegistrationResponse = new ApiRegistrationResponse();
+            ApiCompanySiteViewModel response = new ApiCompanySiteViewModel();
             if (webResponse == null)
             {
-                apiRegistrationResponse.IsSuccessful = false;
-                apiRegistrationResponse.Message = "Could not communicate with web.";
-                return apiRegistrationResponse;
+                response.IsSuccessful = false;
+                response.Message = "Could not communicate with web.";
+                return response;
             }
             if (webResponse.StatusCode == HttpStatusCode.OK)
             {
@@ -81,26 +81,29 @@ namespace RegistrationIntegration.Sevices
                 {
                     string localPath = webResponse.ResponseUri.LocalPath;
                     if (localPath.Contains("Index") && localPath.Contains("Login"))
-                        apiRegistrationResponse.IsSuccessful = false;
+                        response.IsSuccessful = false;
                     else
                     {
-                        apiRegistrationResponse.IsSuccessful = true;
-                        apiRegistrationResponse.Message = "";
+                        var companyStream = new StreamReader(webResponse.GetResponseStream());
+                        response = JsonUtility.Deserialize<ApiCompanySiteViewModel>(companyStream.ReadToEnd());
+                        response.IsSuccessful = true;
+                        response.Message = "";
+                        //response.CompanyName = webResponse.
                     }
                 }
             }
-            if (apiRegistrationResponse.IsSuccessful)
-                apiRegistrationResponse.Message = "";
+            if (response.IsSuccessful)
+                response.Message = "";
             else
             {
                 if (message.Contains("(406)"))
-                    apiRegistrationResponse.Message =
+                    response.Message =
                         "Registration is Disabled for the site in web.\nPlease Enable it first.";
                 else
-                    apiRegistrationResponse.Message =
+                    response.Message =
                         "Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.";
             }
-            return apiRegistrationResponse;
+            return response;
         }
 
         private void HandleExceptions(HttpWebResponse webResponse)

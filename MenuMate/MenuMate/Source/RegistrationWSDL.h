@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (25/01/2019 12:04:37 a.m. - - $Rev: 25127 $)
+// (27/01/2019 7:33:38 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -39,6 +39,7 @@
 
 
 namespace NS__RegistrationWSDL {
+
 // ************************************************************************ //
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
@@ -56,11 +57,11 @@ class SOAP_REMOTABLE_CLASS MMServiceResponse2;
 class SOAP_REMOTABLE_CLASS TerminalModel;
 class SOAP_REMOTABLE_CLASS LicenceSettingModel;
 class SOAP_REMOTABLE_CLASS RegistrationResponse;
-class SOAP_REMOTABLE_CLASS RegistrationWebResponse;
+class SOAP_REMOTABLE_CLASS CompanySiteModelResponse;
 class SOAP_REMOTABLE_CLASS TerminalModel2;
 class SOAP_REMOTABLE_CLASS LicenceSettingModel2;
 class SOAP_REMOTABLE_CLASS RegistrationResponse2;
-class SOAP_REMOTABLE_CLASS RegistrationWebResponse2;
+class SOAP_REMOTABLE_CLASS CompanySiteModelResponse2;
 
 enum class RegistrationResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration"[GblSmpl] */
 {
@@ -263,26 +264,33 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : RegistrationWebResponse, global, <complexType>
+// XML       : CompanySiteModelResponse, global, <complexType>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration
 // ************************************************************************ //
-class RegistrationWebResponse : public TRemotable {
+class CompanySiteModelResponse : public TRemotable {
 private:
+  UnicodeString   FCompanyName;
+  bool            FCompanyName_Specified;
   bool            FIsSuccessful;
   bool            FIsSuccessful_Specified;
-  UnicodeString   FResponseText;
-  bool            FResponseText_Specified;
+  UnicodeString   FMessage;
+  bool            FMessage_Specified;
+  void __fastcall SetCompanyName(int Index, UnicodeString _prop_val)
+  {  FCompanyName = _prop_val; FCompanyName_Specified = true;  }
+  bool __fastcall CompanyName_Specified(int Index)
+  {  return FCompanyName_Specified;  } 
   void __fastcall SetIsSuccessful(int Index, bool _prop_val)
   {  FIsSuccessful = _prop_val; FIsSuccessful_Specified = true;  }
   bool __fastcall IsSuccessful_Specified(int Index)
   {  return FIsSuccessful_Specified;  } 
-  void __fastcall SetResponseText(int Index, UnicodeString _prop_val)
-  {  FResponseText = _prop_val; FResponseText_Specified = true;  }
-  bool __fastcall ResponseText_Specified(int Index)
-  {  return FResponseText_Specified;  } 
+  void __fastcall SetMessage(int Index, UnicodeString _prop_val)
+  {  FMessage = _prop_val; FMessage_Specified = true;  }
+  bool __fastcall Message_Specified(int Index)
+  {  return FMessage_Specified;  } 
 __published:
+  __property UnicodeString CompanyName = { index=(IS_OPTN|IS_NLBL), read=FCompanyName, write=SetCompanyName, stored = CompanyName_Specified };
   __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
-  __property UnicodeString ResponseText = { index=(IS_OPTN|IS_NLBL), read=FResponseText, write=SetResponseText, stored = ResponseText_Specified };
+  __property UnicodeString    Message = { index=(IS_OPTN|IS_NLBL), read=FMessage, write=SetMessage, stored = Message_Specified };
 };
 
 
@@ -325,10 +333,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : RegistrationWebResponse, global, <element>
+// XML       : CompanySiteModelResponse, global, <element>
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration
 // ************************************************************************ //
-class RegistrationWebResponse2 : public RegistrationWebResponse {
+class CompanySiteModelResponse2 : public CompanySiteModelResponse {
 private:
 __published:
 };
@@ -349,14 +357,14 @@ __interface INTERFACE_UUID("{1FDFDF23-7F95-26E8-7096-7DC998DCEF05}") IRegistrati
 {
 public:
   virtual RegistrationResponse* UpdateTerminalRegistrationInfo(const UnicodeString inSyndicateCode, const TerminalModel* terminalRegistrationInfo) = 0; 
-  virtual RegistrationWebResponse* ValidateCompanyInfo(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
+  virtual CompanySiteModelResponse* ValidateCompanyInfo(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
 };
 typedef DelphiInterface<IRegistrationIntegrationWebService> _di_IRegistrationIntegrationWebService;
 
 _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(bool useWSDL=false, AnsiString addr="", THTTPRIO* HTTPRIO=0);
 
 
-};     // NS__RegistrationWSDL
+};     // NS__
 
 #if !defined(NO_IMPLICIT_NAMESPACE_USE)
 using  namespace NS__RegistrationWSDL;

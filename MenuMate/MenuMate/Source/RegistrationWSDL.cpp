@@ -9,9 +9,8 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (25/01/2019 12:04:37 a.m. - - $Rev: 25127 $)
+// (27/01/2019 7:33:38 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
-
 
 #include <vcl.h>
 #pragma hdrstop
@@ -80,16 +79,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(RegistrationResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponseCode");
   /* RegistrationResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RegistrationResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponse");
-  /* RegistrationWebResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(RegistrationWebResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationWebResponse");
+  /* CompanySiteModelResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(CompanySiteModelResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"CompanySiteModelResponse");
   /* TerminalModel */
   RemClassRegistry()->RegisterXSClass(__classid(TerminalModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"TerminalModel2", L"TerminalModel");
   /* LicenceSettingModel */
   RemClassRegistry()->RegisterXSClass(__classid(LicenceSettingModel2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"LicenceSettingModel2", L"LicenceSettingModel");
   /* RegistrationResponse */
   RemClassRegistry()->RegisterXSClass(__classid(RegistrationResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponse2", L"RegistrationResponse");
-  /* RegistrationWebResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(RegistrationWebResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationWebResponse2", L"RegistrationWebResponse");
+  /* CompanySiteModelResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(CompanySiteModelResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"CompanySiteModelResponse2", L"CompanySiteModelResponse");
   /* ArrayOfLicenceSettingModel */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingModel");
   /* RegistrationResponseCode */
@@ -97,5 +96,5 @@ static void RegTypes()
 }
 #pragma startup RegTypes 32
 
-};     // NS__RegistrationWSDL
+};     // NS__
 

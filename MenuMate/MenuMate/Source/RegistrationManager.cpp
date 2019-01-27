@@ -40,7 +40,7 @@ void TRegistrationManager::CheckRegistrationStatus()
             else
             {
                 if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
-                {
+                {    
                     TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, true);
 
                     if(UploadRegistrationInfo(syndCode))
@@ -117,7 +117,11 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         MMRegistrationServiceResponse createResponse = registrationInterface->ValidateCompanyInfo(syndicateCode, siteId);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(createResponse.IsSuccesful)
+        {
             retval = true;
+            TGlobalSettings::Instance().CompanyName = createResponse.Message;
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+        }
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
             throw Exception("Authentication failed with Registration Service");

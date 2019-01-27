@@ -13,6 +13,6 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         RegistrationResponse UpdateTerminalRegistrationInfo(string inSyndicateCode, TerminalModel terminalRegistrationInfo);
         [OperationContract]
-        RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode);
+        CompanySiteModelResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode);
     }
 }

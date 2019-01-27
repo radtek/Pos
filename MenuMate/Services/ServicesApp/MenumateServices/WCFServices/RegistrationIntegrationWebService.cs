@@ -28,7 +28,7 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
-        public RegistrationWebResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
+        public CompanySiteModelResponse ValidateCompanyInfo(string inSyndicateCode, int siteCode)
         {
             try
             {
