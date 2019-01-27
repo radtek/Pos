@@ -144,7 +144,7 @@ namespace RegistrationIntegration.Sevices
             }
             else
             {
-                throw new RegistrationUpdateException("Not able to connect with server.");//message to change
+                throw new RegistrationUpdateException("Not able to connect with registration server.");//message to change
             }
         }  
     }
