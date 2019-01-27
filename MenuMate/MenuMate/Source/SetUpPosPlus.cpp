@@ -11,6 +11,7 @@
 #include "SerialConfig.h"
 #include "FiscalDataUtility.h"
 #include "ManagerAustriaFiscal.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -56,6 +57,11 @@ void __fastcall TfrmSetUpPosPlus::tbtnPortNumberMouseClick(TObject *Sender)
                    TGlobalSettings::Instance().IsFiscalStorageEnabled = false;
                    tbtnConfigure->ButtonColor = clRed;
                    TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
+
+                   //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 }
                 DBTransaction.Commit();
                 DBTransaction.StartTransaction();
@@ -214,6 +220,11 @@ void __fastcall TfrmSetUpPosPlus::tbtnValidateMouseClick(TObject *Sender)
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
         }
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         DBTransaction1.Commit();
     }
     catch(Exception &Exc)
@@ -243,6 +254,11 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
+
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
             DBTransaction1.Commit();
             Close();
         }
@@ -264,6 +280,11 @@ void __fastcall TfrmSetUpPosPlus::tbtnCloseMouseClick(TObject *Sender)
             DBTransaction1.StartTransaction();
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsFiscalStorageEnabled, TGlobalSettings::Instance().IsFiscalStorageEnabled);
             TManagerVariable::Instance().SetDeviceBool(DBTransaction1, vmIsAustriaFiscalStorageEnabled, TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled);
+
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
             DBTransaction1.Commit();
             Close();
         }

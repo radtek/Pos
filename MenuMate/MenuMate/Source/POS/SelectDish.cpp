@@ -13901,7 +13901,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-					        itemComplete->ReturnToAvailability();
+					    itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;
@@ -13961,7 +13961,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-                                                itemComplete->ReturnToAvailability();
+                        itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;

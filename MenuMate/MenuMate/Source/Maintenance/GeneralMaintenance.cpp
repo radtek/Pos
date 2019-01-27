@@ -867,6 +867,11 @@ void __fastcall TfrmGeneralMaintenance::cbSaleAndMakeTimesClick(TObject *Sender)
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 //	}
 //	else if (cbSaleAndMakeTimes->Checked)
@@ -1625,6 +1630,11 @@ TObject *Sender)
 		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmSmartCardMembership,cbEnableMembershipSmartCards->Checked);
 		MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
 		lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
+
+        //Unsetting IsRegistrationVerified Flag To Unregister POS
+        if(TGlobalSettings::Instance().IsRegistrationVerified)
+            TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
+
 	}
 	DBTransaction.Commit();
 }
@@ -2211,6 +2221,10 @@ int Y)
 		{
 			MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
 			lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
+
+            //Unsetting IsRegistrationVerified Flag To Unregister POS
+            if(TGlobalSettings::Instance().IsRegistrationVerified)
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
 		}
 		DBTransaction.Commit();
 	}
@@ -2659,6 +2673,11 @@ void __fastcall TfrmGeneralMaintenance::cbEnableWaiterStationClick(TObject *Send
 	TManagerVariable::Instance().DeviceProfileKey ,
 	vmEnableWaiterStation,
 	TGlobalSettings::Instance().EnableWaiterStation);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 	DBTransaction.Commit();
 }
 
@@ -4449,6 +4468,11 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
         tr.StartTransaction();
         mv.SetProfileBool(tr, pk, vmUseMemberSubs,
         cbUseMemberSubs->Checked);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         tr.Commit();
         MessageBox("All terminals need to be restarted for this selection to work properly","Information", MB_OK + MB_ICONINFORMATION);
     }

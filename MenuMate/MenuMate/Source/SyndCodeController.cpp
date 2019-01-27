@@ -6,6 +6,7 @@
 #include "SyndCodeController.h"
 #include "SyndCodeGui.h"
 #include "MMMessageBox.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -72,10 +73,27 @@ void TSyndCodeController::OnEdit(int SyndKey, int ColIndex)
 {
    std::auto_ptr<TfrmSyndCodeGui> frmSyndCodeGui(new TfrmSyndCodeGui(DisplayOwner,ManagerSyndCode));
    frmSyndCodeGui->SyndCode = ManagerSyndCode.SyndCodeByKey(SyndKey);
+
+   // Saving SynCode And Enable Status Before Editing
+   AnsiString currentSynCode = frmSyndCodeGui->SyndCode.GetSyndCode();
+   bool isSynCodeEnabled     =  frmSyndCodeGui->SyndCode.Enabled;
+   AnsiString newSynCode;
+   bool isSynCodeNotChanged;
+
    TModalResult Result = frmSyndCodeGui->ShowModal();
    if(Result == mrOk)
    {
+      newSynCode           = frmSyndCodeGui->SyndCode.GetSyndCode();
+      isSynCodeNotChanged  = SameStr(currentSynCode,newSynCode);
+
+      if(isSynCodeEnabled && (!frmSyndCodeGui->SyndCode.Enabled || !isSynCodeNotChanged))
+      {
+        //Unsetting IsRegistrationVerified Flag To Unregister POS
+        if(TGlobalSettings::Instance().IsRegistrationVerified)
+            TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
+      }
       ManagerSyndCode.UpdateCode(DBTransaction,frmSyndCodeGui->SyndCode);
+
       PopulateListManager();
    }
 }

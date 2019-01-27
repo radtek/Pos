@@ -23,6 +23,7 @@
 #include "StringTools.h"
 #include "PaymentMaintenance.h"
 #include "WalletConfiguration.h"
+#include "DBRegistration.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
@@ -953,6 +954,10 @@ void __fastcall TfrmNewPaymentType::cbPocketVoucherClick(TObject *Sender)
 		 cbGetVoucherDetails->Checked = false;
 	  }
    }
+
+   //Tracking Setting Changes In IsCloudSyncRequiredFlag
+   if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::ExportMouseClick(TObject *Sender)

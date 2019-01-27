@@ -41,17 +41,13 @@ void TRegistrationManager::CheckRegistrationStatus()
             {
                 if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
                 {
-                    TDBRegistration::SetIsIsRegistrationVerifiedFlag(dbTransaction);
+                    TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, true);
 
                     if(UploadRegistrationInfo(syndCode))
                         TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
                 }
 
             }
-        }
-        else
-        {
-            MessageBox("Please setup syndicate code first","Syndicate Code Error.",MB_OK);
         }
         dbTransaction.Commit();
     }
@@ -87,7 +83,7 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
         else
         {
             if(createResponse.Description == "Failed to update registration info to server.")
-              ErrorMessage = "Failed to update registration to server.";
+              ErrorMessage = "Failed to update registration to server.";          //message to be changed..
             else
               ErrorMessage = "Failed to update registration to server.";
             throw Exception(ErrorMessage);
@@ -129,10 +125,10 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         else
         {
             if(createResponse.Description == "Failed to validate company info to server.")
-              ErrorMessage = "Failed to validate company to server.";
+              ErrorMessage = "Failed to validate company to server.";   //message to be changed..
             else
               ErrorMessage = "Failed to validate company  to server.";
-            throw Exception(ErrorMessage);
+           // throw Exception(ErrorMessage);
         }
         delete registrationInterface;
         registrationInterface = NULL;

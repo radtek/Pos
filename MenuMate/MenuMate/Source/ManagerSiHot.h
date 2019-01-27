@@ -17,7 +17,7 @@ class TManagerSiHot : public TBasePMS
        bool GetDefaultAccount(UnicodeString processMessage);
        void LogPMSEnabling(TriggerLocation triggerType);
        void UnsetPostingFlag();
-       void StoreTicketPost(UnicodeString invoiceNumber, AnsiString receiptData);
+       void StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *receiptData);
     private :
        bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);
@@ -36,5 +36,7 @@ class TManagerSiHot : public TBasePMS
        void ManageFailedStoreTicketPost(std::vector<UnicodeString> invoiceNumbers);
        void UpdatePMSTicketStatus(UnicodeString invoiceNumber, bool response);
        AnsiString GetReceiptForStoreTicket(UnicodeString invoiceNumber);
+       UnicodeString FormatStoreTicket(TMemoryStream *receipt);
+       bool CheckSihotPostingValidity(TPaymentTransaction paymentTransaction);
 };
 #endif

@@ -60,8 +60,15 @@ void __fastcall TfrmSyndCodeGui::TouchBtn3MouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::tbtnEnabledMouseClick(TObject *Sender)
 {
-   SyndCode.Enabled = !SyndCode.Enabled;
-   tbtnEnabled->Caption = (SyndCode.Enabled == true) ? "Enabled" : "Disabled";
+    if(ManagerSyndCode.CheckIfAnySynCodeEnabled() || ManagerSyndCode.CheckIfSynCodeEnabled(SyndCode.SyndCodeKey))
+    {
+        SyndCode.Enabled = !SyndCode.Enabled;
+        tbtnEnabled->Caption = (SyndCode.Enabled == true) ? "Enabled" : "Disabled";
+    }
+    else
+    {
+         MessageBox("One of the Syndicate Code is already enabled in POS.", "Warning", MB_OK);
+    }
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSyndCodeGui::btnCloseMouseClick(TObject *Sender)

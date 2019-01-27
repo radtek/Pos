@@ -7,6 +7,7 @@
 #include "MewsInterface.h"
 #include "MewsDataProcessor.h"
 #include "Generatormanager.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -362,6 +363,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         {
                             TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
                             auxMessage += "\rMews interface is disabled now.";
+
+                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                         }
                         MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         isPostedRoomPost = isSuccessful;
@@ -387,6 +393,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         }
                         MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         isSuccessful = false;
+
+                        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                     }
                     isPostedRoomPost = isSuccessful;
                 }
@@ -503,6 +514,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     }
                     MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                     isSuccessful = false;
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 }
                 else
                 {
@@ -524,6 +540,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     }
                     MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                     isSuccessful = false;
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 }
             }
          }

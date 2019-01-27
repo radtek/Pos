@@ -10,11 +10,14 @@
 #include "Processing.h"
 #include "PMSHelper.h"
 #include "GeneratorManager.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
 
-
+const char CR = 0x0D; // Carriage Return
+const char LF = 0x0A; // Line Feed
+const char FF = 0x0C; // Form Feed
 //---------------------------------------------------------------------------
 TManagerSiHot::TManagerSiHot() : TBasePMS()
 {
@@ -177,25 +180,22 @@ bool TManagerSiHot::RoomChargePost(TPaymentTransaction &_paymentTransaction)
     }
     else
     {
-//        if(roomCharge.AccountNumber.Trim() != TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim())
-//        {
-            AnsiString responseString = "";
-            responseString = roomResponse.ResponseMessage;
-            if(roomResponse.ResponseMessage == "")
-                responseString = "Sale could not get processed.Press OK to  process sale again";
-            if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
-               responseString.Pos("accountclosed") != 0)
-            {
-                responseString += "\rPlease try again or check your Default Room configuration.";
-                TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-            }
-            if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
-                retValue = false;
-//        }
-//        else
-//        {
-//            retValue = RetryDefaultRoomPost(_paymentTransaction,roomCharge);
-//        }
+        AnsiString responseString = "";
+        responseString = roomResponse.ResponseMessage;
+        if(roomResponse.ResponseMessage == "")
+            responseString = "Sale could not get processed.Press OK to  process sale again";
+        if(roomCharge.AccountNumber.Trim() == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber.Trim() &&
+           responseString.Pos("accountclosed") != 0)
+        {
+            responseString += "\rPlease try again or check your Default Room configuration.";
+            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+			                
+			//Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            	TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+        }
+        if(MessageBox(responseString,"Error", MB_OK + MB_ICONERROR) == ID_OK);
+            retValue = false;
     }
     return retValue;
 }
@@ -285,6 +285,10 @@ bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction, int Staf
 bool TManagerSiHot::ExportData(TPaymentTransaction &paymentTransaction)
 {   
     bool roomChargeSelected = false;
+
+    if(!CheckSihotPostingValidity(paymentTransaction))
+        return true;
+
     for(int paymentIndex = 0 ; paymentIndex < paymentTransaction.PaymentsCount(); paymentIndex++)
     {
        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
@@ -515,7 +519,7 @@ void TManagerSiHot::UnsetPostingFlag()
     }
 }
 //---------------------------------------------------------------------------
-void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, AnsiString receiptData)
+void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *receiptStream)
 {
     bool response = false;
     std::auto_ptr<TfrmProcessing>
@@ -528,7 +532,8 @@ void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, AnsiString rece
         std::auto_ptr<TSiHotDataProcessor> siHotDataProcessor(new TSiHotDataProcessor());
         TStoreTicket storeTicket;
         TRoomChargeResponse  roomResponse;
-
+        receiptStream->Position = 0;
+        AnsiString receiptData = FormatStoreTicket(receiptStream);
         siHotDataProcessor->CreateStoreTicketPost(invoiceNumber, storeTicket, receiptData);
         std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
         roomResponse = siHotInterface->SendStoreTicketPost(storeTicket,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
@@ -555,6 +560,94 @@ void TManagerSiHot::StoreTicketPost(UnicodeString invoiceNumber, AnsiString rece
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
     Processing->Close();
+}
+//---------------------------------------------------------------------------
+UnicodeString TManagerSiHot::FormatStoreTicket(TMemoryStream *receipt)
+{
+    UnicodeString receiptData = "";
+    try
+    {
+        char *Line = (char*)receipt->Memory;
+        for (int j = 0; j < receipt->Size; j++)
+        {
+            if (Line[j] == 0x1B)
+            {
+                if (Line[j + 1] == 0x1C)
+                   j += 2;
+                else if (Line[j + 1] == 0x72)
+                   j += 2;
+                else if (Line[j + 1] == 0x07)
+                   j += 4;
+                else if (Line[j + 1] == 0x64)
+                   j += 2;
+                else if (Line[j + 1] == 0x2D)
+                   j += 2;
+                else if (Line[j + 1] == 0x14)
+                   j += 1;
+                else if (Line[j + 1] == 0x0E)
+                   j += 1;
+                else if (Line[j + 1] == 'P')
+                   j += 1;
+                else if (Line[j + 1] == 'M')
+                   j += 1;
+                else if (Line[j + 1] == 'F')
+                   j += 1;
+                else if (Line[j + 1] == 'E')
+                   j += 1;
+            }
+            else if (Line[j] == 0x14 || Line[j] == 0x0E)
+            {
+            // Single Character command just step over it.
+            }
+            else if (Line[j] == 0x1D)
+            {
+                if (Line[j + 1] == 0x56)
+                   j += 2;
+                else if (Line[j + 1] == 0x2F)
+                   j += 2;
+            }
+            else if (Line[j] == ::CR)
+            {
+                if (Line[j + 1] == ::LF)
+                   j += 1;
+                receiptData += "\r";
+            }
+            else if (Line[j] == ::LF)
+            {
+                if (Line[j + 1] == ::CR)
+                   j += 1;
+                receiptData += "\r";
+            }
+            else
+            {
+                if (Line[j] == char(196))
+                {
+                   receiptData += "-";
+                }
+                else
+                {
+                   AnsiString check = "";
+                   if(Line[j] == 0x21 && Line[j+1] == 0x00)
+                   {
+                        j += 1;
+//                        receiptData += "";
+                   }
+                   else if(Line[j] == 0x00 && Line[j+1] != 0x21)
+                   {
+                        receiptData += "";
+                   }
+                   else
+                        if((Line[j] >= 0x20 &&  Line[j] <= 0x7F))
+                            receiptData += Line[j];
+                }
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return receiptData;
 }
 //---------------------------------------------------------------------------
 void TManagerSiHot::SavePMSTicketStatus(UnicodeString invoiceNumber, bool response)
@@ -632,7 +725,6 @@ void TManagerSiHot::ManageFailedStoreTicketPost(std::vector<UnicodeString> invoi
         siHotDataProcessor->CreateStoreTicketPost(invoiceNumbers[i], storeTicket, receiptData);
         std::auto_ptr<TSiHotInterface> siHotInterface(new TSiHotInterface());
         roomResponse = siHotInterface->SendStoreTicketPost(storeTicket,TGlobalSettings::Instance().PMSTimeOut,TDeviceRealTerminal::Instance().BasePMS->ApiKey);
-
         if(roomResponse.IsSuccessful)
         {
             response = true;
@@ -685,9 +777,11 @@ AnsiString TManagerSiHot::GetReceiptForStoreTicket(UnicodeString invoiceNumber)
         IBInternalQuery->ParamByName("INVOICE_NUMBER")->AsString = invoiceNumber;
 
         IBInternalQuery->ExecQuery();
-
-        receiptData = IBInternalQuery->FieldByName("RECEIPT")->AsString;
-
+        TMemoryStream *Receipt = new TMemoryStream;
+		Receipt->Clear();
+		IBInternalQuery->FieldByName("RECEIPT")->SaveToStream(Receipt);
+        Receipt->Position = 0;
+        receiptData = FormatStoreTicket(Receipt);
         DBTransaction.Commit();
     }
     catch(Exception &ex)
@@ -697,4 +791,34 @@ AnsiString TManagerSiHot::GetReceiptForStoreTicket(UnicodeString invoiceNumber)
     }
 
     return receiptData;
+}
+bool TManagerSiHot::CheckSihotPostingValidity(TPaymentTransaction paymentTransaction)
+{
+    bool isNotCompleteCancel = false;
+    bool isOnlyPointsTransaction = false;
+    try
+    {
+        if(paymentTransaction.Orders->Count == 0 &&
+           (paymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() != 0 || paymentTransaction.Membership.Member.Points.getCurrentPointsRefunded() != 0))
+        {
+            isOnlyPointsTransaction = true;
+        }
+        if(!isOnlyPointsTransaction)
+        {
+            for(int indexOrder = 0; indexOrder < paymentTransaction.Orders->Count; indexOrder++)
+            {
+                TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[indexOrder];
+                if(itemComplete->OrderType != CanceledOrder)
+                {
+                   isNotCompleteCancel = true;
+                   break;
+                }
+            }
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return  !isOnlyPointsTransaction && isNotCompleteCancel;
 }

@@ -46,6 +46,7 @@
 #include "GUIDiscount.h"
 #include "MallSalesTypeAssignment.h"
 #include "EnableFloorPlan.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -263,6 +264,11 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 		Database::TDBTransaction DBTransaction(IBDatabase);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
     }
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
@@ -297,6 +303,11 @@ void __fastcall TfrmSetup::PageControlChanging(TObject *Sender,
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmStockMasterExportPath, edStockMasterExport->Text);
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 	}
 	UpdateLists();
@@ -939,6 +950,11 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
         mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
     }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 	DBTransaction.Commit();
 }
 
@@ -2148,6 +2164,11 @@ void __fastcall TfrmSetup::cbNewbookTypeChange(TObject *Sender)
 		Database::TDBTransaction DBTransaction(IBDatabase);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------

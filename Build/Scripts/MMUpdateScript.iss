@@ -61,7 +61,6 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Archive.exe; DestDir: {app}; Flags: ig
 ; MenuMate Files
 ;Source: {#GetEnv('BASEDIR')}\Runtime\DeskMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\DeskMate.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Runtime\Register.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\MenuMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\Kiosk.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags: ignoreversion

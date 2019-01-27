@@ -8,6 +8,7 @@
 #include "DeviceRealterminal.h"
 #include "OracledataBuilder.h"
 #include "MMMessageBox.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -81,6 +82,11 @@ bool TOracleTCPIP::Connect()
         "Abort", MB_OK + MB_ICONERROR);
         List->Add("Exception Occurred " + E.Message + "\n");
         TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 	}
 
     if(retValue)
