@@ -8044,6 +8044,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
+    CheckRegisteration();
     //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
@@ -14422,7 +14423,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
                 if((CurrentDiscount.IsComplimentaryDiscount() || CurrentDiscount.IsNonChargableDiscount()) && !TGlobalSettings::Instance().IsRegistrationVerified)
                 {
-                         MessageBox("You can't apply Complimentary discount until your pos is registered ","Error",MB_OK);
+                          MessageBox("You can't apply this discount until pos is registered","Error",MB_OK + MB_ICONERROR);
                          return;
                 }
                if(CurrentDiscount.IsComplimentaryDiscount())
