@@ -74,7 +74,6 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo, syndicateCode);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
-
         if(createResponse.IsSuccesful)
             retval = true;
         else
@@ -107,14 +106,11 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             {
                 ErrorMessage = "Registration update failed.";
             }
-
             if(showMessage)
                 MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
-
         delete registrationInterface;
         registrationInterface = NULL;
-
         dBTransaction.Commit();
     }
     catch(Exception &E)
