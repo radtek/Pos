@@ -14422,9 +14422,16 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                if((CurrentDiscount.IsComplimentaryDiscount() || CurrentDiscount.IsNonChargableDiscount()) && !TGlobalSettings::Instance().IsRegistrationVerified)
+
+               if(CurrentDiscount.IsComplimentaryDiscount() && !TGlobalSettings::Instance().IsRegistrationVerified)
                 {
-                          MessageBox("You can't apply this discount until pos is registered","Error",MB_OK + MB_ICONERROR);
+                         MessageBox("Complementary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                          return;
+                }
+                else if(CurrentDiscount.IsNonChargableDiscount() && !TGlobalSettings::Instance().IsRegistrationVerified)
+                {
+
+                        MessageBox("Non Chargable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                          return;
                 }
                if(CurrentDiscount.IsComplimentaryDiscount())
