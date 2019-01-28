@@ -426,24 +426,35 @@ void TFrmSelectTable2::SaveLocationId(int locationId)
 //--------------------------------------------------------------------------------
 void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
 {
-    if(MessageBox("Do you want to mark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
-    {
-        tiUpdateFloorPlanReq->Enabled = false;
-        tiUpdateFloorPlanRefresh->Enabled = false;
-        AnsiString message(_controller->GetTableDesc());
-        DTOReservable *Table = _controller->GetCurrentTable();
+    tiUpdateFloorPlanReq->Enabled = false;
+    tiUpdateFloorPlanRefresh->Enabled = false;
+    AnsiString message(_controller->GetTableDesc());
+    DTOReservable *Table = _controller->GetCurrentTable();
 
-        if (Table != NULL )
+    if (Table != NULL )
+    {
+        SelectedTabContainerName = Table->Name;
+        SelectedTabContainerNumber = Table->Number;
+
+        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        dBTransaction.StartTransaction();
+
+        if(!TDBTables::IsTableMarked(dBTransaction, SelectedTabContainerNumber))
         {
-            SelectedTabContainerName = Table->Name;
-            SelectedTabContainerNumber = Table->Number;
-            // Keep our Tables DB in sync for reports.
-            Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-            DBTransaction.StartTransaction();
-            SelectedPartyName = TDBTables::GetPartyName(DBTransaction, SelectedTabContainerNumber);
-            TDBTables::SetTableName(DBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
-            DBTransaction.Commit();
+            if(MessageBox("Do you want to mark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            {
+                SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
+                TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
+            }
         }
+        else
+        {
+            if(MessageBox("Do you want to unmark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            {
+                TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, false);
+            }
+        }
+         dBTransaction.Commit();
      }
 }
 //--------------------------------------------------------------------------------

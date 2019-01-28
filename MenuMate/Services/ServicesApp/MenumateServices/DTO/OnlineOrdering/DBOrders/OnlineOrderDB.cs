@@ -145,38 +145,48 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                                 orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
 
                             bool isTabOrder = false;
-                            if (IsFloorPlanEnabled())
+                            //if (IsFloorPlanEnabled())
+                            //{
+                            if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName)) //CheckTableExistAndGetTableInfo removed for china changes
                             {
-                                if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))
-                                {
-                                    orderRow.ContainerNumber = containerNumber;
-                                    orderRow.TableName = tableName;
+                                orderRow.ContainerNumber = containerNumber;
+                                orderRow.TableName = tableName;
 
-                                    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                                bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+
+                                if (IsFloorPlanEnabled())
+                                {
                                     siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
-                                    if (retVal)
-                                        throw new Exception("Order can't be saved to this table because it already contains orders.");
                                 }
                                 else
                                 {
-                                    isTabOrder = true;
-                                }
-                            }
-                            else
-                            {
-                                if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
-                                {
-                                    isTabOrder = true;
-                                }
-                                else
-                                {
-                                    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
-                                    if (retVal)
-                                        throw new Exception("Order can't be saved to this table because it already contains orders.");
                                     siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
                                     orderRow.TableName = "Table #" + orderRow.ContainerNumber;
                                 }
+
+                                if (retVal)
+                                    throw new Exception("Order can't be saved to this table because it already contains orders.");
                             }
+                            else
+                            {
+                                isTabOrder = true;
+                            }
+                            //}
+                            //else
+                            //{
+                            //if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
+                            //{
+                            //    isTabOrder = true;
+                            //}
+                            //else
+                            //{
+                            //    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                            //    if (retVal)
+                            //        throw new Exception("Order can't be saved to this table because it already contains orders.");
+                            //    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
+                            //    orderRow.TableName = "Table #" + orderRow.ContainerNumber;
+                            //}
+                            //}
 
                             if (isTabOrder)
                             {
@@ -978,11 +988,11 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                         {
                             if (reader1.Read())
                             {
-                                isHappyHourRunning = IsForceHappyHourEnabled(profileKey); 
+                                isHappyHourRunning = IsForceHappyHourEnabled(profileKey);
                             }
                             else
                             {
-                                isHappyHourRunning = IsHappyHourRunning(profileKey);    
+                                isHappyHourRunning = IsHappyHourRunning(profileKey);
                             }
                         }
                     }
@@ -1165,6 +1175,31 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             }
             return hhProfileDays;
         }
+
+        private bool IsTableMarkedForOnlineordering(ref int tableNumber, ref string tableName)
+        {
+            bool isTableOOMarked = false;
+            try
+            {
+                FbCommand selectTableCommand = dbQueries.IsTableMarkedForOnlineordering(connection, transaction, tableNumber, tableName);
+                using (FbDataReader reader = selectTableCommand.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        tableNumber = reader.GetInt32(reader.GetOrdinal("TABLE_NUMBER"));
+                        tableName = reader.GetString(reader.GetOrdinal("TABLE_NAME"));
+                        isTableOOMarked = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableMarkedForOnlineordering extracting tablenumber " + e.Message, e);
+                throw;
+            }
+            return isTableOOMarked;
+        }
+
         #endregion
     }
 

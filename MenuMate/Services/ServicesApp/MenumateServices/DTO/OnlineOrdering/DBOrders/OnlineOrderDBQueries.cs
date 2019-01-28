@@ -88,7 +88,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
                 command.Parameters.AddWithValue("@EMAIL", memberEmail);
-                
+
             }
             catch (Exception e)
             {
@@ -590,7 +590,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
                 command.Parameters.AddWithValue("@COST", orderDbItem.Cost);
                 command.Parameters.AddWithValue("@LOYALTY_KEY", orderDbItem.MembershipProfileId); //to test loyalty key
-                command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);  
+                command.Parameters.AddWithValue("@MASTER_CONTAINER", orderDbItem.MasterContainer);
                 command.Parameters.AddWithValue("@SETMENU_MASK", orderDbItem.SetMenuMask);
                 command.Parameters.AddWithValue("@SETMENU_GROUP", 0); //todo in future
                 command.Parameters.AddWithValue("@ITEM_CATEGORY", QueryUtilities.GetSubstring(orderDbItem.ItemCategory, 1, 40));
@@ -627,7 +627,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@PRICE_INCL", orderDbItem.PriceInclusive);
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", orderDbItem.TransactionType);
                 command.Parameters.AddWithValue("@IS_DOCKET_PRINTED", "F");
-				command.Parameters.AddWithValue("@SITE_ID", orderDbItem.SiteId);
+                command.Parameters.AddWithValue("@SITE_ID", orderDbItem.SiteId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_ID", orderDbItem.OrderItemId);
                 command.Parameters.AddWithValue("@ORDER_ITEM_SIZE_ID", orderDbItem.OrderItemSizeId);
                 command.Parameters.AddWithValue("@REFERENCE_ORDER_ITEM_SIZE_ID", orderDbItem.ReferenceOrderItemSizeId);
@@ -638,7 +638,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@FIRST_NAME", "");
                 command.Parameters.AddWithValue("@LAST_NAME", "");
 
-                
+
 
                 if (orderDbItem.SideOrderKey > 0)
                     command.Parameters.AddWithValue("@SIDE_ORDER_KEY", orderDbItem.SideOrderKey); //todo
@@ -701,7 +701,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
         public FbCommand CreateTable(FbConnection connection, FbTransaction transaction, int tableKey, int tableNumber, string tableName)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
-            if(tableNumber == 0)
+            if (tableNumber == 0)
                 throw new Exception("Table number can not be zero.");
             //...........................................
 
@@ -817,7 +817,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 throw;
             }
 
-            return command;            
+            return command;
         }
 
         public FbCommand LoadBreakDownCategoriesCmd(FbConnection connection, FbTransaction transaction, int itemSizeKey)
@@ -919,7 +919,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
 
         public FbCommand OpenSaleStartTimeCmd(FbConnection connection, FbTransaction transaction, int currentTimeKey)
         {
-            FbCommand result = new FbCommand(@"", connection, transaction);            
+            FbCommand result = new FbCommand(@"", connection, transaction);
 
             try
             {
@@ -940,7 +940,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in OpenSaleStartTimeCmd " + e.Message, e);
                 throw;
             }
-            
+
             return result;
         }
 
@@ -1125,6 +1125,37 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in LoadDaysInfoForSelectedProfile " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+
+        public FbCommand IsTableMarkedForOnlineordering(FbConnection connection, FbTransaction transaction, int tableNumber, string tableName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT a.TABLE_NUMBER, A.TABLE_NAME 
+                                        FROM TABLES a
+                                        WHERE A.ACCEPT_OO = @ACCEPT_OO ";
+                if (tableNumber > 0)
+                {
+                    command.CommandText += " AND a.TABLE_NUMBER = @TABLE_NUMBER ";
+                    command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                }
+                else
+                {
+                    command.CommandText += " AND a.TABLE_NAME = @TABLE_NAME ";
+                    command.Parameters.AddWithValue("@TABLE_NAME", tableName);
+                }
+
+                command.Parameters.AddWithValue("@ACCEPT_OO", "T");
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableMarkedForOnlineordering " + e.Message, e);
                 throw;
             }
 
