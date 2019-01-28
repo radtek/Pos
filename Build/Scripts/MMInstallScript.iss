@@ -347,7 +347,7 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AustriaFiscalIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.Utilities.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\RegistrationIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 ; Menumate Customer Display
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe";   DestDir: "{app}\Customer Display" ; Flags:ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\MMChangingImageController.dll"; DestDir: "{app}\Customer Display" ; Flags:ignoreversion;

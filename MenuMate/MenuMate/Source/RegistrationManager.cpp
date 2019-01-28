@@ -144,7 +144,8 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         else
         {
             ErrorMessage = createResponse.Message;
-            if(ErrorMessage.Pos("Site Code inactive/not found."))     //company validate info
+            if((ErrorMessage.Pos("Site Code inactive/not found.") != 0)||
+                (ErrorMessage.Pos("Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.")!= 0))
             {
                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
             }

@@ -84,7 +84,9 @@ MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(Registrat
 //---------------------------------------------------------------------------
 MMRegistrationServiceResponse TRegistrationInterface::CreateMMResponse(CompanySiteModelResponse* inWCFResponse )
 {
-    return MMRegistrationServiceResponse(inWCFResponse->IsSuccessful, AnsiString( inWCFResponse->CompanyName.t_str() ), "", Successful);
+    if(inWCFResponse->CompanyName.Trim() == "")
+        inWCFResponse->CompanyName = inWCFResponse->Message;
+    return MMRegistrationServiceResponse(inWCFResponse->IsSuccessful, AnsiString( inWCFResponse->CompanyName.t_str() ), AnsiString(inWCFResponse->Message.t_str()), Successful);
 }
 //---------------------------------------------------------------------------
 MMRegistrationServiceResponse TRegistrationInterface::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
