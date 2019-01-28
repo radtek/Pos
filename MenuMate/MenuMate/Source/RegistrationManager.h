@@ -7,7 +7,7 @@
 class TRegistrationManager
 {
 private:
-    bool UploadRegistrationInfo(AnsiString syndicateCode);
+    bool UploadRegistrationInfo(Database::TDBTransaction &dbTransaction, AnsiString syndicateCode);
     void ValidateSiteIdAndSiteCode(Database::TDBTransaction &dbTransaction);
 public:
     void CheckRegistrationStatus();
