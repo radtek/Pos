@@ -168,7 +168,7 @@ void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTable
 	try
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-		int TableKey = GetOrCreateTable(DBTransaction,inTableNo);
+		int TableKey = GetOrCreateTable(DBTransaction,inTableNo, isOOTable);
 
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text =
@@ -1804,11 +1804,7 @@ bool TDBTables::IsTableMarked(Database::TDBTransaction &dBTransaction, int selec
 
         if(IBInternalQuery->FieldByName("ACCEPT_OO")->AsString == "T")
         {
-         isMarked = true;
-        }
-       else
-        {
-         isMarked = false;
+            isMarked = true;
         }
     }
     catch(Exception &Ex)
