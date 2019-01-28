@@ -88,6 +88,7 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             {
                  showMessage = false;
                  ErrorMessage = "No new Setting found for Update.";
+                 TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
             }
             else if(createResponse.ResponseCode == BadRequestError)
             {
