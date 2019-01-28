@@ -1641,8 +1641,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Enable Sale and Make Time Tracking.\r"
 		"You have to have purchased and register the sale and make"
 		" turnaround time traking module.\r"
-		"Default is True",
-		vmgMenuMateModules, true);
+		"Default is False",
+		vmgMenuMateModules, false);
 
 		SetVarBool(DBTransaction,vmAlwaysForceLogin, "Force Logins Every Sale",
 		"If set tables will froce the user to login after every sale.\r"
