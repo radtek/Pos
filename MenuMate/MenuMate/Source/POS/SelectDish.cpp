@@ -4163,7 +4163,7 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             Request->Printouts->Print(devPC);
                             ManagerDockets->Archive(DBTransaction,Request.get());
                             if(TGlobalSettings::Instance().IsRegistrationVerified)
-                            completeOrderToChefMate( PrintTransaction.get() );
+                                completeOrderToChefMate(PrintTransaction.get());
 
                             logList->Clear();
                             logList->Add("Docket printed and order sent to chef.");
@@ -4910,6 +4910,7 @@ void __fastcall TfrmSelectDish::tbtnCallAwayClick()
                                 std::auto_ptr<TKitchen> Kitchen(new TKitchen());
                                 Kitchen->Initialise(DBTransaction);
 				Kitchen->GetPrintouts(DBTransaction, CallAway.get(), NormalRequest.get());
+                if(TGlobalSettings::Instance().IsRegistrationVerified)
 				callAwayToChefMate(CallAway.get());
 				NormalRequest->Printouts->Print(devPC);
                                 //Set Table status for call away
@@ -11454,8 +11455,8 @@ void TfrmSelectDish::SendOrderListToKitchen(Database::TDBTransaction &DBTransact
 	ManagerDockets->Archive(Request.get());
 
 	//::::::::::::::::::::::::::::::::::::::::
-
-	completeHeldOrdersToChefMate( PrintTransaction.get() );
+       if(TGlobalSettings::Instance().IsRegistrationVerified)
+	    completeHeldOrdersToChefMate( PrintTransaction.get() );
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::HoldButtonClick(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> Patrons)
