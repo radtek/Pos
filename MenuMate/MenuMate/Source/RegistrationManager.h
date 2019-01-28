@@ -11,6 +11,6 @@ private:
     void ValidateSiteIdAndSiteCode(Database::TDBTransaction &dbTransaction);
 public:
     void CheckRegistrationStatus();
-    bool ValidateCompanyInfo(AnsiString syndicateCode, int siteId);
+    bool ValidateCompanyInfo(Database::TDBTransaction &dbTransaction,AnsiString syndicateCode, int siteId);
 };
 #endif
