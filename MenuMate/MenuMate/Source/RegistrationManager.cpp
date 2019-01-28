@@ -79,13 +79,16 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             retval = true;
         else
         {
+            bool showMessage = true;
             if(createResponse.ResponseCode == AuthenticationFailed)
             {
                 ErrorMessage = "Authentication failed with Registration Service.";
             }
             else if(createResponse.ResponseCode == NoNewSettingChange)
             {
+                 showMessage = false;
                  ErrorMessage = "No new Setting found for Update.";
+                 TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
             }
             else if(createResponse.ResponseCode == BadRequestError)
             {
@@ -104,7 +107,9 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             {
                 ErrorMessage = "Registration update failed.";
             }
-            MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
+
+            if(showMessage)
+                MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
 
         delete registrationInterface;
