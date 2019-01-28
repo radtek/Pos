@@ -39,7 +39,7 @@ void TRegistrationManager::CheckRegistrationStatus()
             }
             else
             {
-                if(ValidateCompanyInfo(syndCode, TGlobalSettings::Instance().SiteID))
+                if(ValidateCompanyInfo(dbTransaction,syndCode, TGlobalSettings::Instance().SiteID))
                 {    
                     TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, true);
 
@@ -119,14 +119,11 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
     return retval;
 }
 //-----------------------------------------------------------------------
-bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int siteId)
+bool TRegistrationManager::ValidateCompanyInfo(Database::TDBTransaction &dbTransaction, AnsiString syndicateCode, int siteId)
 {
     bool retval = false;
     try
     {
-        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	    dBTransaction.StartTransaction();
-
         TMMProcessingState State(Screen->ActiveForm, "Validating Company Info Please Wait...", "Validating Company Info");
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
@@ -137,7 +134,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         {  
             retval = true;
             TGlobalSettings::Instance().CompanyName = createResponse.Message;
-            TManagerVariable::Instance().SetDeviceStr(dBTransaction,vmCompanyName,TGlobalSettings::Instance().CompanyName);
+            TManagerVariable::Instance().SetDeviceStr(dbTransaction,vmCompanyName,TGlobalSettings::Instance().CompanyName);
         }
         else
         {
@@ -145,7 +142,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
             if((ErrorMessage.Pos("Site Code inactive/not found.") != 0)||
                 (ErrorMessage.Pos("Menumate Registration is Failed. Please Enter correct Syndicate Code and Site Id")!= 0))
             {
-                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
                 MessageBox(ErrorMessage,"Registration Failed", MB_OK + MB_ICONERROR);
             }
             else
@@ -156,8 +153,6 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
 
         delete registrationInterface;
         registrationInterface = NULL;
-
-        dBTransaction.Commit();
     }
     catch(Exception &E)
 	{

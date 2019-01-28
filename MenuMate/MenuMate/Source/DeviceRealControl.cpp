@@ -840,7 +840,8 @@ void TDeviceRealControl::LoadHdrFtr()
 	{
        if (Receipt)
 		{
-			Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().Header.get(),TGlobalSettings::Instance().Header.get());
+			 Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get(),
+            TGlobalSettings::Instance().SubHeader.get());
 		}
 	}
 
