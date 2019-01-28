@@ -150,11 +150,15 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
         {
             ErrorMessage = createResponse.Message;
             if((ErrorMessage.Pos("Site Code inactive/not found.") != 0)||
-                (ErrorMessage.Pos("Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.")!= 0))
+                (ErrorMessage.Pos("Menumate Registration is Failed. Please Enter correct Syndicate Code and Site Id")!= 0))
             {
                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
+                MessageBox(ErrorMessage,"Registration Failed", MB_OK + MB_ICONERROR);
             }
-            MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
+            else
+            {
+                MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
+            }
         }
 
         delete registrationInterface;
