@@ -72,7 +72,7 @@ namespace RegistrationIntegration.Sevices
             if (webResponse == null)
             {
                 response.IsSuccessful = false;
-                response.Message = "Could not communicate with web.";
+                response.Message = "Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.";
                 return response;
             }
             if (webResponse.StatusCode == HttpStatusCode.OK)
