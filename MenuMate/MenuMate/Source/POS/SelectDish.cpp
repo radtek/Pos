@@ -14422,18 +14422,24 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
-                if((CurrentDiscount.IsComplimentaryDiscount() || CurrentDiscount.IsNonChargableDiscount()) && !TGlobalSettings::Instance().IsRegistrationVerified)
-                {
-                          MessageBox("You can't apply this discount until pos is registered","Error",MB_OK + MB_ICONERROR);
-                         return;
-                }
+
                if(CurrentDiscount.IsComplimentaryDiscount())
                {
-                  TypeOfSale = ComplimentarySale;
+                    if(!TGlobalSettings::Instance().IsRegistrationVerified)
+                    {
+                        MessageBox("Complementary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                          return;
+                    }
+                    TypeOfSale = ComplimentarySale;
                }
                else if( CurrentDiscount.IsNonChargableDiscount())
                {
-                 TypeOfSale = NonChargableSale;
+                    if(!TGlobalSettings::Instance().IsRegistrationVerified)
+                    {
+                        MessageBox("Non Chargable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                         return;
+                    }
+                    TypeOfSale = NonChargableSale;
                }
 
 //              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
