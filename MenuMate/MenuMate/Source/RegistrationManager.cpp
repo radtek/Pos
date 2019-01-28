@@ -102,6 +102,7 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
             else
             {
                 ErrorMessage = "Registration update failed.";
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
             }
             if(showMessage)
                 MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
