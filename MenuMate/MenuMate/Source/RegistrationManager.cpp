@@ -33,7 +33,7 @@ void TRegistrationManager::CheckRegistrationStatus()
             {
                 if(TGlobalSettings::Instance().IsCloudSyncRequired)
                 {
-                    if(UploadRegistrationInfo(syndCode))
+                    if(UploadRegistrationInfo(dbTransaction, syndCode))
                         TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
                 }
             }
@@ -43,7 +43,7 @@ void TRegistrationManager::CheckRegistrationStatus()
                 {    
                     TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, true);
 
-                    if(UploadRegistrationInfo(syndCode))
+                    if(UploadRegistrationInfo(dbTransaction, syndCode))
                         TDBRegistration::UpdateIsCloudSyncRequiredFlag(false);
                 }
 
@@ -59,22 +59,18 @@ void TRegistrationManager::CheckRegistrationStatus()
     }
 }
 //-----------------------------------------------------------------------
-bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
+bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTransaction, AnsiString syndicateCode)
 {
     bool retval = false;
     try
     {
-        Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	    dBTransaction.StartTransaction();
-
         TMMProcessingState State(Screen->ActiveForm, "Depicting registration verification in process Please Wait...", "Registration verification");
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
-        TTerminalModel terminalInfo = TDBRegistration::GetTerminalInfo(dBTransaction);
+        TTerminalModel terminalInfo = TDBRegistration::GetTerminalInfo(dbTransaction);
         TRegistrationInterface* registrationInterface = new TRegistrationInterface();
         MMRegistrationServiceResponse createResponse = registrationInterface->UploadRegistrationInfo(terminalInfo, syndicateCode);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
-
         if(createResponse.IsSuccesful)
             retval = true;
         else
@@ -101,21 +97,17 @@ bool TRegistrationManager::UploadRegistrationInfo(AnsiString syndicateCode)
             else if(createResponse.ResponseCode == SiteCodeInAcive)
             {
                  ErrorMessage = "Site Code inactive/not found.";
-                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dBTransaction, false);
+                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
             }
             else
             {
                 ErrorMessage = "Registration update failed.";
             }
-
             if(showMessage)
                 MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);
         }
-
         delete registrationInterface;
         registrationInterface = NULL;
-
-        dBTransaction.Commit();
     }
     catch(Exception &E)
 	{

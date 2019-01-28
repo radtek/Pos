@@ -72,7 +72,7 @@ namespace RegistrationIntegration.Sevices
             if (webResponse == null)
             {
                 response.IsSuccessful = false;
-                response.Message = "Could not communicate with web.";
+                response.Message = "Menumate Registration is Failed. Please Enter correct Syndicate Code and Site Id.";
                 return response;
             }
             if (webResponse.StatusCode == HttpStatusCode.OK)
