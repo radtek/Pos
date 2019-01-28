@@ -802,13 +802,15 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     {
                        tabTableName =  order1->TabName + " : " + order1->TabName;
                     }
-
-                    for( ; it != itemGroupsToCancel.end() ; it++ )
+                    if(TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        _onItemsCanceled( it->second,tabTableName);
-                        it->second->Clear();
-                    }
+                        for( ; it != itemGroupsToCancel.end() ; it++ )
+                        {
 
+                            _onItemsCanceled( it->second,tabTableName);
+                            it->second->Clear();
+                        }
+                    }
                     itemGroupsToCancel.clear();
 
 					std::auto_ptr <TReqPrintJob> Request(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
