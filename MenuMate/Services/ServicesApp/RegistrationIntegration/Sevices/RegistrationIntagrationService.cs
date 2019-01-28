@@ -105,7 +105,7 @@ namespace RegistrationIntegration.Sevices
                         "Registration could not be synced.\nPlease check site code.";
                 else
                     response.Message =
-                        "Unsuccessful sync for registration integration.\nPlease check if syndicatecode and site id are correct.";
+                        "Menumate Registration is Failed. Please Enter correct Syndicate Code and Site Id";
             }
             return response;
         }
