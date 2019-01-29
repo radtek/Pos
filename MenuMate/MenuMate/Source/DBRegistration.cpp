@@ -632,9 +632,10 @@ bool TDBRegistration::GetChefmateSetting(Database::TDBTransaction &dbTransaction
         IBInternalQuery->SQL->Text =  "SELECT a.PHYSICALPRINTER_KEY FROM PHYSICALPRINTER a "
                                       "INNER JOIN VIRTUALPRINTER b ON a.PHYSICALPRINTER_KEY = b.PHYSICALPRINTER_KEY "
                                       "INNER JOIN DEVICEVIRTUALPRINTER c ON b.VIRTUALPRINTER_KEY = c.VIRTUALPRINTER_KEY "
-                                      "WHERE a.PRINTER_TYPE = :PRINTER_TYPE ";
+                                      "WHERE a.PRINTER_TYPE = :PRINTER_TYPE AND c.DEVICE_KEY = :CURRENT_DEVICE_KEY ";
 
         IBInternalQuery->ParamByName("PRINTER_TYPE")->AsInteger = 2;
+        IBInternalQuery->ParamByName("CURRENT_DEVICE_KEY")->AsInteger =  TDeviceRealTerminal::Instance().ID.DeviceKey;
 
         IBInternalQuery->ExecQuery();
 
@@ -712,9 +713,9 @@ bool TDBRegistration::GetPosHandHeldSetting(Database::TDBTransaction &dbTransact
         TIBSQL *IBInternalQuery= dbTransaction.Query(dbTransaction.AddQuery());
         IBInternalQuery->Close();
 
-        IBInternalQuery->SQL->Text =  "SELECT * FROM DEVICES WHERE DEVICE_TYPE = :POS_HAND_HELD ";
+        IBInternalQuery->SQL->Text =  "SELECT * FROM DEVICES WHERE PRODUCT = :POS_HAND_HELD ";
 
-        IBInternalQuery->ParamByName("POS_HAND_HELD")->AsInteger = 2;
+        IBInternalQuery->ParamByName("POS_HAND_HELD")->AsString = "PalmMate";
 
         IBInternalQuery->ExecQuery();
 
