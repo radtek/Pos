@@ -5667,9 +5667,18 @@ void TfrmBillGroup:: IsRegistrationVerified()
     btnBillSelected->Enabled   = TGlobalSettings::Instance().IsRegistrationVerified;
     btnPartialPayment->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
     btnSplitPayment->Enabled  = TGlobalSettings::Instance().IsRegistrationVerified;
-    btnBillTable->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+
+    if(CurrentDisplayMode == eTables && TGlobalSettings::Instance().IsRegistrationVerified)
+        btnBillTable->Enabled = true;
+    else
+        btnBillTable->Enabled = false;
+
     tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    btnTransfer->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+
+    if(TGlobalSettings::Instance().IsRegistrationVerified && CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment)
+        btnTransfer->Enabled = true;
+    else
+        btnTransfer->Enabled = false;
 
 }
 //---------------------------------------------------
