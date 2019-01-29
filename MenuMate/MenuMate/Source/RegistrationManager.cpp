@@ -79,6 +79,7 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
             if(createResponse.ResponseCode == AuthenticationFailed)
             {
                 ErrorMessage = "Authentication failed with Registration Service.";
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
             }
             else if(createResponse.ResponseCode == NoNewSettingChange)
             {
@@ -93,6 +94,7 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
             else if(createResponse.ResponseCode == SiteCodeNotExist)
             {
                  ErrorMessage = "Site Code doesn't exist.";
+                 TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
             }
             else if(createResponse.ResponseCode == SiteCodeInAcive)
             {
@@ -102,7 +104,7 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
             else
             {
                 ErrorMessage = "Registration update failed.";
-                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
+//                TDBRegistration::UpdateIsRegistrationVerifiedFlag(dbTransaction, false);
             }
             if(showMessage)
                 MessageBox(ErrorMessage,"Error", MB_OK + MB_ICONERROR);

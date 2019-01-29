@@ -16551,13 +16551,16 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
 //--------------------------------------------------------
 void TfrmSelectDish::CheckRegisteration()
 {
-    tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    if(!TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged)
+    {
+        tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    }
 }
 
 

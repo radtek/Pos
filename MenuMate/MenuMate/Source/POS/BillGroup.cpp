@@ -5663,23 +5663,28 @@ void TfrmBillGroup:: MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64
 //---------------------------------------------
 void TfrmBillGroup:: IsRegistrationVerified()
 {
+    bool isEnabled = TGlobalSettings::Instance().IsRegistrationVerified &&
+                    !IsWaiterLogged && !TGlobalSettings::Instance().EnableWaiterStation;
 
-    btnBillSelected->Enabled   = TGlobalSettings::Instance().IsRegistrationVerified;
-    btnPartialPayment->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    btnSplitPayment->Enabled  = TGlobalSettings::Instance().IsRegistrationVerified;
 
-    if(CurrentDisplayMode == eTables && TGlobalSettings::Instance().IsRegistrationVerified)
+    btnBillSelected->Enabled   = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+    btnPartialPayment->Enabled = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+    btnSplitPayment->Enabled  = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+
+    if(CurrentDisplayMode == eTables && isEnabled) //&& TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged)
         btnBillTable->Enabled = true;
     else
         btnBillTable->Enabled = false;
 
-    tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+//    tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 
     if((TGlobalSettings::Instance().IsRegistrationVerified && CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment)
         && !(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney))
         btnTransfer->Enabled = true;
     else
         btnTransfer->Enabled = false;
+
+    tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 
 }
 //---------------------------------------------------
