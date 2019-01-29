@@ -30,7 +30,7 @@ namespace RegistrationIntegration.Sevices
                 if (webResponse != null)
                 {
                     webResponse.Close();
-                    response = true;
+                    response = UpdateRegistrationResponse(webResponse, webResponse.StatusDescription);
                 }
             }
             return response;
@@ -108,6 +108,21 @@ namespace RegistrationIntegration.Sevices
                         "Menumate Registration is Failed. Please Enter correct Syndicate Code and Site Id";
             }
             return response;
+        }
+
+        private bool UpdateRegistrationResponse(HttpWebResponse webResponse, string message)
+        {
+            bool retVal = true;
+            if (webResponse.StatusCode == HttpStatusCode.OK)
+            {
+                if (webResponse.ResponseUri != null)
+                {
+                    string localPath = webResponse.ResponseUri.LocalPath;
+                    if (localPath.Contains("Index") && localPath.Contains("Login"))
+                        retVal = false;
+                }
+            }
+            return retVal;
         }
 
         private void HandleExceptions(HttpWebResponse webResponse)
