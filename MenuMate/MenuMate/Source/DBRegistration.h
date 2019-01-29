@@ -44,6 +44,7 @@ private:
     static void LoadOnlineOrderingSettingsForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static AnsiString GetMACaddress();
     static AnsiString GetOperatingSystemName();
+    static void RemoveRegistrationForAllTerminals(Database::TDBTransaction &dbTransaction, int variableKey);
 
 };
 #endif
