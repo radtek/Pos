@@ -5675,7 +5675,8 @@ void TfrmBillGroup:: IsRegistrationVerified()
 
     tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 
-    if(TGlobalSettings::Instance().IsRegistrationVerified && CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment)
+    if((TGlobalSettings::Instance().IsRegistrationVerified && CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment)
+        && !(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney))
         btnTransfer->Enabled = true;
     else
         btnTransfer->Enabled = false;

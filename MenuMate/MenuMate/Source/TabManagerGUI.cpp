@@ -185,6 +185,7 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 			DBTransaction.Commit();
 
 			ShowTabsDetails();
+            btnSubsidisedProfile->Enabled = false;
 		}
 		else
 		{
@@ -219,6 +220,9 @@ void __fastcall TfrmTabManager::btnStaffTabsClick(TObject *Sender)
 	DBTransaction.Commit();
 
 	ShowTabsDetails();
+    btnSubsidisedProfile->Enabled = false;
+    btnChangeDetails->Enabled = false;
+
 }
 
 // ---------------------------------------------------------------------------

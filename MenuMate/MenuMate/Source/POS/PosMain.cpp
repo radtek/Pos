@@ -80,9 +80,10 @@ void __fastcall TfrmPOSMain::FormShow(TObject *Sender)
     btnDelayedPayment->Visible = TGlobalSettings::Instance().TransferTableOnPrintPrelim ;
     if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney)
         tbtnTransfer->Enabled = false;
+    else
+        tbtnTransfer->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
     MenuEdited = false;
     TransferSelected = false;
-    tbtnTransfer->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmPOSMain::CardSwipe(Messages::TMessage& Message)
