@@ -836,12 +836,34 @@ void TDBRegistration::UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction 
     try
     {
         TGlobalSettings::Instance().IsRegistrationVerified = status;
-        TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+        if(status)
+            TManagerVariable::Instance().SetDeviceBool(dbTransaction,vmIsRegistrationVerified,TGlobalSettings::Instance().IsRegistrationVerified);
+        else
+            TDBRegistration::RemoveRegistrationForAllTerminals(dbTransaction, vmIsRegistrationVerified);
 
     }
     catch(Exception &Exc)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+        throw;
+    }
+}
+//---------------------------------------------------------------------
+void TDBRegistration::RemoveRegistrationForAllTerminals(Database::TDBTransaction &dbTransaction, int variableKey)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery= dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 0 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = variableKey;
+
+        IBInternalQuery->ExecQuery();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         throw;
     }
 }
