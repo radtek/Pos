@@ -4747,10 +4747,6 @@ void TfrmGeneralMaintenance::EnableOrDisableEFTPOS(bool Value)
     else
         EnableOtherEFTPOS();
     SaveEFTPOSSettings();
-
-    //Tracking Setting Changes In IsCloudSyncRequiredFlag
-    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 }
 //-----------------------------------------------------------------
 void TfrmGeneralMaintenance::SaveEFTPOSSettings()
@@ -4768,6 +4764,11 @@ void TfrmGeneralMaintenance::SaveEFTPOSSettings()
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosPaymentSense, TGlobalSettings::Instance().EnableEftPosPaymentSense);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
     DBTransaction.Commit();
 }
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposPaymentSenseClick(TObject *Sender)
