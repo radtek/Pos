@@ -275,6 +275,7 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
             memPHeader->Text =  memHeader->Text;
          }
          memFooter->Text = TGlobalSettings::Instance().Footer->Text;
+
          memHeader->Modified = false;
          memPHeader->Modified = false;
          memFooter->Modified = false;
