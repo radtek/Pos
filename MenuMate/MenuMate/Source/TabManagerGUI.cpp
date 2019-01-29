@@ -1116,7 +1116,7 @@ void TfrmTabManager::RefreshTabDetails()
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
-		if (CurrentTabType == TabNormal && TGlobalSettings::Instance().IsRegistrationVerified && CurrentTabType != TabMember && CurrentTabType != TabStaff)
+		if (CurrentTabType == TabNormal && TGlobalSettings::Instance().IsRegistrationVerified)
 		{
 			btnSubsidisedProfile->Enabled = true;
 		}
@@ -1895,13 +1895,7 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
           btnSubsidisedProfile->Enabled   = true;
           btnTabCredit->Enabled           = true;
         }
-     if(TGlobalSettings::Instance().IsRegistrationVerified && CurrentTabType == TabMember || CurrentTabType == TabStaff)
-        btnSubsidisedProfile->Enabled = false;
-     if(TGlobalSettings::Instance().IsRegistrationVerified && CurrentTabType == TabStaff)
-        btnChangeDetails->Enabled       = false;
-     else
         btnChangeDetails->Enabled       = true;
-
         TouchButton1->Enabled           = true;
         btnPINTab->Enabled              = true;
         btnLockTab->Enabled             = true;
