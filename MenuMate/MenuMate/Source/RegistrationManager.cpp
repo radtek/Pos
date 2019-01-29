@@ -137,6 +137,7 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
             retval = true;
             TGlobalSettings::Instance().CompanyName = createResponse.Message;
             TManagerVariable::Instance().SetDeviceStr(dBTransaction,vmCompanyName,TGlobalSettings::Instance().CompanyName);
+            ResetHeaderFooter();
         }
         else
         {
@@ -167,4 +168,111 @@ bool TRegistrationManager::ValidateCompanyInfo(AnsiString syndicateCode, int sit
     return retval;
 }
 //---------------------------------------------------------------------------------------
+void TRegistrationManager::ResetHeaderFooter()
+{
+    try
+    {
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER))
+        {
+            TGlobalSettings::Instance().Header->Clear();
+            TGlobalSettings::Instance().Header->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER);
+        }
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER))
+        {
+            TGlobalSettings::Instance().PHeader->Clear();
+            TGlobalSettings::Instance().PHeader->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER);
+        }
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER))
+        {
+            TGlobalSettings::Instance().Footer->Clear();
+            TGlobalSettings::Instance().Footer->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER);
+        }
+
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_ZEDHEADER))
+        {
+            TGlobalSettings::Instance().ZedHeader->Clear();
+            TGlobalSettings::Instance().ZedHeader->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_ZEDHEADER);
+        }
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER))
+        {
+            TGlobalSettings::Instance().VoidFooter->Clear();
+            TGlobalSettings::Instance().VoidFooter->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
+        }
+        if (FileExists(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER))
+        {
+            TGlobalSettings::Instance().SubHeader->Clear();
+            TGlobalSettings::Instance().SubHeader->LoadFromFile(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER);
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().Header->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().Header->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().Header->Clear();
+                TGlobalSettings::Instance().Header->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().Header->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_HEADER);
+                break;
+            }
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().PHeader->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().PHeader->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().PHeader->Clear();
+                TGlobalSettings::Instance().PHeader->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().PHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_PRELIM_HEADER);
+                break;
+            }
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().Footer->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().Footer->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().Footer->Clear();
+                TGlobalSettings::Instance().Footer->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().Footer->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_FOOTER);
+                break;
+            }
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().ZedHeader->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().ZedHeader->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().ZedHeader->Clear();
+                TGlobalSettings::Instance().ZedHeader->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().ZedHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_ZEDHEADER);
+                break;
+            }
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().VoidFooter->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().VoidFooter->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().VoidFooter->Clear();
+                TGlobalSettings::Instance().VoidFooter->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().VoidFooter->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_VOID_FOOTER);
+                break;
+            }
+        }
+        for(int i = 0; i < TGlobalSettings::Instance().SubHeader->Count; i++)
+        {
+            UnicodeString str = "NOT FOR RESALE";
+            if(TGlobalSettings::Instance().SubHeader->Strings[i].Pos(str) != 0)
+            {
+                TGlobalSettings::Instance().SubHeader->Clear();
+                TGlobalSettings::Instance().SubHeader->Add(TGlobalSettings::Instance().CompanyName);
+                TGlobalSettings::Instance().SubHeader->SaveToFile(ExtractFilePath(Application->ExeName) + RECEIPT_SUBHEADER);
+                break;
+            }
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+	}
+}
 
