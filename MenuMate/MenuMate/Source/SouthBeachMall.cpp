@@ -11,6 +11,7 @@
 #include "DeviceRealTerminal.h"
 #include "MMMessageBox.h"
 #include <Math.h>
+#include "Analysis.h"
 
 //---------------------------------------------------------------------------
 
@@ -161,10 +162,11 @@ TMallExportPrepareData TSouthBeachMall::PrepareDataForExport(int zKey)
         TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
         dbTransaction.StartTransaction();
         bool transactionDoneBeforeZed =  CheckTransactionDoneBeforeZed();
-
+        TGlobalSettings::Instance().mallInfo.FileNameList.clear();
         if(transactionDoneBeforeZed)
         {
            fileName = GetFileName(dbTransaction, zKey)  ;
+           TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
            preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
            PrepareDataForDailySalesFile(dbTransaction,preparedData,1,zKey);
         }//else code run when zed done without any sales
@@ -187,6 +189,8 @@ TMallExportPrepareData TSouthBeachMall::PrepareDataForExport(int zKey)
           int terminalNumber;
           GetTerminalSettings(MachineID, terminalNumber);
           fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+
+          TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
           int MaxZed = GetMaxZedKeyInSales();
@@ -313,7 +317,7 @@ UnicodeString TSouthBeachMall::GetFileName(Database::TDBTransaction &dBTransacti
          UnicodeString Validatedateformat="";
          PrepareDataforFilename(zKey,MachineID,dateformat,TimeFormat,Validatedateformat) ;
          fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
-         TGlobalSettings::Instance().mallInfo.FileName = fileName + ".txt";
+         //TGlobalSettings::Instance().mallInfo.FileName = fileName + ".txt";
 
      }
      catch(Exception &E)
@@ -365,106 +369,104 @@ void TSouthBeachMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBT
 
           if(!BreakConSolidateDateForCurrentDate)
           {
-           TGlobalSettings::Instance().BatchNo += 1;
-           BatchId_Data = TGlobalSettings::Instance().MallBatchID;
-           UpdateBatchIDForSouthBeach(3,Z_Key,BatchId_Data);
-
-           salesData = GetSalesDataQuery(dBTransaction ,Z_Key ,TGlobalSettings::Instance().BatchNo, BatchId_Data);
-
-           prepareListForDSF.push_back(salesData);
-           prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
-
+               TGlobalSettings::Instance().BatchNo += 1;
+               BatchId_Data = TGlobalSettings::Instance().MallBatchID;
+               UpdateBatchIDForSouthBeach(3,Z_Key,BatchId_Data);
+               salesData = GetSalesDataQuery(dBTransaction ,Z_Key ,TGlobalSettings::Instance().BatchNo, BatchId_Data);
+               prepareListForDSF.push_back(salesData);
+               prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
           }//below else code is for non consolidate,shop closure outlet
-
           else
           {
-           int BatchNumber;
-           UnicodeString TimeValueForFilename;
-           TDateTime ZedDateOfSecondMaxZed = GetZedDateForSecondMaxZed(SecondMaxZed,BatchNumber)  ;
-           TDateTime Minimumdateformaxzed = GetMinimumDateForMaxZed(MaxZed,TimeValueForFilename)  ;
-           TDateTime DateForFile;
-           bool Isfirsttransactionoccured = IsAnyTransactionPerformed();
-           if(!Isfirsttransactionoccured && SecondMaxZed!=0)
-           {
-               int value  = Dateutils::DaysBetween(ZedDateOfSecondMaxZed, Minimumdateformaxzed);
-               if(value >1)
+               int BatchNumber;
+               UnicodeString TimeValueForFilename;
+               TDateTime ZedDateOfSecondMaxZed = GetZedDateForSecondMaxZed(SecondMaxZed,BatchNumber)  ;
+               TDateTime Minimumdateformaxzed = GetMinimumDateForMaxZed(MaxZed,TimeValueForFilename)  ;
+               TDateTime DateForFile;
+               bool Isfirsttransactionoccured = IsAnyTransactionPerformed();
+               if(!Isfirsttransactionoccured && SecondMaxZed!=0)
                {
-                    TGlobalSettings::Instance().BatchNo = 1 ;
-                    TMallExportPrepareData preparedData;
-                    UnicodeString fileName = "";
-                    UnicodeString MachineID ="";
-                    UnicodeString dateformat ="";
-                    UnicodeString TimeFormat="";
-                    UnicodeString Date_Value_In_File;
-                    int terminalNumber;
-                    GetTerminalSettings(MachineID, terminalNumber);
-                    bool IsMallClosureExist = false;
-                    for(int i = 0;i<value;i++)
-                    {
-                      DateForFile = ZedDateOfSecondMaxZed +i+1;
-                      dateformat = DateForFile.FormatString("YYYYMMDD");
-                      UnicodeString Date_Value_In_File = DateForFile.FormatString("DDMMYYYY");
-                      fileName = "CDLO3" + MachineID + "_" + dateformat + "_" + TimeValueForFilename;
-                      preparedData.FileName.insert( std::pair<int,UnicodeString >(i+1, fileName ));
-                      bool IsZeroSaledoneBefore = IsAnyZeroSalesDoneBeforeMaxZed(Z_Key);
-                      if(IsZeroSaledoneBefore && i!=value-1)
-                      {
-                        BatchId_Data = TGlobalSettings::Instance().MallBatchID-value+i+1;
-                        IsMallClosureExist = true;
-                      }
-                      else
-                      {
-                        if(!IsMallClosureExist)
+                   int value  = Dateutils::DaysBetween(ZedDateOfSecondMaxZed, Minimumdateformaxzed);
+                   if(value >1)
+                   {
+                        TGlobalSettings::Instance().BatchNo = 1 ;
+                        TMallExportPrepareData preparedData;
+                        UnicodeString fileName = "";
+                        UnicodeString MachineID ="";
+                        UnicodeString dateformat ="";
+                        UnicodeString TimeFormat="";
+                        UnicodeString Date_Value_In_File;
+                        int terminalNumber;
+                        GetTerminalSettings(MachineID, terminalNumber);
+                        bool IsMallClosureExist = false;
+
+                        for(int i = 0;i<value;i++)
                         {
-                          TGlobalSettings::Instance().MallBatchID++;
+                              DateForFile = ZedDateOfSecondMaxZed +i+1;
+                              dateformat = DateForFile.FormatString("YYYYMMDD");
+                              UnicodeString Date_Value_In_File = DateForFile.FormatString("DDMMYYYY");
+                              fileName = "CDLO3" + MachineID + "_" + dateformat + "_" + TimeValueForFilename;
+                              preparedData.FileName.insert( std::pair<int,UnicodeString >(i+1, fileName ));
+
+                              TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
+
+                              bool IsZeroSaledoneBefore = IsAnyZeroSalesDoneBeforeMaxZed(Z_Key);
+                              if(IsZeroSaledoneBefore && i!=value-1)
+                              {
+                                BatchId_Data = TGlobalSettings::Instance().MallBatchID-value+i+1;
+                                IsMallClosureExist = true;
+                              }
+                              else
+                              {
+                                    if(!IsMallClosureExist)
+                                    {
+                                      TGlobalSettings::Instance().MallBatchID++;
+                                    }
+                                BatchId_Data =TGlobalSettings::Instance().MallBatchID;
+                              }
+
+                              if(i == value-1)
+                              {
+                                   UpdateBatchIDForSouthBeach(3,Z_Key,BatchId_Data);
+
+                                   salesData = GetSalesDataQuery(dBTransaction ,Z_Key ,1, BatchId_Data);
+
+                                   prepareListForDSF.push_back(salesData);
+                                   preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(i+1, prepareListForDSF ));
+                                   prepareListForDSF.clear() ;
+
+                                  TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+                                  exporter->WriteToFile(preparedData);
+
+                              }
+                              else
+                              {
+
+                                  salesData = PrepareZeroSalesData(MachineID,Date_Value_In_File,BatchId_Data);
+                                  prepareListForDSF.push_back(salesData);
+                                  preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(i+1, prepareListForDSF ));
+                                  prepareListForDSF.clear() ;
+
+                                  TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
+                                  exporter->WriteToFile(preparedData);
+                              }
                         }
-                       BatchId_Data =TGlobalSettings::Instance().MallBatchID;
-                      }
+                   }
+                     //if value>1 else
+                   else
+                   {
+                       salesData = PrepareDataForSingleDaySalesFile(dBTransaction ,Z_Key);
+                       prepareListForDSF.push_back(salesData);
+                       prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
 
-                      if(i == value-1)
-                      {
-                           UpdateBatchIDForSouthBeach(3,Z_Key,BatchId_Data);
-
-                           salesData = GetSalesDataQuery(dBTransaction ,Z_Key ,1, BatchId_Data);
-
-                           prepareListForDSF.push_back(salesData);
-                           preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(i+1, prepareListForDSF ));
-                           prepareListForDSF.clear() ;
-
-                          TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-                          exporter->WriteToFile(preparedData);
-
-                      }
-                      else
-                      {
-
-                          salesData = PrepareZeroSalesData(MachineID,Date_Value_In_File,BatchId_Data);
-                          prepareListForDSF.push_back(salesData);
-                          preparedData.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(i+1, prepareListForDSF ));
-                          prepareListForDSF.clear() ;
-
-                          TMallExportTextFile* exporter = (TMallExportTextFile*)CreateExportMedium();
-                          exporter->WriteToFile(preparedData);
-                      }
-
-                    }
-               }
-                 //if value>1 else
+                   }
+               } //if--Isfirsttransactionoccured --else
                else
                {
                    salesData = PrepareDataForSingleDaySalesFile(dBTransaction ,Z_Key);
                    prepareListForDSF.push_back(salesData);
                    prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
-
                }
-           } //if--Isfirsttransactionoccured --else
-           else
-           {
-               salesData = PrepareDataForSingleDaySalesFile(dBTransaction ,Z_Key);
-               prepareListForDSF.push_back(salesData);
-               prepareDataForDSF.SalesData.insert( std::pair<int,list<TMallExportSalesData> >(index, prepareListForDSF ));
-           }
-
           }
           SaveIntVariable(vmBatchNo, TGlobalSettings::Instance().BatchNo);
           SaveIntVariable(vmBatchIdForSouthBeachMall, TGlobalSettings::Instance().MallBatchID);
@@ -1032,6 +1034,7 @@ void TSouthBeachMall::RegenerateMallReport(TDateTime sDate, TDateTime eDate)
 }
 void TSouthBeachMall::GetListOfDatesBetwSdateEndDate(TDateTime Startdate, TDateTime EndDate)
 {
+    TGlobalSettings::Instance().mallInfo.FileNameList.clear();
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
     dbTransaction.StartTransaction();
@@ -1098,6 +1101,7 @@ void TSouthBeachMall::GetListOfDatesBetwSdateEndDate(TDateTime Startdate, TDateT
                           fileName = fileName + "CDLO3" + Machine_ID + "_" + DateValueForFilename + "_" + TimeFormat_ShopClosure;
                           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
 
+                          TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
                           salesData = PrepareZeroSalesData( Machine_ID , DateValueInFilename, BatchId) ;
 
@@ -1122,6 +1126,8 @@ void TSouthBeachMall::GetListOfDatesBetwSdateEndDate(TDateTime Startdate, TDateT
                if(query->RecordCount != 0)
                {
                  MessageBox( "Generation of file Successful", "Gernerating File", MB_OK );
+                 std::auto_ptr<TfrmAnalysis>(frmAnalysis)(TfrmAnalysis::Create<TfrmAnalysis>(NULL));
+                 frmAnalysis->UploadMallFilesToFTP();
                }
     }
     catch(Exception &E)
@@ -1198,6 +1204,8 @@ void TSouthBeachMall::CheckFirstSaleOfEachZed(int Zedkey ,TDateTime Startdate,TD
         if(Validatedateformat == datevalue )
         {
           fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+
+          TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
           PrepareDataForRegenerateFile(preparedData,Zedkey,datevalue);
@@ -1370,6 +1378,9 @@ void TSouthBeachMall::CheckNoSaleDataForDateValue(TDateTime DateValue)
           UnicodeString dateformat ="";
 
           fileName = fileName + "CDLO3" + Machine_ID + "_" + Date_Value_For_Filename + "_" + TimeFormat_Nosales;
+
+          TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
+
           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
 
           salesData = PrepareZeroSalesData(Machine_ID , Date_Value_In_File, BatchId_Data);

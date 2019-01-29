@@ -205,7 +205,6 @@ private:	// User declarations
     bool DuplicateEntryInTable;
     void SettleEFTPOSBills();
     void UpdateMaxZedTime(int fieldindex);
-    void UploadMallFilesToFTP();
 
 public:		// User declarations
 	bool ZedCancel;
@@ -228,6 +227,7 @@ public:		// User declarations
                     UnicodeString LocalPathFileName, UnicodeString LocalFileName,
                     int FCount);
      void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
+     void UploadMallFilesToFTP();
 };
 
 //---------------------------------------------------------------------------

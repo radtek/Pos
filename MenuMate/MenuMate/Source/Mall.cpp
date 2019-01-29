@@ -34,8 +34,8 @@ void TMall::SetActiveMall(UnicodeString isActive)
     _mallSettings = mallSettings;
 }
 //-----------------------------------------------------------------------------
- void TMall::SetFileName(UnicodeString fileName)
+ void TMall::SetFileNameList(std::vector<UnicodeString> fileNameList)
 {
-    _fileName = fileName;
+    _fileNameList = fileNameList;
 }
 //-----------------------------------------------------------------------------
