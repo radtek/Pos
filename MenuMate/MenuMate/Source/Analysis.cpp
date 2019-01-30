@@ -3184,10 +3184,6 @@ Zed:
 
 			if(CompleteZed)
 			{
-                //Checking POS Resgistration Status
-               std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
-               mmRegistrationManager->CheckRegistrationStatus();
-
                UpdateMallExportDetails();
 
                 //Method for mall Design According to newly pattern
@@ -3261,6 +3257,10 @@ Zed:
              UpdateDLFMall();
             zedLogsList->Add("Z Completed at " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
             MakeZEDLogFile(zedLogsList);
+
+            //Checking POS Resgistration Status
+            std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+            mmRegistrationManager->CheckRegistrationStatus();
 
         }
         frmSecurity->LogOut();
