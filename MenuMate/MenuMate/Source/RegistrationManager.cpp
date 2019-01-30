@@ -64,7 +64,7 @@ bool TRegistrationManager::UploadRegistrationInfo(Database::TDBTransaction &dbTr
     bool retval = false;
     try
     {
-        TMMProcessingState State(Screen->ActiveForm, "Depicting registration verification in process Please Wait...", "Registration verification");
+        TMMProcessingState State(Screen->ActiveForm, "Registration verification in process. Please Wait...", "Registration verification");
         TDeviceRealTerminal::Instance().ProcessingController.Push(State);
         AnsiString ErrorMessage;
         TTerminalModel terminalInfo = TDBRegistration::GetTerminalInfo(dbTransaction);
