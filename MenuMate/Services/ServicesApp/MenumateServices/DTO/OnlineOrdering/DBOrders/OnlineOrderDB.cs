@@ -169,7 +169,7 @@ namespace MenumateServices.DTO.OnlineOrdering.DBOrders
                             }
                             else
                             {
-                                isTabOrder = true;
+                                throw new Exception("Order can't be saved to this table because it is not marked for online ordering.");
                             }
                             //}
                             //else
