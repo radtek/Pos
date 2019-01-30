@@ -613,6 +613,7 @@ private:
         void EnableOtherEFTPOS();
         void EnableOrDisableEFTPOS(bool value);
         void SaveEFTPOSSettings();
+        bool IsEftposSettingChanged;
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();

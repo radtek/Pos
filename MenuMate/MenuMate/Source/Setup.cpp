@@ -146,8 +146,9 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 
     edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
     edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
-
+    rgMembershipType->OnClick = NULL;
     rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
+    rgMembershipType->OnClick = rgMembershipTypeClick;
     cbBarcodeFormat->ItemIndex =  TGlobalSettings::Instance().BarcodeFormat;
     Database::TDBTransaction DBTransaction(IBDatabase);
     DBTransaction.StartTransaction();
@@ -258,20 +259,21 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
     }
     else
     {
-       cbNewbookType->Enabled  =false;
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired && !TGlobalSettings::Instance().NewBook)
+//            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
+        cbNewbookType->Enabled  =false;
 
        	TGlobalSettings::Instance().NewBook = 0;
 		Database::TDBTransaction DBTransaction(IBDatabase);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
-
-        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-
 		DBTransaction.Commit();
     }
+      cbNewbookType->OnChange = NULL;
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
+      cbNewbookType->OnChange =  cbNewbookTypeChange;
    //load new malls
    SetupNewMalls();
 }
@@ -304,9 +306,9 @@ void __fastcall TfrmSetup::PageControlChanging(TObject *Sender,
 		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmStockMasterExportPath, edStockMasterExport->Text);
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
 
-        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
 		DBTransaction.Commit();
 	}
