@@ -14428,7 +14428,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                {
                     if(!TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        MessageBox("Complementary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                        MessageBox("Complimentary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                           return;
                     }
                     TypeOfSale = ComplimentarySale;
@@ -14437,7 +14437,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                {
                     if(!TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        MessageBox("Non Chargable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                        MessageBox("Non-Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                          return;
                     }
                     TypeOfSale = NonChargableSale;
@@ -16551,13 +16551,16 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
 //--------------------------------------------------------
 void TfrmSelectDish::CheckRegisteration()
 {
-    tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
-    tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    if(!TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged)
+    {
+        tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    }
 }
 
 

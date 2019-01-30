@@ -157,7 +157,7 @@ void TfrmSelectSaveOption::ShowTransferSection()
    tbTabs->Visible = TGlobalSettings::Instance().TabsEnabled;
    tbTables->Visible = TGlobalSettings::Instance().TablesEnabled;
    tbStafftabs->Visible = TGlobalSettings::Instance().TabsEnabled;
-   tbRooms->Visible = false;
+   tbRooms->Visible = true;
 //   TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"];
    tbMembersTab->Visible = true;
 //   TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
