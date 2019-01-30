@@ -14428,7 +14428,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                {
                     if(!TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        MessageBox("Complementary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                        MessageBox("Complimentary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                           return;
                     }
                     TypeOfSale = ComplimentarySale;
@@ -14437,7 +14437,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                {
                     if(!TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        MessageBox("Non Chargable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                        MessageBox("Non Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                          return;
                     }
                     TypeOfSale = NonChargableSale;
