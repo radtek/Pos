@@ -10,6 +10,7 @@ namespace RegistrationIntegration.Sevices
 {
     public class RegistrationIntagrationService : IRegistrationIntegrationService
     {
+
         public bool PostTerminalRegistrationInfo(string inSyndicateCode, ApiTerminalViewModel terminalViewModel)
         {
             bool response = false;

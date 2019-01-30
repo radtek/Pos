@@ -9,6 +9,7 @@ using RegistrationIntegration.Sevices;
 using RegistrationIntegration.Utility;
 using RegistrationIntegration.Models;
 using RegistrationIntegration.Exceptions;
+using MenumateServices.Tools;
 
 namespace MenumateServices.Internal_Classes.Registration
 {
@@ -16,6 +17,7 @@ namespace MenumateServices.Internal_Classes.Registration
     {
         private static volatile TerminalRegistration _instance;
         private static object _syncRoot = new Object();
+        private List<string> stringList = new List<string>();
 
         private TerminalRegistration()
         {
@@ -47,35 +49,55 @@ namespace MenumateServices.Internal_Classes.Registration
             try
             {
                 IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
+                stringList.Add("Inside UpdateTerminalRegistrationInfo() in TerminalRegistration.cs ");
+                stringList.Add("calling registrationService.PostTerminalRegistrationInfo(inSyndicateCode, CreateTerminalViewModel(terminalRegistrationInfo)");
                 var response = registrationService.PostTerminalRegistrationInfo(inSyndicateCode, CreateTerminalViewModel(terminalRegistrationInfo));
+                stringList.Add("After calling registrationservice file's  PostTerminalRegistrationInfo() response received is: " + response);
                 if (response)
+                {
                     return CreateResponseNoError();
+                }
                 else
+                {
+                    stringList.Add("Failed to update registration info to server.");
                     return CreateResponseError("@Failed to registration info to server.", "", RegistrationResponseCode.RegistrationUpdateFailed);
+                }
             }
             catch (AuthenticationFailedException ex)
             {
+                stringList.Add("Authentication failed and exception message is: " + ex.Message);
                 return CreateResponseError(@"Failed to Authenticate", ex.Message, RegistrationResponseCode.AuthenticationFailed);
             }
             catch (NoSettingChangeException ex)
             {
+                stringList.Add("NoSettingChangeException and exception message is: " + ex.Message);
                 return CreateResponseError(@"No new Setting found for Update.", ex.Message, RegistrationResponseCode.NoNewSettingChange);
             }
             catch (BadRequestException ex)
             {
+                stringList.Add("BadRequestException and exception message is: " + ex.Message);
                 return CreateResponseError(@"Bad Request Exception.", ex.Message, RegistrationResponseCode.BadRequestError);
             }
             catch (CodeNotExistException ex)
             {
+                stringList.Add("CodeNotExistException and exception message is: " + ex.Message);
                 return CreateResponseError(@"Site Code doesn't exist.", ex.Message, RegistrationResponseCode.SiteCodeNotExist);
             }
             catch (NotAccessibleException ex)
             {
+                stringList.Add("NotAccessibleException and exception message is: " + ex.Message);
                 return CreateResponseError(@"Site Code inactive/not found.", ex.Message, RegistrationResponseCode.SiteCodeInAcive);
             }
             catch (Exception ex)
             {
+                stringList.Add("exception caught and exception message is: " + ex.Message);
                 return CreateResponseError("@Registration update failed.", ex.Message, RegistrationResponseCode.RegistrationUpdateFailed);
+            }
+            finally
+            {
+                stringList.Add("End of UpdateTerminalRegistrationInfo() in TerminalRegistration.cs ");
+                FileWriter.WriteToFile(stringList, "Registration Integration Logs", "RegistrationLogs ");
+                stringList.Clear();
             }
         }
 
@@ -83,33 +105,49 @@ namespace MenumateServices.Internal_Classes.Registration
         {
             try
             {
+                stringList.Add("Inside ValidateCompanyInfo() in TerminalRegistration.cs");
+                stringList.Add("calling registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode)");
+                
                 IRegistrationIntegrationService registrationService = new RegistrationIntagrationService();
                 var response = registrationService.ValidateCompanyInfo(inSyndicateCode, siteCode);
+                stringList.Add("After calling registrationservice file's  ValidateCompanyInfo() response received is: " + response.ToString());
                 return CreateSiteModelResponseNoError(response);
             }
             catch (AuthenticationFailedException ex)
             {
+                stringList.Add("Authentication failed and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"Failed to Authenticate");
             }
             catch (NoSettingChangeException ex)
             {
+                stringList.Add("NoSettingChangeException and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"No new Setting found for Update."); 
             }
             catch (BadRequestException ex)
             {
+                stringList.Add("BadRequestException and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"Bad Request Exception."); 
             }
             catch (CodeNotExistException ex)
             {
+                stringList.Add("CodeNotExistException and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"Site Code doesn't exist."); 
             }
             catch (NotAccessibleException ex)
             {
+                stringList.Add("NotAccessibleException and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"Site Code inactive/not found."); 
             }
             catch (Exception ex)
             {
+                stringList.Add("exception caught and exception message is: " + ex.Message);
                 return CreateSiteModelResponseNoError(@"Registration update failed.");  
+            }
+            finally
+            {
+                stringList.Add("End of ValidateCompanyInfo() in TerminalRegistration.cs ");
+                FileWriter.WriteToFile(stringList, "Registration Integration Logs", "RegistrationLogs ");
+                stringList.Clear();
             }
         }
 
@@ -120,6 +158,7 @@ namespace MenumateServices.Internal_Classes.Registration
        
         private ApiTerminalViewModel CreateTerminalViewModel(TerminalModel terminalRegistrationInfo)
         {
+            stringList.Add("Inside CreateTerminalViewModel() ");
             var terminalViewModel = new ApiTerminalViewModel();
             try
             {
@@ -142,9 +181,11 @@ namespace MenumateServices.Internal_Classes.Registration
                     }
                 }
                 var requestData = JsonUtility.Serialize<ApiTerminalViewModel>(terminalViewModel);//just to test json
+                stringList.Add("Terminal Model Json is: " + requestData.ToString());
             }
             catch (Exception ex)
             {
+                stringList.Add("Exception in CreateTerminalViewModel : " + ex.Message);
                 throw ex;
             }
             return terminalViewModel;

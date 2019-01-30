@@ -16,6 +16,8 @@ namespace MenumateServices.WCFServices
             try
             {
                 stringList.Add("-------------------------------------------------------Inside UpdateTerminalRegistrationInfo-------------------------------------------------------...");
+                stringList.Add("syndicate code is: " + inSyndicateCode);
+                stringList.Add("site code is: " + terminalRegistrationInfo.SiteCode);
                 WriteAndClearStringList();
                 return TerminalRegistration.Instance.UpdateTerminalRegistrationInfo(inSyndicateCode, terminalRegistrationInfo);
             }
@@ -32,7 +34,9 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-------------------------------------------------------Inside UpdateTerminalRegistrationInfo-------------------------------------------------------...");
+                stringList.Add("-------------------------------------------------------Inside ValidateCompanyInfo-------------------------------------------------------...");
+                stringList.Add("syndicate code is: " + inSyndicateCode);
+                stringList.Add("site code is: " + siteCode);
                 WriteAndClearStringList();
                 return TerminalRegistration.Instance.ValidateCompanyInfo(inSyndicateCode, siteCode);
             }
