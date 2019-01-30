@@ -936,6 +936,9 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
     if(TGlobalSettings::Instance().MembershipType != rgMembershipType->ItemIndex)
     {
       MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
+      //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
     }
 	TGlobalSettings::Instance().MembershipType = rgMembershipType->ItemIndex;
 	Database::TDBTransaction DBTransaction(IBDatabase);
@@ -953,9 +956,6 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
     }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
 
-    //Tracking Setting Changes In IsCloudSyncRequiredFlag
-    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
 	DBTransaction.Commit();
 }

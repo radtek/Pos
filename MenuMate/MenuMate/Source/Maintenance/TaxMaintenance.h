@@ -80,8 +80,10 @@ private:	// User declarations
     void saveNumSettingToDatabase(vmVariables vmVariable, double value);
     void ReadVariablesFromDatabase();
     void SyncTaxSettingWithWeb();
+    bool IsAnySettingChanged;
 };
 //---------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------
 #endif
+

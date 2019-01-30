@@ -3206,6 +3206,8 @@ void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
 //---------------------------------------------------------------------------
 void TfrmMaintain::SelectPMSType()
 {
+    int pmsType = (int)TGlobalSettings::Instance().PMSType;
+    UnicodeString urlValuePMS = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
     TVerticalSelection Item;
     Item.Title = "Cancel";
@@ -3270,13 +3272,15 @@ void TfrmMaintain::SelectPMSType()
             }
         }
         TGlobalSettings::Instance().PMSType = Action;
+        if(pmsType != TGlobalSettings::Instance().PMSType || urlValuePMS != TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress)
+        {
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+        }
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction1.StartTransaction();
         TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
-
-        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
         DBTransaction1.Commit();
     }

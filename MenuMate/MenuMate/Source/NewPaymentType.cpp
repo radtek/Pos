@@ -314,7 +314,9 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbSec2->Checked = Payment.GetPaymentAttribute(ePayTypeSecure2);
         cbSec3->Checked = Payment.GetPaymentAttribute(ePayTypeSecure3);
         cbCSVPaymentType->Checked = Payment.GetPaymentAttribute(ePayTypeCSV);
+        cbPocketVoucher->OnClick = NULL;
         cbPocketVoucher->Checked = Payment.GetPaymentAttribute(ePayTypePocketVoucher);
+        cbPocketVoucher->OnClick = cbPocketVoucherClick;
         tbRoomPayment->Checked = Payment.GetPaymentAttribute(ePayTypeRoomInterface);
         cbIntegrated->Checked = Payment.GetPaymentAttribute(ePayTypeIntegratedEFTPOS);
         cbAllowReversal->Checked = Payment.GetPaymentAttribute(ePayTypeAllowReversal);

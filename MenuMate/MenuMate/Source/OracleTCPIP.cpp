@@ -83,9 +83,9 @@ bool TOracleTCPIP::Connect()
         List->Add("Exception Occurred " + E.Message + "\n");
         TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
 
-        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
 	}
 

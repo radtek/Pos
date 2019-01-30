@@ -1078,9 +1078,9 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
                 MessageBox("No Response Received from Oracle.\nPMS is disabled now.\nPlease ensure POS Server and Oracle are up and working","Error",MB_OK + MB_ICONERROR);
             }
 
-            //Tracking Setting Changes In IsCloudSyncRequiredFlag
-            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+//            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
         }
     }
@@ -1099,9 +1099,9 @@ bool TOracleDataBuilder::DeserializeData(AnsiString inData, TPostRequestAnswer &
             MessageBox("No Response Received from Oracle.\nPMS is disabled now.\nPlease ensure POS Server and Oracle are up and working","Error",MB_OK + MB_ICONERROR);
         }
 
-        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
     }
     return retValue;

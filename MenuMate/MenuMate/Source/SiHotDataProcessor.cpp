@@ -880,9 +880,9 @@ bool TSiHotDataProcessor::GetDefaultAccount(AnsiString tcpIPAddress,AnsiString t
                                TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
                 TDeviceRealTerminal::Instance().BasePMS->Enabled = true;
 
-                //Tracking Setting Changes In IsCloudSyncRequiredFlag
-                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+//                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 
                 DBTransaction.Commit();
                 return true;
