@@ -2263,7 +2263,7 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
                  else if(SelectedDiscount.IsNonChargableDiscount() && !TGlobalSettings::Instance().IsRegistrationVerified)
                  {
 
-                         MessageBox("Non Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                         MessageBox("Non-Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
                          return;
                  }
                     bool applyDiscount = true;
