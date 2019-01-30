@@ -899,10 +899,16 @@ AnsiString TDBRegistration::GetOperatingSystemName()
     AnsiString retValue = "";
     try
     {
-        OSVERSIONINFOEX info;
-        ZeroMemory(&info, sizeof(OSVERSIONINFOEX));
-        info.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-        GetVersionEx((LPOSVERSIONINFO)&info);//info requires typecasting
+        NTSTATUS(WINAPI *RtlGetVersion)(LPOSVERSIONINFOEXW);
+        OSVERSIONINFOEXW info;
+
+        *(FARPROC*)&RtlGetVersion = GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion");
+
+        if (NULL != RtlGetVersion)
+        {
+            info.dwOSVersionInfoSize = sizeof(info);
+            RtlGetVersion(&info);
+        }
 
         double version;
 
