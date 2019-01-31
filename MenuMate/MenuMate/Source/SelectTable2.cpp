@@ -451,7 +451,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         {
             if(MessageBox("Do you want to unmark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
             {
-                TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, false);
+                TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
             }
         }
          dBTransaction.Commit();

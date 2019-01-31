@@ -393,8 +393,12 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
         {
             UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
             bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
-            TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
-            tableName, !isTableAlreadyMarked);
+
+            if(isTableAlreadyMarked)
+                TDBTables::UpdateTableStateForOO(tr, frm_seltbl->SelectedTabContainerNumber, !isTableAlreadyMarked);
+            else
+                 TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, tableName, !isTableAlreadyMarked);
+
             must_signal_changes |= 1;
         }
 		tr.Commit();

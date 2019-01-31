@@ -191,7 +191,7 @@ void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTable
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
 		throw;
 	}
-};
+}
 
 void TDBTables::SetSeatTabToNull(Database::TDBTransaction &DBTransaction,int inTabKey)
 {
@@ -1808,9 +1808,12 @@ bool TDBTables::IsTableMarked(Database::TDBTransaction &dBTransaction, int selec
         IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = selectedTable;
 		IBInternalQuery->ExecQuery();
 
-        if(IBInternalQuery->FieldByName("ACCEPT_OO")->AsString == "T")
+        if(IBInternalQuery->RecordCount > 0)
         {
-            isMarked = true;
+            if(IBInternalQuery->FieldByName("ACCEPT_OO")->AsString == "T")
+            {
+                isMarked = true;
+            }
         }
     }
     catch(Exception &Ex)
@@ -1821,7 +1824,30 @@ bool TDBTables::IsTableMarked(Database::TDBTransaction &dBTransaction, int selec
     return isMarked;
 
 }
+//--------------------------------------------------------------------------------------
+void TDBTables::UpdateTableStateForOO(Database::TDBTransaction &DBTransaction,int inTableNo, bool isMarked)
+{
+   if(!Valid(inTableNo)) return;
 
+	try
+	{
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =
+        "UPDATE TABLES SET  "
+        "ACCEPT_OO = :ACCEPT_OO "
+        "WHERE TABLE_NUMBER = :TABLE_NUMBER";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = inTableNo;
+        IBInternalQuery->ParamByName("ACCEPT_OO")->AsString = isMarked ? "T" : "F";
+        IBInternalQuery->ExecQuery();
+	}
+	catch(Exception &Err)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
+		throw;
+	}
+}
 
 
 
