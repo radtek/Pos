@@ -49,6 +49,9 @@ int TDBTables::GetOrCreateTable(Database::TDBTransaction &DBTransaction, int inT
 
       if(CreateTable)
       {
+        if(!isOOTable)
+            isOOTable = TDBTables::IsTableMarked(DBTransaction, inTableNo);
+
         IBInternalQuery->Close();
         IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_TABLES, 1) FROM RDB$DATABASE";
         IBInternalQuery->ExecQuery();
@@ -169,6 +172,9 @@ void TDBTables::SetTableName(Database::TDBTransaction &DBTransaction,int inTable
 	{
 		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
 		int TableKey = GetOrCreateTable(DBTransaction,inTableNo, isOOTable);
+
+       if(!isOOTable)
+            isOOTable = TDBTables::IsTableMarked(DBTransaction, inTableNo);
 
       IBInternalQuery->Close();
       IBInternalQuery->SQL->Text =
