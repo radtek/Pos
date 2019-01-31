@@ -52,7 +52,6 @@ Source: {#GetEnv('BASEDIR')}\Static Files\Archive.exe; DestDir: {app}; Flags: ig
 Source: {#GetEnv('BASEDIR')}\Static Files\dealer.info; DestDir: {app}; Tasks: Display_Dealer_Info; Flags: ignoreversion
 ;Source: {#GetEnv('BASEDIR')}\Runtime\DeskMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\DeskMate.exe; DestDir: {app}; Flags: ignoreversion
-Source: {#GetEnv('BASEDIR')}\Runtime\Register.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\MenuMate.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Static Files\Submitfile.exe; DestDir: {app}; Flags: ignoreversion
 Source: {#GetEnv('BASEDIR')}\Runtime\ChefMate.exe; DestDir: {app}; Flags: ignoreversion
@@ -348,7 +347,7 @@ Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distributi
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\AustriaFiscalIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\fiskaltrust.ifPOS.Utilities.net40.dll";             DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
-
+Source: "{#GetEnv('BASEDIR')}\Menumate\Services\ServicesApp\Ready for Distribution\RegistrationIntegration.dll";            DestDir: "{app}\Menumate Services\"; Flags: ignoreversion;
 ; Menumate Customer Display
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\Menumate Second Display.exe";   DestDir: "{app}\Customer Display" ; Flags:ignoreversion;
 Source: "{#GetEnv('BASEDIR')}\Second Display\Client\Menumate Second Display\Ready for Distribution\MMChangingImageController.dll"; DestDir: "{app}\Customer Display" ; Flags:ignoreversion;

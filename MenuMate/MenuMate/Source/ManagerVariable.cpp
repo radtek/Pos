@@ -1641,8 +1641,8 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
 		"Enable Sale and Make Time Tracking.\r"
 		"You have to have purchased and register the sale and make"
 		" turnaround time traking module.\r"
-		"Default is True",
-		vmgMenuMateModules, true);
+		"Default is False",
+		vmgMenuMateModules, false);
 
 		SetVarBool(DBTransaction,vmAlwaysForceLogin, "Force Logins Every Sale",
 		"If set tables will froce the user to login after every sale.\r"
@@ -3427,7 +3427,9 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction,vmIsAustriaFiscalCommissioned,"Commission of Austria Fiskal", "Stores value for Austria commission", vmg3rdPartyInterface, false);
         SetVarBool(DBTransaction, vmIsFiscalPostingDisable,"Use Fiscal Printer", "This setting will stop the posting to fiscal", vmgTax, false);
 		SetVarBool(DBTransaction,vmEnableStoreTicketPosting,"Enable Store Ticket Posting", "This setting will Enable Store Ticket Postings to SiHot", vmg3rdPartyInterface, false);
-
+        SetVarBool(DBTransaction, vmIsRegistrationVerified,"Is Registration Verified", "This setting will save the Registration verfication status", vmgPOS, false);
+        SetVarBool(DBTransaction, vmIsCloudSyncRequired,"Is Cloud Sync Required", "Is Cloud Sync Required", vmgPOS, false);
+        SetVarStr(DBTransaction, vmCompanyName, "Registered Company Name", "Registered Company Name", vmgPOS, "");
 	}
 	catch(Exception &E)
 	{

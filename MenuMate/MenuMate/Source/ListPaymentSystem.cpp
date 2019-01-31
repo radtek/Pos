@@ -850,9 +850,9 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         {
             std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
             receiptStream->LoadFromStream(ManagerReceipt->ReceiptToArchive);
-            receiptStream->Position = 0;
-            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
-            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction.InvoiceNumber, ReceiptData);
+            //receiptStream->Position = 0;
+            //AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+            TDeviceRealTerminal::Instance().BasePMS->StoreTicketPost(PaymentTransaction.InvoiceNumber, receiptStream.get());
         }
 
 		transactionRecovery.ClearRecoveryInfo();
@@ -2233,7 +2233,9 @@ long TListPaymentSystem::ArchiveBill(TPaymentTransaction &PaymentTransaction, TD
 				if(((TGlobalSettings::Instance().EnableEftPosSmartPay && EftPos->AcquirerRefSmartPay == SubPayment->ReferenceNumber )
 				||(TGlobalSettings::Instance().EnableEftPosSmartConnect && EftPos->AcquirerRefSmartConnect == SubPayment->ReferenceNumber)
 				||(TGlobalSettings::Instance().EnableEftPosAdyen && EftPos->AcquirerRefAdyen == SubPayment->ReferenceNumber))
-				&& TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"])
+				                /*
+                    && TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
+                */)
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = "";
 				else
 					IBInternalQuery->ParamByName("VOUCHER_NUMBER")->AsString = SubPayment->ReferenceNumber;
@@ -4052,16 +4054,22 @@ bool TListPaymentSystem::ProcessEftPosPayment(TPaymentTransaction &PaymentTransa
 				{
 					if (Payment->ReferenceNumber != "")
 					{
-                        if(TGlobalSettings::Instance().EnableEftPosSmartPay &&
-                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                        if(TGlobalSettings::Instance().EnableEftPosSmartPay                                                                             /*
+                                                                                &&
+                                                                                                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
+                                                                            */ &&
                            EftPos->AcquirerRefSmartPay.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartPay;
-                        else if(TGlobalSettings::Instance().EnableEftPosSmartConnect &&
-                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                        else if(TGlobalSettings::Instance().EnableEftPosSmartConnect                                                                                      /*
+                                                                                         &&
+                                                                                                                    TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"]
+                                                                                     */ &&
                            EftPos->AcquirerRefSmartConnect.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefSmartConnect;
-                        else if(TGlobalSettings::Instance().EnableEftPosAdyen &&
-                           TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"] &&
+                        else if(TGlobalSettings::Instance().EnableEftPosAdyen                                                                               /*
+                                                                                  &&
+                                                                                                             TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"
+                                                                              ]*/ &&
                            EftPos->AcquirerRefAdyen.Length() != 0)
                            Payment->ReferenceNumber = EftPos->AcquirerRefAdyen;
 						PaymentTransaction.References.push_back(RefRefType(Payment->ReferenceNumber,

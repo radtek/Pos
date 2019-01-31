@@ -9,9 +9,10 @@ namespace MenumateServices
     static class Program
     {
         /// <summary>
-        /// Three menumate services: Accounting Integration, LoyaltyMate, WebMate, PocketVoucher, SalesForce,sihot,walletpayments,SmartConnect,Adyen,PaymentSense,Mews,Austria
+        /// Three menumate services: Accounting Integration, LoyaltyMate, WebMate, PocketVoucher, SalesForce,sihot,walletpayments,SmartConnect,Adyen,PaymentSense,Mews,
+        /// Austria, Registration
         /// </summary>
-        private const int ServiceCount = 13;
+        private const int ServiceCount = 14;
         static string _serviceConfigFileName = Properties.Settings.Default.ServiceConfigFilename;
 
         /// <summary>
@@ -227,7 +228,8 @@ namespace MenumateServices
 					(inServiceName == "MenumateServiceAdyenIntegration") ||
                    (inServiceName == "MenumateServicePaymentSense") ||
                    (inServiceName == "MenumateServiceMewsIntegration") ||
-                   (inServiceName == "MenumateServiceAustriaIntegration");
+                   (inServiceName == "MenumateServiceAustriaIntegration") ||
+                   (inServiceName == "MenumateServiceRegistrationIntegration");
         }
 
         static ServiceController GetServiceEndPoint()

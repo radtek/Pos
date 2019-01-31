@@ -8,7 +8,7 @@ namespace MenumateServices.Tools
 {
     public class FileWriter
     {
-        public static void WriteToFile(List<string> list)
+        public static void WriteToFile(List<string> list, string folderName, string fileStartName)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace MenumateServices.Tools
                 if (!Directory.Exists(location))
                     Directory.CreateDirectory(location);
 
-                location = Path.Combine(location, "Online Ordering Logs");
+                location = Path.Combine(location, folderName);
 
                 if (location.Contains(@"file:\"))
                 {
@@ -31,7 +31,7 @@ namespace MenumateServices.Tools
                 if (!Directory.Exists(location))
                     Directory.CreateDirectory(location);
 
-                string name2 = "OnlineOrderingLogs " + DateTime.Now.ToString("ddMMMyyyy") + ".txt";
+                string name2 = fileStartName + DateTime.Now.ToString("ddMMMyyyy") + ".txt";
                 string fileName = Path.Combine(location, name2);
 
                 if (fileName.Contains(@"file:\"))

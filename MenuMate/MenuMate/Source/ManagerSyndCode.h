@@ -65,6 +65,10 @@ public:
    bool ValidateSyndCodes(AnsiString& errorMessage);
    bool CanUseForCommunication(int syndCodeKey);
    AnsiString GetCommunicationSyndCodeString();
+   bool CheckIfSynCodeEnabled(int key);
+   bool CheckIfAnySynCodeEnabled();
+   TSyndCode GetEnabledSyndCode();
+
 };
 
 #endif

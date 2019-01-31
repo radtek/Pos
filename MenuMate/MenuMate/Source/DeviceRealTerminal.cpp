@@ -84,23 +84,13 @@ void TDeviceRealTerminal::SaveHdrFtr(TStrings *inHeader, TStrings *inPHeader, TS
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
-   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+//   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+   Registered = TGlobalSettings::Instance().IsRegistrationVerified;
    if (Registered)
    {
 	  if (Receipt)
 	  {
 		 bool ShowMessage = false;
-		 if (!ContainsCompanyName(inHeader, pRegisteredName))
-		 {
-			inHeader->Insert(0, pRegisteredName);
-			ShowMessage = true;
-		 }
-
-		 if (!ContainsCompanyName(inPHeader, pRegisteredName))
-		 {
-			inPHeader->Insert(0, pRegisteredName);
-			ShowMessage = true;
-		 }
 
 		 Receipt->SetHeaderFooter(inHeader, inPHeader, inFooter, inVoidFooter,inSubHeader);
 		 if (ShowMessage)
@@ -135,7 +125,8 @@ void TDeviceRealTerminal::SaveZedHeader(TStrings *inZedHeader)
 {
    bool Registered = false;
    UnicodeString pRegisteredName = "";
-   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+//   TDeviceRealTerminal::Instance().Registered(&Registered, &pRegisteredName);
+   Registered = TGlobalSettings::Instance().IsRegistrationVerified;
    if (Registered)
    {
 	  if (Receipt)

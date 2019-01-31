@@ -46,6 +46,7 @@
 #include "GUIDiscount.h"
 #include "MallSalesTypeAssignment.h"
 #include "EnableFloorPlan.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -145,8 +146,9 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 
     edTopLine->Text = TGlobalSettings::Instance().PoleDisplayTopLine;
     edBottomLine->Text = TGlobalSettings::Instance().PoleDisplayBottomLine;
-
+    rgMembershipType->OnClick = NULL;
     rgMembershipType->ItemIndex = TGlobalSettings::Instance().MembershipType;
+    rgMembershipType->OnClick = rgMembershipTypeClick;
     cbBarcodeFormat->ItemIndex =  TGlobalSettings::Instance().BarcodeFormat;
     Database::TDBTransaction DBTransaction(IBDatabase);
     DBTransaction.StartTransaction();
@@ -257,7 +259,11 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
     }
     else
     {
-       cbNewbookType->Enabled  =false;
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired && !TGlobalSettings::Instance().NewBook)
+//            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
+        cbNewbookType->Enabled  =false;
 
        	TGlobalSettings::Instance().NewBook = 0;
 		Database::TDBTransaction DBTransaction(IBDatabase);
@@ -265,7 +271,9 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
 		DBTransaction.Commit();
     }
+      cbNewbookType->OnChange = NULL;
       cbNewbookType->ItemIndex =   TGlobalSettings::Instance().NewBook;
+      cbNewbookType->OnChange =  cbNewbookTypeChange;
    //load new malls
    SetupNewMalls();
 }
@@ -297,6 +305,11 @@ void __fastcall TfrmSetup::PageControlChanging(TObject *Sender,
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmStockMasterExportPath, edStockMasterExport->Text);
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
+
+//        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+//        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+//            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 	}
 	UpdateLists();
@@ -613,8 +626,9 @@ void __fastcall TfrmSetup::tbtnReconfigMMDBMouseClick(TObject *Sender)
 
 void __fastcall TfrmSetup::tbtnReconfigMemDBMouseClick(TObject *Sender)
 {
-   if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-   {
+//   if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//   {
+
        AnsiString OldIP 	= TGlobalSettings::Instance().MembershipDatabaseIP;
        AnsiString OldDB 	= TGlobalSettings::Instance().MembershipDatabasePath;
        int OldPort			= TGlobalSettings::Instance().MembershipDatabasePort;
@@ -630,11 +644,11 @@ void __fastcall TfrmSetup::tbtnReconfigMemDBMouseClick(TObject *Sender)
            if(!Proceed) Application->Terminate();
        }
        tbtnIPSettingsRefreshMouseClick(Sender);
-   }
-   else
-   {
-		MessageBox("System Not Registered for membership", "Not Registered",MB_OK + MB_ICONERROR);
-   }
+//   }
+//   else
+//   {
+//		MessageBox("System Not Registered for membership", "Not Registered",MB_OK + MB_ICONERROR);
+//   }
 }
 //---------------------------------------------------------------------------
 
@@ -922,6 +936,9 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
     if(TGlobalSettings::Instance().MembershipType != rgMembershipType->ItemIndex)
     {
       MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
+      //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
     }
 	TGlobalSettings::Instance().MembershipType = rgMembershipType->ItemIndex;
 	Database::TDBTransaction DBTransaction(IBDatabase);
@@ -938,6 +955,8 @@ void __fastcall TfrmSetup::rgMembershipTypeClick(TObject *Sender)
         mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
     }
 	TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmMembershipType,TGlobalSettings::Instance().MembershipType);
+
+
 	DBTransaction.Commit();
 }
 
@@ -2147,6 +2166,11 @@ void __fastcall TfrmSetup::cbNewbookTypeChange(TObject *Sender)
 		Database::TDBTransaction DBTransaction(IBDatabase);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmNewBook,TGlobalSettings::Instance().NewBook);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 }
 //---------------------------------------------------------------------------

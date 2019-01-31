@@ -68,7 +68,7 @@ void TManagerSyndCode::AddCode(Database::TDBTransaction &DBTransaction,TSyndCode
    inSyndCode.SyndCodeKey = IBInternalQuery->Fields[0]->AsInteger;
 
    SyndCodes[inSyndCode.SyndCodeKey] = inSyndCode;
-   UpdateEncryptCode(DBTransaction,inSyndCode);   
+   UpdateEncryptCode(DBTransaction,inSyndCode);
 
    IBInternalQuery->Close();
    IBInternalQuery->SQL->Clear();
@@ -446,3 +446,50 @@ void TManagerSyndCode::ExportToFile(Database::TDBTransaction &DBTransaction,int 
 	SyndStream->Position = 0;
     SyndStream->SaveToFile(FileName);
 }
+//----------------------------------------------------------------------
+bool TManagerSyndCode::CheckIfSynCodeEnabled(int syndCodeKey)
+{
+   bool retVal = false;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.SyndCodeKey == syndCodeKey && CurrentSyndCode.Enabled == true)
+      {
+         retVal = true;
+         break;
+      }
+   }
+   return retVal;
+}
+//----------------------------------------------------------------------
+bool TManagerSyndCode::CheckIfAnySynCodeEnabled()
+{
+   bool retVal = true;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.Enabled == true)
+      {
+         retVal = false;
+         break;
+      }
+   }
+   return retVal;
+}
+
+//---------------------------------------------------------------------
+TSyndCode TManagerSyndCode::GetEnabledSyndCode()
+{
+   TSyndCode retval;
+   for (First(false);!Eof();Next(false))
+   {
+      TSyndCode CurrentSyndCode = SyndCode();
+      if(CurrentSyndCode.Enabled)
+      {
+         retval = CurrentSyndCode;
+         break;
+      }
+   }
+   return retval;
+}
+

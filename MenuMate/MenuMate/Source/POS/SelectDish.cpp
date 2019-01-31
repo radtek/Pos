@@ -254,7 +254,8 @@ void __fastcall TfrmSelectDish::FormCreate(TObject *Sender)
 	CurrentServingCourse.Reset(TDeviceRealTerminal::Instance().Menus->DefaultServingCourse);
 	tbtnSelectTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
 	tbtnSelectTable->Visible = TGlobalSettings::Instance().TablesEnabled;
-	tbtnMembership->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	tbtnMembership->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 	lbeTotalCost->Caption = CurrToStrF(0, ffNumber, CurrencyDecimals) + " ";
 	lbeChange->Caption    = CurrToStrF(0, ffNumber, CurrencyDecimals) + " ";
 	TSeatOrders *Temp = new TSeatOrders(0);
@@ -386,8 +387,8 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
         if(TGlobalSettings::Instance().EnablePhoneOrders)
         TDeviceRealTerminal::Instance().ManagerMembership->SetPhoneOrderFlowMemberSelection(true);
 
-        if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-        {
+//        if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//        {
             // If there is a card inserted go stright to editing that user.
             if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
             {
@@ -428,9 +429,9 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
                 CustAddress = TempUserInfo.LocationAddress;
                 frmProcessWebOrder->MemberInfo = TempUserInfo;
             }
-        }
-        else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        {
+//        }
+//        else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        {
             TMMContactInfo TempUserInfo;
             Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
             TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -448,11 +449,11 @@ ChitResult TfrmSelectDish::SetupChit(Database::TDBTransaction &tr)
             frmProcessWebOrder->MemberInfo = TempUserInfo;
             //MM-1647: Ask for chit if it is enabled for every order.
             NagUserToSelectChit();
-        }
-        else
-        {
-            MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-        }
+//        }
+//        else
+//        {
+//            MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//        }
     }
    if(ChitNumber.PromptForPickUpDeliveryTime && IsChitPromptFormActive)
     {
@@ -1323,6 +1324,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
               }
 		}
 	}
+
 }
 // ---------------------------------------------------------------------------
 std::pair<TItem*, TItemSize*> TfrmSelectDish::GetLoadedItemFromBarcode(UnicodeString inBarcode)
@@ -4160,7 +4162,8 @@ bool TfrmSelectDish::ProcessOrders(TObject *Sender, Database::TDBTransaction &DB
                             Request->Transaction = PrintTransaction.get();
                             Request->Printouts->Print(devPC);
                             ManagerDockets->Archive(DBTransaction,Request.get());
-                            completeOrderToChefMate( PrintTransaction.get() );
+                            if(TGlobalSettings::Instance().IsRegistrationVerified)
+                                completeOrderToChefMate(PrintTransaction.get());
 
                             logList->Clear();
                             logList->Add("Docket printed and order sent to chef.");
@@ -4817,8 +4820,8 @@ void __fastcall TfrmSelectDish::tbtnRunProgramClick()
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnLuckyMemberClick()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	{
 		TMMContactInfo LuckyMember;
 		UnicodeString LocationFilter = "";
 		if (TGlobalSettings::Instance().LuckyDrawByLocationOnly)
@@ -4839,11 +4842,11 @@ void __fastcall TfrmSelectDish::tbtnLuckyMemberClick()
 		{
 			MessageBox("The Lucky Member is\rName : " + LuckyMember.Name + "\rKnown As : " + LuckyMember.Alias + "\rNo. " + LuckyMember.MembershipNumber, "Lucky Member", MB_OK + MB_ICONINFORMATION);
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmSelectDish::tbtnCallAwayClick()
@@ -4907,6 +4910,7 @@ void __fastcall TfrmSelectDish::tbtnCallAwayClick()
                                 std::auto_ptr<TKitchen> Kitchen(new TKitchen());
                                 Kitchen->Initialise(DBTransaction);
 				Kitchen->GetPrintouts(DBTransaction, CallAway.get(), NormalRequest.get());
+                if(TGlobalSettings::Instance().IsRegistrationVerified)
 				callAwayToChefMate(CallAway.get());
 				NormalRequest->Printouts->Print(devPC);
                                 //Set Table status for call away
@@ -5190,6 +5194,7 @@ bool TfrmSelectDish::StaffChanged(TMMContactInfo TempUserInfo)
 			}
 		}
 		TDeviceRealTerminal::Instance().ResetEventLockOutTimer();
+        
 	}
 	return RetVal;
 }
@@ -6096,8 +6101,10 @@ void TfrmSelectDish::RedrawModifyOptionsBtnGrid(bool Reset)
 		}
 
 
-        if (ButtonsSet.Contains(eBTDChangeBarcode) &&
-            TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]  &&
+        if (ButtonsSet.Contains(eBTDChangeBarcode)                                                    /*
+                                                       &&
+                                                                   TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]
+                                                   */  &&
             TGlobalSettings::Instance().MembershipType == MembershipTypeMenuMate  &&
             TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardInserted)
 		{
@@ -8039,6 +8046,7 @@ void __fastcall TfrmSelectDish::tgridServingCourseMouseClick(TObject *Sender, TM
 void __fastcall TfrmSelectDish::tbtnUserNameMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 	OnLockOutTimer(NULL);
+
     //CheckUpdateMenuSetting();
 }
 // ---------------------------------------------------------------------------
@@ -8571,8 +8579,8 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
         if(TGlobalSettings::Instance().EnablePhoneOrders)
            TDeviceRealTerminal::Instance().ManagerMembership->SetPhoneOrderFlowMemberSelection(true);
 
-     	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-    	{
+//     	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//    	{
 	 	// If there is a card inserted go stright to editing that user.
 	    	if (TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 	    	{
@@ -8609,9 +8617,10 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
 		    	DBTransaction.Commit();
 
 	    	}
-	    }
-        	else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        	{
+//	    }
+//        	else if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        	{
+
 	        	TMMContactInfo TempUserInfo;
 	        	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 	        	TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -8661,11 +8670,11 @@ void __fastcall TfrmSelectDish::tbtnMembershipMouseClick(TObject *Sender)
                     AutoLogOut();
                 }
                 NagUserToSelectChit();
-            }
-        	else
-            {
-                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-            }
+//            }
+//        	else
+//            {
+//                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//            }
     }
 }
 // ---------------------------------------------------------------------------
@@ -9543,6 +9552,7 @@ void TfrmSelectDish::ResetPOS()
   InitializeChit(); // initialize default chit...
   IsAutoLogOutInSelectDish = true;
   TGlobalSettings::Instance().DiningBal = 0;
+  CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::InitializeQuickPaymentOptions()
@@ -9557,7 +9567,7 @@ void TfrmSelectDish::InitializeQuickPaymentOptions()
     tbtnDollar3->Enabled = enableQuickPayment;
     tbtnDollar4->Enabled = enableQuickPayment;
     tbtnDollar5->Enabled = enableQuickPayment;
-
+    CheckRegisteration();
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::ReloadChitNumberStatistics()
@@ -10077,8 +10087,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                    case TabMember:
 	                        {   if(!TGlobalSettings::Instance().IsThorlinkSelected)
 	                            {
-	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	                            {
+//	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	                            {
 	                                TMMContactInfo TempUserInfo;
 	                                if (SeatOrders[0]->Orders->AppliedMembership.ContactKey != 0)
 	                                {
@@ -10167,11 +10177,11 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                                        }
 	                                    }
 	                                }
-	                            }
-	                            else
-	                            {
-	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	                            }
+//	                            }
+//	                            else
+//	                            {
+//	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	                            }
 	                        }
 	                        else
 	                        {
@@ -10276,8 +10286,8 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                        {
 	                            if(!TGlobalSettings::Instance().IsThorlinkSelected)
 	                            {
-	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	                            {
+//	                            if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	                            {
 	                                TMMContactInfo TempUserInfo;
 	                                eMemberSource MemberSource;
 	                                std::auto_ptr<TContactStaff>Staff(new TContactStaff(DBTransaction));
@@ -10346,11 +10356,11 @@ TModalResult TfrmSelectDish::GetOrderContainer(Database::TDBTransaction &DBTrans
 	                            {
 	                                Retval = mrAbort;
 	                            }
-							}
-	                            else
-	                            {
-	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	                            }
+//							}
+//	                            else
+//	                            {
+//	                                MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	                            }
 	                         }
 	                        else
 	                        {
@@ -11445,8 +11455,8 @@ void TfrmSelectDish::SendOrderListToKitchen(Database::TDBTransaction &DBTransact
 	ManagerDockets->Archive(Request.get());
 
 	//::::::::::::::::::::::::::::::::::::::::
-
-	completeHeldOrdersToChefMate( PrintTransaction.get() );
+       if(TGlobalSettings::Instance().IsRegistrationVerified)
+	    completeHeldOrdersToChefMate( PrintTransaction.get() );
 }
 //---------------------------------------------------------------------------
 void TfrmSelectDish::HoldButtonClick(std::auto_ptr <TList> &OrderObjects, std::vector<TPatronType> Patrons)
@@ -13893,7 +13903,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-					        itemComplete->ReturnToAvailability();
+					    itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;
@@ -13953,7 +13963,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
 					frmSelectForcedSides->ForcedSidesList = ForcedSidesList.get();
 					if (frmSelectForcedSides->ShowModal() == mrCancel)
 					{
-                                                itemComplete->ReturnToAvailability();
+                        itemComplete->ReturnToAvailability();
 						delete itemComplete;
 						itemComplete = NULL;
 						return itemComplete;
@@ -14416,11 +14426,21 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
 
                if(CurrentDiscount.IsComplimentaryDiscount())
                {
-                  TypeOfSale = ComplimentarySale;
+                    if(!TGlobalSettings::Instance().IsRegistrationVerified)
+                    {
+                        MessageBox("Complimentary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                          return;
+                    }
+                    TypeOfSale = ComplimentarySale;
                }
                else if( CurrentDiscount.IsNonChargableDiscount())
                {
-                 TypeOfSale = NonChargableSale;
+                    if(!TGlobalSettings::Instance().IsRegistrationVerified)
+                    {
+                        MessageBox("Non-Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                         return;
+                    }
+                    TypeOfSale = NonChargableSale;
                }
 
 //              if(SCDChecker.SeniorCitizensCheck(CurrentDiscount, allOrders.get()))
@@ -14980,8 +15000,8 @@ void TfrmSelectDish::OnSmartCardInserted(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//	{
 		for (int i = 0; i < lbDisplay->Items->Count; i++)
 		{
 			TItemRedirector *ListItem = (TItemRedirector*)lbDisplay->Items->Objects[i];
@@ -14995,14 +15015,16 @@ void TfrmSelectDish::OnSmartCardRemoved(TSystemEvents *Sender)
 		}
 
 		ignore_preloaded_card = false;
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::RemoveMembership(Database::TDBTransaction &DBTransaction)
 {
     try
     {
-        if (bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+        if (            /*
+                bool(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"]) &&
+            */
                  TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
         {
             MessageBox("To Remove Membership, Remove the Smart Card from the Reader.", "Error", MB_OK + MB_ICONERROR);
@@ -16526,3 +16548,19 @@ bool TfrmSelectDish::ShowMemberValidationMessage(int selectedTable)
     }
     return retVal;
 }
+//--------------------------------------------------------
+void TfrmSelectDish::CheckRegisteration()
+{
+    if(!TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged)
+    {
+        tbtnCashSale->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnTender->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar1->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar2->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar3->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar4->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+        tbtnDollar5->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+    }
+}
+
+

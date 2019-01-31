@@ -557,6 +557,9 @@ public:
     bool IsFiscalPostingDisable;
     bool EnableStoreTicketPosting;
     bool PMSPostSuccessful;
+    bool IsRegistrationVerified;
+    bool IsCloudSyncRequired;
+    UnicodeString CompanyName;
 };
 
 #endif

@@ -95,10 +95,10 @@ void __fastcall TfrmFunctions::FormCreate(TObject *Sender)
 	}
 
 
-	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//	{
 			BtnLuckyMember->Visible = true;
-	}
+//	}
        btnSync->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
        btnGiftCard->Visible = TGlobalSettings::Instance().LoyaltyMateEnabled;
 

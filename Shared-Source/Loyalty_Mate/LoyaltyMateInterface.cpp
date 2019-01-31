@@ -1629,5 +1629,7 @@ void TLoyaltyMateInterface::SendEmail(AnsiString emailBody)
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
 }
+//----------------------------------------------------------
+
 
 #pragma package(smart_init)

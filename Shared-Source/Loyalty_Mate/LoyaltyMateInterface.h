@@ -15,6 +15,7 @@
 #include "Discount.h"
 #include "LoyaltyMateUtilities.h"
 #include "OnlineOrderingAttributes.h"
+
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------

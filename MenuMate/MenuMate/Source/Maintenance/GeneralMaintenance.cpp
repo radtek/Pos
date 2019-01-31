@@ -39,6 +39,7 @@
 #include "PrintOut.h"
 #include "Comms.h"
 #include "EFTPOSConfiguration.h"
+#include "DBRegistration.h"
 #define semi_colon 0x3B
 
 //---------------------------------------------------------------------------
@@ -118,7 +119,9 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	tbtnMMSubNet->Caption      = IntToStr(TDeviceRealTerminal::Instance().ManagerNet->MMSubNet);
 	cbForcedReasons->Checked 	= TGlobalSettings::Instance().ForcedReasons;
 	edSeatLabel->Text = TGlobalSettings::Instance().SeatLabel;
+    cbSaleAndMakeTimes->OnClick = NULL;
 	cbSaleAndMakeTimes->Checked = TManagerVariable::Instance().GetBool(DBTransaction,vmTrackSaleAndMakeTimes,false);
+    cbSaleAndMakeTimes->OnClick = cbSaleAndMakeTimesClick;
 	cbFTEFTSales->Checked = TDeviceRealTerminal::Instance().PaymentSystem->FTBypassElecTranTyp;
 	cbTableSeats->OnClick = NULL;
 	cbTableSeats->Checked = TGlobalSettings::Instance().TablesEnabled;
@@ -163,21 +166,39 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
 	cbEnableAARewards->Checked = TGlobalSettings::Instance().EnableAARewards;
 	cbEnableAARewards->OnClick = cbEnableAARewardsClick;
 	cbDisableInternalInvoicing->Checked = TGlobalSettings::Instance().DisableInternalInvoicing;
+    cbIntegratedEftposANZ->OnClick = NULL;
 	cbIntegratedEftposANZ->Checked = TGlobalSettings::Instance().EnableEftPosANZ;
+    cbIntegratedEftposANZ->OnClick = cbIntegratedEftposANZClick;
+    cbIntegratedEftposSyncro->OnClick = NULL;
 	cbIntegratedEftposSyncro->Checked = TGlobalSettings::Instance().EnableEftPosSyncro;
+    cbIntegratedEftposSyncro->OnClick = cbIntegratedEftposSyncroClick;
+    cbIntegratedEftposIngenico->OnClick = NULL;
 	cbIntegratedEftposIngenico->Checked = TGlobalSettings::Instance().EnableEftPosIngenico;
+    cbIntegratedEftposIngenico->OnClick = cbIntegratedEftposIngenicoClick;
+    cbIntegratedEftposCadmus->OnClick = NULL;
 	cbIntegratedEftposCadmus->Checked = TGlobalSettings::Instance().EnableEftPosCadmus;
+    cbIntegratedEftposCadmus->OnClick = cbIntegratedEftposCadmusClick;
+    cbCadmusCronos->OnClick = NULL;
 	cbCadmusCronos->Checked = TGlobalSettings::Instance().EnableEftPosCadmusCronos;
+    cbCadmusCronos->OnClick = cbCadmusCronosClick;
+    cbIntegratedEftposDPS->OnClick = NULL;
 	cbIntegratedEftposDPS->Checked = TGlobalSettings::Instance().EnableEftPosDPS;
+    cbIntegratedEftposDPS->OnClick = cbIntegratedEftposDPSClick;
+    cbEnableDPSTipping->OnClick = NULL;
 	cbEnableDPSTipping->Checked = TGlobalSettings::Instance().EnableDPSTipping;
 	cbEnableDPSTipping->Enabled = TGlobalSettings::Instance().EnableEftPosDPS;
+    cbEnableDPSTipping->OnClick = cbEnableDPSTippingClick;
+    cbICELink->OnClick = NULL;
 	cbICELink->Checked = TGlobalSettings::Instance().EnableEftPosIceLink;
+    cbICELink->OnClick = cbICELinkClick;
 	tbCadmusMerchantNumber->Caption = IntToStr(TManagerVariable::Instance().GetInt(DBTransaction,vmEftposMerchantNumber,1));
 	cbShowInvoiceInfo->Checked = TGlobalSettings::Instance().ShowInvoiceInfoOnZed;
 	cbCaptureCustomerName->Checked = TGlobalSettings::Instance().CaptureCustomerName;
 	cbHoldSend->Checked = TGlobalSettings::Instance().EnableHoldSend;
 	cbHideFreeItemsAtBilling->Checked = TGlobalSettings::Instance().HideFreeItemsAtBilling;
+    cbEnableWaiterStation->OnClick = NULL;
 	cbEnableWaiterStation->Checked = TGlobalSettings::Instance().EnableWaiterStation;
+    cbEnableWaiterStation->OnClick = cbEnableWaiterStationClick;
 	cbDisplayTax->Checked = TGlobalSettings::Instance().EnableDisplayTax;
 	cbDisplayServiceCharge->Checked = TGlobalSettings::Instance().EnableDisplayServiceCharge;
 	cbEnableNmiDisplay->Checked = TGlobalSettings::Instance().EnableNmiDisplay;
@@ -464,9 +485,11 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbRestartService->Checked = TGlobalSettings::Instance().RestartServiceAtZED;
     cbEnableTableLock->Checked = TGlobalSettings::Instance().IsTableLockEnabled;
     cbHideFreeSides->Checked = TGlobalSettings::Instance().HideFreeSides;
+    IsEftposSettingChanged = false;
     CustomizeCloudEFTPOS();
     DisableOtherEFTPOS();
     FormResize(this);
+
 }
 //---------------------------------------------------------------------------
 /*
@@ -478,6 +501,7 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     cbIntegratedEftposSmartConnect->OnClick = NULL;
     cbIntegratedEftposAdyen->OnClick = NULL;
     cbIntegratedEftposPaymentSense->OnClick = NULL;
+    cbIntegratedEftposSmartPay->OnClick = NULL;
     if(TGlobalSettings::Instance().EnableEftPosSmartPay)
     {
         cbIntegratedEftposPaymentSense->Checked              = false;
@@ -533,6 +557,7 @@ void TfrmGeneralMaintenance::CustomizeCloudEFTPOS()
     cbIntegratedEftposSmartConnect->OnClick = cbIntegratedEftposSmartConnectClick;
     cbIntegratedEftposAdyen->OnClick = cbIntegratedEftposAdyenClick;
     cbIntegratedEftposPaymentSense->OnClick = cbIntegratedEftposPaymentSenseClick;
+    cbIntegratedEftposSmartPay->OnClick = cbIntegratedEftposSmartPayClick;
     SaveEFTPOSSettings();
 }
 //---------------------------------------------------------------------------
@@ -861,22 +886,27 @@ bool start_with_caps)
 
 void __fastcall TfrmGeneralMaintenance::cbSaleAndMakeTimesClick(TObject *Sender)
 {
-	if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
+//	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
 		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
-	}
-	else if (cbSaleAndMakeTimes->Checked)
-	{
-		cbSaleAndMakeTimes->Checked = false;
-		Database::TDBTransaction DBTransaction(DBControl);
-		DBTransaction.StartTransaction();
-		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
-		DBTransaction.Commit();
-		MessageBox("The 'Sale' and 'Make Time' tracking module has not been registered", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else if (cbSaleAndMakeTimes->Checked)
+//	{
+//		cbSaleAndMakeTimes->Checked = false;
+//		Database::TDBTransaction DBTransaction(DBControl);
+//		DBTransaction.StartTransaction();
+//		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmTrackSaleAndMakeTimes,cbSaleAndMakeTimes->Checked);
+//		DBTransaction.Commit();
+//		MessageBox("The 'Sale' and 'Make Time' tracking module has not been registered", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 //---------------------------------------------------------------------------
 
@@ -975,6 +1005,7 @@ void __fastcall TfrmGeneralMaintenance::cbDuplicateEftPosClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposANZClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosANZ = cbIntegratedEftposANZ->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosANZ);
 }
@@ -982,6 +1013,7 @@ void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposANZClick(TObject *Send
 
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSyncroClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosSyncro = cbIntegratedEftposSyncro->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosSyncro);
 }
@@ -1022,6 +1054,7 @@ TObject *Sender)
 
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposIngenicoClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosIngenico = cbIntegratedEftposIngenico->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosIngenico);
 }
@@ -1272,6 +1305,7 @@ void __fastcall TfrmGeneralMaintenance::cbRememberLastServingCourseClick(TObject
 
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposCadmusClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosCadmus = cbIntegratedEftposCadmus->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosCadmus);
 }
@@ -1452,6 +1486,7 @@ TObject *Sender)
 
 void __fastcall TfrmGeneralMaintenance::cbICELinkClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosIceLink = cbICELink->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosIceLink);
 }
@@ -1591,6 +1626,7 @@ TObject *Sender)
 
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposDPSClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosDPS = cbIntegratedEftposDPS->Checked;
 	cbEnableDPSTipping->Enabled = TGlobalSettings::Instance().EnableEftPosDPS;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosDPS);
@@ -1619,11 +1655,19 @@ TObject *Sender)
 {
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
+    int oldSiteID = TGlobalSettings::Instance().SiteID;
 	if(TDeviceRealTerminal::Instance().SetSiteID(DBTransaction))
 	{
 		TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmSmartCardMembership,cbEnableMembershipSmartCards->Checked);
 		MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
 		lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
+
+        int newSiteID = TGlobalSettings::Instance().SiteID;
+        bool IsSiteIdChanged = (oldSiteID != newSiteID);
+        //Unsetting IsRegistrationVerified Flag To Unregister POS
+        if(TGlobalSettings::Instance().IsRegistrationVerified && IsSiteIdChanged)
+            TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
+
 	}
 	DBTransaction.Commit();
 }
@@ -2068,6 +2112,7 @@ TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbCadmusCronosClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosCadmusCronos = cbCadmusCronos->Checked;
     EnableOrDisableEFTPOS(TGlobalSettings::Instance().EnableEftPosCadmusCronos);
 }
@@ -2206,10 +2251,17 @@ int Y)
 	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		DBTransaction.StartTransaction();
+        int oldSiteID = TGlobalSettings::Instance().SiteID;
 		if(TDeviceRealTerminal::Instance().SetSiteID(DBTransaction,true))
 		{
 			MessageBox("You will need to restart MenuMate for this to take effect.", "Restart Required", MB_OK + MB_ICONINFORMATION);
 			lbeEntireSiteID->Caption = "Site ID " + IntToStr(TGlobalSettings::Instance().SiteID);
+
+            int newSiteID = TGlobalSettings::Instance().SiteID;
+            bool IsSiteIdChanged = (oldSiteID != newSiteID);
+            //Unsetting IsRegistrationVerified Flag To Unregister POS
+            if(TGlobalSettings::Instance().IsRegistrationVerified && IsSiteIdChanged)
+                TDBRegistration::UpdateIsRegistrationVerifiedFlag(DBTransaction, false);
 		}
 		DBTransaction.Commit();
 	}
@@ -2658,6 +2710,11 @@ void __fastcall TfrmGeneralMaintenance::cbEnableWaiterStationClick(TObject *Send
 	TManagerVariable::Instance().DeviceProfileKey ,
 	vmEnableWaiterStation,
 	TGlobalSettings::Instance().EnableWaiterStation);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 	DBTransaction.Commit();
 }
 
@@ -4037,6 +4094,7 @@ void _fastcall TfrmGeneralMaintenance::cbGiftCardOnlyClick(TObject *Sender)
 
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartPayClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
 	TGlobalSettings::Instance().EnableEftPosSmartPay = cbIntegratedEftposSmartPay->Checked;
     CustomizeCloudEFTPOS  ();
 }
@@ -4448,6 +4506,11 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
         tr.StartTransaction();
         mv.SetProfileBool(tr, pk, vmUseMemberSubs,
         cbUseMemberSubs->Checked);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         tr.Commit();
         MessageBox("All terminals need to be restarted for this selection to work properly","Information", MB_OK + MB_ICONINFORMATION);
     }
@@ -4525,6 +4588,7 @@ void __fastcall TfrmGeneralMaintenance::cbUseMemberSubsClick(TObject *Sender)
 }//-------------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
     TGlobalSettings::Instance().EnableEftPosSmartConnect = cbIntegratedEftposSmartConnect->Checked;
     CustomizeCloudEFTPOS();
     MessageBox("MenuMate Restart Required.", "Info", MB_OK + MB_ICONINFORMATION);
@@ -4533,7 +4597,7 @@ void __fastcall TfrmGeneralMaintenance::cbIntegratedEftposSmartConnectClick(TObj
 //----------------------------------------------------------------------------
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposAdyenClick(TObject *Sender)
 {
-
+    IsEftposSettingChanged = true;
     TGlobalSettings::Instance().EnableEftPosAdyen = cbIntegratedEftposAdyen->Checked;
     if(TGlobalSettings::Instance().EnableEftPosAdyen)
         MessageBox("Please provide Adyen Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);
@@ -4644,7 +4708,7 @@ void TfrmGeneralMaintenance::DisableOtherEFTPOS()
 }
 //--------------------------------------------------------------------------------
 void TfrmGeneralMaintenance::EnableOtherEFTPOS()
-{
+{   
     if(!TGlobalSettings::Instance().EnableEftPosANZ)
     {
         cbIntegratedEftposANZ->Enabled                       = true;
@@ -4721,6 +4785,7 @@ void TfrmGeneralMaintenance::EnableOrDisableEFTPOS(bool Value)
         DisableOtherEFTPOS();
     else
         EnableOtherEFTPOS();
+      
     SaveEFTPOSSettings();
 }
 //-----------------------------------------------------------------
@@ -4739,10 +4804,16 @@ void TfrmGeneralMaintenance::SaveEFTPOSSettings()
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosAdyen, TGlobalSettings::Instance().EnableEftPosAdyen);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosSmartConnect, TGlobalSettings::Instance().EnableEftPosSmartConnect);
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableEftPosPaymentSense, TGlobalSettings::Instance().EnableEftPosPaymentSense);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired && IsEftposSettingChanged)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
     DBTransaction.Commit();
 }
 void _fastcall TfrmGeneralMaintenance::cbIntegratedEftposPaymentSenseClick(TObject *Sender)
 {
+    IsEftposSettingChanged = true;
     TGlobalSettings::Instance().EnableEftPosPaymentSense = cbIntegratedEftposPaymentSense->Checked;
     if(TGlobalSettings::Instance().EnableEftPosPaymentSense)
         MessageBox("Please provide PaymentSense Details by using button below.","Info",MB_OK + MB_ICONINFORMATION);

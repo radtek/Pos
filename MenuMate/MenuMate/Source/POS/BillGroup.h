@@ -190,6 +190,7 @@ private:	// User declarations
     void DisableTransferButtonWhenLMIsEnabled();
     void SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo info);
     void MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64> &SelectedItemKeys);
+    void IsRegistrationVerified();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
