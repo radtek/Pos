@@ -13,6 +13,7 @@ using MenumateServices.DTO.OnlineOrdering.MenuModels;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using System.Collections.Generic;
 using MenumateServices.Tools;
+using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
 {
@@ -330,7 +331,7 @@ namespace MenumateServices.WCFServices
 
         private void WriteAndClearStringList()
         {
-            FileWriter.WriteToFile(stringList);
+            FileWriter.WriteToFile(stringList, "Online Ordering Logs", "OnlineOrderingLogs ");
             stringList.Clear();
         }
     }

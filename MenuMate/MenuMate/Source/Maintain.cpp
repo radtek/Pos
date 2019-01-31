@@ -63,6 +63,7 @@
 #include "ManagerCloudSync.h"
 #include "SignalRUtility.h"
 #include "ManagerLocations.h"
+#include "DBRegistration.h"
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -111,10 +112,12 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	Height = Screen->Height;
 	btnChangeRooms->Enabled = TRooms::Instance().Enabled;
 	btnChangeTable->Enabled = TGlobalSettings::Instance().TablesEnabled;
-	btnLoyalty->Enabled = static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"]) &&
-	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
+	btnLoyalty->Enabled =  true;
+//    static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"]) &&
+//	static_cast<bool>(!TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"]);
 	tbtnLocations->Caption  = "Location \r" + TDeviceRealTerminal::Instance().ID.Location;
-	tbPHSInterface->Enabled = TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
+	tbPHSInterface->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"] ? true : false;
 	if(TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
 	{
         if(TGlobalSettings::Instance().PMSType == SiHot)
@@ -127,7 +130,9 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
             tbPHSInterface->Caption = "P.M.S Interface\r[P.M.S Enabled]";
         tbPHSInterface->ButtonColor = clGreen;
 	}
-	else if(!TDeviceRealTerminal::Instance().BasePMS->Enabled && tbPHSInterface->Enabled)
+	else if(            /*
+                !TDeviceRealTerminal::Instance().BasePMS->Enabled &&
+            */ tbPHSInterface->Enabled)
 	{
 		tbPHSInterface->Caption = "P.M.S Interface \r[Disabled]";
         tbPHSInterface->ButtonColor = clRed;
@@ -136,15 +141,16 @@ void __fastcall TfrmMaintain::FormShow(TObject *Sender)
 	if (TGlobalSettings::Instance().ReservationsEnabled)
 	btnChangeTable->Caption = "Edit Tables";
 
-	tbtnSmartCards->Enabled =  static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Registered"]);
-    if(TDeviceRealTerminal::Instance().Modules.Status[eAccounting]["Registered"] )
-    {
+	tbtnSmartCards->Enabled =  true;
+//    static_cast<bool>(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Registered"]);
+//    if(TDeviceRealTerminal::Instance().Modules.Status[eAccounting]["Registered"] )
+//    {
         btnAccountingInterface->Enabled=true;
-    }
-    else
-    {
-        btnAccountingInterface->Enabled=false;
-    }
+//    }
+//    else
+//    {
+//        btnAccountingInterface->Enabled=false;
+//    }
 
 	Pages->ActivePage = tsMaintenance;
 	RedrawButtons(tbtnMaintenance);
@@ -250,8 +256,8 @@ void __fastcall TfrmMaintain::btnLoyaltyClick(TObject *Sender)
 	{
 		TMMContactInfo ContactInfo;
 
-		if(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-		{
+//		if(TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//		{
 			//If there is a card inserted go stright to editing that user.
 			if(TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->CardOk)
 			{
@@ -277,20 +283,20 @@ void __fastcall TfrmMaintain::btnLoyaltyClick(TObject *Sender)
 			{
 				MessageBox("No Smart Card inserted.", "Error", MB_OK + MB_ICONERROR);
 			}
-		}
-		else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-		{
+//		}
+//		else if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//		{
 			Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
 			eMemberSource MemberSource;
 			TLoginSuccess Result = TDeviceRealTerminal::Instance().ManagerMembership->GetMember(DBTransaction,ContactInfo,MemberSource);
 			DBTransaction.Commit();
-		}
-		else
-		{
-			MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-		}
+//		}
+//		else
+//		{
+//			MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//		}
 	}
 	else if (Result == lsDenied)
 	{
@@ -670,13 +676,13 @@ void __fastcall TfrmMaintain::TouchBtn1MouseClick(TObject *Sender)
 void __fastcall TfrmMaintain::ResetWebMate()
 {
 	TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
-	TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
+//	TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 {
-	if( TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-	{
+//	if( TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+//	{
 		if(TGlobalSettings::Instance().WebMateEnabled )
 		{
 			tchbtnWebMate->ButtonColor = clGreen;
@@ -689,12 +695,12 @@ void __fastcall TfrmMaintain::RefreshWebMateBtnColor()
 
 			tchbtnWebMate->Caption = "WebMate \r[Disabled]";
 		}
-	}
-	else
-	{
-		tchbtnWebMate->ButtonColor = clRed;
-		tchbtnWebMate->Caption = "WebMate \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		tchbtnWebMate->ButtonColor = clRed;
+//		tchbtnWebMate->Caption = "WebMate \r[Unregistered]";
+//	}
 
 }
 //---------------------------------------------------------------------------
@@ -717,6 +723,10 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 		{
 			TDeviceRealTerminal::Instance().PocketVouchers->URL = frmTouchKeyboard->KeyboardText;
 			TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmPocketVoucherURL,TDeviceRealTerminal::Instance().PocketVouchers->URL);
+
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 		}
 	}
 	else if (Result == lsDenied)
@@ -733,8 +743,8 @@ void __fastcall TfrmMaintain::tbtnPocketVouchersMouseClick(TObject *Sender)
 const SELDIRHELP = 1000;
 void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 {
-	if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-	{
+//	if(TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
+//	{
 		TMMContactInfo TempUserInfo;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -887,6 +897,11 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 							}
 
 							TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmWebMateEnabled,TGlobalSettings::Instance().WebMateEnabled);
+
+                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 							DBTransaction.Commit();
 
 							//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1040,11 +1055,11 @@ void __fastcall TfrmMaintain::tchbtnWebMateMouseClick(TObject *Sender)
 		{
 			MessageBox("The login was unsuccessful.", "Error", MB_OK + MB_ICONERROR);
 		}
-	}
-	else
-	{
-		MessageBox("You are not registered for WebMate", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("You are not registered for WebMate", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::btnGUIMouseClick(TObject *Sender)
@@ -1124,8 +1139,8 @@ void __fastcall TfrmMaintain::WriteOffMouseClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		TMMContactInfo TempUserInfo;
 		Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBTransaction.StartTransaction();
@@ -1247,6 +1262,11 @@ void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 							DBTransaction.StartTransaction();
 							TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmReservationsEnabled,
 							TGlobalSettings::Instance().ReservationsEnabled);
+
+                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 							DBTransaction.Commit();
 
 							// ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1365,13 +1385,13 @@ void __fastcall TfrmMaintain::TouchBtnReservationsMouseClick(TObject *Sender)
 		{
 			MessageBox("You are not registered for Floor Plan", "Error", MB_OK + MB_ICONERROR);
 		}
-	}
+//	}
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshReservationBtnColor()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().ReservationsEnabled)
 		{
 			TouchBtnReservations->ButtonColor = clGreen;
@@ -1384,12 +1404,12 @@ void __fastcall TfrmMaintain::RefreshReservationBtnColor()
 
 			TouchBtnReservations->Caption = "Floor Plan \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnReservations->ButtonColor = clRed;
-		TouchBtnReservations->Caption = "Floor Plan \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnReservations->ButtonColor = clRed;
+//		TouchBtnReservations->Caption = "Floor Plan \r[Unregistered]";
+//	}
 
 }
 //---------------------------------------------------------------------------
@@ -1527,6 +1547,11 @@ bool TfrmMaintain::DisplayLoyaltyMateSettings(Database::TDBTransaction &DBTransa
                     if (!(pk = mv.GetProfile(DBTransaction, eSystemProfiles, "Globals")))
                     pk = mv.SetProfile(DBTransaction, eSystemProfiles, "Globals");
                     mv.SetProfileBool(DBTransaction, pk, vmUseMemberSubs, TGlobalSettings::Instance().UseMemberSubs);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                     DBTransaction.Commit();
 					RefreshLoyaltyMateBtnColor();
 				}
@@ -2120,6 +2145,11 @@ bool TfrmMaintain::DisplayBarExchangeSettings(Database::TDBTransaction &DBTransa
 
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmBarExchangeEnabled,TGlobalSettings::Instance().BarExchangeEnabled);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 					DBTransaction.Commit();
 
 					//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2383,6 +2413,11 @@ bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransa
 
 					DBTransaction.StartTransaction();
 					TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmRunRateBoardEnabled,TGlobalSettings::Instance().IsRunRateBoardEnabled);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 					DBTransaction.Commit();
 
 					//::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2466,8 +2501,8 @@ bool TfrmMaintain::DisplayRunRateSettingsOnly(Database::TDBTransaction &DBTransa
 //---------------------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().BarExchangeEnabled)
 		{
 			TouchBtnBarExchange->ButtonColor = clGreen;
@@ -2480,18 +2515,18 @@ void __fastcall TfrmMaintain::RefreshBarExchangeBtnColor()
 
 			TouchBtnBarExchange->Caption = "Bar Exchange \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnBarExchange->ButtonColor = clRed;
-		TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnBarExchange->ButtonColor = clRed;
+//		TouchBtnBarExchange->Caption = "Bar Exchange \r[Unregistered]";
+//	}
 }
 //--------------------------------------------------------------
 void __fastcall TfrmMaintain::RefreshRunRateBoard()
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"])
+//	{
 		if (TGlobalSettings::Instance().IsRunRateBoardEnabled)
 		{
 			TouchBtnRunRateBoard->ButtonColor = clGreen;
@@ -2504,12 +2539,12 @@ void __fastcall TfrmMaintain::RefreshRunRateBoard()
 
 			TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Disabled]";
 		}
-	}
-	else
-	{
-		TouchBtnRunRateBoard->ButtonColor = clRed;
-		TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Unregistered]";
-	}
+//	}
+//	else
+//	{
+//		TouchBtnRunRateBoard->ButtonColor = clRed;
+//		TouchBtnRunRateBoard->Caption = "Run Rate Board \r[Unregistered]";
+//	}
 }
 
 void __fastcall TfrmMaintain::RefreshDrinkCommandButtonColor()
@@ -2697,6 +2732,8 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsMYOBEnabled);
                 TGlobalSettings::Instance().IsEnabledPeachTree = false;
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
+
+
             }
             else if(accountingType == eAccountingMYOB)
             {
@@ -2739,6 +2776,11 @@ void TfrmMaintain::SaveAccountingConfig(AccountingType accountingType)
                 MessageBox("Failed to save MYOB Integration configuration. " + TFolderManager::Instance().LastErrorMsg, "Error", MB_OK);
             }
         }
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 		DBTransaction.Commit();
 	}
 	catch( Exception & Exc )
@@ -2920,6 +2962,11 @@ void TfrmMaintain::PeachTreeSettings()
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsXeroEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmIsMYOBEnabled, TGlobalSettings::Instance().IsXeroEnabled);
                         TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsEnabledPeachTree,TGlobalSettings::Instance().IsEnabledPeachTree);
+
+                        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                         DBTransaction.Commit();
                     }
                 }  break;
@@ -3001,7 +3048,7 @@ void __fastcall TfrmMaintain::TouchBtnSecurityMouseClick(TObject *Sender)
     Item1.Title = "Panasonic ";
     Item1.Properties["Action"] = IntToStr(1);
     Item1.Properties["Color"] = IntToStr(clGreen);
-    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
+//    Item1.IsDisabled = !TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"];
     Item1.CloseSelection = true;
     SelectionForm1->Items.push_back(Item1);
 
@@ -3168,6 +3215,8 @@ void TfrmMaintain::SaveEnabledState(Database::TDBTransaction &dbTransaction)
 //---------------------------------------------------------------------------
 void TfrmMaintain::SelectPMSType()
 {
+    int pmsType = (int)TGlobalSettings::Instance().PMSType;
+    UnicodeString urlValuePMS = TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
     std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
     TVerticalSelection Item;
     Item.Title = "Cancel";
@@ -3232,9 +3281,16 @@ void TfrmMaintain::SelectPMSType()
             }
         }
         TGlobalSettings::Instance().PMSType = Action;
+        if(pmsType != TGlobalSettings::Instance().PMSType || urlValuePMS != TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress)
+        {
+            //Tracking Setting Changes In IsCloudSyncRequiredFlag
+            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+        }
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction1.StartTransaction();
         TManagerVariable::Instance().SetDeviceInt(DBTransaction1,vmPMSType,TGlobalSettings::Instance().PMSType);
+
         DBTransaction1.Commit();
     }
 }
@@ -3436,6 +3492,11 @@ void TfrmMaintain::EnableOnlineOrdering(Database::TDBTransaction &DBTransaction)
 
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmEnableOnlineOrdering,TGlobalSettings::Instance().EnableOnlineOrdering);
+
+    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
     if(TGlobalSettings::Instance().EnableOnlineOrdering)
     {
         TManagerLocations locationManager;
@@ -3514,6 +3575,11 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
             MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
         }
         TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableOnlineOrdering, TGlobalSettings::Instance().EnableOnlineOrdering);
+
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
         DBTransaction.Commit();
     }
     catch(Exception &Ex)

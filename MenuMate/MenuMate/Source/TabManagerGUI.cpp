@@ -81,8 +81,10 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	btnShowNormalTabs->Caption = "Tabs";
 	btnStaffTabs->Caption = "Staff Tabs";
 
-	btnMemberTabs->Enabled = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
-	btnMemberTabs->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	btnMemberTabs->Enabled = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+	btnMemberTabs->Visible = true;
+//    TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 	btnShowNormalTabs->Enabled = TGlobalSettings::Instance().TabsEnabled;
 	btnShowNormalTabs->Visible = TGlobalSettings::Instance().TabsEnabled;
 	btnManInvoice->Enabled = false;
@@ -90,17 +92,17 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	lbePartyName->Caption = "";
 	btnChangeDetails->Caption = "Change Details";
 
-	if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]) && !static_cast <bool>
-				(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
-	{
+//	if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]) && !static_cast <bool>
+//				(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
+//	{
 		btnAddNewTab->Enabled = true;
 		btnChangeDetails->Enabled = true;
-	}
-	else
-	{
-		btnAddNewTab->Enabled = false;
-		btnChangeDetails->Enabled = false;
-	}
+//	}
+//	else
+//	{
+//		btnAddNewTab->Enabled = false;
+//		btnChangeDetails->Enabled = false;
+//	}
 
 	SelectedTable = 0;
 	SelectedSeat = 0;
@@ -116,6 +118,7 @@ void __fastcall TfrmTabManager::FormShow(TObject *Sender)
 	RefreshTabDetails();
 	SetGridColors(tgDiscounts);
 	btnSubsidisedProfile->Enabled = false;
+   	btnTabCredit->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
 }
 
 // ---------------------------------------------------------------------------
@@ -142,8 +145,8 @@ void __fastcall TfrmTabManager::btnShowNormalTabsClick(TObject *Sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//	{
 		TempUserInfo.Clear();
 		eMemberSource MemberSource;
 		Database::TDBTransaction DBTransaction(DBControl);
@@ -159,18 +162,18 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 			SelectedSeat = 0;
 			SelectedTab = 0;
 			SelectedRoomNo = 0;
-			if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-						&& !static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
-			{
+//			if (TGlobalSettings::Instance().TabsEnabled || (static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
+//						&& !static_cast <bool> (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["ReadOnly"])))
+//			{
 				btnAddNewTab->Enabled = true;
 				btnChangeDetails->Enabled = true;
-			}
-			else
-			{
-				btnAddNewTab->Enabled = false;
-				btnChangeDetails->Enabled = false;
-			}
-
+//			}
+//			else
+//			{
+//				btnAddNewTab->Enabled = false;
+//				btnChangeDetails->Enabled = false;
+//			}
+            if(TGlobalSettings::Instance().IsRegistrationVerified)
 			btnManInvoice->Enabled = true;
 			btnAddNewTab->Caption = "Create Member";
 
@@ -187,11 +190,11 @@ void __fastcall TfrmTabManager::btnMemberTabsClick(TObject *Sender)
 		{
 			lbePartyName->Caption = "Access Declined";
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 }
 
 // ---------------------------------------------------------------------------
@@ -216,6 +219,7 @@ void __fastcall TfrmTabManager::btnStaffTabsClick(TObject *Sender)
 	DBTransaction.Commit();
 
 	ShowTabsDetails();
+
 }
 
 // ---------------------------------------------------------------------------
@@ -436,6 +440,7 @@ void TfrmTabManager::ShowTabsDetails()
 		}
 		DBTransaction.Commit();
 	}
+   
 }
 
 void __fastcall TfrmTabManager::btnCloseClick(TObject *Sender)
@@ -494,7 +499,6 @@ void __fastcall TfrmTabManager::TouchButtonTabClick(TObject *Sender)
 	{
 		CurrentTabBtn = (TTouchBtn*)Sender;
 	}
-
 	Database::TDBTransaction DBTransaction(DBControl);
 	DBTransaction.StartTransaction();
 
@@ -1112,7 +1116,7 @@ void TfrmTabManager::RefreshTabDetails()
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
-		if (CurrentTabType == TabNormal)
+		if (CurrentTabType == TabNormal && TGlobalSettings::Instance().IsRegistrationVerified)
 		{
 			btnSubsidisedProfile->Enabled = true;
 		}
@@ -1135,7 +1139,8 @@ void TfrmTabManager::RefreshTabDetails()
 			if(LoginSuccess == LoginSuccess)
 			{
 				lbeTotalPoints->Caption = FloatToStrF(Member.Points.getPointsBalance(), ffFixed, 15, 2);
-				btnManInvoice->Enabled = true;
+                if(TGlobalSettings::Instance().IsRegistrationVerified)
+                    btnManInvoice->Enabled = true;
 			}
 		}
 		else
@@ -1198,6 +1203,7 @@ void TfrmTabManager::RefreshTabDetails()
 		}
 		DBTransaction.Commit();
         CustomizeForOnlineOrderingTabs(SelectedTab);
+
 	}
 }
 
@@ -1884,14 +1890,19 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
     }
     else
     {
+     if(TGlobalSettings::Instance().IsRegistrationVerified)
+        {
+          btnSubsidisedProfile->Enabled   = true;
+          btnTabCredit->Enabled           = true;
+        }
         btnChangeDetails->Enabled       = true;
         TouchButton1->Enabled           = true;
-        btnTabCredit->Enabled           = true;
         btnPINTab->Enabled              = true;
         btnLockTab->Enabled             = true;
         btnRemoveTab->Enabled           = true;
-        btnSubsidisedProfile->Enabled   = true;
-        btnPermanent->Enabled      = true;
+        btnPermanent->Enabled           = true;
+
+
     }
 }
 //---------------------------------------------------------------------------

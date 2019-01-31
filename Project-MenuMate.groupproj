@@ -9,9 +9,6 @@
 			<Projects Include="MenuMate\ChefMate\Source\ChefMate.cbproj">
 				<Dependencies/>
 			</Projects>
-			<Projects Include="MenuMate\Registration\Source\Register.cbproj">
-				<Dependencies/>
-			</Projects>
 			<Projects Include="MenuMate\JoinMate\source\JoinMate.cbproj">
 				<Dependencies/>
 			</Projects>
@@ -55,15 +52,6 @@
 		</Target>
 		<Target Name="ChefMate:Make">
 			<MSBuild Targets="Make" Projects="MenuMate\ChefMate\Source\ChefMate.cbproj"/>
-		</Target>
-		<Target Name="Register">
-			<MSBuild Projects="MenuMate\Registration\Source\Register.cbproj"/>
-		</Target>
-		<Target Name="Register:Clean">
-			<MSBuild Targets="Clean" Projects="MenuMate\Registration\Source\Register.cbproj"/>
-		</Target>
-		<Target Name="Register:Make">
-			<MSBuild Targets="Make" Projects="MenuMate\Registration\Source\Register.cbproj"/>
 		</Target>
 		<Target Name="JoinMate">
 			<MSBuild Projects="MenuMate\JoinMate\source\JoinMate.cbproj"/>
@@ -120,13 +108,13 @@
 			<MSBuild Targets="Make" Projects="MenuMate\MenuMate\Source\MenuMate.cbproj"/>
 		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="Parser;ChefMate;Register;JoinMate;DBTrim;Kiosk;SyndCopy;IBTools;MenuMate"/>
+			<CallTarget Targets="Parser;ChefMate;JoinMate;DBTrim;Kiosk;SyndCopy;IBTools;MenuMate"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="Parser:Clean;ChefMate:Clean;Register:Clean;JoinMate:Clean;DBTrim:Clean;Kiosk:Clean;SyndCopy:Clean;IBTools:Clean;MenuMate:Clean"/>
+			<CallTarget Targets="Parser:Clean;ChefMate:Clean;JoinMate:Clean;DBTrim:Clean;Kiosk:Clean;SyndCopy:Clean;IBTools:Clean;MenuMate:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="Parser:Make;ChefMate:Make;Register:Make;JoinMate:Make;DBTrim:Make;Kiosk:Make;SyndCopy:Make;IBTools:Make;MenuMate:Make"/>
+			<CallTarget Targets="Parser:Make;ChefMate:Make;JoinMate:Make;DBTrim:Make;Kiosk:Make;SyndCopy:Make;IBTools:Make;MenuMate:Make"/>
 		</Target>
 		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 	</Project>

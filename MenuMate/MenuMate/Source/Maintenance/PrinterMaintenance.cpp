@@ -257,7 +257,8 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
 			   }
 			}
 			cbReceiptPrinter->ItemIndex = PrinterIndex;
-          TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//          TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+         IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
          if(IsDBRegistered)
          {
              memHeader->Text = TGlobalSettings::Instance().Header->Text;
@@ -274,6 +275,7 @@ void __fastcall TfrmPrinterMaintenance::FormShow(TObject *Sender)
             memPHeader->Text =  memHeader->Text;
          }
          memFooter->Text = TGlobalSettings::Instance().Footer->Text;
+
          memHeader->Modified = false;
          memPHeader->Modified = false;
          memFooter->Modified = false;
@@ -763,12 +765,12 @@ void __fastcall TfrmPrinterMaintenance::tgridProfileListMouseClick(TObject *Send
 
 		 for (int i = 0; i < tgridProfileList->RowCount; i++)
 		 {
+            Database::TDBTransaction DBTransaction(DBControl);
+            DBTransaction.StartTransaction();
+
 			if (tgridProfileList->Buttons[i][0]->Latched)
 			{
 			   DevicesPrinterProfile[CurrentDeviceKey].insert(tgridProfileList->Buttons[i][0]->Tag);
-
-               Database::TDBTransaction DBTransaction(DBControl);
-               DBTransaction.StartTransaction();
 
 			   TPrinterVirtual *Printer = TManagerVirtualPrinter::GetVirtualPrinterByKey(DBTransaction,tgridProfileList->Buttons[i][0]->Tag);
 			   if (Printer != NULL)
@@ -797,9 +799,35 @@ void __fastcall TfrmPrinterMaintenance::tgridProfileListMouseClick(TObject *Send
 						   " to ensure the window driver has been added.", "Error", MB_ICONWARNING + MB_OK);
 					 }
 				  }
+
+                 //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired && PrinterPhysical.Type == ptChefMate_Printer)
+                {
+                    TGlobalSettings::Instance().IsCloudSyncRequired = true;
+                    TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+                }
+
 			   }
-  			   DBTransaction.Commit();
+
 			}
+            else
+            {
+                TPrinterVirtual *Printer = TManagerVirtualPrinter::GetVirtualPrinterByKey(DBTransaction,tgridProfileList->Buttons[i][0]->Tag);
+                if (Printer != NULL)
+			    {
+				  TManagerPhysicalPrinter ManagerPhysicalPrinter;
+				  TPrinterPhysical PrinterPhysical = ManagerPhysicalPrinter.GetPhysicalPrinter(DBTransaction, Printer->PhysicalPrinterKey);
+
+                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                    if(!TGlobalSettings::Instance().IsCloudSyncRequired && PrinterPhysical.Type == ptChefMate_Printer)
+                    {
+                        TGlobalSettings::Instance().IsCloudSyncRequired = true;
+                        TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsCloudSyncRequired,TGlobalSettings::Instance().IsCloudSyncRequired);
+                    }
+                }
+            }
+
+            DBTransaction.Commit();
 		 }
 	  }
    }
@@ -2853,7 +2881,8 @@ void __fastcall TfrmPrinterMaintenance::memHeaderChange(TObject *Sender)
 void __fastcall TfrmPrinterMaintenance::memHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
 
-  TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//  TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+   IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
    if(IsDBRegistered)
    {
        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));
@@ -2873,7 +2902,8 @@ void __fastcall TfrmPrinterMaintenance::memHeaderMouseUp(TObject *Sender, TMouse
 
 void __fastcall TfrmPrinterMaintenance::memPHeaderMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y)
 {
-    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+//    TDeviceRealTerminal::Instance().Registered(&IsDBRegistered, NULL);
+    IsDBRegistered = TGlobalSettings::Instance().IsRegistrationVerified;
    if(IsDBRegistered)
    {
        std::auto_ptr <TfrmTouchKeyboard> frmTouchKeyboard(TfrmTouchKeyboard::Create <TfrmTouchKeyboard> (this));

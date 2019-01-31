@@ -44,6 +44,7 @@ namespace MenumateServices
             this.serviceInstallerPaymentSense = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerMewsIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerAustria = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerRegistration = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -144,6 +145,13 @@ namespace MenumateServices
             this.serviceInstallerAustria.ServiceName = "MenumateServiceAustriaIntegration";
             this.serviceInstallerAustria.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
+            // serviceInstallerAustria
+            // 
+            this.serviceInstallerRegistration.Description = "Menumate Registration Sevice";
+            this.serviceInstallerRegistration.DisplayName = "Menumate Registration Sevice";
+            this.serviceInstallerRegistration.ServiceName = "MenumateServiceRegistrationIntegration";
+            this.serviceInstallerRegistration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
             // ProjectInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
@@ -160,7 +168,8 @@ namespace MenumateServices
             this.serviceInstallerAdyenIntegration,
             this.serviceInstallerPaymentSense,
             this.serviceInstallerMewsIntegration,
-            this.serviceInstallerAustria});
+            this.serviceInstallerAustria,
+            this.serviceInstallerRegistration});
 
         }
 
@@ -210,5 +219,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerPaymentSense;
         private ServiceInstaller serviceInstallerMewsIntegration;
         private ServiceInstaller serviceInstallerAustria;
+        private ServiceInstaller serviceInstallerRegistration;
     }
 }

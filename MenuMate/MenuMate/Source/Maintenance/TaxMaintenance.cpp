@@ -9,6 +9,7 @@
 #include "MMTouchKeyboard.h"
 #include "FiscalPrinterAdapter.h"
 #include "SelectDish.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchBtn"
@@ -72,6 +73,7 @@ void __fastcall TfrmTaxMaintenance::FormShow(TObject *Sender)
         edPrinterName->Enabled = true;
         edLogicalName->Enabled = true;
     }
+    IsAnySettingChanged = false;
 }
 //---------------------------------------------------------------------------
 
@@ -127,6 +129,11 @@ void __fastcall TfrmTaxMaintenance::tbtnOkMouseClick(TObject *Sender)
                 Database::TDBTransaction DBTransaction(DBControl);
                 DBTransaction.StartTransaction();
                 TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
+
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired && IsAnySettingChanged)
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
                 DBTransaction.Commit();
             }
             SyncTaxSettingWithWeb();
@@ -351,6 +358,7 @@ void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender
     DBTransaction.StartTransaction();
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseItalyFiscalPrinter,TGlobalSettings::Instance().UseItalyFiscalPrinter);
     DBTransaction.Commit();
+
     if(cbUseItalyFiscalPrinter->Checked)
     {
         edPrinterName->Enabled = true;
@@ -361,6 +369,7 @@ void __fastcall TfrmTaxMaintenance::cbUseItalyFiscalPrinterClick(TObject *Sender
         edPrinterName->Enabled = false;
         edLogicalName->Enabled = false;
     }
+    IsAnySettingChanged = true;
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmTaxMaintenance::edPrinterNameClick(TObject *Sender)
@@ -379,6 +388,7 @@ void __fastcall TfrmTaxMaintenance::edPrinterNameClick(TObject *Sender)
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmFPPrinterType,TGlobalSettings::Instance().PrinterType);
         edPrinterName->Text = TGlobalSettings::Instance().PrinterType;
         DBTransaction.Commit();
+        IsAnySettingChanged = true;
     }
 }
 //---------------------------------------------------------------------------
@@ -398,6 +408,7 @@ void __fastcall TfrmTaxMaintenance::edLogicalNameClick(TObject *Sender)
         TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmFPPrinterLogicalName,TGlobalSettings::Instance().PrinterlogicalName);
         edLogicalName->Text = TGlobalSettings::Instance().PrinterlogicalName;
         DBTransaction.Commit();
+        IsAnySettingChanged = true;
     }
 }
 //---------------------------------------------------------------------------
@@ -418,4 +429,5 @@ void __fastcall TfrmTaxMaintenance::cbPostRoomSaleToFiscalClick(TObject *Sender)
     TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmIsFiscalPostingDisable,TGlobalSettings::Instance().IsFiscalPostingDisable);
     DBTransaction.Commit();
 }
+
 

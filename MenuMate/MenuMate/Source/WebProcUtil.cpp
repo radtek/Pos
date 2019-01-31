@@ -751,6 +751,8 @@ void __fastcall TWebProcUtil::PrintKitchenDockets(TPaymentTransaction &PaymentTr
                         //throw Exception("Printing Some Orders Failed, Please Check Printer.");
                     }
                     ManagerDockets->Archive(Request.get());
+
+                     if(TGlobalSettings::Instance().IsRegistrationVerified)
                     completeOrderToChefMate(PrintTransaction.get());
                 }
             }

@@ -25,10 +25,11 @@ void __fastcall TfrmSelectSaveOption::FormShow(TObject *Sender)
         ShowTransferSection();
         tbDelayedPayments->Visible = !IsBillingMode && TGlobalSettings::Instance().TransferTableOnPrintPrelim &&
                                      TDBTab::GetDelyedInvoiceNumberCount(DBTransaction) > 0;
-        tbNewInvoice->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"] &&
-                                 (IsBillingMode || !TGlobalSettings::Instance().DisableInternalInvoicing);
-        tbWebOrders->Visible = IsBillingMode &&
-                               TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"];
+        tbNewInvoice->Visible = (IsBillingMode || !TGlobalSettings::Instance().DisableInternalInvoicing);
+//         && TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]
+                                 ;
+        tbWebOrders->Visible = IsBillingMode;
+//        && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"];
         DBTransaction.Commit();
     }
     else
@@ -42,8 +43,9 @@ void __fastcall TfrmSelectSaveOption::FormShow(TObject *Sender)
        else
        {
           ShowTransferSection();
-          tbNewInvoice->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"] &&
-                                 (IsBillingMode || !TGlobalSettings::Instance().DisableInternalInvoicing);
+          tbNewInvoice->Visible = (IsBillingMode || !TGlobalSettings::Instance().DisableInternalInvoicing);
+//          && TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"]
+
           HideForTransferSection();
        }
     }
@@ -155,8 +157,10 @@ void TfrmSelectSaveOption::ShowTransferSection()
    tbTabs->Visible = TGlobalSettings::Instance().TabsEnabled;
    tbTables->Visible = TGlobalSettings::Instance().TablesEnabled;
    tbStafftabs->Visible = TGlobalSettings::Instance().TabsEnabled;
-   tbRooms->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"];
-   tbMembersTab->Visible = TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
+   tbRooms->Visible = true;
+//   TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"];
+   tbMembersTab->Visible = true;
+//   TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"];
 }
 
 //---------------------------------------------------------------------------

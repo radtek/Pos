@@ -325,25 +325,23 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
 {
 	if (CurrentDisplayMode == eTabs)
 	{
-            btnBillTable->Enabled = false;
-            btnBillSelected->Enabled = true;
-            btnPartialPayment->Enabled = true;
-            btnSplitPayment->Enabled = true;
-            btnTransfer->Enabled = true;
-            btnTransfer->Caption = "Transfer To";
-            btnTransfer->ButtonColor = clOlive;
-            btnApplyMembership->Enabled = true;
-            btnApplyMembership->ButtonColor = clPurple;
-            btnApplyMembership->Caption = "Apply Membership";
-            if (CurrentTabType == TabWeb)
-            {
-              btnTransfer->Color = clSilver;
-              btnTransfer->Enabled = false;
-              //
-              btnApplyMembership->Enabled = false;
-            }
-
-
+        btnBillTable->Enabled = false;
+        btnBillSelected->Enabled = true;
+        btnPartialPayment->Enabled = true;
+        btnSplitPayment->Enabled = true;
+        btnTransfer->Enabled = true;
+        btnTransfer->Caption = "Transfer To";
+        btnTransfer->ButtonColor = clOlive;
+        btnApplyMembership->Enabled = true;
+        btnApplyMembership->ButtonColor = clPurple;
+        btnApplyMembership->Caption = "Apply Membership";
+        if (CurrentTabType == TabWeb)
+        {
+          btnTransfer->Color = clSilver;
+          btnTransfer->Enabled = false;
+          //
+          btnApplyMembership->Enabled = false;
+        }
 	}
 	else if (CurrentDisplayMode == eTables)
 	{
@@ -392,6 +390,7 @@ void __fastcall TfrmBillGroup::UpdateRightButtonDisplay(TObject *Sender)
       btnTransfer->Color = clSilver;
       btnTransfer->Enabled = false;
     }
+    IsRegistrationVerified();
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::tbtnReprintReceiptsMouseClick(TObject *Sender)
@@ -803,13 +802,15 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
                     {
                        tabTableName =  order1->TabName + " : " + order1->TabName;
                     }
-
-                    for( ; it != itemGroupsToCancel.end() ; it++ )
+                    if(TGlobalSettings::Instance().IsRegistrationVerified)
                     {
-                        _onItemsCanceled( it->second,tabTableName);
-                        it->second->Clear();
-                    }
+                        for( ; it != itemGroupsToCancel.end() ; it++ )
+                        {
 
+                            _onItemsCanceled( it->second,tabTableName);
+                            it->second->Clear();
+                        }
+                    }
                     itemGroupsToCancel.clear();
 
 					std::auto_ptr <TReqPrintJob> Request(new TReqPrintJob(&TDeviceRealTerminal::Instance()));
@@ -1068,7 +1069,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					TDBTab::SetTabCreditLimit(DBTransaction, CurrentSelectedTab, -1);
 				}
 				DBTransaction.Commit();
-				ResetForm();
+			  	ResetForm();
 			}
 			else
 			{
@@ -2108,8 +2109,8 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
     {
         btnApplyMembership->ButtonColor = clPurple;    //mm-5145
 
-        if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-        {
+//        if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//        {
             if (SelectedTabs.empty() && CurrentDisplayMode == eTabs && CurrentTabType == TabMember)
             {
                 MessageBox("No Tabs selected to Apply!", "Error", MB_OK + MB_ICONERROR);
@@ -2178,11 +2179,11 @@ void __fastcall TfrmBillGroup::btnApplyMembershipMouseClick(TObject *Sender)
 				}
 			}
 		}
-	}
-	else
-	{
-		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-	}
+//	}
+//	else
+//	{
+//		MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//	}
 
    }
 }
@@ -2252,8 +2253,20 @@ void __fastcall TfrmBillGroup::tbtnDiscountMouseClick(TObject *Sender)
 				}
 				else
 				{
-                    bool applyDiscount = true;
 
+
+                if(SelectedDiscount.IsComplimentaryDiscount() && !TGlobalSettings::Instance().IsRegistrationVerified)
+                  {
+                          MessageBox("Complimentary Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                          return;
+                  }
+                 else if(SelectedDiscount.IsNonChargableDiscount() && !TGlobalSettings::Instance().IsRegistrationVerified)
+                 {
+
+                         MessageBox("Non-Chargeable Discount cannot be applied on unregistered POS","Error",MB_OK + MB_ICONERROR);
+                         return;
+                 }
+                    bool applyDiscount = true;
 					if (OrderKeySet.size())
 					{
 						TPaymentTransaction PaymentTransaction(DBTransaction);
@@ -4499,8 +4512,9 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 			{
                 if(!TGlobalSettings::Instance().IsThorlinkSelected )
                 {
-                    if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
-                    {
+                
+//                    if (TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Enabled"])
+//                    {
                         CurrentDisplayMode = eTabs;
                         CurrentTabType = TabMember;
                         CurrentInvoiceKey = 0;
@@ -4534,11 +4548,11 @@ eDisplayMode TfrmBillGroup::SelectedZone()
                          * persistent while viewing the "Member" zone.
                     */
                         ResetForm();
-				}
-				else
-				{
-					MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
-				}
+//				}
+//				else
+//				{
+//					MessageBox("Membership is not Enabled.", "Error", MB_OK + MB_ICONERROR);
+//				}
                 }
                 else
                 {
@@ -4675,6 +4689,7 @@ eDisplayMode TfrmBillGroup::SelectedZone()
 	DBTransaction.Commit();
     UpdateTableForOnlineOrdering();
     DisableTransferButtonWhenLMIsEnabled();
+    IsRegistrationVerified();
 	return RetVal;
 }
 // ---------------------------------------------------------------------------
@@ -4717,6 +4732,7 @@ void TfrmBillGroup::applyWaiterStationSettingsIfEnabled()
 
 	if (CurrentDisplayMode == eTabs)
 	{
+
 		btnBillTable->Enabled = false;
 	}
 	else if (CurrentDisplayMode == eTables)
@@ -4741,6 +4757,7 @@ void TfrmBillGroup::applyWaiterStationSettingsIfEnabled()
 
 
     tbtnDiscount->Enabled = !TGlobalSettings::Instance().EnableWaiterStation && !IsWaiterLogged;
+    IsRegistrationVerified();
 }
 //-----------------------------------------------------------------------------
 void TfrmBillGroup::_displayLastReceipt( Database::TDBTransaction &DBTransaction, TReqPrintJob *LastReceipt )
@@ -5134,8 +5151,8 @@ void TfrmBillGroup::OnSmartCardInserted(TSystemEvents *Sender)
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::OnSmartCardRemoved(TSystemEvents *Sender)
 {
-	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
-	{
+//	if (TDeviceRealTerminal::Instance().Modules.Status[eSmartCardSystem]["Enabled"])
+//	{
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
@@ -5143,7 +5160,7 @@ void TfrmBillGroup::OnSmartCardRemoved(TSystemEvents *Sender)
 		DBTransaction.Commit();
 		TDeviceRealTerminal::Instance().ManagerMembership->EndMemberTransaction();
         ShowReceipt();
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 int TfrmBillGroup::extractPatronCountForMallExport(TPaymentTransaction &paymentTransaction)
@@ -5643,3 +5660,32 @@ void TfrmBillGroup:: MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64
     }
     SelectedItemKeys.insert(ZeroPriceSideKeys.begin(),ZeroPriceSideKeys.end());    //Merging the Item keys of Zero Price Sides with Selected Item Keys
 }
+//---------------------------------------------
+void TfrmBillGroup:: IsRegistrationVerified()
+{
+    bool isEnabled = TGlobalSettings::Instance().IsRegistrationVerified &&
+                    !IsWaiterLogged && !TGlobalSettings::Instance().EnableWaiterStation;
+
+
+    btnBillSelected->Enabled   = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+    btnPartialPayment->Enabled = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+    btnSplitPayment->Enabled  = isEnabled;//TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged;
+
+    if(CurrentDisplayMode == eTables && isEnabled) //&& TGlobalSettings::Instance().IsRegistrationVerified && !IsWaiterLogged)
+        btnBillTable->Enabled = true;
+    else
+        btnBillTable->Enabled = false;
+
+//    tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+
+    if((TGlobalSettings::Instance().IsRegistrationVerified && CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment)
+        && !(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().EnableCustomerJourney))
+        btnTransfer->Enabled = true;
+    else
+        btnTransfer->Enabled = false;
+
+    tbtnReprintReceipts->Enabled = TGlobalSettings::Instance().IsRegistrationVerified;
+
+}
+//---------------------------------------------------
+

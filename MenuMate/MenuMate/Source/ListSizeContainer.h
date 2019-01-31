@@ -18,7 +18,7 @@ public:
 	TItemSize *SizeGet(UnicodeString Name);
     TItemSize *SizeGetByItemSizeKey(long ItemSizeKey) ;
 	TItemSize *SizeGetByPalmID(int PalmID);
-        TItemSize *SizeGetByBarcode(const UnicodeString);
+    TItemSize *SizeGetByBarcode(const UnicodeString);
 	TListSizeContainer();
 	__fastcall virtual ~TListSizeContainer();
 };

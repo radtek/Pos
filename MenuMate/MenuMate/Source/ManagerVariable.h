@@ -64,7 +64,7 @@ enum vmVariables
 	vm_PLACEHOLDER_UseStockMaster = 2200, vmStockMasterExportPath,
 
 	// Kiosk ----------------------------------------------------------------
-	vmKioskDisplayMode = 2300,vmKioskMembershipMode = 2301,
+	vmKioskDisplayMode = 2300,vmKioskMembershipMode = 2301,vmIsRegistrationVerified,vmIsCloudSyncRequired,
 
 	// Misc Equip   ----------------------------------------------------------------
 	vmPoleDisplayTopLine = 3000, vmPoleDisplayBottomLine, vmPoleDisplayPort, vmPoleDisplayEmulationMode, vmSerialKickPort,
@@ -127,6 +127,7 @@ enum vmVariables
     vmDiningBal,
     vmIsTableLockEnabled,
     vmHideFreeSides,
+    vmCompanyName,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,

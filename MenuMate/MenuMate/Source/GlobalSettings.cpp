@@ -462,5 +462,8 @@ TGlobalSettings::TGlobalSettings()
     IsFiscalPostingDisable = false;
     EnableStoreTicketPosting = false;
     PMSPostSuccessful = false;
+    IsRegistrationVerified = false;
+    IsCloudSyncRequired = false;
+    CompanyName = " ";
 }
 

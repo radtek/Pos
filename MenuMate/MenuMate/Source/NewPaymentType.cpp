@@ -23,6 +23,7 @@
 #include "StringTools.h"
 #include "PaymentMaintenance.h"
 #include "WalletConfiguration.h"
+#include "DBRegistration.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "CGRID"
@@ -313,7 +314,9 @@ void __fastcall TfrmNewPaymentType::FormShow(TObject *Sender)
         cbSec2->Checked = Payment.GetPaymentAttribute(ePayTypeSecure2);
         cbSec3->Checked = Payment.GetPaymentAttribute(ePayTypeSecure3);
         cbCSVPaymentType->Checked = Payment.GetPaymentAttribute(ePayTypeCSV);
+        cbPocketVoucher->OnClick = NULL;
         cbPocketVoucher->Checked = Payment.GetPaymentAttribute(ePayTypePocketVoucher);
+        cbPocketVoucher->OnClick = cbPocketVoucherClick;
         tbRoomPayment->Checked = Payment.GetPaymentAttribute(ePayTypeRoomInterface);
         cbIntegrated->Checked = Payment.GetPaymentAttribute(ePayTypeIntegratedEFTPOS);
         cbAllowReversal->Checked = Payment.GetPaymentAttribute(ePayTypeAllowReversal);
@@ -953,6 +956,10 @@ void __fastcall TfrmNewPaymentType::cbPocketVoucherClick(TObject *Sender)
 		 cbGetVoucherDetails->Checked = false;
 	  }
    }
+
+   //Tracking Setting Changes In IsCloudSyncRequiredFlag
+   if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmNewPaymentType::ExportMouseClick(TObject *Sender)

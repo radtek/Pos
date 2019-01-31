@@ -103,6 +103,7 @@
 #pragma link "IdBaseComponent"
 #pragma link "IdComponent"
 #pragma link "IdIPWatch"
+#include "RegistrationManager.h"
 
 #pragma link "C:\\Program Files (x86)\\Embarcadero\RAD Studio\\7.0\\lib\\psdk\\oleacc.lib"
 
@@ -238,21 +239,6 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		Database::TDBTransaction DBBootTransaction(TDeviceRealTerminal::Instance().DBControl);
 		DBBootTransaction.StartTransaction();
 
-		bool Registered = false;
-		UnicodeString pRegisteredName = "";
-		TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
-		if(!Registered)
-		{
-			frmDBMod->SetRegCaption("Unregistered");
-			lbeRegistration->Caption = pRegisteredName;
-		}
-		else
-		{
-			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
-			frmDBMod->SetRegCaption(pRegisteredName);
-			lbeRegistration->Caption = pRegisteredName;
-		}
-
 		frmDBMod->SetCaption("Updating Clock...");
 		TDeviceRealTerminal::Instance().UpdateClockSyncInfo();
 		frmDBMod->SetCaption("Initialising...");
@@ -266,7 +252,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TManagerPhysicalPrinter ManagerPhysicalPrinter;
 		ManagerPhysicalPrinter.Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey,TDeviceRealTerminal::Instance().ID.ComputerName);
 		TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey,TDeviceRealTerminal::Instance().ID.ComputerName);
-        //TManagerVirtualPrinter::InitialisePrinters(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
+
 		TManagerChitNumber::Instance().Initialise(DBBootTransaction,TDeviceRealTerminal::Instance().ID.DeviceKey);
 		Receipt->Initialise(DBBootTransaction);
 		if(!TDBGroups::GroupExists(DBBootTransaction, "No Contacts Group"))
@@ -288,34 +274,27 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		{
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Tabs Enabled");
 		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegMembers]["Registered"])
-		{
+
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Members Mod Registered");
-		}
+
 		frmDBMod->SetCaption("Loading Rooms Interface...");
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegRooms]["Registered"])
-		{
+
 			TRooms::Instance().Initialise(DBBootTransaction);
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Rooms Mod Registered");
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[ePhoenixHotelSystem]["Registered"])
-		{
+
    			TDeviceRealTerminal::Instance().BasePMS->Registered = true;
             ReFormatIpToUrl();
             TDeviceRealTerminal::Instance().BasePMS->LogPMSEnabling(eBoot);
 			TDeviceRealTerminal::Instance().BasePMS->Initialise();
 			TRooms::Instance().Enabled = false;
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegKitchenScreen]["Registered"])
-		{
+
 			TDeviceRealTerminal::Instance().KitchenMod->Enabled = true;
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Kitchen Mod Registered");
-		}
-		if(TDeviceRealTerminal::Instance().Modules.Status[eRegSaleTurnAround]["Registered"])
-		{
+
 			TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Sale Time Mod Registered");
-		}
-		bool EftPosRegiestered = TDeviceRealTerminal::Instance().Modules.Status[eEFTPOS]["Registered"];
+
+		bool EftPosRegiestered = true;
+
         bool IsSyncroEftPosEnabled = false;
 
 		if(EftPosRegiestered)
@@ -384,13 +363,9 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
             EftPos = new TEftPosSyncro();
 			EftPos->Initialise();
         }
-        TDeviceRealTerminal::Instance().Modules.Status[eReservations]["Registered"] = true;
-		TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"] = true;
-		if(TGlobalSettings::Instance().WebMateEnabled && TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Registered"])
-		{   	
-			TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
-			TDeviceRealTerminal::Instance().Modules.Status[eWebMate]["Enabled"] = TWebMate::Instance().Enabled;
-		}
+
+        TWebMate::Instance().Initialise(TGlobalSettings::Instance().WebMateEnabled, ExtractFilePath(Application->ExeName),TGlobalSettings::Instance().InterbaseIP,TGlobalSettings::Instance().DatabasePath, TGlobalSettings::Instance().WebMatePort);
+
 
         //Posting CSV at specified IP
         if(TGlobalSettings::Instance().IsEnabledPeachTree)
@@ -498,12 +473,26 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
-//        if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-//        {
-//            TManagerPanasonic::Instance();
-//            TManagerPanasonic::Instance()->PrepareTenderTypes();
-//            TManagerPanasonic::Instance()->PrepareTransactionTypesAndTerminalId();
-//        }
+
+        //Checking POS Resgistration Status and company validation
+        std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+        mmRegistrationManager->CheckRegistrationStatus();
+
+        bool Registered = false;
+		UnicodeString pRegisteredName = "";
+        Registered = TGlobalSettings::Instance().IsRegistrationVerified;
+		if(Registered)
+		{
+            TManagerLogs::Instance().Add("NA",REGISTRATIONLOG,"Application Registered");
+			frmDBMod->SetRegCaption(pRegisteredName);
+			lbeRegistration->Caption = TGlobalSettings::Instance().CompanyName;
+		}
+		else
+		{
+            frmDBMod->SetRegCaption("Unregistered");
+			lbeRegistration->Caption = pRegisteredName;
+		}
+
         SyncCompanyDetails();
        //initialize this variable when application starts..
        TManagerVariable::Instance().SetDeviceBool(DBBootTransaction, vmNotifyLastWebOrder, TGlobalSettings::Instance().NotifyPOSForLastWebOrder);

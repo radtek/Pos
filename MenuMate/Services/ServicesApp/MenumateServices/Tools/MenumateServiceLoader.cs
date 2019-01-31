@@ -54,6 +54,7 @@ namespace MenumateServices
             AddService(serviceList, MenumateServicesIdentifier.PaymentSense);
             AddService(serviceList, MenumateServicesIdentifier.MewsIntegration);
             AddService(serviceList, MenumateServicesIdentifier.AustriaFiscalIntegration);
+            AddService(serviceList, MenumateServicesIdentifier.RegistrationIntegration);
             if (serviceList.Count == 0)
             {
                 ServiceLogger.Log(@"No Menumate Services to be loaded.");
@@ -173,6 +174,8 @@ namespace MenumateServices
                     return new MenumateServiceMewsIntegration();
                 case MenumateServicesIdentifier.AustriaFiscalIntegration:
                     return new MenumateServiceAustriaIntegration();
+                case MenumateServicesIdentifier.RegistrationIntegration:
+                    return new MenumateServiceRegistrationIntegration();
                 default: throw new Exception(String.Format("Unknown Service: {0}", serviceIdentifier));
             }
         }

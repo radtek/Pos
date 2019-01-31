@@ -65,6 +65,7 @@
 
 #include <Math.hpp>
 #include "ServicesManager.h"
+#include "RegistrationManager.h"
 // ---------------------------------------------------------------------------
 #pragma comment(lib, "wininet")
 #pragma package(smart_init)
@@ -3256,6 +3257,10 @@ Zed:
              UpdateDLFMall();
             zedLogsList->Add("Z Completed at " + Now().FormatString("dd/mm/yy hh:nn:ss" ));
             MakeZEDLogFile(zedLogsList);
+
+            //Checking POS Resgistration Status
+            std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
+            mmRegistrationManager->CheckRegistrationStatus();
 
         }
         frmSecurity->LogOut();
@@ -8779,7 +8784,8 @@ UnicodeString TfrmAnalysis::CheckRegistered()
     UnicodeString emailSubject = "Zed Report";
     bool Registered = false;
     UnicodeString pRegisteredName = "";
-    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+//    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    Registered = TGlobalSettings::Instance().IsRegistrationVerified;
     if(Registered)
     {
         emailSubject = pRegisteredName;

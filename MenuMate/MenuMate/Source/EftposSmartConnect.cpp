@@ -277,7 +277,8 @@ void TEftPosSmartConnect::InitializeProperties()
 
     bool Registered = false;
     UnicodeString pRegisteredName = "";
-    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+//    TDeviceRealTerminal::Instance().Registered(&Registered,&pRegisteredName);
+    Registered = TGlobalSettings::Instance().IsRegistrationVerified;
     if(Registered)
     {
         transactionType->PosBusinessName  = pRegisteredName;
