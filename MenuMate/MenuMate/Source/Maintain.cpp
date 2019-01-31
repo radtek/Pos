@@ -357,7 +357,11 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 	for (TNetMessageInfoSync *req; frm_seltbl->ShowModal() == mrOk; )
     {
 		tr.StartTransaction();
-        int selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
+
+        int selection = 1;
+        if(TGlobalSettings::Instance().EnableOnlineOrdering)
+            selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
+
         if(selection == 1)
         {
             if(TGlobalSettings::Instance().IsTableLockEnabled)
@@ -374,8 +378,8 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
             frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
             if (frm_tchkb->ShowModal() == mrOk)
             {
-                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
-                frm_tchkb->KeyboardText);
+                bool isTableMarkedForOO = TDBTables::IsTableMarked(tr, frm_seltbl->SelectedTabContainerNumber);
+                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, frm_tchkb->KeyboardText, isTableMarkedForOO);
                 must_signal_changes |= 1;
             }
         }

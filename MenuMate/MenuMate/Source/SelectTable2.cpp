@@ -461,7 +461,8 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
 void __fastcall TFrmSelectTable2::imgTablesMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    tiTimerEnableReq->Enabled = true;
+    if(TGlobalSettings::Instance().EnableOnlineOrdering)
+        tiTimerEnableReq->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
