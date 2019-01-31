@@ -2594,10 +2594,17 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
             DisableToggleGSTButton(DBTransaction);
         }
         UpdateContainerListColourDisplay();
-        HasOnlineOrders = TDBTab::HasOnlineOrders(CurrentSelectedTab);
-        UpdateTableForOnlineOrdering();
-//        MessageBox(CurrentSelectedTab,"CurrentSelectedTab in tgridClick",MB_OK);
-        UpdateTabForOnlineOrdering();
+
+        if(CurrentDisplayMode == eTables)
+        {
+            HasOnlineOrders = TDBTables::HasOnlineOrders(CurrentTable);
+            UpdateTableForOnlineOrdering();
+        }
+        else
+        {
+            HasOnlineOrders = TDBTab::HasOnlineOrders(CurrentSelectedTab);
+            UpdateTabForOnlineOrdering();
+        }
         DisableTransferButtonWhenLMIsEnabled();
 
         UpdateSplitButtonState();
@@ -5503,8 +5510,9 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
 //---------------------------------------------------------------------------
 void TfrmBillGroup::UpdateTabForOnlineOrdering()
 {
-    bool isTableGuest = CurrentTable && TDBTables::HasOnlineOrders(CurrentTable);
-    if((CurrentDisplayMode == eTabs && HasOnlineOrders) || (isTableGuest))
+//    bool isTableGuest = CurrentTable && TDBTables::HasOnlineOrders(CurrentTable);
+//    MessageBox(CurrentTable,"CurrentTable",MB_OK);
+    if((CurrentDisplayMode == eTabs && HasOnlineOrders) /*|| (isTableGuest)*/)
     {
         btnTransfer->Color          = clSilver;
         btnTransfer->Enabled        = false;
@@ -5516,8 +5524,8 @@ void TfrmBillGroup::UpdateTabForOnlineOrdering()
         btnSplitPayment->Enabled    = false;
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
-        if(isTableGuest)
-            btnBillSelected->Enabled = false;
+//        if(isTableGuest)
+//            btnBillSelected->Enabled = false;
     }
 }
 //---------------------------------------------------------------------------
