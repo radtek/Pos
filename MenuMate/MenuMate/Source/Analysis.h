@@ -225,7 +225,7 @@ public:		// User declarations
     void FileSubmit(const char * hostName, const char * userName,
                     const char * userPassword, const char * userPath,
                     UnicodeString LocalPathFileName, UnicodeString LocalFileName,
-                    int FCount);
+                    int FCount, bool showMessage = true);
      void SaveCompValueinDBStrUnique(vmVariables vmVar, UnicodeString CompName);
      void UploadMallFilesToFTP();
 };

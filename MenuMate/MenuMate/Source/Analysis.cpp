@@ -3349,7 +3349,7 @@ Zed:
 void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
                                            const char * userPassword, const char * userPath,
                                            UnicodeString LocalPathFileName, UnicodeString LocalFileName,
-                                           int FCount)
+                                           int FCount, bool showMessage)
 {
     const char * pathFileName = LocalPathFileName.t_str();
     const char * fileName = LocalFileName.t_str();
@@ -3384,14 +3384,14 @@ void TfrmAnalysis::FileSubmit(const char * hostName, const char * userName,
             if (!FtpPutFile(hFtpSession, pathFileName, fileName, FTP_TRANSFER_TYPE_BINARY, 0))
             {
 
-                if (FCount == 0)
+                if (FCount == 0 && showMessage)
                 {
 
                     MessageBox( "File was not successfully uploaded!", "File Transfer Failed!", MB_OK );
                 }
             }
 
-            if (FCount == 0)
+            if (FCount == 0 && showMessage)
             {
                 MessageBox( "File was sent successfully!", "File Transfer Success!", MB_OK );
             }
@@ -9312,7 +9312,10 @@ void TfrmAnalysis::UploadMallFilesToFTP()
             const char * userPath = FtpPath.t_str();
             const char * userName = FtpUserName.t_str();
             const char * userPassword = FtpPassword.t_str();
-            FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
+            if(index == (TGlobalSettings::Instance().mallInfo.FileNameList.size()-1))
+                FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
+            else
+                FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount, false);
         }
     }
     catch(Exception & E)
