@@ -460,7 +460,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         }
         else
         {
-            Item1.Properties["Color"] = IntToStr(clRed);
+            Item1.Properties["Color"] = IntToStr(clNavy);
         }
 
         Item1.CloseSelection = true;
@@ -483,15 +483,15 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
             {
                 case 1 :
                 {
-                    AnsiString tableName =  "Table " + SelectedTabContainerNumber;
+                    UnicodeString tableName =  "Table " + IntToStr(SelectedTabContainerNumber);
                     if(isTableAlreadySeated)
                     {
-                        MessageBox(tableName + "is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                        MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
                         TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
                     }
                     else
                     {
-                        MessageBox(tableName + "is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                        MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
                         SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
                         TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
                     }
