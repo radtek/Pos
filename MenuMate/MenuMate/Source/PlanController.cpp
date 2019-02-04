@@ -210,6 +210,10 @@ void PlanController::DrawCurrentPlan(Database::TDBTransaction &DBTransaction, bo
                     TableText->Add(tables[i]->Name);
         		    int LineHeight = image->Canvas->TextHeight(tables[i]->Name.t_str());
                     UnicodeString PartyName = PartyNames[tables[i]->Number];
+
+                    if(TDBTables::IsTableMarked(DBTransaction, tables[i]->Number))
+                        PartyName = PartyName + " (S)";
+
                     if(PartyName != "")
                     {
 	                    TableText->Add(PartyName);

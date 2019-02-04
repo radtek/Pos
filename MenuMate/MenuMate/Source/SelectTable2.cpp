@@ -506,6 +506,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                             SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
                             TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
                         }
+                        _controller->DrawCurrentPlan(dBTransaction);
 
                     }break;
                     case 2 :
