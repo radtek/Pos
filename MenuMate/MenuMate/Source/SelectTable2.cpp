@@ -5,6 +5,7 @@
 #include "SelectTable2.h"
 #include "DeviceRealTerminal.h"
 #include "VerticalSelect.h"
+#include "BillGroup.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -450,21 +451,24 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         Item.CloseSelection = true;
         SelectionForm->Items.push_back(Item);
 
-        TVerticalSelection Item1;
-        Item1.Title = "Seat";
-        Item1.Properties["Action"] = IntToStr(1);
-
-        if(isTableAlreadySeated)
+        if(TGlobalSettings::Instance().EnableOnlineOrdering)
         {
-            Item1.Properties["Color"] = IntToStr(clGreen);
-        }
-        else
-        {
-            Item1.Properties["Color"] = IntToStr(clNavy);
-        }
+            TVerticalSelection Item1;
+            Item1.Title = "Seat";
+            Item1.Properties["Action"] = IntToStr(1);
 
-        Item1.CloseSelection = true;
-        SelectionForm->Items.push_back(Item1);
+            if(isTableAlreadySeated)
+            {
+                Item1.Properties["Color"] = IntToStr(clGreen);
+            }
+            else
+            {
+                Item1.Properties["Color"] = IntToStr(clNavy);
+            }
+
+            Item1.CloseSelection = true;
+            SelectionForm->Items.push_back(Item1);
+        }
 
         TVerticalSelection Item2;
         Item2.Title = "Bill";
@@ -499,6 +503,14 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 }break;
                 case 2 :
                 {
+                    TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
+                    frmBillGroup->CurrentTable = SelectedTabContainerNumber;
+                    frmBillGroup->CurrentDisplayMode = eTables;
+                    frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTabContainerNumber);
+
+                    frmBillGroup->ShowModal();
+                    delete frmBillGroup;
+                    frmBillGroup = NULL;
                 }break;
             }
         }
