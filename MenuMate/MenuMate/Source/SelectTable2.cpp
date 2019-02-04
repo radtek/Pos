@@ -4,6 +4,7 @@
 
 #include "SelectTable2.h"
 #include "DeviceRealTerminal.h"
+#include "VerticalSelect.h"
 
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -439,22 +440,69 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
         dBTransaction.StartTransaction();
 
-        if(!TDBTables::IsTableMarked(dBTransaction, SelectedTabContainerNumber))
+        bool isTableAlreadySeated = TDBTables::IsTableMarked(dBTransaction, SelectedTabContainerNumber);
+
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = IntToStr(clMaroon);
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        TVerticalSelection Item1;
+        Item1.Title = "Seat";
+        Item1.Properties["Action"] = IntToStr(1);
+
+        if(isTableAlreadySeated)
         {
-            if(MessageBox("Do you want to mark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
-            {
-                SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
-                TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
-            }
+            Item1.Properties["Color"] = IntToStr(clGreen);
         }
         else
         {
-            if(MessageBox("Do you want to unmark this table for online ordering?", "Warning", MB_YESNO | MB_ICONQUESTION) == IDYES)
+            Item1.Properties["Color"] = IntToStr(clRed);
+        }
+
+        Item1.CloseSelection = true;
+        SelectionForm->Items.push_back(Item1);
+
+        TVerticalSelection Item2;
+        Item2.Title = "Bill";
+        Item2.Properties["Action"] = IntToStr(2);
+        Item2.Properties["Color"] = IntToStr(clNavy);
+        Item2.CloseSelection = true;
+        SelectionForm->Items.push_back(Item2);
+
+        SelectionForm->ShowModal();
+
+        TVerticalSelection SelectedItem;
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+            switch(Action)
             {
-                TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
+                case 1 :
+                {
+                    AnsiString tableName =  "Table " + SelectedTabContainerNumber;
+                    if(isTableAlreadySeated)
+                    {
+                        MessageBox(tableName + "is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                        TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
+                    }
+                    else
+                    {
+                        MessageBox(tableName + "is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                        SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
+                        TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
+                    }
+
+                }break;
+                case 2 :
+                {
+                }break;
             }
         }
-         dBTransaction.Commit();
+        dBTransaction.Commit();
      }
 }
 //--------------------------------------------------------------------------------
