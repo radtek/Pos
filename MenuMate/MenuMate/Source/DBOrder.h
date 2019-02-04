@@ -149,6 +149,7 @@ public:
     static UnicodeString getOrderKeysList(TList *Orders);
     static void SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email);
     static void SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransaction,int tabKey,int loyaltyKey, UnicodeString email);
+    static bool IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int tableNumber);
 };
 //---------------------------------------------------------------------------
 #endif

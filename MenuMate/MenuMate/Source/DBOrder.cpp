@@ -5130,3 +5130,28 @@ void TDBOrder::SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransa
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
     }
 }
+//-------------------------------------------------------------------------------
+bool TDBOrder::IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int tableNumber)
+{
+    bool isOrderExist = false;
+    try
+    {
+        TIBSQL *selectOrderQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        selectOrderQuery->Close();
+        selectOrderQuery->SQL->Clear();
+        selectOrderQuery->SQL->Text =
+                                    "SELECT ORDER_KEY FROM ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER ";
+        selectOrderQuery->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
+        selectOrderQuery->ExecQuery();
+
+        if(selectOrderQuery->RecordCount)
+            isOrderExist = true;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
+    return isOrderExist;
+}
