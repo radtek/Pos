@@ -226,7 +226,7 @@ object FrmSelectTable2: TFrmSelectTable2
   end
   object tiTimerEnableReq: TTimer
     Enabled = False
-    Interval = 3000
+    Interval = 1500
     OnTimer = tiTimerEnableReqTimer
     Left = 300
     Top = 240
