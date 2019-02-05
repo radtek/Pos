@@ -283,6 +283,10 @@ void TfrmSelectTable::UpdateFloorPlanSheet()
             {
                 TableCaption				+= "\r" + IBInternalQuery->FieldByName("PARTY_NAME")->AsString;
             }
+
+            if(TDBTables::IsTableMarked(DBTransaction, TableNo))
+                TableCaption += " (S)";
+
             GridButton->Caption	 		= TableCaption;
         }
 	}
