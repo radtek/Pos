@@ -1685,7 +1685,12 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	UpdateContainerListColourDisplay();
 
     if(CurrentDisplayMode == eTables)
+    {
         UpdateTableForOnlineOrdering();
+
+        if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
+            TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+    }
     else if(CurrentDisplayMode == eTabs)
         UpdateTabForOnlineOrdering();
 

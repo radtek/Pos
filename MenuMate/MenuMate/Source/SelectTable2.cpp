@@ -428,7 +428,7 @@ void TFrmSelectTable2::SaveLocationId(int locationId)
 }
 //--------------------------------------------------------------------------------
 void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
-{
+{     
     Database::TDBTransaction dBTransaction(TDeviceRealTerminal::Instance().DBControl);
     dBTransaction.StartTransaction();
     try
@@ -474,7 +474,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 Item2.CloseSelection = true;
                 SelectionForm->Items.push_back(Item2);
             }
-
+            tiTimerEnableReq->Enabled = false;
             SelectionForm->ShowModal();
 
             TVerticalSelection SelectedItem;
@@ -496,7 +496,6 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                             SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
                             TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
                         }
-                        _controller->DrawCurrentPlan(dBTransaction);
 
                     }break;
                     case 2 :
@@ -511,6 +510,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                         frmBillGroup = NULL;
                     }break;
                 }
+                _controller->DrawCurrentPlan(dBTransaction);
             }
          }
          dBTransaction.Commit();
