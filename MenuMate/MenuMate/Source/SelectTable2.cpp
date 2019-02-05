@@ -459,16 +459,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 TVerticalSelection Item1;
                 Item1.Title = "Seat";
                 Item1.Properties["Action"] = IntToStr(1);
-
-                if(isTableAlreadySeated)
-                {
-                    Item1.Properties["Color"] = IntToStr(clGreen);
-                }
-                else
-                {
-                    Item1.Properties["Color"] = IntToStr(clNavy);
-                }
-
+                Item1.Properties["Color"] = isTableAlreadySeated ? IntToStr(clGreen) : IntToStr(clNavy);
                 Item1.CloseSelection = true;
                 SelectionForm->Items.push_back(Item1);
             }
