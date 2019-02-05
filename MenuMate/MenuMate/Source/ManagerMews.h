@@ -26,8 +26,6 @@ class TManagerMews : public TBasePMS
        bool GetCategories(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken,Database::TDBTransaction &DBTransaction);
        bool GetServices(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken,Database::TDBTransaction &DBTransaction);
        bool GetOutlets(UnicodeString url, UnicodeString clientToken, UnicodeString accessToken,Database::TDBTransaction &DBTransaction);
-       void GetDetailsForMewsOrder(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
-                                            double tipPortion,TOrder &mewsOrder,bool isBill);
        void GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
                                             double tipPortion,TOrder &mewsOrder,bool isBill);
        TUnitCost GetUnitCost(TItemComplete* itemComplete, double portion,bool &seperateDiscount,double &value);

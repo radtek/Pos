@@ -425,12 +425,14 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         itemMews.Name = payment->Name;
                     else
                         itemMews.Name = payment->CardType;
-                    if(_paymentTransaction.CreditTransaction)
-                        itemMews.UnitCount = -1;
-                    else
-                        itemMews.UnitCount = 1;
+
+                    itemMews.UnitCount = 1;
                     double paymentAmount = ((double)(payment->GetPayTendered() + payment->GetCashOut() - payment->GetChange()));
-                    itemMews.UnitCost.Amount = fabs(RoundTo(paymentAmount,-2));
+                    itemMews.UnitCost.Amount = RoundTo(paymentAmount,-2);
+
+                    //Adding -ve sign Prefix to Amount
+                    itemMews.UnitCost.Amount *= -1;
+
                     itemMews.UnitCost.Currency = CurrencyString;
                     itemMews.UnitCost.Tax = 0;
                     itemMews.Category.Name = "";
@@ -477,11 +479,14 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                             itemMews.Name = "Points Purchase";
                         else
                             itemMews.Name = "Surcharge";
-                        if(_paymentTransaction.CreditTransaction)
-                            itemMews.UnitCount = -1;
-                        else
-                            itemMews.UnitCount = 1;
+
+                        itemMews.UnitCount = 1;
                         itemMews.UnitCost.Amount = fabs(RoundTo(surcharge,-2));
+
+                        //Adding -ve sign Prefix to Amount
+                        if(_paymentTransaction.CreditTransaction)
+                            itemMews.UnitCost.Amount *= -1;
+
                         itemMews.UnitCost.Currency = CurrencyString;
                         itemMews.UnitCost.Tax = 0;
                         //itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
@@ -714,95 +719,6 @@ void TManagerMews::UpdateMewsLogs(bool status)
        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
 }
-void TManagerMews::GetDetailsForMewsOrder(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
-                                            double tipPortion,TOrder &mewsOrder,bool isBill)
-{
-    try
-    {
-        for(int i = 0; i < paymentTransaction.Orders->Count; i++)
-        {
-            TItemComplete* itemComplete = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
-            TItemMews itemMews;
-            itemMews.Type = "Revenue";
-            itemMews.Name = itemComplete->Item;
-            int qtyItem = 0;
-            double qtyItemD = 0;
-            double varianceAdditive = 0;
-            qtyItemD = RoundTo((double)itemComplete->GetQty() * portion, -2);
-            CalculateQtyAndvariance(qtyItemD, qtyItem, varianceAdditive);
-            itemMews.UnitCount = qtyItem;
-            bool seperateDiscount = false;
-            double discountValue = 0;
-            itemMews.UnitCost = GetUnitCost(itemComplete, portion,seperateDiscount,discountValue);
-            varianceAdditive = varianceAdditive/qtyItem;
-            itemMews.UnitCost.Amount = RoundTo((itemMews.UnitCost.Amount + (varianceAdditive*itemMews.UnitCost.Amount))/portion,-2);
-            itemMews.Category.Name = "";
-            itemMews.Category.Name = GetMewsCategoryCodeForItem(itemComplete,false);
-            mewsOrder.Items.push_back(itemMews);
-        }
-        if(paymentTransaction.Money.ServiceCharge != 0)
-        {
-            TItemMews itemMews;
-            itemMews.Type = "Revenue";
-            itemMews.Name = "Service Charge";
-            if(paymentTransaction.CreditTransaction)
-                itemMews.UnitCount = -1;
-            else
-                itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = fabs(RoundTo((double)paymentTransaction.Money.ServiceCharge * portion,-2));
-            itemMews.UnitCost.Currency = CurrencyString;
-            if(TGlobalSettings::Instance().ApplyServiceChargeTax)
-                itemMews.UnitCost.Tax = TGlobalSettings::Instance().ServiceChargeTaxRate;
-            else
-                itemMews.UnitCost.Tax = 0;
-            itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
-            // get code for items
-            mewsOrder.Items.push_back(itemMews);
-        }
-        if(tipPortion != 0)
-        {
-            TItemMews itemMews;
-            itemMews.Type = "Revenue";
-            itemMews.Name = "Tips";
-            if(paymentTransaction.CreditTransaction)
-                itemMews.UnitCount = -1;
-            else
-                itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = fabs(RoundTo(tipPortion,-2));
-            itemMews.UnitCost.Currency = CurrencyString;
-            itemMews.UnitCost.Tax = 0;
-            itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->TipAccount;
-            // get code for items
-            mewsOrder.Items.push_back(itemMews);
-        }
-        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-        double surcharge = 0;
-        if(paymentTransaction.CreditTransaction)
-            surcharge = payment->GetDiscount();
-        else
-            surcharge = payment->GetSurcharge();
-        if(surcharge != 0)
-        {
-            TItemMews itemMews;
-            itemMews.Type = "Revenue";
-            itemMews.Name = "Surcharge";
-            if(paymentTransaction.CreditTransaction)
-                itemMews.UnitCount = -1;
-            else
-                itemMews.UnitCount = 1;
-            itemMews.UnitCost.Amount = fabs(RoundTo(surcharge,-2));
-            itemMews.UnitCost.Currency = CurrencyString;
-            itemMews.UnitCost.Tax = 0;
-            itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
-            // get code for items
-            mewsOrder.Items.push_back(itemMews);
-        }
-    }
-	catch(Exception &E)
-	{
-		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-	}
-}
 void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
                                             double tipPortion,TOrder &mewsOrder,bool isBill)
 {
@@ -820,8 +736,6 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             mewsOrder.ConsumptionUtc = GetInvoiceNumber(paymentTransaction);
         }
 
-        TPayment *payment = paymentTransaction.PaymentGet(paymentIndex);
-
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
         {
             TItemComplete* itemComplete = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
@@ -833,12 +747,23 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             double varianceAdditive = 0;
             qtyItemD = RoundTo((double)itemComplete->GetQty() * portion, -2);
             CalculateQtyAndvariance(qtyItemD, qtyItem, varianceAdditive);
+
+            //Making Qty +ve
+            if(qtyItem < 0)
+                qtyItem *= -1;
+
             itemMews.UnitCount = qtyItem;
             bool seperateDiscount = false;
             double discountValue = 0;
             itemMews.UnitCost = GetUnitCost(itemComplete, portion,seperateDiscount,discountValue);
             varianceAdditive = varianceAdditive/qtyItem;
-            itemMews.UnitCost.Amount = RoundTo((itemMews.UnitCost.Amount + (varianceAdditive*itemMews.UnitCost.Amount))/portion,-2);
+
+            //Adding -ve sign Prefix to Amount in case of Credit Transaction
+            double unitAmount = RoundTo((itemMews.UnitCost.Amount + (varianceAdditive*itemMews.UnitCost.Amount))/portion,-2);
+            if(paymentTransaction.CreditTransaction)
+                unitAmount *= -1;
+
+            itemMews.UnitCost.Amount = unitAmount;
             itemMews.Category.Name = "";
             itemMews.Category.Name = GetMewsCategoryCodeForItem(itemComplete,false);
             UnicodeString itemCatCode = itemMews.Category.Name;
@@ -861,17 +786,18 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                 if(!paymentTransaction.CreditTransaction)
                 {
                     if(discountAux < 0)
-                        itemMewsDiscount.UnitCount = -1;
+                        itemMewsDiscount.UnitCost.Amount *= -1;
                     else
-                        itemMewsDiscount.UnitCount = 1;
+                        itemMewsDiscount.UnitCost.Amount *= 1;
                 }
                 else
                 {
                     if(discountAux > 0)
-                        itemMewsDiscount.UnitCount = 1;
+                        itemMewsDiscount.UnitCost.Amount *= 1;
                     else
-                        itemMewsDiscount.UnitCount = -1;
+                        itemMewsDiscount.UnitCost.Amount *= -1;
                 }
+                itemMewsDiscount.UnitCount = 1;
                 itemMewsDiscount.UnitCost.Currency = CurrencyString;
                 itemMewsDiscount.UnitCost.Tax = 0;
                 itemMewsDiscount.Category.Name = "";
@@ -897,12 +823,23 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                 double varianceAdditiveSub = 0;
                 qtyItemDSub = RoundTo((double)itemCompleteSub->GetQty() * portion, -2);
                 CalculateQtyAndvariance(qtyItemDSub, qtyItemSub, varianceAdditiveSub);
+
+                //Making Qty +ve
+                if(qtyItemSub < 0)
+                    qtyItemSub *= -1;
+
                 itemMewsSub.UnitCount = qtyItemSub;
                 bool seperateDiscountSub = false;
                 double discountValueSub = 0;
                 itemMewsSub.UnitCost = GetUnitCost(itemCompleteSub, portion,seperateDiscountSub,discountValueSub);
                 varianceAdditiveSub = varianceAdditiveSub/qtyItemSub;
-                itemMewsSub.UnitCost.Amount = RoundTo((itemMewsSub.UnitCost.Amount + (varianceAdditive*itemMewsSub.UnitCost.Amount))/portion,-2);
+
+                //Adding -ve sign Prefix to Amount in case of Credit Transaction
+                double unitAmount = RoundTo((itemMewsSub.UnitCost.Amount + (varianceAdditive*itemMewsSub.UnitCost.Amount))/portion,-2);
+                if(paymentTransaction.CreditTransaction)
+                    unitAmount *= -1;
+
+                itemMewsSub.UnitCost.Amount = unitAmount;
                 itemMewsSub.Category.Name = "";
                 itemMewsSub.Category.Name = GetMewsCategoryCodeForItem(itemCompleteSub,false);
                 UnicodeString itemCatCode = itemMewsSub.Category.Name;
@@ -925,17 +862,18 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
                     if(!paymentTransaction.CreditTransaction)
                     {
                         if(discountValueSubAux < 0)
-                            itemMewsDiscountSub.UnitCount = -1;
+                            itemMewsDiscountSub.UnitCost.Amount *= -1;
                         else
-                            itemMewsDiscountSub.UnitCount = 1;
+                            itemMewsDiscountSub.UnitCost.Amount *= 1;
                     }
                     else
                     {
                         if(discountValueSubAux > 0)
-                            itemMewsDiscountSub.UnitCount = 1;
+                            itemMewsDiscountSub.UnitCost.Amount *= 1;
                         else
-                            itemMewsDiscountSub.UnitCount = -1;
+                            itemMewsDiscountSub.UnitCost.Amount *= -1;
                     }
+                    itemMewsDiscountSub.UnitCount = 1;
                     itemMewsDiscountSub.UnitCost.Currency = CurrencyString;
                     itemMewsDiscountSub.UnitCost.Tax = 0;
                     itemMewsDiscountSub.Category.Name = "";
@@ -955,12 +893,15 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = "Service Charge";
-            if(paymentTransaction.CreditTransaction)
-                itemMews.UnitCount = -1;
-            else
-                itemMews.UnitCount = 1;
+
+            itemMews.UnitCount = 1;
             itemMews.UnitCost.Amount = fabs(RoundTo((double)paymentTransaction.Money.ServiceCharge * portion,-2) +
                                             RoundTo((double)paymentTransaction.Money.ServiceChargeTax * portion,-2));
+
+            //Adding -ve sign Prefix to Amount
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCost.Amount *= -1;
+
             itemMews.UnitCost.Currency = CurrencyString;
             if(TGlobalSettings::Instance().ApplyServiceChargeTax)
                 itemMews.UnitCost.Tax = TGlobalSettings::Instance().ServiceChargeTaxRate/100;
@@ -981,11 +922,14 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             TItemMews itemMews;
             itemMews.Type = "Revenue";
             itemMews.Name = "Tips";
-            if(paymentTransaction.CreditTransaction)
-                itemMews.UnitCount = -1;
-            else
-                itemMews.UnitCount = 1;
+
+            itemMews.UnitCount = 1;
             itemMews.UnitCost.Amount = fabs(RoundTo(tipPortion,-2));
+
+            //Adding -ve sign Prefix to Amount
+            if(paymentTransaction.CreditTransaction)
+                itemMews.UnitCost.Amount *= -1;
+
             itemMews.UnitCost.Currency = CurrencyString;
             itemMews.UnitCost.Tax = 0;
             //itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->TipAccount;
@@ -1022,22 +966,24 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
         unitAmount -= fabs((double)itemComplete->BillCalcResult.ServiceCharge.TaxValue * portion);
         if(!TGlobalSettings::Instance().Instance().ReCalculateTaxPostDiscount)     //ReCalculateTaxPostDiscount
         {
+            discountValue = ((double)itemComplete->BillCalcResult.TotalDiscount);
+            discountValue = discountValue * portion;
+
             if(itemComplete->GetQty() >= 0)
             {
                 if((double)itemComplete->BillCalcResult.TotalDiscount < 0)
-                    unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                    unitAmount += fabs(discountValue);
                 else
-                    unitAmount -= fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                    unitAmount -= fabs(discountValue);
             }
             else
             {
                 if((double)itemComplete->BillCalcResult.TotalDiscount < 0)
-                    unitAmount -= fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                    unitAmount -= fabs(discountValue);
                 else
-                    unitAmount += fabs((double)itemComplete->BillCalcResult.TotalDiscount);
+                    unitAmount += fabs(discountValue);
             }
-            discountValue = ((double)itemComplete->BillCalcResult.TotalDiscount);
-            discountValue = discountValue * portion;
+
             if(fabs((double)itemComplete->BillCalcResult.TotalDiscount) > 0)
                 seperateDiscount = true;
         }
