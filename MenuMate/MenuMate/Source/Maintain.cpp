@@ -393,17 +393,16 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
         {
             UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
             bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
-            UnicodeString tableCaption =  "Table " + IntToStr(frm_seltbl->SelectedTabContainerNumber);
-
+           
             if(isTableAlreadyMarked)
             {
                 TDBTables::UpdateTableStateForOO(tr, frm_seltbl->SelectedTabContainerNumber, !isTableAlreadyMarked);
-                MessageBox(tableCaption + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
             }
             else
             {
                  TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, tableName, !isTableAlreadyMarked);
-                 MessageBox(tableCaption + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                 MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
             }
 
             must_signal_changes |= 1;

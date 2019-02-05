@@ -485,15 +485,14 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 {
                     case 1 :
                     {
-                        UnicodeString tableName =  "Table " + IntToStr(SelectedTabContainerNumber);
-                        if(isTableAlreadySeated)
+                       if(isTableAlreadySeated)
                         {
-                            MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                            MessageBox(SelectedTabContainerName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
                             TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
                         }
                         else
                         {
-                            MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                            MessageBox(SelectedTabContainerName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
                             SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
                             TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
                         }
