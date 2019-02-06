@@ -1219,16 +1219,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
             else
                 DisableTransferButtonWhenLMIsEnabled();
 
-            //If whole table is billed then unseat is if already seated.
-            Database::TDBTransaction DBTransaction(DBControl);
-			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-			DBTransaction.StartTransaction();
-            bool isTableBilled = TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
-                                        TDBTables::IsTableBilled(DBTransaction, CurrentTable);
-             if(isTableBilled)
-                TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
-            DBTransaction.Commit();
-
+            UpdateTabeleStateForOO();
         }
         else if(CurrentDisplayMode == eTabs)
         {
@@ -1348,6 +1339,9 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 {
                     RemoveLoyaltymateMembership(SplitItemKeySet);
                 }
+
+                if(CurrentDisplayMode == eTables)
+                    UpdateTabeleStateForOO();
                 ResetForm();
 			}
 		}
@@ -1492,6 +1486,9 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 				UpdateContainerListColourDisplay();
 				DBTransaction.Commit();
 				ShowReceipt();
+
+                if(CurrentDisplayMode == eTables)
+                    UpdateTabeleStateForOO();
 			}
 		}
 	}
@@ -5706,4 +5703,15 @@ void TfrmBillGroup:: IsRegistrationVerified()
 
 }
 //---------------------------------------------------
-
+void TfrmBillGroup::UpdateTabeleStateForOO()
+{
+    //If whole table is billed then unseat is if already seated.
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    bool isTableBilled = TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
+                                TDBTables::IsTableBilled(DBTransaction, CurrentTable);
+     if(isTableBilled)
+        TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+    DBTransaction.Commit();
+}
