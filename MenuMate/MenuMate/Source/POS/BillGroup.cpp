@@ -957,8 +957,10 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
             else
                 DisableTransferButtonWhenLMIsEnabled();
 
+            DBTransaction.StartTransaction();
             if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
                 TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+            DBTransaction.Commit();
         }
         else if(CurrentDisplayMode == eTabs)
         {
@@ -1216,6 +1218,17 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                UpdateTableForOnlineOrdering();
             else
                 DisableTransferButtonWhenLMIsEnabled();
+
+            //If whole table is billed then unseat is if already seated.
+            Database::TDBTransaction DBTransaction(DBControl);
+			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+			DBTransaction.StartTransaction();
+            bool isTableBilled = TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
+                                        TDBTables::IsTableBilled(DBTransaction, CurrentTable);
+             if(isTableBilled)
+                TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+            DBTransaction.Commit();
+
         }
         else if(CurrentDisplayMode == eTabs)
         {
