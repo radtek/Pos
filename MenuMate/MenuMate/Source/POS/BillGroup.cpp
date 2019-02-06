@@ -956,6 +956,9 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                UpdateTableForOnlineOrdering();
             else
                 DisableTransferButtonWhenLMIsEnabled();
+
+            if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
+                TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
         }
         else if(CurrentDisplayMode == eTabs)
         {
@@ -1687,9 +1690,6 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
     if(CurrentDisplayMode == eTables)
     {
         UpdateTableForOnlineOrdering();
-
-        if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
-            TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
     }
     else if(CurrentDisplayMode == eTabs)
         UpdateTabForOnlineOrdering();
