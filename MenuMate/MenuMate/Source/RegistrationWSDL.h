@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (28/01/2019 12:35:18 a.m. - - $Rev: 25127 $)
+// (7/02/2019 9:04:52 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -49,6 +49,7 @@ namespace NS__RegistrationWSDL {
 // ************************************************************************ //
 // !:string          - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:boolean         - "http://www.w3.org/2001/XMLSchema"[Gbl]
+// !:dateTime        - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:long            - "http://www.w3.org/2001/XMLSchema"[Gbl]
 // !:int             - "http://www.w3.org/2001/XMLSchema"[Gbl]
 
@@ -146,6 +147,8 @@ private:
   bool            FMenumateVersion_Specified;
   UnicodeString   FOperatingSystemName;
   bool            FOperatingSystemName_Specified;
+  TXSDateTime*    FRegistrationTime;
+  bool            FRegistrationTime_Specified;
   __int64         FSiteCode;
   bool            FSiteCode_Specified;
   UnicodeString   FStaffName;
@@ -176,6 +179,10 @@ private:
   {  FOperatingSystemName = _prop_val; FOperatingSystemName_Specified = true;  }
   bool __fastcall OperatingSystemName_Specified(int Index)
   {  return FOperatingSystemName_Specified;  } 
+  void __fastcall SetRegistrationTime(int Index, TXSDateTime* _prop_val)
+  {  FRegistrationTime = _prop_val; FRegistrationTime_Specified = true;  }
+  bool __fastcall RegistrationTime_Specified(int Index)
+  {  return FRegistrationTime_Specified;  } 
   void __fastcall SetSiteCode(int Index, __int64 _prop_val)
   {  FSiteCode = _prop_val; FSiteCode_Specified = true;  }
   bool __fastcall SiteCode_Specified(int Index)
@@ -205,6 +212,7 @@ __published:
   __property UnicodeString  MacAdress = { index=(IS_OPTN|IS_NLBL), read=FMacAdress, write=SetMacAdress, stored = MacAdress_Specified };
   __property UnicodeString MenumateVersion = { index=(IS_OPTN|IS_NLBL), read=FMenumateVersion, write=SetMenumateVersion, stored = MenumateVersion_Specified };
   __property UnicodeString OperatingSystemName = { index=(IS_OPTN|IS_NLBL), read=FOperatingSystemName, write=SetOperatingSystemName, stored = OperatingSystemName_Specified };
+  __property TXSDateTime* RegistrationTime = { index=(IS_OPTN), read=FRegistrationTime, write=SetRegistrationTime, stored = RegistrationTime_Specified };
   __property __int64      SiteCode = { index=(IS_OPTN), read=FSiteCode, write=SetSiteCode, stored = SiteCode_Specified };
   __property UnicodeString  StaffName = { index=(IS_OPTN|IS_NLBL), read=FStaffName, write=SetStaffName, stored = StaffName_Specified };
   __property UnicodeString SyndicateCode = { index=(IS_OPTN|IS_NLBL), read=FSyndicateCode, write=SetSyndicateCode, stored = SyndicateCode_Specified };

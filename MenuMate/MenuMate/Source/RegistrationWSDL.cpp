@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (28/01/2019 12:35:18 a.m. - - $Rev: 25127 $)
+// (7/02/2019 9:04:52 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -51,6 +51,7 @@ _di_IRegistrationIntegrationWebService GetIRegistrationIntegrationWebService(boo
 
 __fastcall TerminalModel::~TerminalModel()
 {
+  delete FRegistrationTime;
   for(int i=0; i<FLicenceSettingsModel.Length; i++)
     if (FLicenceSettingsModel[i])
       delete FLicenceSettingsModel[i];
@@ -89,10 +90,10 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(RegistrationResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponse2", L"RegistrationResponse");
   /* CompanySiteModelResponse */
   RemClassRegistry()->RegisterXSClass(__classid(CompanySiteModelResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"CompanySiteModelResponse2", L"CompanySiteModelResponse");
-  /* ArrayOfLicenceSettingModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingModel");
   /* RegistrationResponseCode */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(RegistrationResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"RegistrationResponseCode");
+  /* ArrayOfLicenceSettingModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfLicenceSettingModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateRegistration", L"ArrayOfLicenceSettingModel");
 }
 #pragma startup RegTypes 32
 

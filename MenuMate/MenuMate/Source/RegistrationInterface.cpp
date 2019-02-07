@@ -45,6 +45,10 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
         wcfInfo->TerminalDescription = terminalInfo.TerminalDescription;
         wcfInfo->TerminalName = terminalInfo.TerminalName;
 
+        TXSDateTime* transactionDate = new TXSDateTime;
+        transactionDate->AsDateTime = terminalInfo.RegistrationTime;
+        wcfInfo->RegistrationTime = transactionDate;
+
         if(!terminalInfo.LicenceSettingsModel.empty())
         {
             ArrayOfLicenceSettingModel licenseSettingModelArray;

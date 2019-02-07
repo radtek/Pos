@@ -93,6 +93,7 @@ struct TTerminalModel
     AnsiString OperatingSystemName;
     AnsiString MenumateVersion;
     std::list<TLicenceSettingModel> LicenceSettingsModel;
+    TDateTime RegistrationTime;
     TTerminalModel(): SiteCode(0), SyndicateCode(""), TerminalName(""), TerminalDescription(""), StaffName(""), MacAdress(""),
                         ComputerName(""), OperatingSystemName(""), MenumateVersion(""){}
 };
