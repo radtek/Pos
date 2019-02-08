@@ -752,7 +752,7 @@ object frmMaintain: TfrmMaintain
             Font.Style = []
             ParentFont = False
             ParentColor = True
-            Caption = 'Smartcards'
+            Caption = 'Syndicate Code'
             ButtonColor = 6052441
             LatchedColor = clBtnFace
             DisabledButtonColor = clBtnFace
