@@ -28,6 +28,8 @@ namespace MenumateServices.DTO.MenumateRegistration
         [DataMember]
         public string MenumateVersion { get; set; }
         [DataMember]
+        public DateTime RegistrationTime { get; set; }
+        [DataMember]
         public List<LicenceSettingModel> LicenceSettingsModel { get; set; }
     }
 }
