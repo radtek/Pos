@@ -221,7 +221,11 @@ void TfrmEFTPOSConfig::UpdateGUI()
         {
             tbEftPosTerminalID->Enabled = false;
             if(TGlobalSettings::Instance().EnableEftPosAdyen)
+            {
                 tbEftPosTerminalID->Caption =  "Adjust Authorisation URL\r";
+                cbMerchantCopy->Checked = TGlobalSettings::Instance().PrintMerchantReceipt;
+                cbCardHolderCopy->Checked = TGlobalSettings::Instance().PrintCardHolderReceipt;
+            }
         }
     }
     if(!TGlobalSettings::Instance().EnableEftPosAdyen)
