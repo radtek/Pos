@@ -95,6 +95,7 @@ class TDBTables
     static UnicodeString GetStaffNameForSelectedTable(Database::TDBTransaction &DBTransaction,int TableNumber);
     static bool IsTableMarked(Database::TDBTransaction &dBTransaction, int selectedTable);
     static void UpdateTableStateForOO(Database::TDBTransaction &DBTransaction,int inTableNo, bool isMarked);
+    static bool TDBTables::IsTableBilled(Database::TDBTransaction &dBTransaction, int selectedTable);
 };
 
 #endif

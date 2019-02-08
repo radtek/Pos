@@ -1818,7 +1818,6 @@ bool TDBTables::IsTableMarked(Database::TDBTransaction &dBTransaction, int selec
     }
     catch(Exception &Ex)
 	{
-        MessageBox(Ex.Message,"Error in IsTableMarked()",MB_OK);
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
 	}
     return isMarked;
@@ -1847,6 +1846,28 @@ void TDBTables::UpdateTableStateForOO(Database::TDBTransaction &DBTransaction,in
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Err.Message);
 		throw;
 	}
+}
+//=======================================================================================
+bool TDBTables::IsTableBilled(Database::TDBTransaction &dBTransaction, int selectedTable)
+{
+    bool isTableBilled = true;
+    try
+    {
+        TIBSQL *IBInternalQuery = dBTransaction.Query(dBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = " SELECT a.ORDER_KEY FROM ORDERS a WHERE a.TABLE_NUMBER = :TABLE_NUMBER ";
+        IBInternalQuery->ParamByName("TABLE_NUMBER")->AsInteger = selectedTable;
+		IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+                isTableBilled = false;
+    }
+    catch(Exception &Ex)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
+	}
+    return isTableBilled;
+
 }
 
 

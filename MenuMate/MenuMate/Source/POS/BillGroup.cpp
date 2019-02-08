@@ -956,6 +956,11 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                UpdateTableForOnlineOrdering();
             else
                 DisableTransferButtonWhenLMIsEnabled();
+
+            DBTransaction.StartTransaction();
+            if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
+                TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+            DBTransaction.Commit();
         }
         else if(CurrentDisplayMode == eTabs)
         {
@@ -1213,6 +1218,8 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                UpdateTableForOnlineOrdering();
             else
                 DisableTransferButtonWhenLMIsEnabled();
+
+            UpdateTabeleStateForOO();
         }
         else if(CurrentDisplayMode == eTabs)
         {
@@ -1332,6 +1339,9 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 {
                     RemoveLoyaltymateMembership(SplitItemKeySet);
                 }
+
+                if(CurrentDisplayMode == eTables)
+                    UpdateTabeleStateForOO();
                 ResetForm();
 			}
 		}
@@ -1476,6 +1486,9 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 				UpdateContainerListColourDisplay();
 				DBTransaction.Commit();
 				ShowReceipt();
+
+                if(CurrentDisplayMode == eTables)
+                    UpdateTabeleStateForOO();
 			}
 		}
 	}
@@ -1685,7 +1698,9 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
 	UpdateContainerListColourDisplay();
 
     if(CurrentDisplayMode == eTables)
+    {
         UpdateTableForOnlineOrdering();
+    }
     else if(CurrentDisplayMode == eTabs)
         UpdateTabForOnlineOrdering();
 
@@ -5688,4 +5703,15 @@ void TfrmBillGroup:: IsRegistrationVerified()
 
 }
 //---------------------------------------------------
-
+void TfrmBillGroup::UpdateTabeleStateForOO()
+{
+    //If whole table is billed then unseat is if already seated.
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    bool isTableBilled = TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
+                                TDBTables::IsTableBilled(DBTransaction, CurrentTable);
+     if(isTableBilled)
+        TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
+    DBTransaction.Commit();
+}

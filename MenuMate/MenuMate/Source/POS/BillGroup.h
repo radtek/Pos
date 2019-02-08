@@ -191,6 +191,7 @@ private:	// User declarations
     void SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction, TMMContactInfo info);
     void MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64> &SelectedItemKeys);
     void IsRegistrationVerified();
+    void UpdateTabeleStateForOO();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

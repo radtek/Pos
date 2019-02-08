@@ -393,11 +393,17 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
         {
             UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
             bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
-
+           
             if(isTableAlreadyMarked)
+            {
                 TDBTables::UpdateTableStateForOO(tr, frm_seltbl->SelectedTabContainerNumber, !isTableAlreadyMarked);
+                MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+            }
             else
+            {
                  TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, tableName, !isTableAlreadyMarked);
+                 MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+            }
 
             must_signal_changes |= 1;
         }
@@ -3727,7 +3733,7 @@ int TfrmMaintain::ChooseOperation(Database::TDBTransaction &DBTransaction, int s
 	SelectionForm->Items.push_back(Item1);
 
     TVerticalSelection Item2;
-	Item2.Title = isTableAlreadyMarked ? UnicodeString("Unmark for Online orders") : UnicodeString("Mark for Online Orders");
+	Item2.Title = UnicodeString("Seat") ;
 	Item2.Properties["Action"] = IntToStr(2);
     Item2.Properties["Color"] = isTableAlreadyMarked ? IntToStr(clGreen) : IntToStr(clNavy);
     Item2.CloseSelection = true;
