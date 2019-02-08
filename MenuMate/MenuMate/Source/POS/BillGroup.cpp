@@ -957,10 +957,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
             else
                 DisableTransferButtonWhenLMIsEnabled();
 
-            DBTransaction.StartTransaction();
-            if(TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable))
-                TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
-            DBTransaction.Commit();
+            UpdateTabeleStateForOO();
         }
         else if(CurrentDisplayMode == eTabs)
         {
