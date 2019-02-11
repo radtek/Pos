@@ -135,13 +135,24 @@ CMC_ERROR TChefmateClientManager::SendReplacementOrder( TPaymentTransaction* inT
 
 bool TChefmateClientManager::chefMateEnabled()
 {
-	Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-	DBTransaction.StartTransaction();
-	TManagerPhysicalPrinter printerManager;
- 	std::auto_ptr<TStringList>serverNameList(new TStringList);
-	printerManager.GetPrinterServerList(DBTransaction, serverNameList.get(), ptChefMate_Printer);
-    DBTransaction.Commit();
-	return serverNameList->Count > 0;
+    bool result = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+    	TManagerPhysicalPrinter printerManager;
+     	std::auto_ptr<TStringList>serverNameList(new TStringList);
+    //	printerManager.GetPrinterServerList(DBTransaction, serverNameList.get(), ptChefMate_Printer);
+        result = printerManager.CheckIfChefMateEnabledForTerminal(DBTransaction, ptChefMate_Printer);
+        DBTransaction.Commit();
+    }
+    catch (Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        DBTransaction.Rollback();
+    }
+//	return serverNameList->Count > 0;
+    return result;
 }
 //---------------------------------------------------------------------------
 
