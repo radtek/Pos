@@ -13,7 +13,7 @@ namespace SystemTrayApp.SignalR
     public static class Client
     {
         private static IHubProxy _hubProxy { get; set; }
-        const string ServerURI = "http://menumateloyalty.com";
+        const string ServerURI = "http://menumatepos.com";
         public static HubConnection Connection { get; set; }
         private static NotifyIcon notifyIcon;
         private static List<string> logsList;
