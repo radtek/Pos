@@ -220,6 +220,8 @@ __published:	// IDE-managed Components
     TCheckBox *cbReadyForSubstitute3;
     TIBQuery *qrSubstitutePersmissionID;
     TIBQuery *qrupdateSubstituteSetting;
+    TIBSQL *qrUpdateStockFlag;
+    TIBSQL *sqlAddLocal;
 
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall btnOkClick(TObject *Sender);
@@ -328,6 +330,10 @@ private:	// User declarations
     void ResetSubstitueControl();
     void CheckNegativeValue(TDBEdit *dbetextbox);
     AnsiString FormatForDecimalPlaces(AnsiString inputValue, bool &moveToNext);
+    void UpdateIsStockEnabledFlag(bool isStockItemExist);
+    void CheckIfStockItemExist();
+    int GetGlobalProfileKey();
+    int SetProfileKey();
     //bool moveToNext;
 public:		// User declarations
 	__fastcall TfrmAddStock(TComponent* Owner);

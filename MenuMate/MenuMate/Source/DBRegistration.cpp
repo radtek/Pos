@@ -41,7 +41,7 @@ std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Dat
     std::list<TLicenceSettingModel> licenceSettingModelList;
     try
     {
-        for(int settingType = eEftpos; settingType <= eOnlineOrdering; settingType++)
+        for(int settingType = eEftpos; settingType <= eStock; settingType++)
         {
             LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
         }
@@ -127,6 +127,10 @@ void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbT
             case eOnlineOrdering:
                 {
                     LoadOnlineOrderingSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
+            case eStock:
+                {
+                    LoadStockSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             default:
             {
@@ -500,6 +504,27 @@ void TDBRegistration::LoadOnlineOrderingSettingsForTerminal(Database::TDBTransac
 	}
 }
 //-----------------------------------------------------------------------
+void TDBRegistration::LoadStockSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = TGlobalSettings::Instance().IsStockEnabled;
+
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------
 bool TDBRegistration::GetEFTPosSetting(int eftPosSubType)
 {
     bool status;

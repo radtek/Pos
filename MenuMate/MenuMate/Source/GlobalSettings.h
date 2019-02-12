@@ -560,6 +560,7 @@ public:
     bool IsRegistrationVerified;
     bool IsCloudSyncRequired;
     UnicodeString CompanyName;
+    bool IsStockEnabled;
 };
 
 #endif

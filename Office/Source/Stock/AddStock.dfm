@@ -3817,4 +3817,16 @@ object frmAddStock: TfrmAddStock
         ParamType = ptUnknown
       end>
   end
+  object qrUpdateStockFlag: TIBSQL
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    Left = 816
+    Top = 136
+  end
+  object sqlAddLocal: TIBSQL
+    Database = dmStockData.dbStock
+    Transaction = dmStockData.trStock
+    Left = 720
+    Top = 144
+  end
 end
