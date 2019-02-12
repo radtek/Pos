@@ -24,7 +24,7 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
         terminalInfo.MacAdress            = GetMACaddress();
         terminalInfo.ComputerName         = TDeviceRealTerminal::Instance().ID.ComputerName;
         terminalInfo.OperatingSystemName  = GetOperatingSystemName();
-        terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
+        terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
         terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
         terminalInfo.RegistrationTime = Now();
     }
