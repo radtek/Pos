@@ -46,6 +46,9 @@ private:
     static AnsiString GetMACaddress();
     static AnsiString GetOperatingSystemName();
     static void RemoveRegistrationForAllTerminals(Database::TDBTransaction &dbTransaction, int variableKey);
+    static bool GetStockSetting(Database::TDBTransaction &dbTransaction);
+    static bool CheckIfStockItemExist(Database::TDBTransaction &dbTransaction, UnicodeString StockDB);
+    static void UpdateIsStockEnabledFlag(bool status);
 
 };
 #endif

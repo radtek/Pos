@@ -137,8 +137,8 @@ __published:	// IDE-managed Components
 	TImage *Image1;
     TIBSQL *qrStockRequestLocation;
     TIBSQL *qrStockReqPO;
-    TIBSQL *qrUpdateStockFlag;
-    TIBSQL *sqlAddLocal;
+    TIBSQL *qrDelStockFlag;
+    TIBSQL *sqlDelLocal;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall tvStockMouseDown(TObject *Sender, TMouseButton Button,
@@ -227,6 +227,7 @@ private:	// User declarations
     void CheckIfStockItemExist();
     int GetGlobalProfileKey();
     int SetProfileKey();
+    void UpdateIsCloudSyncRequiredFlag();
 
 	TTreeNode *DeletedNode;
 	TTreeNode *LocateInTree(int StockCategoryKey, int StockGroupKey, int StockKey, bool Deleted=false);

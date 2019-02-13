@@ -960,7 +960,6 @@ void __fastcall TfrmAddStock::btnOkClick(TObject *Sender)
       {
 			if (Transaction->InTransaction) Transaction->Commit();
 			ModalResult = mrOk;
-            CheckIfStockItemExist();
       }
    }
          else{return;}
@@ -984,6 +983,7 @@ void __fastcall TfrmAddStock::btnOkClick(TObject *Sender)
             Transaction->Commit();
     	SubsituteData();
         PopulateSubstituteField();
+        CheckIfStockItemExist();
 }
 //---------------------------------------------------------------------------
 void TfrmAddStock::ResetSubstitueControl()
@@ -2958,13 +2958,16 @@ void TfrmAddStock::CheckIfStockItemExist()
         bool isStockItemExist = false;
         sqlAddLocal->Transaction->StartTransaction();
 		sqlAddLocal->Close();
-		sqlAddLocal->SQL->Text = "SELECT STOCK_KEY FROM STOCK ";
+		sqlAddLocal->SQL->Text = "SELECT COUNT(STOCK_KEY) COUNTSTOCKITEMS FROM STOCK WHERE DELETED = 'F' ";
 		sqlAddLocal->ExecQuery();
 
-        if(sqlAddLocal->RecordCount > 0)
+        int count = sqlAddLocal->FieldByName("COUNTSTOCKITEMS")->AsInteger;
+        if(count == 1)
+        {
             isStockItemExist = true;
-
-        UpdateIsStockEnabledFlag(isStockItemExist);
+            UpdateIsStockEnabledFlag(isStockItemExist);
+            UpdateIsCloudSyncRequiredFlag();
+        }
         sqlAddLocal->Transaction->Commit();
 
 	}
@@ -2996,7 +2999,7 @@ void TfrmAddStock::UpdateIsStockEnabledFlag(bool isStockItemExist)
 	                    "VARIABLES_KEY = :VARIABLES_KEY AND "
 	                    "PROFILE_KEY = :PROFILE_KEY";
 
-	    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 4149;
+	    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 9648;
 	    qrUpdateStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
 	    qrUpdateStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
 	    qrUpdateStockFlag->ExecQuery();
@@ -3027,7 +3030,7 @@ void TfrmAddStock::UpdateIsStockEnabledFlag(bool isStockItemExist)
                         ":INTEGER_VAL);";
 
 		    qrUpdateStockFlag->ParamByName("VARSPROFILE_KEY")->AsInteger = Key;
-		    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 4149;
+		    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 9648;
 		    qrUpdateStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
 		    qrUpdateStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
 		    qrUpdateStockFlag->ExecQuery();
@@ -3110,6 +3113,28 @@ int TfrmAddStock::SetProfileKey()
 
 
         qrUpdateStockFlag->Transaction->Commit();
+    }
+    catch(Exception &E)
+    {
+        qrUpdateStockFlag->Transaction->Rollback();
+		throw;
+    }
+}
+//-------------------------------------------------------------------------
+void TfrmAddStock::UpdateIsCloudSyncRequiredFlag()
+{
+    try
+    {
+        qrUpdateStockFlag->Transaction->StartTransaction();
+
+		qrUpdateStockFlag->Close();
+
+		qrUpdateStockFlag->SQL->Text = "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+
+		qrUpdateStockFlag->ExecQuery();
+        qrUpdateStockFlag->Transaction->Commit();
+    
     }
     catch(Exception &E)
     {

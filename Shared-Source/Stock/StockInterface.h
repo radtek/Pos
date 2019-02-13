@@ -120,6 +120,7 @@ public:
 	bool GetNextStockCost(TStockDetails &StockDetails);
 	bool GetStockDetails(const AnsiString &Code ,const AnsiString &Location ,TStockDetails &StockDetails );
     bool CheckStockItem();
+    bool CheckIfStockItemExist();
 
 private:
 	std::auto_ptr<TvMMControls>	fControls;	// Interface into hidden functionality.

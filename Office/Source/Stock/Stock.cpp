@@ -3590,22 +3590,24 @@ void __fastcall TfrmStock::ListView1DblClick(TObject *Sender)
 void TfrmStock::CheckIfStockItemExist()
 {
 	try
-	{   Application->MessageBox("CheckIfStockItemExist", "Question", MB_OK);
+	{
         bool isStockItemExist = false;
-        sqlAddLocal->Transaction->StartTransaction();
-		sqlAddLocal->Close();
-		sqlAddLocal->SQL->Text = "SELECT STOCK_KEY FROM STOCK ";
-		sqlAddLocal->ExecQuery();
+        sqlDelLocal->Transaction->StartTransaction();
+		sqlDelLocal->Close();
+		sqlDelLocal->SQL->Text = "SELECT STOCK_KEY FROM STOCK WHERE DELETED = 'F' ";
 
-        if(sqlAddLocal->RecordCount > 0)
-            isStockItemExist = true;
+		sqlDelLocal->ExecQuery();
 
-        UpdateIsStockEnabledFlag(isStockItemExist);
-        sqlAddLocal->Transaction->Commit();
+        if(sqlDelLocal->RecordCount == 0)
+        {
+            UpdateIsStockEnabledFlag(isStockItemExist);
+            UpdateIsCloudSyncRequiredFlag();
+        }
+        sqlDelLocal->Transaction->Commit();
 
 	}
 	catch(Exception &E)
-	{   sqlAddLocal->Transaction->Rollback();
+	{   sqlDelLocal->Transaction->Rollback();
 		throw;
 	}
 
@@ -3619,11 +3621,11 @@ void TfrmStock::UpdateIsStockEnabledFlag(bool isStockItemExist)
         int profile_key = GetGlobalProfileKey();
         if(profile_key == 0)
             profile_key = SetProfileKey();
-	 	qrUpdateStockFlag->Transaction->StartTransaction();
+	 	qrDelStockFlag->Transaction->StartTransaction();
 
-        qrUpdateStockFlag->Close();
+        qrDelStockFlag->Close();
 
-	    qrUpdateStockFlag->SQL->Text =
+	    qrDelStockFlag->SQL->Text =
 	                    "UPDATE "
 	                    "VARSPROFILE "
 	                    "SET "
@@ -3632,25 +3634,25 @@ void TfrmStock::UpdateIsStockEnabledFlag(bool isStockItemExist)
 	                    "VARIABLES_KEY = :VARIABLES_KEY AND "
 	                    "PROFILE_KEY = :PROFILE_KEY";
 
-	    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 4149;
-	    qrUpdateStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
-	    qrUpdateStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
-	    qrUpdateStockFlag->ExecQuery();
+	    qrDelStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 9648;
+	    qrDelStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
+	    qrDelStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
+	    qrDelStockFlag->ExecQuery();
 
-	    if(qrUpdateStockFlag->RowsAffected == 0)
+	    if(qrDelStockFlag->RowsAffected == 0)
 	    {
 		    Create = true;
 	    }
 
 	    if(Create)
 	    {
-		    qrUpdateStockFlag->Close();
-		    qrUpdateStockFlag->SQL->Text = "SELECT GEN_ID(GEN_VARSPROFILE, 1) FROM RDB$DATABASE";
-		    qrUpdateStockFlag->ExecQuery();
-		    int Key = qrUpdateStockFlag->Fields[0]->AsInteger;
+		    qrDelStockFlag->Close();
+		    qrDelStockFlag->SQL->Text = "SELECT GEN_ID(GEN_VARSPROFILE, 1) FROM RDB$DATABASE";
+		    qrDelStockFlag->ExecQuery();
+		    int Key = qrDelStockFlag->Fields[0]->AsInteger;
 
-		    qrUpdateStockFlag->Close();
-		    qrUpdateStockFlag->SQL->Text =
+		    qrDelStockFlag->Close();
+		    qrDelStockFlag->SQL->Text =
 		                "INSERT INTO VARSPROFILE ("
                         "VARSPROFILE_KEY,"
                         "VARIABLES_KEY,"
@@ -3662,19 +3664,19 @@ void TfrmStock::UpdateIsStockEnabledFlag(bool isStockItemExist)
                         ":PROFILE_KEY,"
                         ":INTEGER_VAL);";
 
-		    qrUpdateStockFlag->ParamByName("VARSPROFILE_KEY")->AsInteger = Key;
-		    qrUpdateStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 4149;
-		    qrUpdateStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
-		    qrUpdateStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
-		    qrUpdateStockFlag->ExecQuery();
+		    qrDelStockFlag->ParamByName("VARSPROFILE_KEY")->AsInteger = Key;
+		    qrDelStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 9648;
+		    qrDelStockFlag->ParamByName("PROFILE_KEY")->AsInteger = profile_key;
+		    qrDelStockFlag->ParamByName("INTEGER_VAL")->AsInteger = isStockItemExist? 1:0;
+		    qrDelStockFlag->ExecQuery();
 	    }
 
-        qrUpdateStockFlag->Transaction->Commit();
+        qrDelStockFlag->Transaction->Commit();
 
 	}
 	catch(Exception &E)
 	{
-        qrUpdateStockFlag->Transaction->Rollback();
+        qrDelStockFlag->Transaction->Rollback();
 		throw;
 	}
 }
@@ -3684,10 +3686,10 @@ int TfrmStock::GetGlobalProfileKey()
     int RetVal = 0;
     try
     {
-        qrUpdateStockFlag->Transaction->StartTransaction();
+        qrDelStockFlag->Transaction->StartTransaction();
 
-        qrUpdateStockFlag->Close();
-	    qrUpdateStockFlag->SQL->Text =
+        qrDelStockFlag->Close();
+	    qrDelStockFlag->SQL->Text =
                     "SELECT "
                     "PROFILE_KEY "
                     "FROM "
@@ -3696,20 +3698,20 @@ int TfrmStock::GetGlobalProfileKey()
                     "NAME = :NAME AND "
                     "PROFILE_TYPE = :PROFILE_TYPE";
 
-        qrUpdateStockFlag->ParamByName("NAME")->AsString = "Globals";
-        qrUpdateStockFlag->ParamByName("PROFILE_TYPE")->AsInteger = 4;
-        qrUpdateStockFlag->ExecQuery();
+        qrDelStockFlag->ParamByName("NAME")->AsString = "Globals";
+        qrDelStockFlag->ParamByName("PROFILE_TYPE")->AsInteger = 4;
+        qrDelStockFlag->ExecQuery();
 
-        if(qrUpdateStockFlag->RecordCount)
+        if(qrDelStockFlag->RecordCount)
         {
-            RetVal = qrUpdateStockFlag->FieldByName("PROFILE_KEY")->AsInteger;
+            RetVal = qrDelStockFlag->FieldByName("PROFILE_KEY")->AsInteger;
         }
-        qrUpdateStockFlag->Transaction->Commit();
+        qrDelStockFlag->Transaction->Commit();
 
     }
     catch(Exception &E)
     {
-        qrUpdateStockFlag->Transaction->Rollback();
+        qrDelStockFlag->Transaction->Rollback();
 		throw;
     }
     
@@ -3721,16 +3723,16 @@ int TfrmStock::SetProfileKey()
     int RetVal = 0;
     try
     {
-        qrUpdateStockFlag->Transaction->StartTransaction();
+        qrDelStockFlag->Transaction->StartTransaction();
 
-        qrUpdateStockFlag->Close();
-		qrUpdateStockFlag->SQL->Text = "SELECT GEN_ID(GEN_PROFILE, 1) FROM RDB$DATABASE";
-		qrUpdateStockFlag->ExecQuery();
-		RetVal = qrUpdateStockFlag->Fields[0]->AsInteger;
+        qrDelStockFlag->Close();
+		qrDelStockFlag->SQL->Text = "SELECT GEN_ID(GEN_PROFILE, 1) FROM RDB$DATABASE";
+		qrDelStockFlag->ExecQuery();
+		RetVal = qrDelStockFlag->Fields[0]->AsInteger;
 
-		qrUpdateStockFlag->Close();
+		qrDelStockFlag->Close();
 
-		qrUpdateStockFlag->SQL->Text =
+		qrDelStockFlag->SQL->Text =
                     "INSERT INTO PROFILE ("
                     "PROFILE_KEY,"
                     "PROFILE_TYPE,"
@@ -3739,17 +3741,38 @@ int TfrmStock::SetProfileKey()
                     ":PROFILE_KEY,"
                     ":PROFILE_TYPE,"
                     ":NAME);";
-		qrUpdateStockFlag->ParamByName("PROFILE_KEY")->AsInteger = RetVal;
-		qrUpdateStockFlag->ParamByName("PROFILE_TYPE")->AsInteger = 4;
-		qrUpdateStockFlag->ParamByName("NAME")->AsString = "Globals";
-		qrUpdateStockFlag->ExecQuery();
+		qrDelStockFlag->ParamByName("PROFILE_KEY")->AsInteger = RetVal;
+		qrDelStockFlag->ParamByName("PROFILE_TYPE")->AsInteger = 4;
+		qrDelStockFlag->ParamByName("NAME")->AsString = "Globals";
+		qrDelStockFlag->ExecQuery();
 
 
-        qrUpdateStockFlag->Transaction->Commit();
+        qrDelStockFlag->Transaction->Commit();
     }
     catch(Exception &E)
     {
-        qrUpdateStockFlag->Transaction->Rollback();
+        qrDelStockFlag->Transaction->Rollback();
+		throw;
+    }
+}
+//-------------------------------------------------------------------------
+void TfrmStock::UpdateIsCloudSyncRequiredFlag()
+{
+    try
+    {
+        qrDelStockFlag->Transaction->StartTransaction();
+		qrDelStockFlag->Close();
+
+		qrDelStockFlag->SQL->Text = "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        qrDelStockFlag->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+
+		qrDelStockFlag->ExecQuery();
+        qrDelStockFlag->Transaction->Commit();
+
+    }
+    catch(Exception &E)
+    {
+        qrDelStockFlag->Transaction->Rollback();
 		throw;
     }
 }

@@ -334,6 +334,7 @@ private:	// User declarations
     void CheckIfStockItemExist();
     int GetGlobalProfileKey();
     int SetProfileKey();
+    void UpdateIsCloudSyncRequiredFlag();
     //bool moveToNext;
 public:		// User declarations
 	__fastcall TfrmAddStock(TComponent* Owner);

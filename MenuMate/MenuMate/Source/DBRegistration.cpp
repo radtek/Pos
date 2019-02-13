@@ -6,6 +6,9 @@
 #include "MMLogging.h"
 #include "DBRegistration.h"
 #include "ManagerPhysicalPrinter.h"
+#include "StockInterface.h"
+
+using namespace StockInterface;
 
 //---------------------------------------------------------------------------
 
@@ -512,7 +515,7 @@ void TDBRegistration::LoadStockSettingForTerminal(Database::TDBTransaction &dbTr
 
         licenceSettingModel.SettingType       = licenceType;
         licenceSettingModel.SettingSubType    = "0";
-        licenceSettingModel.IsActive          = TGlobalSettings::Instance().IsStockEnabled;
+        licenceSettingModel.IsActive          = GetStockSetting(dbTransaction);
 
 
         licenceSettingModelList.push_back(licenceSettingModel);
@@ -980,5 +983,105 @@ AnsiString TDBRegistration::GetOperatingSystemName()
     }
 
     return retValue;
+}
+//--------------------------------------------------------------------------
+bool TDBRegistration::GetStockSetting(Database::TDBTransaction &dbTransaction)
+{
+    bool status = false;
+    bool stockGlobalSetting = false;
+    int global_profile_key;
+    try
+    {
+        #pragma warn -pia
+        if (!(global_profile_key = TManagerVariable::Instance().GetProfile(dbTransaction, eSystemProfiles, "Globals")))
+            global_profile_key = TManagerVariable::Instance().SetProfile(dbTransaction, eSystemProfiles, "Globals");
+        #pragma warn .pia
+
+        TManagerVariable::Instance().GetProfileBool(dbTransaction, global_profile_key, vmIsStockEnabled, stockGlobalSetting);
+        UnicodeString StockDB = TGlobalSettings::Instance().StockInterbaseIP + ":" +TGlobalSettings::Instance().StockDatabasePath;
+
+        if(stockGlobalSetting)
+        {
+            if(StockDB != ":")
+                status = true;
+        }
+        else
+        {
+            if(StockDB != ":")
+            {
+                bool isAnyStockItemExist = CheckIfStockItemExist(dbTransaction, StockDB);
+                if(isAnyStockItemExist)
+                {
+                    UpdateIsStockEnabledFlag(true);
+                    status = true;
+                }
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+    return status;
+}
+//--------------------------------------------------------------------------
+bool TDBRegistration::CheckIfStockItemExist(Database::TDBTransaction &dbTransaction, UnicodeString StockDB)
+{
+    bool retValue = false;
+    try
+    {
+        TStockInterface StockInterface(StockDB);
+        try
+        {
+            StockInterface.Initialise();
+            retValue = StockInterface.CheckIfStockItemExist();
+        }
+        catch(Exception & E)
+        {
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
+            throw;
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
+        throw;
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TDBRegistration::UpdateIsStockEnabledFlag(bool status)
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    try
+	{
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+	    TManagerVariable &mv = TManagerVariable::Instance();
+
+	    int global_profile_key;
+
+    	tr.StartTransaction();
+
+	    // This is used to retain the state of the checkbox if the POS is exited
+        #pragma warn -pia
+	    if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        #pragma warn .pia
+
+	    mv.SetProfileBool(
+	    tr,
+	    global_profile_key,
+	    vmIsStockEnabled,
+	    gs.IsStockEnabled = status);
+
+	    tr.Commit();
+
+	}
+	catch(Exception & E)
+	{
+        tr.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 

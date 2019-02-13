@@ -1391,13 +1391,13 @@ object frmStock: TfrmStock
     Left = 160
     Top = 304
   end
-  object qrUpdateStockFlag: TIBSQL
+  object qrDelStockFlag: TIBSQL
     Database = dmMMData.dbMenuMate
     Transaction = dmMMData.trMenuMate
     Left = 48
     Top = 312
   end
-  object sqlAddLocal: TIBSQL
+  object sqlDelLocal: TIBSQL
     Database = dmStockData.dbStock
     Transaction = dmStockData.trStock
     Left = 104
