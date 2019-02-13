@@ -6,8 +6,8 @@ object FrmSelectTable2: TFrmSelectTable2
   BorderStyle = bsNone
   BorderWidth = 5
   Caption = 'Select Table'
-  ClientHeight = 565
-  ClientWidth = 814
+  ClientHeight = 575
+  ClientWidth = 824
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,10 +26,10 @@ object FrmSelectTable2: TFrmSelectTable2
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 671
+    Left = 681
     Top = 0
     Width = 143
-    Height = 565
+    Height = 575
     Align = alRight
     BevelOuter = bvNone
     BorderWidth = 3
@@ -37,7 +37,7 @@ object FrmSelectTable2: TFrmSelectTable2
     TabOrder = 1
     object TouchBtn2: TTouchBtn
       Left = 3
-      Top = 493
+      Top = 503
       Width = 133
       Height = 65
       Align = alBottom
@@ -59,7 +59,7 @@ object FrmSelectTable2: TFrmSelectTable2
       Left = 3
       Top = 3
       Width = 133
-      Height = 490
+      Height = 500
       Align = alClient
       BorderWidth = 5
       Font.Charset = DEFAULT_CHARSET
@@ -177,8 +177,8 @@ object FrmSelectTable2: TFrmSelectTable2
   object panelTables: TPanel
     Left = 0
     Top = 0
-    Width = 671
-    Height = 565
+    Width = 681
+    Height = 575
     Align = alClient
     ParentBackground = False
     TabOrder = 0
@@ -195,7 +195,7 @@ object FrmSelectTable2: TFrmSelectTable2
     object PnlLocation: TPanel
       Left = 1
       Top = 1
-      Width = 669
+      Width = 679
       Height = 41
       Align = alTop
       Caption = 'Location.'
