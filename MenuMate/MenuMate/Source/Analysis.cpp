@@ -9294,7 +9294,13 @@ void TfrmAnalysis::UpdateMaxZedTime(int fieldindex)
 }
 //-----------------------------------------------------------------------------------------------------------
 void TfrmAnalysis::UploadMallFilesToFTP()
-{    try    {       MessageBox("Hi","",MB_OK);        std::list<TMallExportSettings> ::iterator itUISettings;         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)        {
+{
+    try
+    {
+        std::list<TMallExportSettings> ::iterator itUISettings;
+         UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";
+        for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
+        {
             if(itUISettings->Value != "" )
             {
                 if(itUISettings->ControlName == "edMallFTPServer")
@@ -9309,7 +9315,12 @@ void TfrmAnalysis::UploadMallFilesToFTP()
                     LocalPathFileName = itUISettings->Value;//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
 
             }
-        }        if(HostName.Trim() != "" && FtpUserName.Trim() != "" && FtpPassword.Trim() != "")        {            for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)            {
+        }
+
+        if(HostName.Trim() != "" && FtpUserName.Trim() != "" && FtpPassword.Trim() != "")
+        {
+            for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)
+            {
                 LocalPathFileName = LocalPathFileName + TGlobalSettings::Instance().mallInfo.FileNameList[index];
                 LocalFileName = TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
                 int FCount=0;
@@ -9317,12 +9328,10 @@ void TfrmAnalysis::UploadMallFilesToFTP()
                 const char * userPath = FtpPath.t_str();
                 const char * userName = FtpUserName.t_str();
                 const char * userPassword = FtpPassword.t_str();
-
                 if(index == (TGlobalSettings::Instance().mallInfo.FileNameList.size()-1))
                     FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount);
                 else
                     FileSubmit(hostName, userName, userPassword, userPath, LocalPathFileName, LocalFileName, FCount, false);
-
             }
         }
     }
@@ -9333,7 +9342,6 @@ void TfrmAnalysis::UploadMallFilesToFTP()
     }
 
 }
-
 
 
 
