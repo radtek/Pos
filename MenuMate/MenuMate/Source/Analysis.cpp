@@ -9297,6 +9297,8 @@ void TfrmAnalysis::UploadMallFilesToFTP()
 {
     try
     {
+     for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)
+        {
         std::list<TMallExportSettings> ::iterator itUISettings;
          UnicodeString HostName = "", FtpPath = "", FtpUserName = "", FtpPassword = "", LocalPathFileName = "", LocalFileName = "";
         for(itUISettings = TGlobalSettings::Instance().mallInfo.MallSettings.begin(); itUISettings != TGlobalSettings::Instance().mallInfo.MallSettings.end(); itUISettings++)
@@ -9312,16 +9314,14 @@ void TfrmAnalysis::UploadMallFilesToFTP()
                 else if(itUISettings->ControlName == "edMallFTPPassword")
                     FtpPassword = itUISettings->Value;
                 else if(itUISettings->ControlName == "edNewMallPath")
-                    LocalPathFileName = itUISettings->Value;//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
+                    LocalPathFileName = itUISettings->Value + TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().SouthBeachFileName;
 
             }
         }
 
         if(HostName.Trim() != "" && FtpUserName.Trim() != "" && FtpPassword.Trim() != "")
         {
-            for (int index = 0; index < TGlobalSettings::Instance().mallInfo.FileNameList.size() ; index++)
-            {
-                LocalPathFileName = LocalPathFileName + TGlobalSettings::Instance().mallInfo.FileNameList[index];
+
                 LocalFileName = TGlobalSettings::Instance().mallInfo.FileNameList[index];//TGlobalSettings::Instance().mallInfo.FileName;//TGlobalSettings::Instance().SouthBeachFileName;
                 int FCount=0;
                 const char * hostName = HostName.t_str();

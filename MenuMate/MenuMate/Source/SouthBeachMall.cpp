@@ -188,7 +188,7 @@ TMallExportPrepareData TSouthBeachMall::PrepareDataForExport(int zKey)
           TimeFormat= Date_Value.FormatString("hhmmss");
           int terminalNumber;
           GetTerminalSettings(MachineID, terminalNumber);
-          fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+          fileName = fileName + "CDL03" + MachineID + "_" + dateformat + "_" + TimeFormat;
 
           TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
@@ -316,7 +316,7 @@ UnicodeString TSouthBeachMall::GetFileName(Database::TDBTransaction &dBTransacti
          UnicodeString TimeFormat="";
          UnicodeString Validatedateformat="";
          PrepareDataforFilename(zKey,MachineID,dateformat,TimeFormat,Validatedateformat) ;
-         fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+         fileName = fileName + "CDL03" + MachineID + "_" + dateformat + "_" + TimeFormat;
          //TGlobalSettings::Instance().mallInfo.FileName = fileName + ".txt";
 
      }
@@ -405,7 +405,7 @@ void TSouthBeachMall::PrepareDataForDailySalesFile(Database::TDBTransaction &dBT
                               DateForFile = ZedDateOfSecondMaxZed +i+1;
                               dateformat = DateForFile.FormatString("YYYYMMDD");
                               UnicodeString Date_Value_In_File = DateForFile.FormatString("DDMMYYYY");
-                              fileName = "CDLO3" + MachineID + "_" + dateformat + "_" + TimeValueForFilename;
+                              fileName = "CDL03" + MachineID + "_" + dateformat + "_" + TimeValueForFilename;
                               preparedData.FileName.insert( std::pair<int,UnicodeString >(i+1, fileName ));
 
                               TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
@@ -1098,7 +1098,7 @@ void TSouthBeachMall::GetListOfDatesBetwSdateEndDate(TDateTime Startdate, TDateT
                           TMallExportSalesData salesData;
                           UnicodeString fileName = "";
 
-                          fileName = fileName + "CDLO3" + Machine_ID + "_" + DateValueForFilename + "_" + TimeFormat_ShopClosure;
+                          fileName = fileName + "CDL03" + Machine_ID + "_" + DateValueForFilename + "_" + TimeFormat_ShopClosure;
                           preparedData.FileName.insert( std::pair<int,UnicodeString >(1, fileName ));
 
                           TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
@@ -1203,7 +1203,7 @@ void TSouthBeachMall::CheckFirstSaleOfEachZed(int Zedkey ,TDateTime Startdate,TD
 
         if(Validatedateformat == datevalue )
         {
-          fileName = fileName + "CDLO3" + MachineID + "_" + dateformat + "_" + TimeFormat;
+          fileName = fileName + "CDL03" + MachineID + "_" + dateformat + "_" + TimeFormat;
 
           TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
@@ -1377,7 +1377,7 @@ void TSouthBeachMall::CheckNoSaleDataForDateValue(TDateTime DateValue)
           UnicodeString fileName = "";
           UnicodeString dateformat ="";
 
-          fileName = fileName + "CDLO3" + Machine_ID + "_" + Date_Value_For_Filename + "_" + TimeFormat_Nosales;
+          fileName = fileName + "CDL03" + Machine_ID + "_" + Date_Value_For_Filename + "_" + TimeFormat_Nosales;
 
           TGlobalSettings::Instance().mallInfo.FileNameList.push_back(fileName + ".txt");
 
