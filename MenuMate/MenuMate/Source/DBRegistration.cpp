@@ -6,6 +6,9 @@
 #include "MMLogging.h"
 #include "DBRegistration.h"
 #include "ManagerPhysicalPrinter.h"
+#include "StockInterface.h"
+
+using namespace StockInterface;
 
 //---------------------------------------------------------------------------
 
@@ -24,7 +27,7 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
         terminalInfo.MacAdress            = GetMACaddress();
         terminalInfo.ComputerName         = TDeviceRealTerminal::Instance().ID.ComputerName;
         terminalInfo.OperatingSystemName  = GetOperatingSystemName();
-        terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.MMSoftwareVersion;
+        terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
         terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
         terminalInfo.RegistrationTime = Now();
     }
@@ -41,7 +44,7 @@ std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Dat
     std::list<TLicenceSettingModel> licenceSettingModelList;
     try
     {
-        for(int settingType = eEftpos; settingType <= eOnlineOrdering; settingType++)
+        for(int settingType = eEftpos; settingType <= eStock; settingType++)
         {
             LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
         }
@@ -127,6 +130,10 @@ void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbT
             case eOnlineOrdering:
                 {
                     LoadOnlineOrderingSettingsForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
+            case eStock:
+                {
+                    LoadStockSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             default:
             {
@@ -500,6 +507,27 @@ void TDBRegistration::LoadOnlineOrderingSettingsForTerminal(Database::TDBTransac
 	}
 }
 //-----------------------------------------------------------------------
+void TDBRegistration::LoadStockSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          = GetStockSetting(dbTransaction);
+
+
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------
 bool TDBRegistration::GetEFTPosSetting(int eftPosSubType)
 {
     bool status;
@@ -955,5 +983,105 @@ AnsiString TDBRegistration::GetOperatingSystemName()
     }
 
     return retValue;
+}
+//--------------------------------------------------------------------------
+bool TDBRegistration::GetStockSetting(Database::TDBTransaction &dbTransaction)
+{
+    bool status = false;
+    bool stockGlobalSetting = false;
+    int global_profile_key;
+    try
+    {
+        #pragma warn -pia
+        if (!(global_profile_key = TManagerVariable::Instance().GetProfile(dbTransaction, eSystemProfiles, "Globals")))
+            global_profile_key = TManagerVariable::Instance().SetProfile(dbTransaction, eSystemProfiles, "Globals");
+        #pragma warn .pia
+
+        TManagerVariable::Instance().GetProfileBool(dbTransaction, global_profile_key, vmIsStockEnabled, stockGlobalSetting);
+        UnicodeString StockDB = TGlobalSettings::Instance().StockInterbaseIP + ":" +TGlobalSettings::Instance().StockDatabasePath;
+
+        if(stockGlobalSetting)
+        {
+            if(StockDB != ":")
+                status = true;
+        }
+        else
+        {
+            if(StockDB != ":")
+            {
+                bool isAnyStockItemExist = CheckIfStockItemExist(dbTransaction, StockDB);
+                if(isAnyStockItemExist)
+                {
+                    UpdateIsStockEnabledFlag(true);
+                    status = true;
+                }
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+    return status;
+}
+//--------------------------------------------------------------------------
+bool TDBRegistration::CheckIfStockItemExist(Database::TDBTransaction &dbTransaction, UnicodeString StockDB)
+{
+    bool retValue = false;
+    try
+    {
+        TStockInterface StockInterface(StockDB);
+        try
+        {
+            StockInterface.Initialise();
+            retValue = StockInterface.CheckIfStockItemExist();
+        }
+        catch(Exception & E)
+        {
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
+            throw;
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message + " Full DB Path " + StockDB);
+        throw;
+    }
+    return retValue;
+}
+//----------------------------------------------------------------------------
+void TDBRegistration::UpdateIsStockEnabledFlag(bool status)
+{
+    Database::TDBTransaction tr(TDeviceRealTerminal::Instance().DBControl);
+    try
+	{
+        TGlobalSettings  &gs = TGlobalSettings::Instance();
+	    TManagerVariable &mv = TManagerVariable::Instance();
+
+	    int global_profile_key;
+
+    	tr.StartTransaction();
+
+	    // This is used to retain the state of the checkbox if the POS is exited
+        #pragma warn -pia
+	    if (!(global_profile_key = mv.GetProfile(tr, eSystemProfiles, "Globals")))
+	        global_profile_key = mv.SetProfile(tr, eSystemProfiles, "Globals");
+        #pragma warn .pia
+
+	    mv.SetProfileBool(
+	    tr,
+	    global_profile_key,
+	    vmIsStockEnabled,
+	    gs.IsStockEnabled = status);
+
+	    tr.Commit();
+
+	}
+	catch(Exception & E)
+	{
+        tr.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+		throw;
+	}
 }
 
