@@ -437,87 +437,90 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         tiUpdateFloorPlanRefresh->Enabled = false;
         AnsiString message(_controller->GetTableDesc());
         DTOReservable *Table = _controller->GetCurrentTable();
+        SelectedTabContainerName = Table->Name;
+        SelectedTabContainerNumber = Table->Number;
 
-        if (Table != NULL )
+         // checking bill button option whether online ordering is true or table has order in it.
+        if(TGlobalSettings::Instance().EnableOnlineOrdering || TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
         {
-            SelectedTabContainerName = Table->Name;
-            SelectedTabContainerNumber = Table->Number;
-
-            bool isTableAlreadySeated = TDBTables::IsTableMarked(dBTransaction, SelectedTabContainerNumber);
-            bool showSelectionForm = false;
-            std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
-
-            TVerticalSelection Item;
-            Item.Title = "Cancel";
-            Item.Properties["Color"] = IntToStr(clMaroon);
-            Item.CloseSelection = true;
-            SelectionForm->Items.push_back(Item);
-
-            if(TGlobalSettings::Instance().EnableOnlineOrdering)
+            if (Table != NULL)
             {
-                showSelectionForm = true;
-                TVerticalSelection Item1;
-                Item1.Title = "Seat";
-                Item1.Properties["Action"] = IntToStr(1);
-                Item1.Properties["Color"] = isTableAlreadySeated ? IntToStr(clGreen) : IntToStr(clNavy);
-                Item1.CloseSelection = true;
-                SelectionForm->Items.push_back(Item1);
-            }
+                bool isTableAlreadySeated = TDBTables::IsTableMarked(dBTransaction, SelectedTabContainerNumber);
+                bool showSelectionForm = false;
+                std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
 
-            if(TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
-            {
-                showSelectionForm = true;
-                TVerticalSelection Item2;
-                Item2.Title = "Bill";
-                Item2.Properties["Action"] = IntToStr(2);
-                Item2.Properties["Color"] = IntToStr(clNavy);
-                Item2.CloseSelection = true;
-                SelectionForm->Items.push_back(Item2);
-            }
-            tiTimerEnableReq->Enabled = false;
-            SelectionForm->ShowModal();
+                TVerticalSelection Item;
+                Item.Title = "Cancel";
+                Item.Properties["Color"] = IntToStr(clMaroon);
+                Item.CloseSelection = true;
+                SelectionForm->Items.push_back(Item);
 
-            TVerticalSelection SelectedItem;
-            if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
-            {
-                int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
-                switch(Action)
+                if(TGlobalSettings::Instance().EnableOnlineOrdering)
                 {
-                    case 1 :
-                    {
-                       if(isTableAlreadySeated)
-                        {
-                            MessageBox(SelectedTabContainerName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
-                            TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
-                        }
-                        else
-                        {
-                            MessageBox(SelectedTabContainerName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
-                            SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
-                            TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
-                        }
-
-                    }break;
-                    case 2 :
-                    {
-                        TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
-                        frmBillGroup->CurrentTable = SelectedTabContainerNumber;
-                        frmBillGroup->CurrentDisplayMode = eTables;
-                        frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTabContainerNumber);
-
-                        frmBillGroup->ShowModal();
-                        delete frmBillGroup;
-                        frmBillGroup = NULL;
-                    }break;
+                    showSelectionForm = true;
+                    TVerticalSelection Item1;
+                    Item1.Title = "Seat";
+                    Item1.Properties["Action"] = IntToStr(1);
+                    Item1.Properties["Color"] = isTableAlreadySeated ? IntToStr(clGreen) : IntToStr(clNavy);
+                    Item1.CloseSelection = true;
+                    SelectionForm->Items.push_back(Item1);
                 }
-                _controller->DrawCurrentPlan(dBTransaction);
-            }
+
+                if(TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
+                {
+                    showSelectionForm = true;
+                    TVerticalSelection Item2;
+                    Item2.Title = "Bill";
+                    Item2.Properties["Action"] = IntToStr(2);
+                    Item2.Properties["Color"] = IntToStr(clNavy);
+                    Item2.CloseSelection = true;
+                    SelectionForm->Items.push_back(Item2);
+                }
+                tiTimerEnableReq->Enabled = false;
+                SelectionForm->ShowModal();
+
+                TVerticalSelection SelectedItem;
+                if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+                {
+                    int Action = StrToIntDef(SelectedItem.Properties["Action"],0);
+                    switch(Action)
+                    {
+                        case 1 :
+                        {
+                           if(isTableAlreadySeated)
+                            {
+                                MessageBox(SelectedTabContainerName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                                TDBTables::UpdateTableStateForOO(dBTransaction, SelectedTabContainerNumber, false);
+                            }
+                            else
+                            {
+                                MessageBox(SelectedTabContainerName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+                                SelectedPartyName = TDBTables::GetPartyName(dBTransaction, SelectedTabContainerNumber);
+                                TDBTables::SetTableName(dBTransaction, SelectedTabContainerNumber, SelectedTabContainerName, true);
+                            }
+
+                        }break;
+                        case 2 :
+                        {
+                            TfrmBillGroup* frmBillGroup  = new  TfrmBillGroup(this, TDeviceRealTerminal::Instance().DBControl);
+                            frmBillGroup->CurrentTable = SelectedTabContainerNumber;
+                            frmBillGroup->CurrentDisplayMode = eTables;
+                            frmBillGroup->HasOnlineOrders = TDBTables::HasOnlineOrders(SelectedTabContainerNumber);
+
+                            frmBillGroup->ShowModal();
+                            delete frmBillGroup;
+                            frmBillGroup = NULL;
+                        }break;
+                    }
+                    _controller->DrawCurrentPlan(dBTransaction);
+                }
+             }
          }
          dBTransaction.Commit();
     }
     catch(Exception & Err)
     {
-        dBTransaction.Rollback();
+
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Mezzanine Area Error " + Err.Message);
     }
 
@@ -526,8 +529,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
 void __fastcall TFrmSelectTable2::imgTablesMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, int X, int Y)
 {
-    if(TGlobalSettings::Instance().EnableOnlineOrdering)
-        tiTimerEnableReq->Enabled = true;
+    tiTimerEnableReq->Enabled = true;
 }
 //---------------------------------------------------------------------------
 
