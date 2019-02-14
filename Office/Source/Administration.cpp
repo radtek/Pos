@@ -1657,7 +1657,11 @@ void  TfrmAdministration::BikeShopImport()
                try
                {
 
+                   qrClearStocktake->Close();
+		           qrClearStocktake->SQL->Text = "SELECT COUNT(STOCK_KEY) COUNTSTOCKITEMS FROM STOCK WHERE DELETED = 'F' ";
+		           qrClearStocktake->ExecQuery();
 
+                   int count = qrClearStocktake->FieldByName("COUNTSTOCKITEMS")->AsInteger;
 
                     //update the stock
                   bool stockCompleted =  SaveStockImport(&ImportCSV);
@@ -1696,7 +1700,11 @@ void  TfrmAdministration::BikeShopImport()
                         {
                             MMTransaction->Commit();
                         }
+
+                       if(count == 0)
+                            menu->UpdateIsCloudSyncRequiredFlag(qrUpdateOnImport);
                     }
+
                 }
                 catch (Exception &E)
 		        {
@@ -1711,6 +1719,7 @@ void  TfrmAdministration::BikeShopImport()
 		        }
 
         }
+
 
 
 }
@@ -2936,7 +2945,26 @@ bool TfrmAdministration::CheckTaxFormat( AnsiString taxStringInCsv,int column ,i
     return false;
  }
 
+//-------------------------------------------------------------------------
+void TimportMenu::UpdateIsCloudSyncRequiredFlag(TIBSQL *qrUpdateOnImport)
+{
+    try
+    {
+        if (qrUpdateOnImport->Database->Connected)
+        {
+            if(!qrUpdateOnImport->Transaction->InTransaction)
+                qrUpdateOnImport->Transaction->StartTransaction();
 
-
-//---------------------------------------------------------------------------
-
+		    qrUpdateOnImport->Close();
+		    qrUpdateOnImport->SQL->Text = "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+            qrUpdateOnImport->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+		    qrUpdateOnImport->ExecQuery();
+            qrUpdateOnImport->Transaction->Commit();
+        }
+    }
+    catch(Exception &E)
+    {
+        qrUpdateOnImport->Transaction->Rollback();
+		throw;
+    }
+}

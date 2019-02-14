@@ -983,7 +983,8 @@ void __fastcall TfrmAddStock::btnOkClick(TObject *Sender)
             Transaction->Commit();
     	SubsituteData();
         PopulateSubstituteField();
-        CheckIfStockItemExist();
+        if(Mode != amEditStock)
+            CheckIfStockItemExist();
 }
 //---------------------------------------------------------------------------
 void TfrmAddStock::ResetSubstitueControl()

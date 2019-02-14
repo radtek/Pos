@@ -3424,6 +3424,7 @@ void __fastcall TfrmStock::miRestoreClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStock::btnRestoreClick(TObject *Sender)
 {
+    int count;
 	TStockNodeData *StockNodeData = (TStockNodeData *)tvStock->Selected->Data;
 	if (StockNodeData->Type == snDeletedBin)
 	{
@@ -3442,6 +3443,12 @@ void __fastcall TfrmStock::btnRestoreClick(TObject *Sender)
 			StockKey				= ((TStockNodeData *)tvStock->Selected->Data)->Key;
 
 			if (!Transaction->InTransaction) Transaction->StartTransaction();
+
+            qrUpdateStock->Close();
+            qrUpdateStock->SQL->Text = "SELECT COUNT(STOCK_KEY) COUNTSTOCKITEMS FROM STOCK WHERE DELETED = 'F' ";
+		    qrUpdateStock->ExecQuery();
+
+            count = qrUpdateStock->FieldByName("COUNTSTOCKITEMS")->AsInteger;
 
 			qrUpdateStock->Close();
 			qrUpdateStock->SQL->Text =
@@ -3476,6 +3483,9 @@ void __fastcall TfrmStock::btnRestoreClick(TObject *Sender)
 			qrUpdateStock->ParamByName("Stock_Category_Key")->AsInteger = StockCategoryKey;
 			qrUpdateStock->ExecQuery();
 
+            if(count == 0)
+                UpdateIsCloudSyncRequiredFlag();
+
 			if (Transaction->InTransaction)
 			Transaction->Commit();
 
@@ -3488,6 +3498,7 @@ void __fastcall TfrmStock::btnRestoreClick(TObject *Sender)
 				LoadTreeforStockRequest();
 			}
 			SelectInTree(LocateInTree(StockCategoryKey, StockGroupKey, StockKey, false));
+
 		}
 		catch (Exception &E)
 		{
@@ -3508,11 +3519,18 @@ void __fastcall TfrmStock::btnRestoreClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmStock::btnRestoreAllClick(TObject *Sender)
 {
+    int count;
 	if (Application->MessageBox("Do you wish to restore all deleted items?", "Question", MB_ICONQUESTION + MB_OKCANCEL + MB_DEFBUTTON1) == ID_OK)
 	{
 		try
 		{
 			if (!Transaction->InTransaction) Transaction->StartTransaction();
+
+            qrUpdateStock->Close();
+            qrUpdateStock->SQL->Text = "SELECT COUNT(STOCK_KEY) COUNTSTOCKITEMS FROM STOCK WHERE DELETED = 'F' ";
+		    qrUpdateStock->ExecQuery();
+
+            count = qrUpdateStock->FieldByName("COUNTSTOCKITEMS")->AsInteger;
 
 			qrUpdateStock->Close();
 			qrUpdateStock->SQL->Text =
@@ -3537,6 +3555,9 @@ void __fastcall TfrmStock::btnRestoreAllClick(TObject *Sender)
 			"Set "
 			"Deleted = 'F' ";
 			qrUpdateStock->ExecQuery();
+
+            if(count == 0)
+                UpdateIsCloudSyncRequiredFlag();
 
 			Transaction->Commit();
 
