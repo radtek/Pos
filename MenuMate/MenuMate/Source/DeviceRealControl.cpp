@@ -20,6 +20,7 @@
 #include "StringTableVariables.h"
 #include "DBContacts.h"
 #include "split.h"
+#include "DBRegistration.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -1166,6 +1167,8 @@ bool TDeviceRealControl::SetSiteID(Database::TDBTransaction &DBTransaction, bool
 
 bool TDeviceRealControl::OpenStockDB(bool Reconfigure)
 {
+    AnsiString OldIP = TGlobalSettings::Instance().StockInterbaseIP;
+	AnsiString OldDB = TGlobalSettings::Instance().StockDatabasePath;
 	std::auto_ptr <TfrmSystemConfig> frmSystemConfig(TfrmSystemConfig::Create(Screen->ActiveForm));
 	frmSystemConfig->EnableStock();
 
@@ -1198,6 +1201,11 @@ bool TDeviceRealControl::OpenStockDB(bool Reconfigure)
 			{
 				TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Unable to Connect to Stock Database. " + Err.Message);
 				MessageBox("Unable to Connect to Stock Database.\r" + Err.Message, "Error", MB_OK + MB_ICONERROR);
+
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+
 				Abort = false;
 				RetVal = false;
 			}
@@ -1224,6 +1232,18 @@ bool TDeviceRealControl::OpenStockDB(bool Reconfigure)
 			TManagerVariable::Instance().SetDeviceStr(DBBootTransaction, vmStockInterbaseIP, TGlobalSettings::Instance().StockInterbaseIP);
 			TManagerVariable::Instance().SetDeviceStr(DBBootTransaction, vmStockDatabasePath, TGlobalSettings::Instance().StockDatabasePath);
 			DBBootTransaction.Commit();
+
+            if( !SameStr(OldIP, TGlobalSettings::Instance().StockInterbaseIP) || !SameStr(OldDB, TGlobalSettings::Instance().StockDatabasePath))
+            {
+                //Tracking Setting Changes In IsCloudSyncRequiredFlag
+                if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+                {
+                    TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+                    //Setting  IsStockEnabled flag = false
+                    TDBRegistration::UpdateIsStockEnabledFlag(false);
+                }
+
+            }
 		}
 	}
 	return RetVal;

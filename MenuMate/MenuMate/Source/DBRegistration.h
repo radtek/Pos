@@ -12,6 +12,7 @@ public:
     static AnsiString GetSyndCode(Database::TDBTransaction &dbTransaction);
     static void UpdateIsCloudSyncRequiredFlag(bool status);
     static void UpdateIsRegistrationVerifiedFlag(Database::TDBTransaction &dbTransaction, bool status);
+    static void UpdateIsStockEnabledFlag(bool status);
 
 private:
     static std::list<TLicenceSettingModel>  GetLicenseSettingsModelList(Database::TDBTransaction &dbTransaction);
@@ -48,7 +49,6 @@ private:
     static void RemoveRegistrationForAllTerminals(Database::TDBTransaction &dbTransaction, int variableKey);
     static bool GetStockSetting(Database::TDBTransaction &dbTransaction);
     static bool CheckIfStockItemExist(Database::TDBTransaction &dbTransaction, UnicodeString StockDB);
-    static void UpdateIsStockEnabledFlag(bool status);
 
 };
 #endif

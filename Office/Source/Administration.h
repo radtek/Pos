@@ -102,6 +102,7 @@ __published:	// IDE-managed Components
     TIBSQL *qrCSV;
     TIBSQL *qrcsv1;
     TIBSQL *qrGetPriceLevelLimit;
+    TIBSQL *qrUpdateOnImport;
 	void __fastcall btnImportClick(TObject *Sender);
 	void __fastcall btnCloseClick(TObject *Sender);
 	void __fastcall btnBarcodesClick(TObject *Sender);
@@ -133,6 +134,7 @@ private:	// User declarations
 
    bool validate_weborder_target_uri(AnsiString uri);
 	CategoryTranslation::TUpdateArchiveCategories *UpdateArchiveCategories;
+
 
 public:		// User declarations
 	__fastcall TfrmAdministration(TComponent* Owner);
@@ -336,6 +338,7 @@ class TimportMenu: public TservingCourse, public Tcourse ,public Titem ,public T
     std::vector<Tsize> allMenuSize;
     std::vector<TitemSize> allItemSizeInMenu;
     bool CheckDuplicateStockCodeInDatabase(AnsiString StockCode ,TIBSQL *qrStockQuery);
+    void UpdateIsCloudSyncRequiredFlag(TIBSQL *qrUpdateOnImport);
 
 };
 
