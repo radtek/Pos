@@ -52,6 +52,7 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "ManagerSyndCode.h"
+#include "TransactionHelper.h"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "TouchControls"
@@ -869,10 +870,11 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     logList->Add("-----------------------btnBillTableMouseClick() called-----------------------------");
     TSaveLogs::RecordFiscalLogs(logList);
     logList->Clear();
-
+    bool ispaymentComplete = false;
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
+    TPaymentTransaction PaymentTransaction(DBTransaction);
     if(TGlobalSettings::Instance().LoyaltyMateEnabled )     //&& HasOnlineOrders
         DownloadOnlineMember();
 	try
@@ -936,7 +938,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
                        }
                        if (PatronCount <= 0)
                              PatronCount = 1;
-                       BillItems(DBTransaction, ItemsToBill, eTransOrderSet);
+                       BillItems(PaymentTransaction, DBTransaction, ItemsToBill, eTransOrderSet,ispaymentComplete);
 				}
 			}
 		}
@@ -948,6 +950,9 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
         TSaveLogs::RecordFiscalLogs(logList);
         logList->Clear();
 		DBTransaction.Commit();
+        if(ispaymentComplete && CurrentDisplayMode != eInvoices)
+            SendFiscalPrint(PaymentTransaction);
+        ResetTransactionAfterCommit(PaymentTransaction);
 		ResetForm();
         UpdateRightButtonDisplay(Sender);
         if(CurrentDisplayMode == eTables)
@@ -1024,7 +1029,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
-
+            TPaymentTransaction CreditTransaction(DBTransaction);
 			bool Proceed = false;
 			if (SelectedTabs.empty() && CurrentSelectedTab != 0)
 			{
@@ -1038,6 +1043,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 			if (Proceed)
 			{
 				DBTransaction.StartTransaction();
+                bool ispaymentComplete = false;
 				Proceed = TabStaffAccessOk(DBTransaction);
 				if (Proceed)
 				{
@@ -1067,7 +1073,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 					CreditTransaction.Recalc();
                     if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)CreditTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
                         CustomizeForSiHot(CreditTransaction);
-					TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
+					ispaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(CreditTransaction);
+                    if(ispaymentComplete && CurrentDisplayMode != eInvoices)
+                        SendFiscalPrint(CreditTransaction);
 					TDBTab::SetTabCreditLimit(DBTransaction, CurrentSelectedTab, -1);
 				}
 				DBTransaction.Commit();
@@ -1083,6 +1091,8 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
+            TPaymentTransaction PaymentTransaction(DBTransaction);
+            bool ispaymentComplete = false;
 			bool Proceed = TabStaffAccessOk(DBTransaction);
 			DBTransaction.Commit();
             bool  AllowTimeOut = false;
@@ -1171,7 +1181,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                         // set the transaction type as we use it to differenciate between which payment system to use
                         TPaymentTransactionType transactionType = CurrentDisplayMode != eInvoices ? eTransOrderSet : eTransInvoicePayment;
                         TDeviceRealTerminal::Instance().PaymentSystem->IsClippSale = false;
-                        BillItems(DBTransaction, SelectedItemKeys, transactionType );
+                        BillItems(PaymentTransaction, DBTransaction, SelectedItemKeys, transactionType,ispaymentComplete);
 					}
 					else
 					{
@@ -1185,6 +1195,9 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 				}
 
                     DBTransaction.Commit();
+                    if(ispaymentComplete && CurrentDisplayMode != eInvoices)
+                        SendFiscalPrint(PaymentTransaction);
+                    ResetTransactionAfterCommit(PaymentTransaction);
                     logList->Add("Transaction commit in btnBillSelectedMouseClick() ");
                     TSaveLogs::RecordFiscalLogs(logList);
                     logList->Clear();
@@ -1266,6 +1279,8 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
+            TPaymentTransaction PaymentTransaction(DBTransaction);
+            bool ispaymentComplete = false;
 			bool Proceed = TabStaffAccessOk(DBTransaction);
 			DBTransaction.Commit();
 			if (Proceed)
@@ -1317,7 +1332,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                         if(TGlobalSettings::Instance().HideFreeSides)
                         MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys);    //Merging the Item keys of Zero Price Sides with Selected Item Keys
                         PatronCount = DeterminePatronCount();
-						SplitItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransPartialPayment);
+						SplitItemKey = BillItems(PaymentTransaction, DBTransaction, SelectedItemKeys, eTransPartialPayment,ispaymentComplete);
 					}
 				}
 				else
@@ -1325,6 +1340,9 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 					MessageBox("Nothing to Bill.", "Info", MB_OK + MB_ICONINFORMATION);
 				}
 				DBTransaction.Commit();
+                if(ispaymentComplete && CurrentDisplayMode != eInvoices)
+                    SendFiscalPrint(PaymentTransaction);
+                ResetTransactionAfterCommit(PaymentTransaction);
                 logList->Clear();
                  logList->Add("Transaction commit of btnPartialPaymentMouseClick() ");
                 TSaveLogs::RecordFiscalLogs(logList);
@@ -1376,6 +1394,8 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
+            TPaymentTransaction PaymentTransaction(DBTransaction);
+            bool ispaymentComplete = false;
 			bool Proceed = TabStaffAccessOk(DBTransaction);
 			DBTransaction.Commit();
 			int splittedItemKey = 0;
@@ -1432,7 +1452,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
                         if(TGlobalSettings::Instance().HideFreeSides)
                         MergeZeroPriceSideKeysWithSelectedItemKeys(SelectedItemKeys); //Merging the Item keys of Zero Price Sides with Selected Item Keys
 						PatronCount = DeterminePatronCount();
-						splittedItemKey = BillItems(DBTransaction, SelectedItemKeys, eTransSplitPayment);
+						splittedItemKey = BillItems(PaymentTransaction, DBTransaction, SelectedItemKeys, eTransSplitPayment,ispaymentComplete);
 
 					}
 				}
@@ -1443,6 +1463,9 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 
 				TDBTab::ReleaseTab(DBTransaction, TDeviceRealTerminal::Instance().ID.Name, 0);
 				DBTransaction.Commit();
+                if(ispaymentComplete && CurrentDisplayMode != eInvoices)
+                    SendFiscalPrint(PaymentTransaction);
+                ResetTransactionAfterCommit(PaymentTransaction);
 				ResetForm();
                 logList->Add("-Transaction commit in btnSplitPaymentMouseClick() ");
                 TSaveLogs::RecordFiscalLogs(logList);
@@ -4257,85 +4280,83 @@ void TfrmBillGroup::UpdateBilledPatronCount(Database::TDBTransaction &DBTransact
        }
 }
 // ---------------------------------------------------------------------------
-int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std::set <__int64> &ItemsToBill,
-	TPaymentTransactionType TransType)
+int TfrmBillGroup::BillItems(TPaymentTransaction &paymentTransaction, Database::TDBTransaction &DBTransaction, const std::set <__int64> &ItemsToBill,
+                        	 TPaymentTransactionType TransType, bool &ispaymentComplete)
 {
     int retVal = 0;
-    bool isPaymentComplete = false;
     VoucherCode = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount;
 	try
 	{
+		paymentTransaction.ApplyMembership(Membership);
 
- 		TPaymentTransaction PaymentTransaction(DBTransaction);
-		PaymentTransaction.ApplyMembership(Membership);
-
-        TDBOrder::GetOrdersFromOrderKeys(DBTransaction, PaymentTransaction.Orders, ItemsToBill);
+        TDBOrder::GetOrdersFromOrderKeys(DBTransaction, paymentTransaction.Orders, ItemsToBill);
 
         if(IsPMSConfigured())
         {
             std::auto_ptr<TPMSHelper> pmsHelper(new TPMSHelper());
-            pmsHelper->GetRevenueCode(PaymentTransaction.Orders);
-            pmsHelper->GetItemSizeIdentifierKeys(PaymentTransaction.Orders);
+            pmsHelper->GetRevenueCode(paymentTransaction.Orders);
+            pmsHelper->GetItemSizeIdentifierKeys(paymentTransaction.Orders);
         }
         TMMContactInfo Member;
         if(SelectedDiscount.IsComplimentaryDiscount())
           {
-             PaymentTransaction.TypeOfSale = ComplimentarySale;
+             paymentTransaction.TypeOfSale = ComplimentarySale;
           }
          else if( SelectedDiscount.IsNonChargableDiscount())
           {
-             PaymentTransaction.TypeOfSale = NonChargableSale;
+             paymentTransaction.TypeOfSale = NonChargableSale;
           }
 		if (CurrentDisplayMode == eTabs)
 		{
-			PaymentTransaction.SalesType = eTab;
+			paymentTransaction.SalesType = eTab;
 			if (CurrentTabType == TabWeb)
 			{
-				PaymentTransaction.SalesType = eWeb;
-                PaymentTransaction.ChitNumber.DeliveryTime = delivery_time; //.FormatString("DD/MM/YYYY hh:nn am/pm");
-                PaymentTransaction.WebOrderKey = TDBWebUtil::GetWebOrderKeyByTabKey(DBTransaction, CurrentSelectedTab);
+				paymentTransaction.SalesType = eWeb;
+                paymentTransaction.ChitNumber.DeliveryTime = delivery_time; //.FormatString("DD/MM/YYYY hh:nn am/pm");
+                paymentTransaction.WebOrderKey = TDBWebUtil::GetWebOrderKeyByTabKey(DBTransaction, CurrentSelectedTab);
 
                 std::auto_ptr<TStringList>WebDeliveryDetials(new TStringList);
-                TDBWebUtil::getWebOrderExtraData(DBTransaction, PaymentTransaction.WebOrderKey, "DELIVERY", WebDeliveryDetials.get());
+                TDBWebUtil::getWebOrderExtraData(DBTransaction, paymentTransaction.WebOrderKey, "DELIVERY", WebDeliveryDetials.get());
 
                 std::auto_ptr<TStringList>WebDetials(new TStringList);
-                TDBWebUtil::getWebOrderDetials(DBTransaction, PaymentTransaction.WebOrderKey, *WebDetials.get());
-                _getWebOrderMemberDetails(DBTransaction, PaymentTransaction, WebDeliveryDetials.get(), WebDetials.get(), PaymentTransaction.WebOrderKey, delivery_time);
+                TDBWebUtil::getWebOrderDetials(DBTransaction, paymentTransaction.WebOrderKey, *WebDetials.get());
+                _getWebOrderMemberDetails(DBTransaction, paymentTransaction, WebDeliveryDetials.get(), WebDetials.get(), paymentTransaction.WebOrderKey, delivery_time);
 
 			}
 		}
 		else if (CurrentDisplayMode == eRooms)
 		{
-			PaymentTransaction.SalesType = eRoomSale;
-			PaymentTransaction.BookingID = TDBRooms::GetBookingID(DBTransaction, CurrentRoom);
-			PaymentTransaction.RoomNumber = CurrentRoom;
-			PaymentTransaction.MiscPrintData["PartyName"] = TDBRooms::GetPartyName(DBTransaction, CurrentRoom);
+			paymentTransaction.SalesType = eRoomSale;
+			paymentTransaction.BookingID = TDBRooms::GetBookingID(DBTransaction, CurrentRoom);
+			paymentTransaction.RoomNumber = CurrentRoom;
+			paymentTransaction.MiscPrintData["PartyName"] = TDBRooms::GetPartyName(DBTransaction, CurrentRoom);
 		}
 		else if (CurrentDisplayMode == eInvoices)
 		{
-			PaymentTransaction.SalesType = eAccount;
-			PaymentTransaction.InvoiceKey = CurrentInvoiceKey;    //unused
+			paymentTransaction.SalesType = eAccount;
+			paymentTransaction.InvoiceKey = CurrentInvoiceKey;    //unused
 		}
 		else
 		{
-			PaymentTransaction.SalesType = eTableSeat;
-			PaymentTransaction.MiscPrintData["PartyName"] = TDBTables::GetPartyName(DBTransaction, CurrentTable);
+			paymentTransaction.SalesType = eTableSeat;
+			paymentTransaction.MiscPrintData["PartyName"] = TDBTables::GetPartyName(DBTransaction, CurrentTable);
 		}
 
 		try
 		{
 
-            LoadCustNameAndOrderType(PaymentTransaction);
-            PaymentTransaction.IgnoreLoyaltyKey = false;
-			PaymentTransaction.Recalc();
-			PaymentTransaction.Type = TransType;
+            LoadCustNameAndOrderType(paymentTransaction);
+            paymentTransaction.IgnoreLoyaltyKey = false;
+			paymentTransaction.Recalc();
+			paymentTransaction.Type = TransType;
 
-			TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, PaymentTransaction.Patrons, PatronCount);
+			TManagerPatron::Instance().SetDefaultPatrons(DBTransaction, paymentTransaction.Patrons, PatronCount);
 
             //MM-1649: The patron count which was asked by user when table was selected has to be assigned to the current payment transaction
-            if(!PatronTypes.empty() && (TGlobalSettings::Instance().PromptForPatronCount || (PaymentTransaction.SalesType = eTableSeat && TGlobalSettings::Instance().PromptPatronCountOnTableSales)))
+            if(!PatronTypes.empty() && (TGlobalSettings::Instance().PromptForPatronCount ||
+                    (paymentTransaction.SalesType = eTableSeat && TGlobalSettings::Instance().PromptPatronCountOnTableSales)))
             {
-                PaymentTransaction.Patrons = PatronTypes;
+                paymentTransaction.Patrons = PatronTypes;
             }
 
             if( CurrentDisplayMode == eInvoices )
@@ -4343,23 +4364,38 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                 // use the InvoicePaymentSystem as it allows paying multiple invoices and acts different on partial n split payments
                 std::auto_ptr<TMMInvoicePaymentSystem> invoicePaymentSystem( new TMMInvoicePaymentSystem() );
 
-                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
-                    CustomizeForSiHot(PaymentTransaction);
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
+                    CustomizeForSiHot(paymentTransaction);
 
-                invoicePaymentSystem->ProcessTransaction(PaymentTransaction);
+//                bool isComplete =
+                invoicePaymentSystem->ProcessTransaction(paymentTransaction);
+//                if(isComplete)
+//                {
+////                    MessageBox("true","",MB_OK);
+//                    if(invoicePaymentSystem->LastReceipt != NULL)
+//                    {
+////                        MessageBox("Not Null","",MB_OK);
+//                        if(invoicePaymentSystem->LastReceipt->Printouts != NULL && TGlobalSettings::Instance().UseItalyFiscalPrinter &&
+//                                     TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransaction))
+//                        {
+                            //SendInvoiceForFiscalPrint(paymentTransaction,invoicePaymentSystem->LastReceipt);
+//                        }
+//                    }
+//                }
                             // display last receipt if any
                 _displayLastReceipt( DBTransaction, invoicePaymentSystem->LastReceipt );
             }
             else
             {
-                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)PaymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
-                    CustomizeForSiHot(PaymentTransaction);
-                isPaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction, false );
+                if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
+                    CustomizeForSiHot(paymentTransaction);
+                ispaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(paymentTransaction, false );
+
                 // display last receipt if any
                 _displayLastReceipt( DBTransaction, TDeviceRealTerminal::Instance().PaymentSystem->LastReceipt );
             }
 
-            if(PaymentTransaction.SalesType == eTableSeat)
+            if(paymentTransaction.SalesType == eTableSeat)
             {
                if(TDBTables::GetTableExists(DBTransaction,CurrentTable))
                 {
@@ -4368,7 +4404,7 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
                     {
                       TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,eNoneStatus);
                     }
-                    else if(PaymentTransaction.Type == eTransSplitPayment || PaymentTransaction.Type == eTransPartialPayment)
+                    else if(paymentTransaction.Type == eTransSplitPayment || paymentTransaction.Type == eTransPartialPayment)
                     {
                       TDBTables::SetTableBillingStatus(DBTransaction,CurrentTable,ePartialSplit);
                     }
@@ -4378,25 +4414,28 @@ int TfrmBillGroup::BillItems(Database::TDBTransaction &DBTransaction, const std:
             //changes to get points values..
             if(TGlobalSettings::Instance().IsRunRateBoardEnabled)
             {
-                SendPointValueToRunRate(PaymentTransaction);
+                SendPointValueToRunRate(paymentTransaction);
             }
 
         }
 		__finally
 		{
-			retVal  = PaymentTransaction.SplittedItemKey;
-			PaymentTransaction.DeleteOrders();
-            if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
-                    || TGlobalSettings::Instance().LoyaltyMateEnabled)
+			retVal  = paymentTransaction.SplittedItemKey;
+            if(CurrentDisplayMode == eInvoices)
             {
-                ClearLoyaltyVoucher();
-                Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
-                TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
-                DBTransaction1.StartTransaction();
-                RemoveMembership(DBTransaction1);
-                DBTransaction1.Commit();
+                paymentTransaction.DeleteOrders();
+                if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+                        || TGlobalSettings::Instance().LoyaltyMateEnabled)
+                {
+                    ClearLoyaltyVoucher();
+                    Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+                    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+                    DBTransaction1.StartTransaction();
+                    RemoveMembership(DBTransaction1);
+                    DBTransaction1.Commit();
+                }
+                TGlobalSettings::Instance().IsPOSOffline = true;
             }
-            TGlobalSettings::Instance().IsPOSOffline = true;
 		}
 	}
 	catch(Exception & E)
@@ -5712,3 +5751,40 @@ void TfrmBillGroup::UpdateTabeleStateForOO()
         TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
     DBTransaction.Commit();
 }
+//--------------------------------------------------------
+void TfrmBillGroup::SendFiscalPrint(TPaymentTransaction &paymentTransactionNew)
+{
+    try
+    {
+        if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransactionNew))
+            TDeviceRealTerminal::Instance().PaymentSystem->PrintFiscalReceipt(paymentTransactionNew);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+}
+//--------------------------------------------------------
+void TfrmBillGroup::ResetTransactionAfterCommit(TPaymentTransaction &paymentTransaction)
+{
+    try
+    {
+        paymentTransaction.DeleteOrders();
+        if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherDiscount != ""
+                || TGlobalSettings::Instance().LoyaltyMateEnabled)
+        {
+            ClearLoyaltyVoucher();
+            Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
+            TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction1);
+            DBTransaction1.StartTransaction();
+            RemoveMembership(DBTransaction1);
+            DBTransaction1.Commit();
+        }
+        TGlobalSettings::Instance().IsPOSOffline = true;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+}
+//--------------------------------------------------------

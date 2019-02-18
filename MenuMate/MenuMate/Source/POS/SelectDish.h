@@ -501,6 +501,8 @@ private: // User declarations
     void  ShowErrorMessage(std::string message, TLoginSuccess Result);
     bool ShowMemberValidationMessage(int selectedTable);
     void CheckRegisteration();
+    void SendFiscalPrint(TPaymentTransaction &paymentTransactionNew);
+    void ClearCurrentTransactionDetails(TPaymentTransaction &paymentTransactionNew);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);
@@ -629,7 +631,7 @@ public: // User declarations
 	  read = fLocation, write = SetLocation
    };
    void SetItemNote(AnsiString Note);
-   bool ProcessOrders(TObject *Sender, Database::TDBTransaction &DBTransaction, int SelectedTab, TMMTabType TabType,
+   bool ProcessOrders(TPaymentTransaction &PaymentTransaction, TObject *Sender, Database::TDBTransaction &DBTransaction, int SelectedTab, TMMTabType TabType,
 	  AnsiString TabContainerName, AnsiString TabName, AnsiString PartyName = "", bool PrintPrelim = false, int TableNo = 0,
 	  int SeatNo = 0, int RoomNo = 0, bool BillOff = false, AnsiString DelayedInvoiceNumber = "");
 

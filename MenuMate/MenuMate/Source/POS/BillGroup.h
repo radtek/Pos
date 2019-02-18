@@ -132,7 +132,8 @@ private:	// User declarations
 	void ShowReceipt();
     TDiscount SelectedDiscount;
 	bool InCheckFunc;
-	int BillItems(Database::TDBTransaction &DBTransaction,const std::set<__int64> &ItemsToBill,TPaymentTransactionType TransType);
+	int BillItems(TPaymentTransaction &paymentTransaction,Database::TDBTransaction &DBTransaction,
+                    const std::set<__int64> &ItemsToBill,TPaymentTransactionType TransType, bool &isPaymentComplete);
 	Database::TDBControl &DBControl;
 	bool Scaled;
 	eDisplayMode SelectedZone();
@@ -192,6 +193,8 @@ private:	// User declarations
     void MergeZeroPriceSideKeysWithSelectedItemKeys(std::set<__int64> &SelectedItemKeys);
     void IsRegistrationVerified();
     void UpdateTabeleStateForOO();
+    void SendFiscalPrint(TPaymentTransaction &paymentTransaction);
+    void ResetTransactionAfterCommit(TPaymentTransaction &paymentTransaction);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
