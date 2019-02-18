@@ -1084,7 +1084,7 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 					{
 						DBTransaction.Commit();
 						ResetPOS();
-                        logList->Add("Trabsaction commit of CardSwipe().");
+                        logList->Add("Transaction commit of CardSwipe().");
                         TSaveLogs::RecordFiscalLogs(logList);
 					}
                     else
@@ -1876,9 +1876,9 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
 
             if (PaymentComplete)
             {
-                logList->Add("Trabsaction commit of tbtnCashSaleClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
                 paymentTransactionNew.DBTransaction.Commit();
+                logList->Add("Transaction commit of tbtnCashSaleClick().");
+                TSaveLogs::RecordFiscalLogs(logList);
                 SendFiscalPrint(paymentTransactionNew);
                 ClearCurrentTransactionDetails(paymentTransactionNew);
                 ResetPOS();
@@ -2567,9 +2567,9 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
             logList->Clear();
 			if (PaymentComplete)
 			{
-                logList->Add("Trabsaction commit of tbtnTenderClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
                 paymentTransactionNew.DBTransaction.Commit();
+                logList->Add("Transaction commit of tbtnTenderClick().");
+                TSaveLogs::RecordFiscalLogs(logList);
                 SendFiscalPrint(paymentTransactionNew);
                 ClearCurrentTransactionDetails(paymentTransactionNew);
 				ResetPOS();
@@ -2604,9 +2604,9 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 
 		if (PaymentComplete)
 		{
-            logList->Add("Trabsaction commit of tbtnTenderClick() part 2.");
-            TSaveLogs::RecordFiscalLogs(logList);
             paymentTransactionNew.DBTransaction.Commit();
+            logList->Add("Transaction commit of tbtnTenderClick() part 2.");
+            TSaveLogs::RecordFiscalLogs(logList);
             SendFiscalPrint(paymentTransactionNew);
             ClearCurrentTransactionDetails(paymentTransactionNew);
 			ResetPOS();
@@ -4778,13 +4778,11 @@ void TfrmSelectDish::ProcessQuickPayment(TObject *Sender,AnsiString paymentName)
     if (PaymentComplete)
     {
         paymentTransactionNew.DBTransaction.Commit();
+        logList->Add("Transaction commit of tbtnSaveMouseClick().");
+        TSaveLogs::RecordFiscalLogs(logList);
         SendFiscalPrint(paymentTransactionNew);
-        if(paymentTransactionNew.Orders != NULL)
-            MessageBox(paymentTransactionNew.Orders->Count,"Count of paymentTransactionNew",MB_OK);
         ClearCurrentTransactionDetails(paymentTransactionNew);
         ResetPOS();
-        logList->Add("Trabsaction commit of tbtnSaveMouseClick().");
-        TSaveLogs::RecordFiscalLogs(logList);
     }
     else
     {
@@ -8849,14 +8847,14 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 				if (PaymentComplete)
 				{
 					DBTransaction.Commit();
-                    logList->Add("Trabsaction commit of tbtnSaveMouseClick().");
+                    logList->Add("Transaction commit of tbtnSaveMouseClick().");
                     TSaveLogs::RecordFiscalLogs(logList);
 					ResetPOS();
 
 				}
 				else
 				{
-                    logList->Add("Trabsaction rollback of tbtnSaveMouseClick().");
+                    logList->Add("Transaction rollback of tbtnSaveMouseClick().");
                     TSaveLogs::RecordFiscalLogs(logList);
 					DBTransaction.Rollback();
 				}
@@ -9299,7 +9297,7 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
 
                     if (PaymentComplete)
                     {
-                        logList->Add("Trabsaction commit of tbtnSelectTable(().");
+                        logList->Add("Transaction commit of tbtnSelectTable(().");
                         TSaveLogs::RecordFiscalLogs(logList);
 
                         DBTransaction.Commit();
@@ -12612,7 +12610,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 
 			if (PaymentComplete)
 			{
-                logList->Add("Trabsaction commit of SaveTabData(().");
+                logList->Add("Transaction commit of SaveTabData(().");
                 TSaveLogs::RecordFiscalLogs(logList);
 
 				DBTransaction.Commit();
@@ -12622,7 +12620,7 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 			else
 			{
 				DBTransaction.Rollback();
-                logList->Add("Trabsaction rollback of SaveTabData(().");
+                logList->Add("Transaction rollback of SaveTabData(().");
                 TSaveLogs::RecordFiscalLogs(logList);
 			}
             delete logList;
