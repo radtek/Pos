@@ -4367,22 +4367,8 @@ int TfrmBillGroup::BillItems(TPaymentTransaction &paymentTransaction, Database::
                 if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
                     CustomizeForSiHot(paymentTransaction);
 
-//                bool isComplete =
                 invoicePaymentSystem->ProcessTransaction(paymentTransaction);
-//                if(isComplete)
-//                {
-////                    MessageBox("true","",MB_OK);
-//                    if(invoicePaymentSystem->LastReceipt != NULL)
-//                    {
-////                        MessageBox("Not Null","",MB_OK);
-//                        if(invoicePaymentSystem->LastReceipt->Printouts != NULL && TGlobalSettings::Instance().UseItalyFiscalPrinter &&
-//                                     TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransaction))
-//                        {
-                            //SendInvoiceForFiscalPrint(paymentTransaction,invoicePaymentSystem->LastReceipt);
-//                        }
-//                    }
-//                }
-                            // display last receipt if any
+                // display last receipt if any
                 _displayLastReceipt( DBTransaction, invoicePaymentSystem->LastReceipt );
             }
             else
@@ -5515,7 +5501,7 @@ appending if clause to the calling.
 bool TfrmBillGroup::IsPMSConfigured()
 {
     bool retValue = false;
-    retValue = ((TDeviceRealTerminal::Instance().PaymentSystem->IsOracleConfigured() || TDeviceRealTerminal::Instance().PaymentSystem->IsSiHotConfigured() ) &&
+    retValue = ((TTransactionHelper::IsOracleConfigured() || TTransactionHelper::IsSiHotConfigured() ) &&
                 (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot));
     return retValue;
 }
