@@ -665,6 +665,17 @@ void __fastcall TfrmSetup::tbtnReconfigStockDBMouseClick(TObject *Sender)
 		bool Proceed = TDeviceRealTerminal::Instance().OpenStockDB(true);
 		if(!Proceed)Application->Terminate();
 	}
+    if(TGlobalSettings::Instance().StockInterbaseIP == "" || TGlobalSettings::Instance().StockDatabasePath == "")
+    {
+        //Tracking Setting Changes In IsCloudSyncRequiredFlag
+        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
+        {
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+            //Setting  IsStockEnabled flag = false
+            TDBRegistration::UpdateIsStockEnabledFlag(false);
+        }
+    }
+
 	tbtnIPSettingsRefreshMouseClick(Sender);
 }
 //---------------------------------------------------------------------------

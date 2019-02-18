@@ -351,4 +351,22 @@ bool TMMControls::fGetStockCost(TStockDetails &StockDetails)
 	}
 }
 //---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+bool TStockInterface::CheckIfStockItemExist()
+{
+    bool returnVal = false;
+	TMMControls *Controls = dynamic_cast<TMMControls*>(fControls.get());
+	if (Controls)
+	{
+		Controls->fDBTransaction.StartTransaction();
+		Controls->sqlStockItem->Close();
+        Controls->sqlStockItem->SQL->Text = "SELECT COUNT(STOCK_KEY) COUNTSTOCKITEMS FROM STOCK WHERE DELETED = 'F' ";
+		Controls->sqlStockItem->ExecQuery();
 
+        int count = Controls->sqlStockItem->FieldByName("COUNTSTOCKITEMS")->AsInteger;
+        if(count > 0)
+            returnVal = true;
+
+     }
+     return returnVal;
+}

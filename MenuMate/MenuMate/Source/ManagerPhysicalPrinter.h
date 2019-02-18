@@ -37,6 +37,7 @@ class TManagerPhysicalPrinter : public TManager
 	void DBGetPrinterList(Database::TDBTransaction &DBTransaction,TStrings *StringsList);
 	void DBGetValidPrinterList(Database::TDBTransaction &DBTransaction,int DeviceKey,TStrings *StringsList);	
 	void GetPrinterServerList(Database::TDBTransaction &DBTransaction,TStrings *StringsList,TPrinterType Type);
+    bool CheckIfChefMateEnabledForTerminal(Database::TDBTransaction &DBTransaction, TPrinterType Type);
 };
 
 #endif

@@ -1126,4 +1126,10 @@ object frmAdministration: TfrmAdministration
     Left = 624
     Top = 672
   end
+  object qrUpdateOnImport: TIBSQL
+    Database = dmMMData.dbMenuMate
+    Transaction = MMTransaction
+    Left = 448
+    Top = 504
+  end
 end

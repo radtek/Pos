@@ -465,5 +465,6 @@ TGlobalSettings::TGlobalSettings()
     IsRegistrationVerified = false;
     IsCloudSyncRequired = false;
     CompanyName = " ";
+    IsStockEnabled = false;
 }
 

@@ -367,3 +367,31 @@ void TManagerPhysicalPrinter::DBGetPrinterList(Database::TDBTransaction &DBTrans
    }
 }
 
+bool TManagerPhysicalPrinter::CheckIfChefMateEnabledForTerminal(Database::TDBTransaction &DBTransaction, TPrinterType Type)
+{
+   bool status = false;
+   try
+   {
+      Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+	  DBTransaction.RegisterQuery(IBInternalQuery);
+
+	  IBInternalQuery->Close();
+
+      IBInternalQuery->SQL->Text =  "SELECT a.PHYSICALPRINTER_KEY FROM PHYSICALPRINTER a "
+                                    "INNER JOIN VIRTUALPRINTER b ON a.PHYSICALPRINTER_KEY = b.PHYSICALPRINTER_KEY "
+                                    "INNER JOIN DEVICEVIRTUALPRINTER c ON b.VIRTUALPRINTER_KEY = c.VIRTUALPRINTER_KEY "
+                                    "WHERE a.PRINTER_TYPE = :PRINTER_TYPE AND c.DEVICE_KEY = :CURRENT_DEVICE_KEY ";
+	  IBInternalQuery->ParamByName("PRINTER_TYPE")->AsInteger = Type;
+      IBInternalQuery->ParamByName("CURRENT_DEVICE_KEY")->AsInteger =  TDeviceRealTerminal::Instance().ID.DeviceKey;
+	  IBInternalQuery->ExecQuery();
+      if(IBInternalQuery->RecordCount > 0)
+        status = true;
+
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+	  throw;
+   }
+   return status;
+}
