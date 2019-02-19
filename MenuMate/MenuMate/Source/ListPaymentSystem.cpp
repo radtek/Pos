@@ -4295,7 +4295,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
                ReleasedVoucherDetail.DiscountUsage.push_back(itDiscount->first);
             }
        }
-       paymentComplete = ManagerLoyaltyVoucher.ReleaseVouchers(ReleasedVoucherDetail);
+        ManagerLoyaltyVoucher.ReleaseVouchers(ReleasedVoucherDetail);
     }
   }
   return paymentComplete;
