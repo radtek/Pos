@@ -18,37 +18,37 @@ namespace MenumateServices.WCFServices
     {
         // Member Operations
         [OperationContract]
-        LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo);
+        LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo);
+        LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo);
+        LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo);
+        LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode);
+        LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction);
+        LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode);
+        LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo);
+        LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo);
+        LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs);
 
         [OperationContract]
-        VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction);
+        VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction, List<string> loyaltyLogs);
 
         [OperationContract]
-        LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
+        LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo, List<string> loyaltyLogs);
 
         [OperationContract]
         LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);

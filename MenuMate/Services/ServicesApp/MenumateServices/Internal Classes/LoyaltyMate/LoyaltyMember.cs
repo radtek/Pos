@@ -40,55 +40,66 @@ namespace MenumateServices.LoyaltyMate
 
         #region Public
 
-        public LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo)
+        public LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo, List<string> loyaltyLogs)
         {
-            return CreateMemberInTheCloud(inSyndicateCode, inInfo);
+            return CreateMemberInTheCloud(inSyndicateCode, inInfo, loyaltyLogs);
         }
 
 
-        public LoyaltyMemberResponse GetMemberByUniqueCode(string inSyndicateCode, RequestInfo requestInfo)
+        public LoyaltyMemberResponse GetMemberByUniqueCode(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
-            return GetMemberFromCloud(inSyndicateCode, requestInfo);
+            return GetMemberFromCloud(inSyndicateCode, requestInfo, loyaltyLogs);
         }
 
-        public LoyaltyMemberResponse GetByCardCode(string inSyndicateCode, RequestInfo requestInfo)
+        public LoyaltyMemberResponse GetByCardCode(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
-            return GetMemberByCodeFromCloud(inSyndicateCode, requestInfo);
+            return GetMemberByCodeFromCloud(inSyndicateCode, requestInfo, loyaltyLogs);
         }
 
-        public LoyaltyMemberResponse GetByEmail(string inSyndicateCode, RequestInfo requestInfo)
+        public LoyaltyMemberResponse GetByEmail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
-            return GetMemberByEmailFromCloud(inSyndicateCode, requestInfo);
+            return GetMemberByEmailFromCloud(inSyndicateCode, requestInfo, loyaltyLogs);
         }
 
-        public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction)
+        public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction, List<string> loyaltyLogs)
         {
             if (transaction.PointsType == 9)
             {
-                return UploadInvoiceTransactionToCloud(inSyndicateCode, CreateInvoiceTransactionObject(transaction));
+                loyaltyLogs.Add("Post Invoice for Points Type 9                                   ");
+                return UploadInvoiceTransactionToCloud(inSyndicateCode, CreateInvoiceTransactionObject(transaction), loyaltyLogs);
             }
             else
             {
-                return UploadTransactionToCloud(inSyndicateCode, CreateTransactionObject(transaction));
+                loyaltyLogs.Add("Post Invoice for Points Type except 9                            ");
+                return UploadTransactionToCloud(inSyndicateCode, CreateTransactionObject(transaction), loyaltyLogs);
             }
         }
 
-        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
+        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, CreateUpdateCardCodeRequest(uniqueId, memberCardCode));
+                loyaltyLogs.Add("Updating Member Card Code                                        ");
+                var response = loyaltymateService.UpdateMemberCardCode(inSyndicateCode, CreateUpdateCardCodeRequest(uniqueId, memberCardCode), loyaltyLogs);
                 if (response)
+                {
+                    loyaltyLogs.Add("Creating Response With No Error                              ");
                     return CreateResponseNoError();
+                }
                 else
+                {
+                    loyaltyLogs.Add("Creating Response With Error                                 ");
                     return CreateResponseError(
                         "@Failed to update member information to server",
                         "",
                         LoyaltyResponseCode.UpdateMemberFailed);
+                }
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception                                  " + ex.Message);
+                loyaltyLogs.Add("Time is                                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -98,12 +109,16 @@ namespace MenumateServices.LoyaltyMate
             {
                 if (ex.Message.Contains("Card Code"))
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception                               " + ex.Message);
+                    loyaltyLogs.Add("Time is                                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateResponseError(ex.Message,
                             @"Card Code Already In Use.",
                             LoyaltyResponseCode.UpdateMemberFailed);
                 }
                 else
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception                               " + ex.Message);
+                    loyaltyLogs.Add("Time is                                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateResponseError(ex.Message,
                             @"Loyaltymate error.",
                             LoyaltyResponseCode.UpdateMemberFailed);
@@ -111,6 +126,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (Exception ex)
             {
+                loyaltyLogs.Add("Exception is                                                      " + ex.Message);
+                loyaltyLogs.Add("Time is                                                           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                     "@Failed to update member information to server",
                     ex.Message,
@@ -122,16 +139,20 @@ namespace MenumateServices.LoyaltyMate
 
         #region Private
 
-        LoyaltyMemberResponse CreateMemberInTheCloud(string inSyndicateCode, MemberInfo inInfo)
+        LoyaltyMemberResponse CreateMemberInTheCloud(string inSyndicateCode, MemberInfo inInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.SaveMember(CreateMemberObject(inInfo), inSyndicateCode);
+                loyaltyLogs.Add("Saving Member                                       ");
+                var response = loyaltymateService.SaveMember(CreateMemberObject(inInfo), inSyndicateCode, loyaltyLogs);
                 return CreateMemberResponseNoError(createMemberInfo(response));
+                
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                  "+ ex.Message);
+                loyaltyLogs.Add("Time is                                             " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -142,6 +163,8 @@ namespace MenumateServices.LoyaltyMate
             {
                 if (ex.Message.Contains("Card Code"))
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception is               " + ex.Message);
+                    loyaltyLogs.Add("Time is                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Card Code Already In Use.",
                             LoyaltyResponseCode.CreateMemberFailed,
@@ -149,6 +172,8 @@ namespace MenumateServices.LoyaltyMate
                 }
                 else
                 {
+                    loyaltyLogs.Add("Loyaltymate error Exception                      " + ex.Message);
+                    loyaltyLogs.Add("Time is                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Loyaltymate error.",
                             LoyaltyResponseCode.CreateMemberFailed,
@@ -157,6 +182,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                         " + exc.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                              @"Failed to create a member in the server",
                              exc.Message,
@@ -165,16 +192,19 @@ namespace MenumateServices.LoyaltyMate
             }
         }
 
-        LoyaltyMemberResponse GetMemberFromCloud(string inSyndicateCode, RequestInfo requestInfo)
+        LoyaltyMemberResponse GetMemberFromCloud(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByUniqueId(CreateRequest(requestInfo), inSyndicateCode);
+                loyaltyLogs.Add("Getting Member By Unique Id                          ");
+                var response = loyaltymateService.GetMemberByUniqueId(CreateRequest(requestInfo), inSyndicateCode, loyaltyLogs);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -183,14 +213,20 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (MultipleGUIDException ex)
             {
+                loyaltyLogs.Add("Multiple GUID Exception is                           " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
             }
             catch (GUIDNotFoundException ex)
             {
+                loyaltyLogs.Add("GUID Not Found Exception is                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"GUID Not found",  ex.Message,  LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
             }     
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                         " + exc.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                              @"Failed to request member's info from the server",
                              exc.Message,
@@ -199,18 +235,21 @@ namespace MenumateServices.LoyaltyMate
             }
         }
 
-        LoyaltyMemberResponse GetMemberByCodeFromCloud(string inSyndicateCode, RequestInfo requestInfo)
+        LoyaltyMemberResponse GetMemberByCodeFromCloud(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByCardCode(CreateRequest(requestInfo), inSyndicateCode);
+                loyaltyLogs.Add("Getting Member By Card Code                              ");
+                var response = loyaltymateService.GetMemberByCardCode(CreateRequest(requestInfo), inSyndicateCode, loyaltyLogs);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
             catch (LoyaltymateOperationException ex)
             {
                 if (ex.Message.Contains("Member Not"))
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception is                   " + ex.Message);
+                    loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Member Not Exist.",
                             LoyaltyResponseCode.MemberNotExist,
@@ -218,6 +257,8 @@ namespace MenumateServices.LoyaltyMate
                 }
                 else
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception is                   " + ex.Message);
+                    loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Loyaltymate error.",
                             LoyaltyResponseCode.GetMemberFailed,
@@ -226,6 +267,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                       " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -234,14 +277,20 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (MultipleGUIDException ex)
             {
+                loyaltyLogs.Add("Multiple GUID Exception is                              " + ex.Message);
+                loyaltyLogs.Add("Time is                                                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist, CreateMemberInfo(requestInfo.RequestKey));
             }
             catch (GUIDNotFoundException ex)
             {
+                loyaltyLogs.Add("GUID Not Found Exception is                              " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound, CreateMemberInfo(requestInfo.RequestKey));
             }     
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                             " + exc.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"Failed to request member's info from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
@@ -249,18 +298,21 @@ namespace MenumateServices.LoyaltyMate
             }
         }
 
-        private LoyaltyMemberResponse GetMemberByEmailFromCloud(string inSyndicateCode, RequestInfo requestInfo)
+        private LoyaltyMemberResponse GetMemberByEmailFromCloud(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetMemberByEmail(CreateRequest(requestInfo), inSyndicateCode);
+                loyaltyLogs.Add("Getting Member By Email                                 ");
+                var response = loyaltymateService.GetMemberByEmail(CreateRequest(requestInfo), inSyndicateCode, loyaltyLogs);
                 return CreateMemberResponseNoError(createMemberInfo(response));
             }
             catch (LoyaltymateOperationException ex)
             {
                 if (ex.Message.Contains("Member Not"))
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception is                  " + ex.Message);
+                    loyaltyLogs.Add("Time is                                             " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Member Not Exist.",
                             LoyaltyResponseCode.MemberNotExist,
@@ -268,6 +320,8 @@ namespace MenumateServices.LoyaltyMate
                 }
                 else
                 {
+                    loyaltyLogs.Add("Loyaltymate Operation Exception is                   " + ex.Message);
+                    loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateMemberResponseError(ex.Message,
                             @"Loyaltymate error.",
                             LoyaltyResponseCode.GetMemberFailed,
@@ -276,6 +330,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                       " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -284,6 +340,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                             " + exc.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateMemberResponseError(@"Failed to request member's info from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetMemberFailed,
@@ -291,22 +349,32 @@ namespace MenumateServices.LoyaltyMate
             }
         }
 
-        LoyaltyResponse UploadTransactionToCloud(string inSyndicateCode, PointsTransactionViewModel transaction)
+        LoyaltyResponse UploadTransactionToCloud(string inSyndicateCode, PointsTransactionViewModel transaction, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.PostTransaction(transaction, inSyndicateCode);
+                loyaltyLogs.Add("Post transaction                                         ");
+                var response = loyaltymateService.PostTransaction(transaction, inSyndicateCode, loyaltyLogs);
+                
                 if (response)
+                {
+                    loyaltyLogs.Add("Creating Response With No Error                      ");
                     return CreateResponseNoError();
+                }
                 else
+                {
+                    loyaltyLogs.Add("Creating Response Error                              ");
                     return CreateResponseError(
                         "@Failed to post member transaction to server",
                         "",
                         LoyaltyResponseCode.PostTransactionFailed);
+                }
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                       " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -314,14 +382,20 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (MultipleGUIDException ex)
             {
+                loyaltyLogs.Add("Multiple GUID Exception is                               " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist);
             }
             catch (GUIDNotFoundException ex)
             {
+                loyaltyLogs.Add("GUID Not Found Exception is                              " + ex.Message);
+                loyaltyLogs.Add("Time is                                                  " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound);
             }     
             catch (Exception ex)
             {
+                loyaltyLogs.Add("Exception is                                            " + ex.Message);
+                loyaltyLogs.Add("Time is                                                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                     "@Failed to post member transaction to server",
                     ex.Message,
@@ -329,22 +403,31 @@ namespace MenumateServices.LoyaltyMate
             }
         }
 
-        LoyaltyResponse UploadInvoiceTransactionToCloud(string inSyndicateCode, ApiMemberInvoiceTransactionViewModel transaction)
+        LoyaltyResponse UploadInvoiceTransactionToCloud(string inSyndicateCode, ApiMemberInvoiceTransactionViewModel transaction, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.PostInvoiceTransaction(transaction, inSyndicateCode);
+                loyaltyLogs.Add("Post Invoice transaction                                ");
+                var response = loyaltymateService.PostInvoiceTransaction(transaction, inSyndicateCode, loyaltyLogs);
                 if (response)
+                {
+                    loyaltyLogs.Add("Creating Response With No Error                     ");
                     return CreateResponseNoError();
+                }
                 else
+                {
+                    loyaltyLogs.Add("Creating Response Error                             ");
                     return CreateResponseError(
                         "@Failed to post member transaction to server",
                         "",
                         LoyaltyResponseCode.PostTransactionFailed);
+                }
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -352,14 +435,20 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (MultipleGUIDException ex)
             {
+                loyaltyLogs.Add("Multiple GUID Exception is                           " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(@"Multiple GUID exists", ex.Message, LoyaltyResponseCode.MultipleGUIDExist);
             }
             catch (GUIDNotFoundException ex)
             {
+                loyaltyLogs.Add("GUID Not Found Exception is                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(@"GUID Not found", ex.Message, LoyaltyResponseCode.GUIDNotFound);
             }      
             catch (Exception ex)
             {
+                loyaltyLogs.Add("Exception is                                         " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                     "@Failed to post member transaction to server",
                     ex.Message,

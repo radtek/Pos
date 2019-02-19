@@ -37,36 +37,39 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo)
+        public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
-            return GetGiftCardBalanceFromCloud(inSyndicateCode, requestInfo);
+            return GetGiftCardBalanceFromCloud(inSyndicateCode, requestInfo, loyaltyLogs);
         }
 
-        public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo)
+        public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
-            return GetPocketVoucherDetailFromCloud(inSyndicateCode, requestInfo);
+            return GetPocketVoucherDetailFromCloud(inSyndicateCode, requestInfo, loyaltyLogs);
         }
 
-        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
+        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction, List<string> loyaltyLogs)
         {
-            return PostVoucherTransaction(inSyndicateCode, transaction);
+            return PostVoucherTransaction(inSyndicateCode, transaction, loyaltyLogs);
         }
 
-        public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo)
+        public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo, List<string> loyaltyLogs)
         {
-            return ReleaseVouchersInCloud(inSyndicateCode, releasedVoucherInfo);
+            return ReleaseVouchersInCloud(inSyndicateCode, releasedVoucherInfo, loyaltyLogs);
         }
 
-        private LoyaltyGiftCardResponse GetGiftCardBalanceFromCloud(string inSyndicateCode, RequestInfo requestInfo)
+        private LoyaltyGiftCardResponse GetGiftCardBalanceFromCloud(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetGiftCardBalance(inSyndicateCode, CreateRequest(requestInfo));
+                var response = loyaltymateService.GetGiftCardBalance(inSyndicateCode, CreateRequest(requestInfo), loyaltyLogs);
+                loyaltyLogs.Add("Creating Gift Card Response With No Error            ");
                 return (CreateGiftCardResponseNoError(CreateGiftCardInfo(response)));
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateGiftCardResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -75,6 +78,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (LoyaltymateOperationException ex)
             {
+                loyaltyLogs.Add("Loyaltymate Operation Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateGiftCardResponseError(ex.Message,
                             @"Invalid Gift Voucher Number",
                             LoyaltyResponseCode.InvalidGiftVoucher,
@@ -82,6 +87,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                         " + exc.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateGiftCardResponseError(
                              @"Failed to request gift card balance from the server",
                              exc.Message,
@@ -90,16 +97,19 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        private LoyaltyVoucherResponse GetPocketVoucherDetailFromCloud(string inSyndicateCode, RequestInfo requestInfo)
+        private LoyaltyVoucherResponse GetPocketVoucherDetailFromCloud(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetPocketVoucherDetail(inSyndicateCode, CreateRequest(requestInfo));
+                var response = loyaltymateService.GetPocketVoucherDetail(inSyndicateCode, CreateRequest(requestInfo), loyaltyLogs);
+                loyaltyLogs.Add("Creating Gift Card Response With No Error            ");
                 return (CreateVoucherResponseNoError(CreateVoucherInfo(response)));
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateVoucherResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -107,11 +117,15 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (LoyaltymateOperationException ex)
             {
+                loyaltyLogs.Add("Loyaltymate Operation Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateVoucherResponseError(ex.Message, @"Invalid Pocket Voucher Number",
                             LoyaltyResponseCode.InvalidPocketVoucher, new VoucherInfo());
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                         " + exc.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateVoucherResponseError(@"Failed to request voucher detail from the server",
                              exc.Message,
                              LoyaltyResponseCode.GetPocketVoucherFailed,
@@ -119,21 +133,26 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        private VoucherTransactionResponse PostVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
+        private VoucherTransactionResponse PostVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.PostVoucherTransactions(inSyndicateCode, CreateVoucherTransaction(transaction));
+                loyaltyLogs.Add("Posting Voucher Transaction at                        ");
+                var response = loyaltymateService.PostVoucherTransactions(inSyndicateCode, CreateVoucherTransaction(transaction), loyaltyLogs);
                 if (response != null)
                 {
                     foreach (var item in response)
                     {
                         if (!item.IsProcessedSuccessfully)
+                        {
+                            loyaltyLogs.Add("Creating Voucher Transaction Response With Error at           " + DateTime.Now.ToString("hh:mm:ss tt"));
                             return CreateVoucherTransactionResponseError(item.Error,
-                                                            item.Error,
+                                                                        item.Error,
                                                             LoyaltyResponseCode.PostTransactionFailed, null);
+                        }
                     }
+                    loyaltyLogs.Add("Creating Voucher Transaction Response With No Error           " + DateTime.Now.ToString("hh:mm:ss tt"));
                     return CreateVoucherTransactionResponseNoError(GetGiftCardExpiryDate(response));
                 }
                 return CreateVoucherTransactionResponseError(
@@ -143,6 +162,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateVoucherTransactionResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -150,6 +171,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (Exception ex)
             {
+                loyaltyLogs.Add("Exception is                                         " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateVoucherTransactionResponseError(
                     "@Failed to post transaction to server",
                     ex.Message,
@@ -157,22 +180,31 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse ReleaseVouchersInCloud(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo)
+        public LoyaltyResponse ReleaseVouchersInCloud(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo, List<string> loyaltyLogs)
         {
             try
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.ReleaseVouchers(inSyndicateCode, CreateReleasedVoucherTransaction(releasedVoucherInfo));
+                var response = loyaltymateService.ReleaseVouchers(inSyndicateCode, CreateReleasedVoucherTransaction(releasedVoucherInfo), loyaltyLogs);
+                loyaltyLogs.Add("Releasing Voucher In Cloud at                        ");
                 if (response)
+                {
+                    loyaltyLogs.Add("Creating Voucher Transaction Response With No Error  ");
                     return CreateResponseNoError();
+                }
                 else
+                {
+                    loyaltyLogs.Add("Creating Voucher Transaction Response With  Error    ");
                     return CreateResponseError(
                         "@Failed to process vouchers",
                         "",
                         LoyaltyResponseCode.PostTransactionFailed);
+                }
             }
             catch (AuthenticationFailedException ex)
             {
+                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -180,6 +212,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
             catch (Exception ex)
             {
+                loyaltyLogs.Add("Exception is                                         " + ex.Message);
+                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateResponseError(
                     "@Failed to process vouchers",
                     ex.Message,
