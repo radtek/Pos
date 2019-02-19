@@ -1029,7 +1029,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 			Database::TDBTransaction DBTransaction(DBControl);
 			TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 			DBTransaction.StartTransaction();
-            TPaymentTransaction CreditTransaction(DBTransaction);
 			bool Proceed = false;
 			if (SelectedTabs.empty() && CurrentSelectedTab != 0)
 			{
@@ -1047,7 +1046,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 				Proceed = TabStaffAccessOk(DBTransaction);
 				if (Proceed)
 				{
-					TPaymentTransaction CreditTransaction(DBTransaction);
 					CreditTransaction.Type = eTransCreditPurchase;
 					CreditTransaction.SalesType = eCreditPurchase;
 					CreditTransaction.Money.Change = 0;
