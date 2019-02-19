@@ -248,6 +248,8 @@ class TLoyaltyMateInterface
         OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
         InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
         AnsiString GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
+        AnsiString GetLogFileName();
+        void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);
 };
 
 #endif
