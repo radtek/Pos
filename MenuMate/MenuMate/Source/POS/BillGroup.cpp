@@ -1046,6 +1046,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 				Proceed = TabStaffAccessOk(DBTransaction);
 				if (Proceed)
 				{
+                    TPaymentTransaction CreditTransaction(DBTransaction);
 					CreditTransaction.Type = eTransCreditPurchase;
 					CreditTransaction.SalesType = eCreditPurchase;
 					CreditTransaction.Money.Change = 0;
