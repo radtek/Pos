@@ -361,16 +361,13 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::SyncOnlineOrderingDetails(TSyndC
 //---------------------------------------------------------------------------
 bool TLoyaltyMateInterface::UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode)
 {
-    std::auto_ptr<TStringList> LoyaltyLogs(new TStringList);
+
     bool isSuccesssful = false;
     try
     {
         CoInitialize(NULL);
-
         isSuccesssful = loyaltymateClient->UnsetOrderingDetails(syndicateCode.GetSyndCode(),siteCode);
-
-        AddLoyaltyLogs(LoyaltyLogs);
-    }
+     }
     catch( Exception& exc )
     {
     }
@@ -932,7 +929,7 @@ void TLoyaltyMateInterface::SyncCompanyInfo(CompanyInfo* companyInfo)
 //---------------------------------------------------------------------------
 void TLoyaltyMateInterface::SyncTierLevels(Database::TDBTransaction &DBTransaction,DynamicArray<TierLevelInfo*> tierLevels)
 {
-      std::auto_ptr<TStringList> LoyaltyLogs(new TStringList);
+
       try
         {
            TDBTierLevel::ClearAll(DBTransaction);
@@ -944,7 +941,7 @@ void TLoyaltyMateInterface::SyncTierLevels(Database::TDBTransaction &DBTransacti
              TDBTierLevel::AddTierLevel(DBTransaction,tierLevel);
 
            }
-           AddLoyaltyLogs(LoyaltyLogs);
+
           TGlobalSettings::Instance().UseTierLevels = tierLevels.Length > 0;
   	      TManagerVariable::Instance().SetDeviceBool(DBTransaction,vmUseTierLevels,TGlobalSettings::Instance().UseTierLevels);
           if(!TGlobalSettings::Instance().UseTierLevels)
