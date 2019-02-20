@@ -1763,7 +1763,6 @@ AnsiString TLoyaltyMateInterface::GetEmailBody(AnsiString syndicateCode, AnsiStr
     emailBody += "Contact Key:- " + IntToStr(TDBContacts::GetContactByEmail(DBTransaction, email)) + "\r\r";
     emailBody += "Thank You";
     DBTransaction.Commit();
-    MessageBox(emailBody,"emailBody",MB_OK);
     return emailBody;
 }
 //------------------------------------------------------------
