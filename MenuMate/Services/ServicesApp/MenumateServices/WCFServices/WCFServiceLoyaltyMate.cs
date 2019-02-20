@@ -25,7 +25,7 @@ namespace MenumateServices.WCFServices
 
         private List<string> stringList = new List<string>();
         private List<string> loyaltyLogs = new List<string>();
-        public LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo, List<string> loyaltyLogs)
+        public LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo)
         {
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
@@ -44,7 +44,7 @@ namespace MenumateServices.WCFServices
             return loyaltyMemberResponse;
         }
 
-        public LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
+        public LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo)
         {
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
@@ -63,7 +63,7 @@ namespace MenumateServices.WCFServices
             return loyaltyMemberResponse;
         }
 
-        public LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
+        public LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo)
         {
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
@@ -82,7 +82,7 @@ namespace MenumateServices.WCFServices
             return loyaltyMemberResponse;
         }
 
-        public LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
+        public LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo)
         {
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
@@ -101,7 +101,7 @@ namespace MenumateServices.WCFServices
             return loyaltyMemberResponse;
         }
 
-        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode, List<string> loyaltyLogs)
+        public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
         {
             LoyaltyResponse loyaltyResponse = null;
             try
@@ -120,7 +120,7 @@ namespace MenumateServices.WCFServices
             return loyaltyResponse;
         }
 
-        public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction, List<string> loyaltyLogs)
+        public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction)
         {
             LoyaltyResponse loyaltyResponse = null;
             try
@@ -139,7 +139,7 @@ namespace MenumateServices.WCFServices
             return loyaltyResponse;
         }
 
-        public LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode, List<string> loyaltyLogs)
+        public LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode)
         {
             LoyaltyCompanyResponse loyaltyCompanyResponse = null;
             try
@@ -158,7 +158,7 @@ namespace MenumateServices.WCFServices
             return loyaltyCompanyResponse;
         }
 
-        public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
+        public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo)
         {
             LoyaltyGiftCardResponse loyaltyGiftCardResponse = null;
             try
@@ -177,7 +177,7 @@ namespace MenumateServices.WCFServices
             return loyaltyGiftCardResponse;
         }
 
-        public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo, List<string> loyaltyLogs)
+        public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo)
         {
 
             LoyaltyVoucherResponse loyaltyVoucherResponse = null;
@@ -197,7 +197,7 @@ namespace MenumateServices.WCFServices
             return loyaltyVoucherResponse;
         }
 
-        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction, List<string> loyaltyLogs)
+        public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
             VoucherTransactionResponse voucherTransactionResponse = null;
             try
@@ -216,7 +216,7 @@ namespace MenumateServices.WCFServices
             return voucherTransactionResponse;
         }
 
-        public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo, List<string> loyaltyLogs)
+        public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo)
         {
             LoyaltyResponse loyaltyResponse = null;
             try
