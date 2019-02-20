@@ -18,7 +18,7 @@ namespace Loyaltymate.Sevices
         public ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveMember, syndicateCode, null,
                 WebRequestMethods.Http.Post, member);
                 HttpWebResponse webResponse = null;
@@ -57,7 +57,7 @@ namespace Loyaltymate.Sevices
         public ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByUniqueId, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
@@ -209,7 +209,7 @@ namespace Loyaltymate.Sevices
         public bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode, List<string> loyaltyLogs)
         {
             bool response = false;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.PostTransaction, syndicateCode, null,
                 WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
@@ -247,7 +247,7 @@ namespace Loyaltymate.Sevices
         public bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel pointsTransaction, string syndicateCode, List<string> loyaltyLogs)
         {
             bool response = false;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.PostInvoiceTransaction, syndicateCode, null,
                 WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
@@ -285,7 +285,7 @@ namespace Loyaltymate.Sevices
         public ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode, List<string> loyaltyLogs)
         {
             ApiCompanyViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetCompanyDetail, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
@@ -324,7 +324,7 @@ namespace Loyaltymate.Sevices
         public GiftCardApiViewModel GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel, List<string> loyaltyLogs)
         {
             GiftCardApiViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetGiftCardInfo, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
@@ -441,7 +441,7 @@ namespace Loyaltymate.Sevices
         public bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction, List<string> loyaltyLogs)
         {
             bool response = false;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.ReleaseVouchers, inSyndicateCode, null,
                 WebRequestMethods.Http.Post, voucherTransaction);
             HttpWebResponse webResponse = null;
