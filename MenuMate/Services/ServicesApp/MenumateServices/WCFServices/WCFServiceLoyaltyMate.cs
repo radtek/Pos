@@ -49,7 +49,7 @@ namespace MenumateServices.WCFServices
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                loyaltyLogs.Add("Getting Member By UniqueId of services at           " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Getting Member By UniqueId of services at          " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyMemberResponse = LoyaltyMember.Instance.GetMemberByUniqueCode(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -68,7 +68,7 @@ namespace MenumateServices.WCFServices
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                loyaltyLogs.Add("Getting Member By Card Code of services at            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Getting Member By Card Code of services at         " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyMemberResponse = LoyaltyMember.Instance.GetByCardCode(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -87,7 +87,7 @@ namespace MenumateServices.WCFServices
             LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                loyaltyLogs.Add("Getting Member By Email of services at                 " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Getting Member By Email of services at             " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyMemberResponse = LoyaltyMember.Instance.GetByEmail(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -106,7 +106,7 @@ namespace MenumateServices.WCFServices
             LoyaltyResponse loyaltyResponse = null;
             try
             {
-                loyaltyLogs.Add("Updating Member Card Code of services at             " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Updating Member Card Code of services at           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyResponse = LoyaltyMember.Instance.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode, loyaltyLogs);
             }
             catch (Exception exc)
@@ -125,7 +125,7 @@ namespace MenumateServices.WCFServices
             LoyaltyResponse loyaltyResponse = null;
             try
             {
-                loyaltyLogs.Add("Posting Transaction of services at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Posting Transaction of services at                 " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyResponse = LoyaltyMember.Instance.PostTransaction(inSyndicateCode, transaction, loyaltyLogs);
             }
             catch (Exception exc)
@@ -163,7 +163,7 @@ namespace MenumateServices.WCFServices
             LoyaltyGiftCardResponse loyaltyGiftCardResponse = null;
             try
             {
-                loyaltyLogs.Add("Getting Gift card balance of services at              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Getting Gift card balance of services at           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyGiftCardResponse = LoyaltyVoucher.Instance.GetGiftCardBalance(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -183,7 +183,7 @@ namespace MenumateServices.WCFServices
             LoyaltyVoucherResponse loyaltyVoucherResponse = null;
             try
             {
-                loyaltyLogs.Add("Getting Pocket Voucher Detail at                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Getting Pocket Voucher Detail at                   " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyVoucherResponse = LoyaltyVoucher.Instance.GetPocketVoucherDetail(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -221,7 +221,7 @@ namespace MenumateServices.WCFServices
             LoyaltyResponse loyaltyResponse = null;
             try
             {
-                loyaltyLogs.Add("Releasing Voucher at                                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Releasing Voucher at                               " + DateTime.Now.ToString("hh:mm:ss tt"));
                 loyaltyResponse = LoyaltyVoucher.Instance.ReleaseVouchers(inSyndicateCode, releasedVoucherInfo, loyaltyLogs);
             }
             catch (Exception exc)
@@ -394,6 +394,7 @@ namespace MenumateServices.WCFServices
 
         private void WriteAndClearLoyaltyList()
         {
+            loyaltyLogs.Add("======================================================================================================================");
             FileWriter.WriteToFile(loyaltyLogs, "LoyaltyMate Post Logs", "LoyaltyMatePosts ");
             loyaltyLogs.Clear();
         }

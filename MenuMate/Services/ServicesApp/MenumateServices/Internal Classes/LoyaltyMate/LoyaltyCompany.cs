@@ -48,13 +48,13 @@ namespace MenumateServices.LoyaltyMate
             {
                 ILoyaltymateService loyaltymateService = new LoyaltymateService();
                 var response = loyaltymateService.GetCompanyDetail(inSyndicateCode, loyaltyLogs);
-                loyaltyLogs.Add("Creating Company Response With No Error                 ");
+                loyaltyLogs.Add("Creating Company Response With No Error            ");
                 return CreateCompanyResponseNoError(CreateCompanyInfo(response));
             }
             catch (AuthenticationFailedException ex)
             {
-                loyaltyLogs.Add("Authentication Failed Exception is                   " + ex.Message);
-                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Authentication Failed Exception is                 " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateCompanyResponseError(
                             @"Failed to Authenticate",
                             ex.Message,
@@ -62,8 +62,8 @@ namespace MenumateServices.LoyaltyMate
             }
             catch (Exception exc)
             {
-                loyaltyLogs.Add("Exception is                                         " + exc.Message);
-                loyaltyLogs.Add("Time is                                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 return CreateCompanyResponseError(
                              @"Unable to sync with server",
                              exc.Message,
