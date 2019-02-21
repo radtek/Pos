@@ -53,18 +53,17 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
         else
             wcfInfo->Activated    = false;     //trip
        CoInitialize(NULL);
-       loyaltyLogs->Add("Creating Connection  with Web services for add member       " + Now().FormatString("hh:mm:ss tt"));
+       loyaltyLogs->Add("Creating Connection  with Web services for add member               " + Now().FormatString("hh:mm:ss tt"));
        wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo );
-       loyaltyLogs->Add("Receive Response on pos of created Member                   " + Now().FormatString("hh:mm:ss tt"));
+       loyaltyLogs->Add("Receive Response on pos of created Member                           " + Now().FormatString("hh:mm:ss tt"));
        if( FAutoSync && wcfResponse->Successful)
         {
             contactInfo.CloudUUID = AnsiString(wcfResponse->MemberInfo->UniqueId);
             contactInfo.MemberCode = AnsiString(wcfResponse->MemberInfo->MemberCardCode);
             SyncLoyaltymateAttrs( &contactInfo );
-            loyaltyLogs->Add("Sync with LoyaltyAttribute done                             ");
-
+            loyaltyLogs->Add("Sync with LoyaltyAttribute done                                     ");
             ReadContactInfo(wcfResponse, contactInfo, true );
-            loyaltyLogs->Add("Read Contact Info                                           ");
+            loyaltyLogs->Add("Read Contact Info                                                   ");
             loyaltyLogs->Add("=================================================================================================");
 
         }
@@ -73,7 +72,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
     }
     catch( Exception& exc )
     {
-        loyaltyLogs->Add("Exception is                                                " + exc.Message);
+       loyaltyLogs->Add("Exception is                                                        " + exc.Message);
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
     }
@@ -88,12 +87,12 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(TSyndCode syndicate
         MemberInfo            *wcfInfo = new MemberInfo();
         TMMContactInfo contact_Info = ( TMMContactInfo )( *contactInfo );
         CreateWcfContactInfo(wcfInfo,contact_Info);
-        loyaltyLogs->Add("Created Contact Info for Update Member                      ");
+        loyaltyLogs->Add("Created Contact Info for Update Member                              ");
         wcfInfo->UniqueId = uuid;
         CoInitialize(NULL);
-        loyaltyLogs->Add("sending Request for Updating Member on pos                   " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for Updating Member on pos                          " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->SaveMember(syndicateCode.GetSyndCode(),wcfInfo);
-        loyaltyLogs->Add("Received Response of Updated Member on pos                   " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of Updated Member on pos                          " + Now().FormatString("hh:mm:ss tt"));
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         delete wcfInfo;
@@ -101,7 +100,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::UpdateMember(TSyndCode syndicate
     }
     catch( Exception& exc )
     {
-        loyaltyLogs->Add("Exception is                                                " + exc.Message);
+        loyaltyLogs->Add("Exception is                                                        " + exc.Message);
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
@@ -115,10 +114,9 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-
-        loyaltyLogs->Add("Sending Request of Member by UniqueId from pos              " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request of Member by UniqueId from pos                      " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse =  loyaltymateClient->GetMemberByUniqueId(syndicateCode.GetSyndCode(),CreateRequest(uuid));
-        loyaltyLogs->Add("Received Response of Member by uniqueId on pos              " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of Member by uniqueId on pos                      " + Now().FormatString("hh:mm:ss tt"));
 
         if(wcfResponse->ResponseCode == GUIDNotFound && outContactInfo.EMail.Trim() != "")
         {
@@ -127,31 +125,28 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
             DBTransaction.StartTransaction();
 
             CoInitialize(NULL);
-
-            loyaltyLogs->Add("Sending Request of member by email from pos                 " + Now().FormatString("hh:mm:ss tt"));
+            loyaltyLogs->Add("Sending Request of member by email from pos                         " + Now().FormatString("hh:mm:ss tt"));
             wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(outContactInfo.EMail));
-            loyaltyLogs->Add("Received Response of Member by email on pos                 " + Now().FormatString("hh:mm:ss tt"));
-
+            loyaltyLogs->Add("Received Response of Member by email on pos                         " + Now().FormatString("hh:mm:ss tt"));
             if(wcfResponse->Successful)
             {
 
                 ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
                 int contactKey = TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail);
-                loyaltyLogs->Add("Getting Contact key from Contact table                      ");
+
+                loyaltyLogs->Add("Getting Contact key from Contact table                              ");
 
                 if(contactKey && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,outContactInfo.CloudUUID))
                 {
                     TLoyaltyMateUtilities::UpdateUUID(DBTransaction, contactKey, outContactInfo.CloudUUID);
-                    loyaltyLogs->Add("Update UID in LOYALTYATTRIBUTES table done                  ");
-
+                    loyaltyLogs->Add("Update UID in LOYALTYATTRIBUTES table done                          ");
 
                 }
                 else
                 {
                     wcfResponse->Successful = false;
                     wcfResponse->Message = "Failed to Download member.";
-                    loyaltyLogs->Add("Failed to Download member.                                  ");
-
+                    loyaltyLogs->Add("Failed to Download member.                                          ");
 
                 }
             }
@@ -161,16 +156,17 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
         else if(wcfResponse->ResponseCode == MultipleGUIDExist)
         {
             AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, uuid);
-            loyaltyLogs->Add("Received Email Body                                         ");
+            loyaltyLogs->Add("Received Email Body                                                 ");
             SendEmail(EmailBody);
-            loyaltyLogs->Add("Send Mail                                                   ");
+            loyaltyLogs->Add("Send Mail                                                           ");
+
 
         }
-        //LoyaltyLogs->Add("Sucessful Response                                         " + Now().FormatString("hh:mm:ss tt"));
-        if(wcfResponse->Successful)
+       if(wcfResponse->Successful)
         {
             ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
-            loyaltyLogs->Add("Read Member Details                                         ");
+            loyaltyLogs->Add("Read Member Details                                                 ");
+
         }
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
@@ -178,7 +174,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetails(TSyndCode syndi
     }
     catch( Exception& exc )
     {
-        loyaltyLogs->Add("Exception is                                                " + exc.Message);
+        loyaltyLogs->Add("Exception is                                                        " + exc.Message);
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
@@ -192,9 +188,11 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        loyaltyLogs->Add("Sending Request of Member by code from pos                             " + Now().FormatString("hh:mm:ss tt"));
+
+        loyaltyLogs->Add("Sending Request of Member by code from pos                          " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->GetMemberByCardCode(syndicateCode.GetSyndCode(), CreateRequest(memberCode));
-        loyaltyLogs->Add("Received Response of Member by code on pos                           " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of Member by code on pos                          " + Now().FormatString("hh:mm:ss tt"));
+
         if(wcfResponse->ResponseCode == GUIDNotFound && outContactInfo.EMail.Trim() != "")
         {
             TMMContactInfo contactInfo;
@@ -202,25 +200,29 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
             DBTransaction.StartTransaction();
 
             CoInitialize(NULL);
-            loyaltyLogs->Add("Sending Request of Member by email from pos                             " + Now().FormatString("hh:mm:ss tt"));
+
+            loyaltyLogs->Add("Sending Request of Member by email from pos                         " + Now().FormatString("hh:mm:ss tt"));
             wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(outContactInfo.EMail));
-            loyaltyLogs->Add("Received Response of Member by email on pos                           " + Now().FormatString("hh:mm:ss tt"));
+            loyaltyLogs->Add("Received Response of Member by email on pos                         " + Now().FormatString("hh:mm:ss tt"));
+
             if(wcfResponse->Successful)
             {
                 ReadContactInfo(wcfResponse,outContactInfo,replacePoints );
-                loyaltyLogs->Add("Read Contact Info of Member Details By Code                          ");
+                loyaltyLogs->Add("Read Contact Info of Member Details By Code                         ");
                 int contactKey = TDBContacts::GetContactByEmail(DBTransaction, outContactInfo.EMail);
-                loyaltyLogs->Add("Getting Contact key from contact table using email                   ");
+                loyaltyLogs->Add("Getting Contact key from contact table using email                  ");
+
                 if(contactKey && !TLoyaltyMateUtilities::IsUUIDExist(DBTransaction,outContactInfo.CloudUUID))
                 {
                     TLoyaltyMateUtilities::UpdateUUID(DBTransaction, contactKey, outContactInfo.CloudUUID);
-                    loyaltyLogs->Add("Updated in LOYALTYATTRIBUTES table done                               ");
+                    loyaltyLogs->Add("Updated in LOYALTYATTRIBUTES table done                             ");
+
                 }
                 else
                 {
                     wcfResponse->Successful = false;
                     wcfResponse->Message = "Failed to Download member.";
-                    loyaltyLogs->Add("Failed to Download member details by code                            ");
+                    loyaltyLogs->Add("Failed to Download member details by code                           ");
 
                 }
             }
@@ -231,14 +233,16 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByCode(TSyndCode
         {
 
             AnsiString EmailBody = GetEmailBody(syndicateCode.GetSyndCode() , outContactInfo.EMail, "not available to print");
-            loyaltyLogs->Add("Received Email Body for member detail by code                        ");
+            loyaltyLogs->Add("Received Email Body for member detail by code                       ");
             SendEmail(EmailBody);
-            loyaltyLogs->Add("Send Email for member detail by code                        " );
+            loyaltyLogs->Add("Send Email for member detail by code                                " );
+
         }
         if(wcfResponse->Successful)
         {
             ReadContactInfo(wcfResponse, outContactInfo, replacePoints );
-            loyaltyLogs->Add("Read Member Details by code                                 " + Now().FormatString("hh:mm:ss tt"));
+            loyaltyLogs->Add("Read Member Details by code                                         " + Now().FormatString("hh:mm:ss tt"));
+
         }
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
@@ -261,13 +265,14 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByEmail(TSyndCod
     {
         LoyaltyMemberResponse *wcfResponse;
         CoInitialize(NULL);
-        loyaltyLogs->Add("Sending Request of Member details by Email from pos                          " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request of Member details by Email from pos                 " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->GetMemberByEmail(syndicateCode.GetSyndCode(), CreateRequest(memberEmail));
-        loyaltyLogs->Add("Received Response of member detail by Email on pos                   " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of member detail by Email on pos                  " + Now().FormatString("hh:mm:ss tt"));
         if(wcfResponse->Successful)
         {
             ReadContactInfo(wcfResponse, contactInfo, replacePoints );
-            loyaltyLogs->Add("Read Member Details by Email                                         ");
+            loyaltyLogs->Add("Read Member Details by Email                                        ");
+
         }
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
@@ -275,7 +280,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetMemberDetailsByEmail(TSyndCod
     }
     catch( Exception& exc )
     {
-        loyaltyLogs->Add("Exception is                                                " + exc.Message);
+        loyaltyLogs->Add("Exception is                                                        " + exc.Message);
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
@@ -299,9 +304,9 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(TSyndCode syndic
         wcfInfo->SiteCode = siteId;
         wcfInfo->InvoiceNumber = inInvoiceNumber;
         CoInitialize(NULL);
-        loyaltyLogs->Add("Sending Request for Post Transaction from pos                        " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for Post Transaction from pos                       " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->PostTransaction(syndicateCode.GetSyndCode(),wcfInfo);
-        loyaltyLogs->Add("Received Response of Post Transaction on pos                         " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of Post Transaction on pos                        " + Now().FormatString("hh:mm:ss tt"));
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         delete wcfInfo;
@@ -309,7 +314,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::PostTransaction(TSyndCode syndic
     }
     catch( Exception &exc)
     {
-         loyaltyLogs->Add("Exception is                                                " + exc.Message);
+        loyaltyLogs->Add("Exception is                                                        " + exc.Message);
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
@@ -406,13 +411,15 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetGiftVoucherBalance(TSyndCode 
         LoyaltyGiftCardResponse *wcfResponse;
         CoInitialize(NULL);
 
-        loyaltyLogs->Add("Sending Request for gift card balance from pos                       " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for gift card balance from pos                      " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->GetGiftCardBalance(syndicateCode.GetSyndCode(),CreateRequest(giftVoucherNumber));
-        loyaltyLogs->Add("Received Response of gift card balance on pos                        " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of gift card balance on pos                       " + Now().FormatString("hh:mm:ss tt"));
+
         if(wcfResponse->Successful)
         {
            ReadGiftCardInfo(wcfResponse->GiftCardInfo, GiftCardDetail );
-           loyaltyLogs->Add("Read Gift Card info in pos                                        ");
+           loyaltyLogs->Add("Read Gift Card info in pos                                          ");
+
         }
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
@@ -436,11 +443,9 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::GetPocketVoucherDetail(TSyndCode
 
         LoyaltyVoucherResponse *wcfResponse;
         CoInitialize(NULL);
-
-        loyaltyLogs->Add("Sending Request for pocket voucher from pos                          " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for pocket voucher from pos                         " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->GetPocketVoucherDetail(syndicateCode.GetSyndCode(), CreateRequest(pocketVoucherNumber));
-        loyaltyLogs->Add("Received Response for pocket voucher on pos                          " + Now().FormatString("hh:mm:ss tt"));
-
+        loyaltyLogs->Add("Received Response for pocket voucher on pos                         " + Now().FormatString("hh:mm:ss tt"));
         if(wcfResponse->Successful)
         {
             VoucherDetail.VoucherNumber = pocketVoucherNumber;
@@ -502,10 +507,9 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ProcessVoucherTransaction(TSyndC
         }
 
         CoInitialize(NULL);
-
-        loyaltyLogs->Add("Sending Request for Process Voucher Transaction from pos             " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for Process Voucher Transaction from pos            " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->ProcessVoucherTransaction(syndicateCode.GetSyndCode(),wcfInfo);
-        loyaltyLogs->Add("Received Response of Process voucher on pos                          " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response of Process voucher on pos                         " + Now().FormatString("hh:mm:ss tt"));
         loyaltyLogs->Add("=================================================================================================");
         if(wcfResponse->Successful && wcfResponse->GiftCardExpiryDate != NULL)
         {
@@ -548,9 +552,9 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::ReleaseVouchers(TSyndCode syndic
            wcfInfo->DiscountCodes = DiscountUsageArray;
         }
         CoInitialize(NULL);
-        loyaltyLogs->Add("Sending Request for Release Voucher Transaction from pos             " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Sending Request for Release Voucher Transaction from pos            " + Now().FormatString("hh:mm:ss tt"));
         wcfResponse = loyaltymateClient->ReleaseVouchers(syndicateCode.GetSyndCode(),wcfInfo);
-        loyaltyLogs->Add("Received Response for Process Voucher Transaction on pos             " + Now().FormatString("hh:mm:ss tt"));
+        loyaltyLogs->Add("Received Response for Process Voucher Transaction on pos            " + Now().FormatString("hh:mm:ss tt"));
         loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateMMResponse( wcfResponse );
@@ -721,7 +725,7 @@ void TLoyaltyMateInterface::ReadContactInfo(MemberInfo* inMemberInfo,TMMContactI
 
      }
     ReadMemberVouchers(inMemberInfo->MemberVouchers,inContactInfo);
-    LoyaltyLogs->Add("Read Member Vouchers                                        " + Now().FormatString("hh:mm:ss tt"));
+    LoyaltyLogs->Add("Read Member Vouchers                                                " + Now().FormatString("hh:mm:ss tt"));
     if(replacePoints) // Do we want to replace points or simply add them on to what we already have?
     {
         inContactInfo.Points.ClearPoints();

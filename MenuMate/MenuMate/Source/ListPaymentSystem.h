@@ -242,6 +242,9 @@ protected:
      bool TryToEnableMews();
      bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
      bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
+     UnicodeString TransactionType(int trans);
+     UnicodeString VoucherType(AnsiString voucherno);
+//     UnicodeString VoucherType(AnsiString voucherno , TPaymentTransaction &inPaymentTransaction);
 };
 
 #endif

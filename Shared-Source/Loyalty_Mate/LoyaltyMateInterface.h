@@ -170,6 +170,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
         bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
         void SendEmail(AnsiString emailBody);
+        void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);
     private:
         // initiates the Loyaltymate WCF Client
         void InitLMClient();
@@ -249,7 +250,7 @@ class TLoyaltyMateInterface
         InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
         AnsiString GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
         AnsiString GetLogFileName();
-        void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);
+        //void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);
 };
 
 #endif

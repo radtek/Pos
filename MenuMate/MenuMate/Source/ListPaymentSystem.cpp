@@ -4192,9 +4192,12 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction)
 {
+  std::auto_ptr<TStringList> loyaltyLogs(new TStringList);
   bool paymentComplete = true;
   bool isVoucherPresent = false;
   TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+  TLoyaltyMateInterface  LoyaltyMateInterface;
+  TRedeemPocketVoucherInformation *RedeemPocketVoucherInformation;
   TVoucherUsageDetail VoucherUsageDetail;
   TGUID transactionReference;
   CreateGUID(transactionReference);
@@ -4202,6 +4205,9 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   VoucherUsageDetail.ReferenceNumber =  Sysutils::GUIDToString(transactionReference);
   VoucherUsageDetail.InvoiceNumber =  PaymentTransaction.InvoiceNumber;
   VoucherUsageDetail.TotalSaleAmount = PaymentTransaction.Money.GrandTotal;
+  TRedeemGiftVoucherInformation  *RedeemGiftVoucherInformation;
+  AnsiString VoucherName;
+
   if(PaymentTransaction.Membership.Applied())
   {
      VoucherUsageDetail.MemberUniqueId = TLoyaltyMateUtilities::GetMemberCloudId(PaymentTransaction.DBTransaction,
@@ -4212,6 +4218,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber !="")
   {
+    VoucherName = "Pocket Voucher";
     isVoucherPresent = true;
     VoucherUsageDetail.PocketVoucherDiscountAmount = PaymentTransaction.RedeemPocketVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.PocketVoucherNumber = PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
@@ -4221,6 +4228,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(paymentComplete && PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber !="")
   {
+    VoucherName = "Loyalty Gift Card redemption";
     isVoucherPresent = true;
     VoucherUsageDetail.PointsRedeemed = PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.GiftCardNumber = PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
@@ -4230,6 +4238,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(paymentComplete && PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber !="")
   {
+    VoucherName = "Loyalty Gift Card Point Purchase";
     isVoucherPresent = true;
     VoucherUsageDetail.PointsPurchased = PaymentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.PurchasedGiftCardNumber = PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber;
@@ -4238,10 +4247,12 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   //Loyalty member voucher
    if(paymentComplete && TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName != NULL &&
      TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName !="")
-  {
-    isVoucherPresent = true;
-    VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
-    VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
+   {
+
+     VoucherName = "Member Voucher";
+     isVoucherPresent = true;
+     VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
+     VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
   }
   //Loyalty members only discounts
   for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
@@ -4273,10 +4284,64 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
 
   if(isVoucherPresent)
   {
+
+
     if(!PaymentTransaction.IsVouchersProcessed)
     {
+         double BalanceAfterSale = PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount - PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
          paymentComplete = ManagerLoyaltyVoucher.ProcessVouchers(VoucherUsageDetail);
-    }
+         UnicodeString transactiontype = TransactionType(PaymentTransaction.SalesType);
+
+          MessageBox("ff","gg",MB_OK);
+        // loyaltyLogs->Add(VoucherName +" "+  "Transaction Type of  voucher                     " + transactiontype);
+         //loyaltyLogs->Add(VoucherName +" "+  "Transaction Type of  voucher           " + transactiontype);
+         loyaltyLogs->Add(VoucherName +" "+  "Voucher time is                        " + Now().FormatString("hh:mm:ss tt"));
+         loyaltyLogs->Add(VoucherName +" "+  "Terminal name is                       " + TDeviceRealTerminal::Instance().ID.Name);
+         loyaltyLogs->Add(VoucherName +" "+  "Staff name is                          " + TDeviceRealTerminal::Instance().User.Name);
+         if(VoucherName=="Loyalty Gift Card redemption" || VoucherName == "Loyalty Gift Card Point Purchase")
+         {
+
+             loyaltyLogs->Add(VoucherName +" "+  "gift Card No.                          " + VoucherUsageDetail.GiftCardNumber);
+             loyaltyLogs->Add(VoucherName +" "+  "balance before sale                    " + PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount.operator UnicodeString());
+             loyaltyLogs->Add(VoucherName +" "+  "expected gift card balance After sale  " + FormatFloat("0.00",BalanceAfterSale));
+             loyaltyLogs->Add(VoucherName +" "+  "Expiry date of voucher.                " + VoucherUsageDetail.GiftCardExpiryDate.DateTimeString());
+         }
+         if(VoucherName == "Pocket Voucher")
+         {
+
+             loyaltyLogs->Add(VoucherName +" "+  "Pocket Voucher No.                     " + VoucherUsageDetail.PocketVoucherNumber);
+             loyaltyLogs->Add(VoucherName +" "+  "Pocket Voucher Total Sale amount       " + PaymentTransaction.RedeemPocketVoucherInformation->TotalSaleAmount.operator UnicodeString());
+         }
+         if(VoucherName == "Member Voucher")
+         {
+
+              loyaltyLogs->Add(VoucherName +" "+  "Member Voucher Name.                   " + TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName);
+
+              for(int indexVouchers = 0; indexVouchers < TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.size(); indexVouchers++)
+              {
+
+                  if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName.Trim() ==
+                            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].VoucherName.Trim())
+                  {
+
+                      loyaltyLogs->Add(VoucherName +" "+  "Number of Uses Allowed                 " +
+                      IntToStr(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].NumberOfUsesRemaining));
+
+                      break;
+                  }
+              }
+
+         }
+          loyaltyLogs->Add(VoucherName +" "+  "Transaction Type of  voucher           " + transactiontype);
+
+
+
+
+
+
+
+     }
+    LoyaltyMateInterface.AddLoyaltyLogs(loyaltyLogs);
     PaymentTransaction.IsVouchersProcessed = paymentComplete;
     if(paymentComplete)
     {
@@ -7212,3 +7277,52 @@ bool TListPaymentSystem::IsPaymentDoneForFiscal(TPaymentTransaction paymentTrans
     }
     return retVal;
 }
+
+//--------------------------------------------------------
+UnicodeString TListPaymentSystem::TransactionType(int trans)
+{
+   UnicodeString transtype;
+    switch(trans)
+		{
+        case eTab:
+         transtype = "eTab";
+         return transtype;
+        break;
+		case eTableSeat:
+          transtype = "eTableSeat";
+          return transtype;
+          break;
+        case eCash:
+           transtype = "eCash";
+           return transtype;
+		   break;
+        case eAccount:
+           transtype = "eAccount";
+           return transtype;
+           break;
+        case eCredited:
+            transtype = "eCredited";
+            return transtype;
+            break;
+        case eCreditPurchase:
+            transtype = "eCreditPurchase";
+            return transtype;
+            break;
+        case eWeb:
+             transtype = "eWeb";
+             return "eWeb";
+             break;
+		default:
+			return "Unknown";
+			break;
+ 		}
+ }
+//-------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+//------------------------------
+
+
+
