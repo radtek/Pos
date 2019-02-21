@@ -274,6 +274,7 @@ void __fastcall TfrmBillGroup::FormShow(TObject *Sender)
       delivery_time = 0;
       PatronCountForMallExport = 0;
       tbtnToggleGST->Visible = false;
+    logList.reset(new TStringList());
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormResize(TObject *Sender)
@@ -866,10 +867,7 @@ void TfrmBillGroup::CancelItems(Database::TDBTransaction &DBTransaction, std::se
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 {
-    TStringList* logList = new TStringList();
-    logList->Add("-----------------------btnBillTableMouseClick() called-----------------------------");
-    TSaveLogs::RecordFiscalLogs(logList);
-    logList->Clear();
+    RecordFiscalLogsPaymentSystem(logList.get(),"-----------------------btnBillTableMouseClick() called-----------------------------");
     bool ispaymentComplete = false;
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
@@ -946,9 +944,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 		{
 			MessageBox("No Seats to bill!", "Error", MB_OK + MB_ICONERROR);
 		}
-        logList->Add("Transaction Commit of  btnBillTableMouseClick()");
-        TSaveLogs::RecordFiscalLogs(logList);
-        logList->Clear();
+        RecordFiscalLogsPaymentSystem(logList.get(),"Transaction Commit of  btnBillTableMouseClick()");
 		DBTransaction.Commit();
         if(ispaymentComplete && CurrentDisplayMode != eInvoices)
             SendFiscalPrint(PaymentTransaction);
@@ -981,22 +977,13 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
 		MessageBox("Unable to process this bill.\r" "Please report the following message to your service provider :\r\r" + E.Message +
 			"\r\rPlease check this Table is not in use.", "Error", MB_OK + MB_ICONERROR);
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-
-        logList->Add("Transaction Rollback of  btnBillTableMouseClick()");
-        TSaveLogs::RecordFiscalLogs(logList);
-        logList->Clear();
+        RecordFiscalLogsPaymentSystem(logList.get(),"Transaction Rollback of  btnBillTableMouseClick()");
 	}
-    delete logList;
-    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 {
-    TStringList* logList = new TStringList();
-    logList->Add("-----------------------btnBillSelectedMouseClick() called-----------------------------");
-    TSaveLogs::RecordFiscalLogs(logList);
-    logList->Clear();
-
+    RecordFiscalLogsPaymentSystem(logList.get(),"-----------------------btnBillSelectedMouseClick() called-----------------------------");
     TGlobalSettings::Instance().IsThorBillSelected = true;
     TMMTabType type;
     int noOfTabs = 0;
@@ -1197,9 +1184,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                     if(ispaymentComplete && CurrentDisplayMode != eInvoices)
                         SendFiscalPrint(PaymentTransaction);
                     ResetTransactionAfterCommit(PaymentTransaction);
-                    logList->Add("Transaction commit in btnBillSelectedMouseClick() ");
-                    TSaveLogs::RecordFiscalLogs(logList);
-                    logList->Clear();
+                    RecordFiscalLogsPaymentSystem(logList.get(),"Transaction commit in btnBillSelectedMouseClick()");
                     ResetForm();
                     if(TGlobalSettings::Instance().IsBillSplittedByMenuType )
                     {
@@ -1213,9 +1198,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 catch(Exception & E)
                 {
                     DBTransaction.Rollback();
-                    logList->Add("Transaction rollback in btnBillSelectedMouseClick() ");
-                    TSaveLogs::RecordFiscalLogs(logList);
-                    logList->Clear();
+                    RecordFiscalLogsPaymentSystem(logList.get(),"Transaction rollback in btnBillSelectedMouseClick()");
                     throw;
                 }
             }
@@ -1247,9 +1230,6 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	}
     TGlobalSettings::Instance().IsThorBillSelected = false;
-
-    delete logList;
-    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
@@ -1260,11 +1240,7 @@ void __fastcall TfrmBillGroup::CloseTerminateCallBack(TObject* sender)
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 {
-     TStringList* logList = new TStringList();
-     logList->Add("-----------------------btnPartialPaymentMouseClick() called-----------------------------");
-    TSaveLogs::RecordFiscalLogs(logList);
-    logList->Clear();
-
+    RecordFiscalLogsPaymentSystem(logList.get(),"-----------------------btnPartialPaymentMouseClick() called-----------------------------");
     std::set <__int64> SplitItemKeySet;
     int SplitItemKey = 0;
 	try
@@ -1342,11 +1318,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
                 if(ispaymentComplete && CurrentDisplayMode != eInvoices)
                     SendFiscalPrint(PaymentTransaction);
                 ResetTransactionAfterCommit(PaymentTransaction);
-                logList->Clear();
-                 logList->Add("Transaction commit of btnPartialPaymentMouseClick() ");
-                TSaveLogs::RecordFiscalLogs(logList);
-                logList->Clear();
-
+                RecordFiscalLogsPaymentSystem(logList.get(),"Transaction commit of btnPartialPaymentMouseClick()");
 
                 SplitItemKeySet.insert(SplitItemKey);
                 if(VoucherCode != "" && TGlobalSettings::Instance().LoyaltyMateEnabled)
@@ -1366,22 +1338,13 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        logList->Clear();
-         logList->Add("Exception caught in btnPartialPaymentMouseClick() ");
-                TSaveLogs::RecordFiscalLogs(logList);
-                logList->Clear();
+        RecordFiscalLogsPaymentSystem(logList.get(),"Exception caught in btnPartialPaymentMouseClick()");
 	}
-    delete logList;
-    logList = NULL;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 {
-     TStringList* logList = new TStringList();
-     logList->Add("-----------------------btnSplitPaymentMouseClick() called-----------------------------");
-    TSaveLogs::RecordFiscalLogs(logList);
-    logList->Clear();
-
+    RecordFiscalLogsPaymentSystem(logList.get(),"-----------------------btnSplitPaymentMouseClick() called-----------------------------");
 	try
 	{
 		if (SelectedItems.empty())
@@ -1466,9 +1429,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
                     SendFiscalPrint(PaymentTransaction);
                 ResetTransactionAfterCommit(PaymentTransaction);
 				ResetForm();
-                logList->Add("-Transaction commit in btnSplitPaymentMouseClick() ");
-                TSaveLogs::RecordFiscalLogs(logList);
-                logList->Clear();
+                RecordFiscalLogsPaymentSystem(logList.get(),"-Transaction commit in btnSplitPaymentMouseClick()");
 				DBTransaction.StartTransaction();
 				// Now reslect all the remaining items.
 				if(splittedItemKey > 0)
@@ -1517,13 +1478,8 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			"\r\rYou may need to reboot the system.", "Error", MB_OK + MB_ICONERROR);
 
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-
-        logList->Add("-Exception in btnSplitPaymentMouseClick() ");
-                TSaveLogs::RecordFiscalLogs(logList);
-                logList->Clear();
+        RecordFiscalLogsPaymentSystem(logList.get(),"-Exception in btnSplitPaymentMouseClick()");
 	}
-    delete logList;
-    logList = NULL;
 }
 //----------------------------------------------------------------------------
 void TfrmBillGroup::RemoveLoyaltymateMembership(std::set <__int64> SelectedItemKeys)
@@ -5773,3 +5729,17 @@ void TfrmBillGroup::ResetTransactionAfterCommit(TPaymentTransaction &paymentTran
     }
 }
 //--------------------------------------------------------
+void TfrmBillGroup::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue)
+{
+    try
+    {
+        logList->Clear();
+        logList->Add(logValue);
+        TSaveLogs::RecordFiscalLogs(logList);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
+    }
+}

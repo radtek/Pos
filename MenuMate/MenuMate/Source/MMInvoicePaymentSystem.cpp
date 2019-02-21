@@ -12,7 +12,6 @@
 #include "ReceiptManager.h"
 //#include "ManagerPanasonic.h"
 #include "ManagerAustriaFiscal.h"
-#include "FiscalPrinterAdapter.h"
 #include "SaveLogs.h"
 #include "Printout.h"
 #include "TransactionHelper.h"

@@ -195,6 +195,8 @@ private:	// User declarations
     void UpdateTabeleStateForOO();
     void SendFiscalPrint(TPaymentTransaction &paymentTransaction);
     void ResetTransactionAfterCommit(TPaymentTransaction &paymentTransaction);
+    void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
+    std::auto_ptr<TStringList> logList;
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

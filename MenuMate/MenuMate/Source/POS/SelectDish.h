@@ -258,6 +258,7 @@ private: // User declarations
     std::auto_ptr<TLabel> taxFigure;
     std::auto_ptr<TLabel> serviceChargeLabel;
     std::auto_ptr<TLabel> serviceChargeFigure;
+    std::auto_ptr<TStringList> logList;
     bool isExtendedDisplayActive;
     int tbtnDollar1Width;
     int tbtnDollar2Width;
@@ -503,6 +504,8 @@ private: // User declarations
     void CheckRegisteration();
     void SendFiscalPrint(TPaymentTransaction &paymentTransactionNew);
     void ClearCurrentTransactionDetails(TPaymentTransaction &paymentTransactionNew);
+    void ClearSeatOrdersWithFiscalPrint();
+    void RecordFiscalLogsSelectDish(TStringList* logList, AnsiString logValue);
 
 protected:
    void __fastcall WMDisplayChange(TWMDisplayChange& Message);

@@ -134,7 +134,6 @@
 #include "SaveLogs.h"
 #include "DBOnlineOrdeing.h"
 #include "OnlineOrderDocketPrinter.h"
-#include "FiscalPrinterAdapter.h"
 #include "TransactionHelper.h"
 // ---------------------------------------------------------------------------
 
@@ -629,6 +628,7 @@ void __fastcall TfrmSelectDish::FormShow(TObject *Sender)
     {
         TOnlineOrderDocketPrinter::Instance()->TriggerTransactionSync();
     }
+    logList.reset(new TStringList());
 }
 // ---------------------------------------------------------------------------
 void TfrmSelectDish::AdjustScreenSize()
@@ -1077,23 +1077,16 @@ void __fastcall TfrmSelectDish::CardSwipe(Messages::TMessage& Message)
 						OrderContainer.Location["SelectedTable"], OrderContainer.Location["SelectedSeat"], OrderContainer.Location["RoomNumber"]);
 					Processing->Close();
 
-                    TStringList* logList = new TStringList();
-                    logList->Clear();
-
 					if (PaymentComplete)
 					{
 						DBTransaction.Commit();
 						ResetPOS();
-                        logList->Add("Transaction commit of CardSwipe().");
-                        TSaveLogs::RecordFiscalLogs(logList);
+                        RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of CardSwipe().");
 					}
                     else
                     {
-                        logList->Add("Payment not completed in CardSwipe().");
-                        TSaveLogs::RecordFiscalLogs(logList);
+                        RecordFiscalLogsSelectDish(logList.get(), "Payment not completed in CardSwipe().");
                     }
-                    delete logList;
-                    logList = NULL;
 
 					if (!OrdersPending()) // All Orders Posted No Exceptions
 					{
@@ -1871,25 +1864,19 @@ void __fastcall TfrmSelectDish::tbtnCashSaleClick(TObject *Sender)
                 0, // Table
                 0, // Seat
                 0); // Room
-            TStringList* logList = new TStringList();
-            logList->Clear();
 
             if (PaymentComplete)
             {
                 paymentTransactionNew.DBTransaction.Commit();
-                logList->Add("Transaction commit of tbtnCashSaleClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnCashSaleClick().");
                 SendFiscalPrint(paymentTransactionNew);
                 ClearCurrentTransactionDetails(paymentTransactionNew);
                 ResetPOS();
             }
             else
             {
-                logList->Add("payment not completed in tbtnCashSaleClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "payment not completed in tbtnCashSaleClick().");
             }
-            delete logList;
-            logList = NULL;
         }
         DisplayRoomNoUI();
 	}
@@ -2563,24 +2550,18 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 				0, // Table
 				0, // Seat
 				0); // Room
-            TStringList* logList = new TStringList();
-            logList->Clear();
 			if (PaymentComplete)
 			{
                 paymentTransactionNew.DBTransaction.Commit();
-                logList->Add("Transaction commit of tbtnTenderClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnTenderClick().");
                 SendFiscalPrint(paymentTransactionNew);
                 ClearCurrentTransactionDetails(paymentTransactionNew);
 				ResetPOS();
 			}
             else
             {
-                logList->Add("payment not completed received in tbtnTenderClick().");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "payment not completed received in tbtnTenderClick().");
             }
-            delete logList;
-            logList = NULL;
 		}
 	}
 	else
@@ -2599,14 +2580,10 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 			0, // Seat
 			0); // Room
 
-        TStringList* logList = new TStringList();
-        logList->Clear();
-
 		if (PaymentComplete)
 		{
             paymentTransactionNew.DBTransaction.Commit();
-            logList->Add("Transaction commit of tbtnTenderClick() part 2.");
-            TSaveLogs::RecordFiscalLogs(logList);
+            RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnTenderClick() part 2.");
             SendFiscalPrint(paymentTransactionNew);
             ClearCurrentTransactionDetails(paymentTransactionNew);
 			ResetPOS();
@@ -2653,11 +2630,8 @@ void __fastcall TfrmSelectDish::tbtnTenderClick(TObject *Sender)
 				IsSubSidizeOrderCancil=true;
 				IsSubSidizeProcessed=false;
 			}
-             logList->Add("payment not completed received in tbtnTenderClick() part 2");
-                TSaveLogs::RecordFiscalLogs(logList);
+            RecordFiscalLogsSelectDish(logList.get(), "payment not completed received in tbtnTenderClick() part 2.");
 		}
-        delete logList;
-        logList = NULL;
 	}
 
 	if(!IsSubSidizeProcessed&&!IsSubSidizeOrderCancil)
@@ -3844,11 +3818,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 				    PaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(PaymentTransaction);
                     if(PaymentComplete)
                     {
-                        TStringList* logList = new TStringList();
-                        logList->Add("After calling ProcessTransaction() in POS and payment was completed.");
-                        TSaveLogs::RecordFiscalLogs(logList);
-                        delete logList;
-                        logList = NULL;
+                        RecordFiscalLogsSelectDish(logList.get(), "After calling ProcessTransaction() in POS and payment was completed.");
                     }
                 }
 
@@ -3863,19 +3833,13 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 				{
 					// Security Records are processed in TransProcessTransaction.
 
-                    TStringList* logList = new TStringList();
-                    logList->Add("Updating stock.");
-                    TSaveLogs::RecordFiscalLogs(logList);
+                    RecordFiscalLogsSelectDish(logList.get(), "Updating stock.");
 
 					TDeviceRealTerminal::Instance().ManagerStock->UpdateStock(PaymentTransaction.DBTransaction, OrdersList.get(), TDeviceRealTerminal::Instance().User.Name);
                     if (!PaymentTransaction.CreditTransaction)
                        HideSoldItems(PaymentTransaction.DBTransaction,OrdersList.get());
                     isChitDiscountExist = false;
-                    logList->Clear();
-                     logList->Add("After Updating stock.");
-                    TSaveLogs::RecordFiscalLogs(logList);
-                    delete logList;
-                    logList = NULL;
+                    RecordFiscalLogsSelectDish(logList.get(), "After Updating stock.");
 				}
 				else
 				{
@@ -3923,11 +3887,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                     HighlightSelectedItem();
                     isChitDiscountExist = true;
 
-                    TStringList* logList = new TStringList();
-                    logList->Add("Payment was not completed in select dish.");
-                    TSaveLogs::RecordFiscalLogs(logList);
-                    delete logList;
-                    logList = NULL;
+                    RecordFiscalLogsSelectDish(logList.get(), "Payment was not completed in select dish.");
 				}
 			}
 			else
@@ -4056,9 +4016,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 			}
 			if (PaymentComplete)
 			{
-                TStringList* logList = new TStringList();
-                logList->Add("Before calling CloseSaleStartTime");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "Before calling CloseSaleStartTime");
 				TDBSaleTimes::CloseSaleStartTime(PaymentTransaction.DBTransaction, CurrentTimeKey); // Close the Sale Key for Chefmate.
 
 				if (OrdersList->Count > 0)
@@ -4070,9 +4028,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 					PrintTransaction->Patrons = PaymentTransaction.Patrons;
 					PrintTransaction->CustomerOrder = PaymentTransaction.CustomerOrder;
 
-                    logList->Clear();
-                    logList->Add("Before Printing docket.");
-                    TSaveLogs::RecordFiscalLogs(logList);
+                    RecordFiscalLogsSelectDish(logList.get(), "Before Printing docket.");
 
 					if (!PaymentTransaction.CreditTransaction)
 					{
@@ -4173,9 +4129,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                             if(TGlobalSettings::Instance().IsRegistrationVerified)
                                 completeOrderToChefMate(PrintTransaction.get());
 
-                            logList->Clear();
-                            logList->Add("Docket printed and order sent to chef.");
-                            TSaveLogs::RecordFiscalLogs(logList);
+                            RecordFiscalLogsSelectDish(logList.get(), "Docket printed and order sent to chef.");
 						}
 					}
 
@@ -4214,10 +4168,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 
                             if (TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder && TabType != TabInvoice || TabType == TabCashAccount)
                             {
-
-                                logList->Clear();
-                                logList->Add("If block of TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                                RecordFiscalLogsSelectDish(logList.get(), "If block of TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder.");
 
                                 if (OrdersList->Count != 0)
                                 {
@@ -4251,9 +4202,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                             {
                                 std::set<__int64>InvoiceTabs;
 
-                                logList->Clear();
-                                logList->Add("Else block of TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                                RecordFiscalLogsSelectDish(logList.get(), "Else block of TGlobalSettings::Instance().SaveAndPrintPrintsPartialOrder.");
 
                                 if(TGlobalSettings::Instance().IsBillSplittedByMenuType && TabType == TabDelayedPayment &&
                                         TGlobalSettings::Instance().TransferTableOnPrintPrelim )
@@ -4315,9 +4264,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 
                             if (TabType == TabInvoice)
                             {
-                                logList->Clear();
-                                logList->Add("Tab type was invoice.");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                                RecordFiscalLogsSelectDish(logList.get(), "Tab type was invoice.");
 
                                 TempReceipt->JobType = pjReceiptInvoice;
                                 TempReceipt->PaymentType = ptFinal;
@@ -4331,19 +4278,14 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                             }
                             else if (TabType == TabRoom)
                             {
-                                logList->Clear();
-                                logList->Add("Tab type was Room.");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                                RecordFiscalLogsSelectDish(logList.get(), "Tab type was Room.");
 
                                 TempReceipt->ExtraInfo->Add("Room Number # " + IntToStr(RoomNo));
                                 TempReceipt->ExtraInfo->Add("Guest " + TDBRooms::GetPartyName(PaymentTransaction.DBTransaction, RoomNo));
                             }
 
                             // Print Invoice.
-
-                            logList->Clear();
-                                logList->Add("Printing invoice.");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                            RecordFiscalLogsSelectDish(logList.get(), "Printing invoice.");
 
                             TempReceipt->Transaction = &InvoiceTransaction;
                             if(TDeviceRealTerminal::Instance().BasePMS->Enabled ||
@@ -4369,9 +4311,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                                     delete(TItemComplete*)InvoiceTransaction.Orders->Items[0];
                                     InvoiceTransaction.Orders->Delete(0);
                                 }
-                                logList->Clear();
-                                logList->Add("Order Deleted from Invoice transaction.");
-                                TSaveLogs::RecordFiscalLogs(logList);
+                                RecordFiscalLogsSelectDish(logList.get(), "Order Deleted from Invoice transaction.");
                             }
                         }
 					}
@@ -4385,49 +4325,24 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 				}
                 //call method to send points details...
                 SendPointValueToRunRate( PaymentTransaction );
-				// Clear all Orders and membership.
-				// Note you can have a sale with no orders but that has membership
-				// which needs to be cleared anyway.
-				lbDisplay->Clear();
-				for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
-				{
-					for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
-					{
-						delete SeatOrders[iSeat]->Orders->Items[i];
-					}
-					for (int j = 0; j < SeatOrders[iSeat]->Orders->PrevCount; j++)
-					{
-						delete SeatOrders[iSeat]->Orders->PrevItems[j];
-					}
-					SeatOrders[iSeat]->Orders->Clear();
-					SeatOrders[iSeat]->Orders->ClearPrev();
-					SeatOrders[iSeat]->Orders->AppliedMembership.Clear();
-                    SeatOrders[iSeat]->Orders->pmsAccountDetails.RoomNumber = "";
-                    SeatOrders[iSeat]->Orders->pmsAccountDetails.RoomBedNumber = "";
-                    SeatOrders[iSeat]->Orders->pmsAccountDetails.FirstName = "";
-                    SeatOrders[iSeat]->Orders->pmsAccountDetails.LastName = "";
-				}
-                logList->Clear();
-                logList->Add("All seat order deleted.");
-                TSaveLogs::RecordFiscalLogs(logList);
 
-//				AfterSaleProcessed.Occured();
+                //********************************************//
+                // Check if fiscal enabled and print required
+                if(!(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction)))
+                    ClearSeatOrdersWithFiscalPrint();
+
+                RecordFiscalLogsSelectDish(logList.get(), "All seat order deleted.");
+
                 //clear phone number and customer name after successful sale
                 TGlobalSettings::Instance().TabPrintName = "";
                 TGlobalSettings::Instance().TabPrintPhone = "";
-//                OrdersList->Clear();
                 memNote->Lines->Clear();
                 memOverview->Lines->Clear();
                 patronsStore.clear();
                 storedPatronCountFromMenu = 0;
                 PaymentTransaction.PatronCountFromMenu = 0;
 
-                logList->Clear();
-                logList->Add("End of processorder");
-                TSaveLogs::RecordFiscalLogs(logList);
-
-                delete logList;
-                logList = NULL;
+                RecordFiscalLogsSelectDish(logList.get(), "End of processorder.");
 			}
             else
             {
@@ -4456,31 +4371,19 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 	{
         if(!CanClose)
         {
-		MessageBox("Unable to process this order.\r" "Please report the following message to your service provider :\r\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
-		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+            MessageBox("Unable to process this order.\r" "Please report the following message to your service provider :\r\r" + E.Message, "Error", MB_OK + MB_ICONERROR);
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 
-		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Tab Data Type :" + IntToStr(TabType) + " Selected Tab Key " + IntToStr(SelectedTab) + "Tab Name :" + TabName);
-		PaymentComplete = false;
-        TStringList* logList = new TStringList();
-        logList->Clear();
-        logList->Add("Exception in select dish process transaction().");
-        TSaveLogs::RecordFiscalLogs(logList);
+            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Tab Data Type :" + IntToStr(TabType) + " Selected Tab Key " + IntToStr(SelectedTab) + "Tab Name :" + TabName);
+            PaymentComplete = false;
 
-        delete logList;
-        logList = NULL;
+            RecordFiscalLogsSelectDish(logList.get(), "Exception in select dish process transaction().");
         }
 	}
 
     if(PaymentComplete)
      {
-        //PaymentTransaction.PaymentsClear();
-        TStringList* logList = new TStringList();
-        logList->Clear();
-        logList->Add("Payment info cleared.");
-        TSaveLogs::RecordFiscalLogs(logList);
-
-        delete logList;
-        logList = NULL;
+        RecordFiscalLogsSelectDish(logList.get(), "Payment info cleared.");
      }
     IsParkSalesEnable = false;
 	return PaymentComplete;
@@ -4772,22 +4675,17 @@ void TfrmSelectDish::ProcessQuickPayment(TObject *Sender,AnsiString paymentName)
                                         0, // Seat
                                         0); // Room
 
-     TStringList* logList = new TStringList();
-     logList->Clear();
-
     if (PaymentComplete)
     {
         paymentTransactionNew.DBTransaction.Commit();
-        logList->Add("Transaction commit of tbtnSaveMouseClick().");
-        TSaveLogs::RecordFiscalLogs(logList);
+        RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnSaveMouseClick().");
         SendFiscalPrint(paymentTransactionNew);
         ClearCurrentTransactionDetails(paymentTransactionNew);
         ResetPOS();
     }
     else
     {
-        logList->Add("Payment not completed in ProcessQuickPayment().");
-        TSaveLogs::RecordFiscalLogs(logList);
+        RecordFiscalLogsSelectDish(logList.get(), "Payment not completed in ProcessQuickPayment().");
     }
 
    AutoLogOut();
@@ -8841,25 +8739,18 @@ void __fastcall TfrmSelectDish::tbtnSaveMouseClick(TObject *Sender)
 				OrderContainer.Location["BillOff"],
                 OrderContainer.Location["DelayedInvoiceNumber"]);
 
-                TStringList* logList = new TStringList();
-                logList->Clear();
-
 				if (PaymentComplete)
 				{
 					DBTransaction.Commit();
-                    logList->Add("Transaction commit of tbtnSaveMouseClick().");
-                    TSaveLogs::RecordFiscalLogs(logList);
+                    RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnSaveMouseClick().");
 					ResetPOS();
 
 				}
 				else
 				{
-                    logList->Add("Transaction rollback of tbtnSaveMouseClick().");
-                    TSaveLogs::RecordFiscalLogs(logList);
+                    RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnSaveMouseClick().");
 					DBTransaction.Rollback();
 				}
-                delete logList;
-                logList = NULL;
 			}
 			frmProcessing->Close();
 
@@ -9292,26 +9183,16 @@ void __fastcall TfrmSelectDish::tbtnSelectTableMouseClick(TObject *Sender)
                     OrderContainer.Location["DelayedInvoiceNumber"]);
                     frmProcessing->Close();
 
-                    TStringList* logList = new TStringList();
-                    logList->Clear();
-
                     if (PaymentComplete)
                     {
-                        logList->Add("Transaction commit of tbtnSelectTable(().");
-                        TSaveLogs::RecordFiscalLogs(logList);
-
+                        RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of tbtnSelectTable(().");
                         DBTransaction.Commit();
                         ResetPOS();
-
                     }
                     else
                     {
-                        logList->Add("Payment not completed for tbtnSelectTable(().");
-                        TSaveLogs::RecordFiscalLogs(logList);
+                        RecordFiscalLogsSelectDish(logList.get(), "Payment not completed for tbtnSelectTable(().");
                     }
-                    delete logList;
-                    logList = NULL;
-
                 }
 
 				if (!OrdersPending() && IsChitPromptFormActive) // All Orders Posted No Exceptions
@@ -12605,14 +12486,9 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 			OrderContainer.Location["RoomNumber"],
 			OrderContainer.Location["BillOff"]);
 
-            TStringList* logList = new TStringList();
-            logList->Clear();
-
 			if (PaymentComplete)
 			{
-                logList->Add("Transaction commit of SaveTabData(().");
-                TSaveLogs::RecordFiscalLogs(logList);
-
+                RecordFiscalLogsSelectDish(logList.get(), "Transaction commit of SaveTabData(().");
 				DBTransaction.Commit();
 				ResetPOS();
 
@@ -12620,11 +12496,8 @@ void TfrmSelectDish::SaveTabData(TSaveOrdersTo &OrderContainer)
 			else
 			{
 				DBTransaction.Rollback();
-                logList->Add("Transaction rollback of SaveTabData(().");
-                TSaveLogs::RecordFiscalLogs(logList);
+                RecordFiscalLogsSelectDish(logList.get(), "Transaction rollback of SaveTabData(().");
 			}
-            delete logList;
-            logList = NULL;
 		}
 		frmProcessing->Close();
 		if (!OrdersPending())
@@ -16589,6 +16462,10 @@ void TfrmSelectDish::SendFiscalPrint(TPaymentTransaction &paymentTransactionNew)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
     }
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransactionNew))
+    {
+        ClearSeatOrdersWithFiscalPrint();
+    }
 }
 //--------------------------------------------------------
 void TfrmSelectDish::ClearCurrentTransactionDetails(TPaymentTransaction &paymentTransactionNew)
@@ -16596,14 +16473,59 @@ void TfrmSelectDish::ClearCurrentTransactionDetails(TPaymentTransaction &payment
     try
     {
         paymentTransactionNew.Orders->Clear();
-        paymentTransactionNew.PaymentsClear();
         AfterSaleProcessed.Occured();
+        paymentTransactionNew.PaymentsClear();
     }
     catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-		//throw;
 	}
 }
 //--------------------------------------------------------
-
+void TfrmSelectDish::ClearSeatOrdersWithFiscalPrint()
+{
+    // Clear all Orders and membership.
+    // Note you can have a sale with no orders but that has membership
+    // which needs to be cleared anyway.
+    try
+    {
+        lbDisplay->Clear();
+        for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
+        {
+            for (int i = 0; i < SeatOrders[iSeat]->Orders->Count; i++)
+            {
+                delete SeatOrders[iSeat]->Orders->Items[i];
+            }
+            for (int j = 0; j < SeatOrders[iSeat]->Orders->PrevCount; j++)
+            {
+                delete SeatOrders[iSeat]->Orders->PrevItems[j];
+            }
+            SeatOrders[iSeat]->Orders->Clear();
+            SeatOrders[iSeat]->Orders->ClearPrev();
+            SeatOrders[iSeat]->Orders->AppliedMembership.Clear();
+            SeatOrders[iSeat]->Orders->pmsAccountDetails.RoomNumber = "";
+            SeatOrders[iSeat]->Orders->pmsAccountDetails.RoomBedNumber = "";
+            SeatOrders[iSeat]->Orders->pmsAccountDetails.FirstName = "";
+            SeatOrders[iSeat]->Orders->pmsAccountDetails.LastName = "";
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+}
+void TfrmSelectDish::RecordFiscalLogsSelectDish(TStringList* logList, AnsiString logValue)
+{
+    try
+    {
+        logList->Clear();
+        logList->Add(logValue);
+        TSaveLogs::RecordFiscalLogs(logList);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
+    }
+}

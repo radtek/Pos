@@ -235,6 +235,7 @@ protected:
      bool IsRoomReceiptSettingEnable();
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
      bool TryToEnableMews();
+     void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
 };
 
 #endif
