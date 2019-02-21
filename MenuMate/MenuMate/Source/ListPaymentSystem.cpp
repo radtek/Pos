@@ -3488,10 +3488,9 @@ void TListPaymentSystem::StoreInfo(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::Reset(TPaymentTransaction &PaymentTransaction)
 {
-	if (PaymentTransaction.Type == eTransSplitPayment || PaymentTransaction.Type == eTransPartialPayment || PaymentTransaction.Type ==
-			eTransTabSet)
+	if (CanResetOrdersInPaymentTransaction(PaymentTransaction))
 	{
-		while (PaymentTransaction.Orders->Count != 0)
+		while(PaymentTransaction.Orders->Count != 0)
 		{
 			delete(TItemComplete*)PaymentTransaction.Orders->Items[0];
 			PaymentTransaction.Orders->Delete(0);
@@ -5248,7 +5247,6 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                         }
 						RemoveOrders(PaymentTransaction);
 						AdjustCredit(PaymentTransaction);
-
 					}
 				}
 				else
@@ -7081,4 +7079,21 @@ void TListPaymentSystem::RecordFiscalLogsPaymentSystem(TStringList* logList, Ans
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
     }
+}
+bool TListPaymentSystem::CanResetOrdersInPaymentTransaction(TPaymentTransaction paymentTransaction)
+{
+    bool retValue = false;
+    try
+    {
+        retValue = ((paymentTransaction.Type == eTransSplitPayment || paymentTransaction.Type == eTransPartialPayment ||
+                     paymentTransaction.Type == eTransTabSet)
+                              &&
+                     !(TGlobalSettings::Instance().UseItalyFiscalPrinter &&
+                        TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransaction)));
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
 }

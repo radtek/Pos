@@ -4331,7 +4331,6 @@ int TfrmBillGroup::BillItems(TPaymentTransaction &paymentTransaction, Database::
                 if(TGlobalSettings::Instance().PMSType == SiHot && ((TItemComplete*)paymentTransaction.Orders->Items[0])->RoomNoStr != "" && TGlobalSettings::Instance().EnableCustomerJourney)
                     CustomizeForSiHot(paymentTransaction);
                 ispaymentComplete = TDeviceRealTerminal::Instance().PaymentSystem->ProcessTransaction(paymentTransaction, false );
-
                 // display last receipt if any
                 _displayLastReceipt( DBTransaction, TDeviceRealTerminal::Instance().PaymentSystem->LastReceipt );
             }

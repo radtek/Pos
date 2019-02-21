@@ -236,6 +236,7 @@ protected:
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
      bool TryToEnableMews();
      void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
+     bool CanResetOrdersInPaymentTransaction(TPaymentTransaction paymentTransaction);
 };
 
 #endif
