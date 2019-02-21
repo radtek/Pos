@@ -95,7 +95,7 @@ namespace Loyaltymate.Sevices
         public ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByCardCode, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
@@ -133,7 +133,7 @@ namespace Loyaltymate.Sevices
         public ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByEmail, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
@@ -171,7 +171,7 @@ namespace Loyaltymate.Sevices
         public bool UpdateMemberCardCode(string inSyndicateCode, ApiUpdateCardCodeRequestViewModel requestViewModel, List<string> loyaltyLogs)
         {
             bool response = false;
-            loyaltyLogs.Add("Creating Web Request                                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateMemberCardCode, inSyndicateCode, null,
                 WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
