@@ -5733,9 +5733,9 @@ void TfrmBillGroup::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiStri
 {
     try
     {
-        logList->Clear();
         logList->Add(logValue);
         TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
     }
     catch(Exception &ex)
     {

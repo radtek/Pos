@@ -4328,8 +4328,8 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 
                 //********************************************//
                 // Check if fiscal enabled and print required
-                if(!(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction)))
-                    ClearSeatOrdersWithFiscalPrint();
+                if(CanClearSeatOrders(PaymentTransaction,Sender))
+                    ClearSeatOrders();
 
                 RecordFiscalLogsSelectDish(logList.get(), "All seat order deleted.");
 
@@ -16464,7 +16464,7 @@ void TfrmSelectDish::SendFiscalPrint(TPaymentTransaction &paymentTransactionNew)
     }
     if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransactionNew))
     {
-        ClearSeatOrdersWithFiscalPrint();
+        ClearSeatOrders();
     }
 }
 //--------------------------------------------------------
@@ -16482,7 +16482,7 @@ void TfrmSelectDish::ClearCurrentTransactionDetails(TPaymentTransaction &payment
 	}
 }
 //--------------------------------------------------------
-void TfrmSelectDish::ClearSeatOrdersWithFiscalPrint()
+void TfrmSelectDish::ClearSeatOrders()
 {
     // Clear all Orders and membership.
     // Note you can have a sale with no orders but that has membership
@@ -16519,13 +16519,29 @@ void TfrmSelectDish::RecordFiscalLogsSelectDish(TStringList* logList, AnsiString
 {
     try
     {
-        logList->Clear();
         logList->Add(logValue);
         TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
     }
     catch(Exception &ex)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
     }
+}
+bool TfrmSelectDish::CanClearSeatOrders(TPaymentTransaction PaymentTransaction,TObject *Sender)
+{
+    bool retValue = true;
+    try
+    {
+        retValue = (!(TGlobalSettings::Instance().UseItalyFiscalPrinter &&
+                    TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+                    ||
+                    ((Sender != tbtnTender) && (Sender != tbtnCashSale)));
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
 }

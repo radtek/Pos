@@ -504,7 +504,8 @@ private: // User declarations
     void CheckRegisteration();
     void SendFiscalPrint(TPaymentTransaction &paymentTransactionNew);
     void ClearCurrentTransactionDetails(TPaymentTransaction &paymentTransactionNew);
-    void ClearSeatOrdersWithFiscalPrint();
+    bool CanClearSeatOrders(TPaymentTransaction PaymentTransaction,TObject *Sender);
+    void ClearSeatOrders();
     void RecordFiscalLogsSelectDish(TStringList* logList, AnsiString logValue);
 
 protected:

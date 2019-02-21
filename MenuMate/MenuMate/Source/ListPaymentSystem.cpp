@@ -7072,9 +7072,9 @@ void TListPaymentSystem::RecordFiscalLogsPaymentSystem(TStringList* logList, Ans
 {
     try
     {
-        logList->Clear();
         logList->Add(logValue);
         TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
     }
     catch(Exception &ex)
     {
