@@ -55,6 +55,10 @@ __published:	// IDE-managed Components
     TCheckBox *cbNoPointsEarnedDuring;
     TGroupBox *GroupBox4;
     TTouchBtn *BtnPriority;
+    TTouchBtn *BtnStartSecond;
+    TTouchBtn *BtnEndSecond;
+    TLabel *lbStartSecond;
+    TLabel *lbEndSecond;
 	void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
 
@@ -82,6 +86,8 @@ __published:	// IDE-managed Components
     void __fastcall cbHappyHourProfileDblClick(TObject *Sender);
     void __fastcall csPriceLevelChange(TObject *Sender);
     void __fastcall BtnPriorityMouseClick(TObject *Sender);
+    void __fastcall BtnEndSecondMouseClick(TObject *Sender);
+    void __fastcall BtnStartSecondMouseClick(TObject *Sender);
 
 
 protected:

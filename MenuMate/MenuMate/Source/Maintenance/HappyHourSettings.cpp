@@ -297,7 +297,7 @@ void __fastcall TfrmHappyHourSettings::BtnStartHourMouseClick(TObject *Sender)
 {
      TfrmSelectDateTime *frmSelectDateTime = new TfrmSelectDateTime(this);
      BtnStartHour->Caption = frmSelectDateTime->PopUpDatePicker("Enter the Hour", UnicodeString (BtnStartHour->Caption));
-    ProfileEdited =true;
+     ProfileEdited =true;
 
      if(!ValidateTime(true,false))return;
      if (EnableEdit)
@@ -451,7 +451,7 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
     int Day,Month,Year,profileDay,profileMonth,profileYear;
 
     TDateTime currentTimestamp = Dateutils::EncodeDateTime(YearOf(Now()),MonthOf(Now()),DayOf(Now()),
-                                                            HourOfTheDay(Now()),MinuteOfTheHour(Now()),00,000);
+                                                            HourOfTheDay(Now()),MinuteOfTheHour(Now()),SecondOfTheMinute(Now()),000);
     if(BtnDate->Caption == "Day" || (BtnMonth->Caption == "Month") || (BtnYear->Caption == "Year"))
     {
         profileDay = 30;
@@ -493,6 +493,7 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
       StartHour = 0;
     }
     int StartMinute = StrToInt(BtnStartMinute->Caption);
+    int StartSecond = StrToInt(BtnStartSecond->Caption);
 
     //validation for end date
     if(StrToInt(BtnEndHour->Caption) != 12)
@@ -515,11 +516,12 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
       EndHour = 0;
     }
     int EndMinute = StrToInt(BtnEndMinute->Caption);
+    int EndSecond = StrToInt(BtnEndSecond->Caption);
 
      //encode date
-    TDateTime encodedStartDate =Dateutils::EncodeDateTime(Year,Month,Day,StartHour,StartMinute,SecondOfTheMinute(currentTimestamp),MilliSecondOfTheSecond(currentTimestamp));
+    TDateTime encodedStartDate =Dateutils::EncodeDateTime(Year,Month,Day,StartHour,StartMinute,StartSecond,000);
 
-    TDateTime encodedEndDate =Dateutils::EncodeDateTime(Year,Month,Day,EndHour,EndMinute,SecondOfTheMinute(currentTimestamp),MilliSecondOfTheSecond(currentTimestamp));
+    TDateTime encodedEndDate =Dateutils::EncodeDateTime(Year,Month,Day,EndHour,EndMinute,EndSecond,000);
 
 
      TDateTime encodedDateTime;
@@ -531,7 +533,7 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
       }
       else
       {
-           encodedDateTime = Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(currentTimestamp),MinuteOfTheHour(currentTimestamp),SecondOfTheMinute(currentTimestamp),MilliSecondOfTheSecond(currentTimestamp));
+           encodedDateTime = Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(currentTimestamp),MinuteOfTheHour(currentTimestamp),SecondOfTheMinute(currentTimestamp),000);
 
       }
 
@@ -562,7 +564,7 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
           {
         //    if( Dateutils::CompareDateTime(encodedEndDate,Now())== LessThanValue )
 
-      if( Dateutils::CompareDateTime(Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(Now()),MinuteOfTheHour(Now()),SecondOfTheMinute(Now()),MilliSecondOfTheSecond(Now())),Now())== LessThanValue )
+      if( Dateutils::CompareDateTime(Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(Now()),MinuteOfTheHour(Now()),SecondOfTheMinute(Now()),000),Now())== LessThanValue )
             {
                 MessageBox("Date entered is prior to current date, please enter a valid date.", "Invalid Date", MB_OK + MB_ICONERROR);
 
@@ -771,10 +773,12 @@ bool TfrmHappyHourSettings::EnableDate()
 
         BtnStartHour->Caption = HourOf(startTime);
         BtnStartMinute->Caption = MinuteOf(startTime);
+        BtnStartSecond->Caption = SecondOf(startTime);
         BtnStartAMPM->Caption = "AM" ;
 
         BtnEndHour->Caption = HourOf(endTime);
         BtnEndMinute->Caption = MinuteOf(endTime);
+        BtnEndSecond->Caption = SecondOf(startTime);
         BtnEndAMPM->Caption = "AM" ;
 
         startHour = HourOf(startTime);
@@ -1183,9 +1187,11 @@ bool TfrmHappyHourSettings::CheckNoOfHHProfile(int dayindex)
   {
     BtnStartHour->Caption = HourOf(currentTimeStamp);
     BtnStartMinute->Caption = MinuteOf(currentTimeStamp);
+    BtnStartSecond->Caption = SecondOf(currentTimeStamp);
     BtnStartAMPM->Caption = "AM" ;
     BtnEndHour->Caption = HourOf(currentTimeStamp);
     BtnEndMinute->Caption = MinuteOf(currentTimeStamp);
+    BtnEndSecond->Caption = SecondOf(currentTimeStamp);
     BtnEndAMPM->Caption = "AM" ;
     int Hour = HourOf(currentTimeStamp);
 
@@ -1315,7 +1321,6 @@ void __fastcall TfrmHappyHourSettings::cbHappyHourProfileDblClick(TObject *Sende
 }
 //---------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------
 
 void __fastcall TfrmHappyHourSettings::csPriceLevelChange(TObject *Sender)
 {
@@ -1515,5 +1520,43 @@ void __fastcall TfrmHappyHourSettings::BtnPriorityMouseClick(TObject *Sender)
 
 //---------------------------------------------------------------------------
 
+
+void __fastcall TfrmHappyHourSettings::BtnStartSecondMouseClick(TObject *Sender)
+{
+    try
+    {
+        TfrmSelectDateTime *frmSelectDateTime = new TfrmSelectDateTime(this);
+        BtnStartSecond->Caption = frmSelectDateTime->PopUpDatePicker("Enter the Second", UnicodeString (BtnStartSecond->Caption));
+        ProfileEdited =true;
+
+        if(!ValidateTime(true,false))return;
+        if (EnableEdit)
+           UpdateEditedProfile(CurrentSelectedProfileKey,HappyHourProfiles);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmHappyHourSettings::BtnEndSecondMouseClick(TObject *Sender)
+{
+    try
+    {
+        TfrmSelectDateTime *frmSelectDateTime = new TfrmSelectDateTime(this);
+        BtnEndSecond->Caption = frmSelectDateTime->PopUpDatePicker("Enter the Second", UnicodeString (BtnEndSecond->Caption));
+        ProfileEdited =true;
+
+        if(!ValidateTime(true,false))return;
+        if (EnableEdit)
+           UpdateEditedProfile(CurrentSelectedProfileKey,HappyHourProfiles);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+//---------------------------------------------------------------------------
 
 
