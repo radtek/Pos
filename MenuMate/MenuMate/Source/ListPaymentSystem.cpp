@@ -7266,7 +7266,7 @@ UnicodeString TListPaymentSystem::TransactionType(int trans)
  		}
  }
 //------------------------------------------------------------------------------
-void TListPaymentSystem::LogDetailsForVoucherProcess(TPaymentTransaction &PaymentTransaction, AnsiString voucherName,TVoucherUsageDetail& VoucherUsageDetail)
+void TListPaymentSystem::LogDetailsForVoucherProcess(TPaymentTransaction &PaymentTransaction, AnsiString voucherName,TVoucherUsageDetail &VoucherUsageDetail)
 {
     std::auto_ptr<TStringList> loyaltyLogs(new TStringList);
     TLoyaltyMateInterface  LoyaltyMateInterface;
