@@ -73,6 +73,7 @@ MMLoyaltyServiceResponse TLoyaltyMateInterface::CreateMember(TSyndCode syndicate
     catch( Exception& exc )
     {
        loyaltyLogs->Add("Exception is                                                        " + exc.Message);
+       loyaltyLogs->Add("=================================================================================================");
         AddLoyaltyLogs(loyaltyLogs);
         return CreateExceptionFailedResponse( exc.Message );
     }
