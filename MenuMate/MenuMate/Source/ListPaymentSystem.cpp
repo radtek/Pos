@@ -4192,11 +4192,10 @@ bool TListPaymentSystem::ProcessWalletTransaction(TPaymentTransaction &PaymentTr
 //------------------------------------------------------------------------------
 bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTransaction)
 {
-  std::auto_ptr<TStringList> loyaltyLogs(new TStringList);
+
   bool paymentComplete = true;
   bool isVoucherPresent = false;
   TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
-  TLoyaltyMateInterface  LoyaltyMateInterface;
   TRedeemPocketVoucherInformation *RedeemPocketVoucherInformation;
   TVoucherUsageDetail VoucherUsageDetail;
   TGUID transactionReference;
@@ -4205,8 +4204,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   VoucherUsageDetail.ReferenceNumber =  Sysutils::GUIDToString(transactionReference);
   VoucherUsageDetail.InvoiceNumber =  PaymentTransaction.InvoiceNumber;
   VoucherUsageDetail.TotalSaleAmount = PaymentTransaction.Money.GrandTotal;
-  TRedeemGiftVoucherInformation  *RedeemGiftVoucherInformation;
-  AnsiString VoucherName;
+  AnsiString voucherName;
 
   if(PaymentTransaction.Membership.Applied())
   {
@@ -4218,7 +4216,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber !="")
   {
-    VoucherName = "Pocket Voucher";
+    voucherName = "Pocket Voucher";
     isVoucherPresent = true;
     VoucherUsageDetail.PocketVoucherDiscountAmount = PaymentTransaction.RedeemPocketVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.PocketVoucherNumber = PaymentTransaction.RedeemPocketVoucherInformation->VoucherNumber;
@@ -4228,7 +4226,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(paymentComplete && PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber !="")
   {
-    VoucherName = "Loyalty Gift Card redemption";
+    voucherName = "Loyalty Gift Card redemption";
     isVoucherPresent = true;
     VoucherUsageDetail.PointsRedeemed = PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.GiftCardNumber = PaymentTransaction.RedeemGiftVoucherInformation->VoucherNumber;
@@ -4238,7 +4236,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
   if(paymentComplete && PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber != NULL &&
      PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber !="")
   {
-    VoucherName = "Loyalty Gift Card Point Purchase";
+    voucherName = "Loyalty Gift Card Point Purchase";
     isVoucherPresent = true;
     VoucherUsageDetail.PointsPurchased = PaymentTransaction.PurchasedGiftVoucherInformation->RedeemedAmount;
     VoucherUsageDetail.PurchasedGiftCardNumber = PaymentTransaction.PurchasedGiftVoucherInformation->VoucherNumber;
@@ -4249,7 +4247,7 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
      TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName !="")
    {
 
-     VoucherName = "Member Voucher";
+     voucherName = "Member Voucher";
      isVoucherPresent = true;
      VoucherUsageDetail.MemberVoucherDiscountAmount = 0;
      VoucherUsageDetail.VoucherName = TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName;
@@ -4288,49 +4286,10 @@ bool TListPaymentSystem::ProcessLoyaltyVouchers(TPaymentTransaction &PaymentTran
 
     if(!PaymentTransaction.IsVouchersProcessed)
     {
-         double BalanceAfterSale = PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount - PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
+         LogDetailsForVoucherProcess(PaymentTransaction,voucherName,VoucherUsageDetail);
          paymentComplete = ManagerLoyaltyVoucher.ProcessVouchers(VoucherUsageDetail);
-         UnicodeString transactiontype = TransactionType(PaymentTransaction.SalesType);
-         loyaltyLogs->Add(VoucherName +" "+  "Voucher time is                        " + Now().FormatString("hh:mm:ss tt"));
-         loyaltyLogs->Add(VoucherName +" "+  "Terminal name is                       " + TDeviceRealTerminal::Instance().ID.Name);
-         loyaltyLogs->Add(VoucherName +" "+  "Staff name is                          " + TDeviceRealTerminal::Instance().User.Name);
-         if(VoucherName=="Loyalty Gift Card redemption" || VoucherName == "Loyalty Gift Card Point Purchase")
-         {
-             loyaltyLogs->Add(VoucherName +" "+  "gift Card No.                          " + VoucherUsageDetail.GiftCardNumber);
-             loyaltyLogs->Add(VoucherName +" "+  "balance before sale                    " + PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount.operator UnicodeString());
-             loyaltyLogs->Add(VoucherName +" "+  "expected gift card balance After sale  " + FormatFloat("0.00",BalanceAfterSale));
-             loyaltyLogs->Add(VoucherName +" "+  "Expiry date of voucher.                " + VoucherUsageDetail.GiftCardExpiryDate.DateTimeString());
-         }
-         if(VoucherName == "Pocket Voucher")
-         {
-             loyaltyLogs->Add(VoucherName +" "+  "Pocket Voucher No.                     " + VoucherUsageDetail.PocketVoucherNumber);
-             loyaltyLogs->Add(VoucherName +" "+  "Pocket Voucher Total Sale amount       " + PaymentTransaction.RedeemPocketVoucherInformation->TotalSaleAmount.operator UnicodeString());
-         }
-         if(VoucherName == "Member Voucher")
-         {
-             loyaltyLogs->Add(VoucherName +" "+  "Member Voucher Name.                   " + TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName);
-             for(int indexVouchers = 0; indexVouchers < TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.size(); indexVouchers++)
-              {
-              if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName.Trim() ==
-                            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].VoucherName.Trim())
-              {
-                      loyaltyLogs->Add(VoucherName +" "+  "Number of Uses Allowed                 " +
-                      IntToStr(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].NumberOfUsesRemaining));
-                      break;
-                  }
-              }
-
-         }
-          loyaltyLogs->Add(VoucherName +" "+  "Transaction Type of  voucher           " + transactiontype);
-
-
-
-
-
-
-
      }
-    LoyaltyMateInterface.AddLoyaltyLogs(loyaltyLogs);
+
     PaymentTransaction.IsVouchersProcessed = paymentComplete;
     if(paymentComplete)
     {
@@ -7306,8 +7265,60 @@ UnicodeString TListPaymentSystem::TransactionType(int trans)
 			break;
  		}
  }
-//-------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void TListPaymentSystem::LogDetailsForVoucherProcess(TPaymentTransaction &PaymentTransaction, AnsiString voucherName,TVoucherUsageDetail& VoucherUsageDetail)
+{
+    std::auto_ptr<TStringList> loyaltyLogs(new TStringList);
+    TLoyaltyMateInterface  LoyaltyMateInterface;
+    try
+    {
+         double balanceAfterSale = PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount - PaymentTransaction.RedeemGiftVoucherInformation->RedeemedAmount;
+         UnicodeString transactiontype = TransactionType(PaymentTransaction.SalesType);
+         loyaltyLogs->Add(voucherName +" "+  "Voucher time is                        " + Now().FormatString("hh:mm:ss tt"));
+         loyaltyLogs->Add(voucherName +" "+  "Terminal name is                       " + TDeviceRealTerminal::Instance().ID.Name);
+         loyaltyLogs->Add(voucherName +" "+  "Staff name is                          " + TDeviceRealTerminal::Instance().User.Name);
+         if(voucherName=="Loyalty Gift Card redemption" || voucherName == "Loyalty Gift Card Point Purchase")
+         {
+             loyaltyLogs->Add(voucherName +" "+  "gift Card No.                          " + VoucherUsageDetail.GiftCardNumber);
+             loyaltyLogs->Add(voucherName +" "+  "balance before sale                    " + PaymentTransaction.RedeemGiftVoucherInformation->GiftVoucherAmount.operator UnicodeString());
+             loyaltyLogs->Add(voucherName +" "+  "expected gift card balance After sale  " + FormatFloat("0.00",balanceAfterSale));
+             loyaltyLogs->Add(voucherName +" "+  "Expiry date of voucher.                " + VoucherUsageDetail.GiftCardExpiryDate.DateTimeString());
+         }
+         if(voucherName == "Pocket Voucher")
+         {
+             loyaltyLogs->Add(voucherName +" "+  "Pocket Voucher No.                     " + VoucherUsageDetail.PocketVoucherNumber);
+             loyaltyLogs->Add(voucherName +" "+  "Pocket Voucher Total Sale amount       " + PaymentTransaction.RedeemPocketVoucherInformation->TotalSaleAmount.operator UnicodeString());
+         }
+         if(voucherName == "Member Voucher")
+         {
+             loyaltyLogs->Add(voucherName +" "+  "Member Voucher Name.                   " + TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName);
+             for(int indexVouchers = 0; indexVouchers < TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers.size(); indexVouchers++)
+              {
+              if(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->RedeemedVoucherName.Trim() ==
+                            TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].VoucherName.Trim())
+              {
+                      loyaltyLogs->Add(voucherName +" "+  "Number of Uses Allowed                 " +
+                      IntToStr(TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->MemberVouchers[indexVouchers].NumberOfUsesRemaining));
+                      break;
+                  }
+              }
 
+         }
+
+          loyaltyLogs->Add(voucherName +" "+  "Transaction Type of  voucher           " + transactiontype);
+          loyaltyLogs->Add("=================================================================================================");
+          LoyaltyMateInterface.AddLoyaltyLogs(loyaltyLogs);
+
+    }
+    catch(Exception &ex)
+    {
+      TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+      loyaltyLogs->Add("Exception is                                                        " + ex.Message);
+      loyaltyLogs->Add("=================================================================================================");
+      LoyaltyMateInterface.AddLoyaltyLogs(loyaltyLogs);
+
+    }
+}
 
 
 
