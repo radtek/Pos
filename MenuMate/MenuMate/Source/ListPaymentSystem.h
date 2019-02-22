@@ -243,9 +243,8 @@ protected:
      bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
      bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
      UnicodeString TransactionType(int trans);
-     UnicodeString VoucherType(AnsiString voucherno);
      void LogDetailsForVoucherProcess(TPaymentTransaction &PaymentTransaction,AnsiString voucherName,TVoucherUsageDetail& VoucherUsageDetail) ;
-//     UnicodeString VoucherType(AnsiString voucherno , TPaymentTransaction &inPaymentTransaction);
+
 };
 
 #endif
