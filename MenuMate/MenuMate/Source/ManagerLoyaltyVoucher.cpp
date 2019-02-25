@@ -159,12 +159,12 @@ bool TManagerLoyaltyVoucher::ReleaseVouchers(TReleasedVoucherDetail ReleasedVouc
 
         transactionStatus = voucherThread->OperationSuccessful;
         AnsiString errorMessage =  voucherThread->ErrorMessage;
-        if(!transactionStatus)
-        {
-            if(errorMessage == NULL || errorMessage != "")
-               errorMessage == "Failed to process vouchers and discounts.";
-            MessageBox(errorMessage,"Menumate", MB_ICONERROR + MB_OK);
-        }
+//        if(!transactionStatus)
+//        {
+//            if(errorMessage == NULL || errorMessage != "")
+//               errorMessage == "Failed to process vouchers and discounts.";
+//            MessageBox(errorMessage,"Menumate", MB_ICONERROR + MB_OK);
+//        }
         delete voucherThread;
         delete _lmOperationDialogBox;
     }
