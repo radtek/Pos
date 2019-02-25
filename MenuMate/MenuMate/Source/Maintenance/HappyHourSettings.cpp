@@ -564,7 +564,7 @@ bool TfrmHappyHourSettings::ValidateTime(bool validateFlag,bool validationType)
           {
         //    if( Dateutils::CompareDateTime(encodedEndDate,Now())== LessThanValue )
 
-      if( Dateutils::CompareDateTime(Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(Now()),MinuteOfTheHour(Now()),SecondOfTheMinute(Now()),000),Now())== LessThanValue )
+      if( Dateutils::CompareDateTime(Dateutils::EncodeDateTime(Year,Month,Day,HourOfTheDay(Now()),MinuteOfTheHour(Now()),SecondOfTheMinute(Now()),MilliSecondOfTheSecond(Now())),Now())== LessThanValue )
             {
                 MessageBox("Date entered is prior to current date, please enter a valid date.", "Invalid Date", MB_OK + MB_ICONERROR);
 
@@ -778,7 +778,7 @@ bool TfrmHappyHourSettings::EnableDate()
 
         BtnEndHour->Caption = HourOf(endTime);
         BtnEndMinute->Caption = MinuteOf(endTime);
-        BtnEndSecond->Caption = SecondOf(startTime);
+        BtnEndSecond->Caption = SecondOf(endTime);
         BtnEndAMPM->Caption = "AM" ;
 
         startHour = HourOf(startTime);

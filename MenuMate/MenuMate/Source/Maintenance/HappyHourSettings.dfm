@@ -600,6 +600,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         LatchedColor = clBtnFace
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnPriorityMouseClick
       end
     end
   end
