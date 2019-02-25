@@ -21,9 +21,11 @@ namespace Loyaltymate.Sevices
             loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveMember, syndicateCode, null,
                 WebRequestMethods.Http.Post, member);
-                HttpWebResponse webResponse = null;
+            HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(member);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = memberStream.ReadToEnd();
@@ -62,6 +64,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = memberStream.ReadToEnd();
@@ -100,6 +104,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = memberStream.ReadToEnd();
@@ -138,6 +144,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = memberStream.ReadToEnd();
@@ -177,6 +185,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
                 loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -215,6 +225,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(pointsTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
                 loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -253,6 +265,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(pointsTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
                 loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -329,6 +343,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = responseStream.ReadToEnd();
@@ -367,6 +383,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = responseStream.ReadToEnd();
@@ -407,6 +425,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(voucherTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
                 string responseStr = responseStream.ReadToEnd();
@@ -447,6 +467,8 @@ namespace Loyaltymate.Sevices
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(voucherTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
                 loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -485,7 +507,7 @@ namespace Loyaltymate.Sevices
                 {
                     throw new AuthenticationFailedException();
                 }
-                else if ((int)webResponse.StatusCode == 300 )
+                else if ((int)webResponse.StatusCode == 300)
                 {
                     throw new MultipleGUIDException();
                 }
@@ -694,11 +716,11 @@ namespace Loyaltymate.Sevices
             }
             catch (WebException we)
             {
-                
+
             }
             catch (Exception ex)
             {
-                
+
             }
             finally
             {
