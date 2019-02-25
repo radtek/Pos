@@ -21,90 +21,6 @@ object frmServingTime: TfrmServingTime
     Height = 193
     Caption = 'pnlMain'
     TabOrder = 0
-    object TouchTime1: TTouchTime
-      Left = 6
-      Top = 19
-      Width = 244
-      Height = 161
-      BorderWidth = 4
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -35
-      Font.Name = 'Tahoma'
-      Font.Style = [fsBold]
-      IndicatorDelay = 100
-      GridBorderWidth = 0
-      ButtonGapWidth = 4
-      ButtonGapHeight = 4
-      ScrollHourUp.Font.Charset = DEFAULT_CHARSET
-      ScrollHourUp.Font.Color = clWindowText
-      ScrollHourUp.Font.Height = -11
-      ScrollHourUp.Font.Name = 'Tahoma'
-      ScrollHourUp.Font.Style = []
-      ScrollHourUp.LatchedFont.Charset = DEFAULT_CHARSET
-      ScrollHourUp.LatchedFont.Color = clWindowText
-      ScrollHourUp.LatchedFont.Height = -11
-      ScrollHourUp.LatchedFont.Name = 'Tahoma'
-      ScrollHourUp.LatchedFont.Style = []
-      ScrollHourUp.GlyphAlpha = 255
-      ScrollHourUp.Color = -16777201
-      ScrollHourUp.FontColor = -16777208
-      ScrollHourUp.LatchedColor = -16777201
-      ScrollHourUp.DisabledColor = -16777201
-      ScrollHourUp.LatchedFontColor = -16777208
-      ScrollHourDown.Font.Charset = DEFAULT_CHARSET
-      ScrollHourDown.Font.Color = clWindowText
-      ScrollHourDown.Font.Height = -11
-      ScrollHourDown.Font.Name = 'Tahoma'
-      ScrollHourDown.Font.Style = []
-      ScrollHourDown.LatchedFont.Charset = DEFAULT_CHARSET
-      ScrollHourDown.LatchedFont.Color = clWindowText
-      ScrollHourDown.LatchedFont.Height = -11
-      ScrollHourDown.LatchedFont.Name = 'Tahoma'
-      ScrollHourDown.LatchedFont.Style = []
-      ScrollHourDown.GlyphAlpha = 255
-      ScrollHourDown.Color = -16777201
-      ScrollHourDown.FontColor = -16777208
-      ScrollHourDown.LatchedColor = -16777201
-      ScrollHourDown.DisabledColor = -16777201
-      ScrollHourDown.LatchedFontColor = -16777208
-      ScrollMinuteUp.Font.Charset = DEFAULT_CHARSET
-      ScrollMinuteUp.Font.Color = clWindowText
-      ScrollMinuteUp.Font.Height = -11
-      ScrollMinuteUp.Font.Name = 'Tahoma'
-      ScrollMinuteUp.Font.Style = []
-      ScrollMinuteUp.LatchedFont.Charset = DEFAULT_CHARSET
-      ScrollMinuteUp.LatchedFont.Color = clWindowText
-      ScrollMinuteUp.LatchedFont.Height = -11
-      ScrollMinuteUp.LatchedFont.Name = 'Tahoma'
-      ScrollMinuteUp.LatchedFont.Style = []
-      ScrollMinuteUp.GlyphAlpha = 255
-      ScrollMinuteUp.Color = -16777201
-      ScrollMinuteUp.FontColor = -16777208
-      ScrollMinuteUp.LatchedColor = -16777201
-      ScrollMinuteUp.DisabledColor = -16777201
-      ScrollMinuteUp.LatchedFontColor = -16777208
-      ScrollMinuteDown.Font.Charset = DEFAULT_CHARSET
-      ScrollMinuteDown.Font.Color = clWindowText
-      ScrollMinuteDown.Font.Height = -11
-      ScrollMinuteDown.Font.Name = 'Tahoma'
-      ScrollMinuteDown.Font.Style = []
-      ScrollMinuteDown.LatchedFont.Charset = DEFAULT_CHARSET
-      ScrollMinuteDown.LatchedFont.Color = clWindowText
-      ScrollMinuteDown.LatchedFont.Height = -11
-      ScrollMinuteDown.LatchedFont.Name = 'Tahoma'
-      ScrollMinuteDown.LatchedFont.Style = []
-      ScrollMinuteDown.GlyphAlpha = 255
-      ScrollMinuteDown.Color = -16777201
-      ScrollMinuteDown.FontColor = -16777208
-      ScrollMinuteDown.LatchedColor = -16777201
-      ScrollMinuteDown.DisabledColor = -16777201
-      ScrollMinuteDown.LatchedFontColor = -16777208
-      InitialDelay = 300
-      RepeatDelay = 100
-      ButtonWidth = 60
-      DisplayFormat = 'HH:nn'
-    end
     object btnCancel: TTouchBtn
       Left = 264
       Top = 104
@@ -140,6 +56,109 @@ object frmServingTime: TfrmServingTime
       DisabledButtonColor = clBtnFace
       LatchingProperties = [lkLatchColor, lkStayDown]
       OnMouseClick = btnCloseMouseClick
+    end
+    object GroupBox1: TGroupBox
+      Left = 1
+      Top = 3
+      Width = 258
+      Height = 187
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 4342338
+      Font.Height = -15
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 2
+      object lbeHour: TLabel
+        Left = 20
+        Top = 40
+        Width = 30
+        Height = 17
+        Caption = 'Hour'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = 4342338
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lbeMinute: TLabel
+        Left = 95
+        Top = 40
+        Width = 40
+        Height = 17
+        Caption = 'Minute'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = 4342338
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lbeSecond: TLabel
+        Left = 170
+        Top = 40
+        Width = 46
+        Height = 17
+        Caption = 'Second'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = 4342338
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object BtnServingTimeHour: TTouchBtn
+        Left = 20
+        Top = 62
+        Width = 64
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 9933970
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnServingTimeHourMouseClick
+      end
+      object BtnServingTimeMinute: TTouchBtn
+        Left = 94
+        Top = 62
+        Width = 64
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 9933970
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnServingTimeMinuteMouseClick
+      end
+      object BtnServingTimeSecond: TTouchBtn
+        Left = 168
+        Top = 62
+        Width = 64
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 9933970
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnServingTimeSecondMouseClick
+      end
     end
   end
 end
