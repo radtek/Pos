@@ -114,12 +114,10 @@ class TListPaymentSystem : public TMMPaymentSystem
     void GetDLFMallCMDCodeForth(TPaymentTransaction &paymentTransaction);
     void GetDLFMallCMDCodeFifth(TPaymentTransaction &PaymentTransaction)  ;
     TModalResult CaptureSCDOrPWDCustomerDetails(TPaymentTransaction &PaymentTransaction);
-//    void InsertPaymentTypeInPanasonicDB(std::vector <UnicodeString> PayTypes);
-    bool IsOracleConfigured();
-    bool IsSiHotConfigured();
      //settle th eeftpos bills after zed performed..
     bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
- 
+    void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
+    void PrintFiscalReceipt(TPaymentTransaction &paymentTransactionNew);
 
 protected:
 
@@ -192,6 +190,7 @@ protected:
 
     bool ProcessCSVNewBookExport( TPaymentTransaction &inPaymentTransaction );
 
+
    private:
      bool MakePatronCountZero;
      bool sessionStartedAlready;
@@ -219,13 +218,10 @@ protected:
      bool SendDataToFiscalBox(TPaymentTransaction &paymentTransaction);
      void SetCashDrawerStatus(TPaymentTransaction &PaymentTransaction);
      bool TryToEnableSiHot();
-     void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
-     bool IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction);
      char* Formatdateseparator( UnicodeString date) ;
 
      bool TryToEnableOracle();
      void ResetPayments(TPaymentTransaction &paymentTransaction);
-     bool IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex);
      void SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType);
      void PrintEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt);
      void UpdateEftposLogsForInvoice(TPaymentTransaction paymentTransaction);
@@ -238,10 +234,9 @@ protected:
      TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction);
      bool IsRoomReceiptSettingEnable();
      bool IsPaidByAdyen(TPaymentTransaction &_paymentTransaction);
-     bool IsMewsConfigured();
      bool TryToEnableMews();
-     bool CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction);
-     bool IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction);
+     void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
+     bool CanResetOrdersInPaymentTransaction(TPaymentTransaction paymentTransaction);
 };
 
 #endif

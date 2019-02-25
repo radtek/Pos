@@ -80,7 +80,7 @@ void TFiscalPrinterAdapter::PrepareItemInfo(TPaymentTransaction paymentTransacti
         double priceTotal = 0;
         double ItemPrice = 0;
         ItemPrice = (double)RoundToNearest(order->PriceEach(), 0.01, TGlobalSettings::Instance().MidPointRoundsDown);
-         priceTotal =  (double)RoundToNearest((order->PriceEach()*order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
+        priceTotal =  (double)RoundToNearest((order->PriceEach()*order->GetQty()), 0.01, TGlobalSettings::Instance().MidPointRoundsDown );
 		itemDetails.PricePerUnit = ItemPrice;
         itemDetails.PriceTotal = priceTotal;
         itemDetails.VATPercentage;

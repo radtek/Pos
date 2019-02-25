@@ -77,6 +77,7 @@
 #include "DBAdyen.h"
 #include "AustriaFiscalDataObjects.h"
 #include "ManagerAustriaFiscal.h"
+#include "TransactionHelper.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -787,7 +788,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		if( PaymentTransaction.Type == eTransEFTPOSRecovery || PaymentTransaction.Type == eTransRewardsRecovery )
 		{
             if(!TGlobalSettings::Instance().EnableEftPosPaymentSense)
-			reprintEftposReceipt = true;
+				reprintEftposReceipt = true;
 			isRecovering = true;
 		}
 
@@ -821,29 +822,29 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
             PaymentTransaction.Customer = TCustomer(0,0,"");
 		switch (PaymentTransaction.Type)
 		{
-		case eTransOrderSet:
-			_processOrderSetTransaction( PaymentTransaction );
-			break;
-		case eTransSplitPayment:
-			_processSplitPaymentTransaction( PaymentTransaction );
-			break;
-		case eTransPartialPayment:
-			_processPartialPaymentTransaction( PaymentTransaction );
-			break;
-		case eTransQuickSale:
-			_processQuickTransaction( PaymentTransaction );
-            break;
-		case eTransCreditPurchase:
-			_processCreditTransaction( PaymentTransaction );
-            break;
-		case eTransEFTPOSRecovery:
-			_processEftposRecoveryTransaction( PaymentTransaction ); 	// similar to eTransRewardsRecovery ?
-			break;
-		case eTransRewardsRecovery:
-			_processRewardsRecoveryTransaction( PaymentTransaction ); 	// similar to eTransEftposRecovery ?
-			break;
-		default:
-			break;
+			case eTransOrderSet:
+				_processOrderSetTransaction( PaymentTransaction );
+				break;
+			case eTransSplitPayment:
+				_processSplitPaymentTransaction( PaymentTransaction );
+				break;
+			case eTransPartialPayment:
+				_processPartialPaymentTransaction( PaymentTransaction );
+				break;
+			case eTransQuickSale:
+				_processQuickTransaction( PaymentTransaction );
+				break;
+			case eTransCreditPurchase:
+				_processCreditTransaction( PaymentTransaction );
+				break;
+			case eTransEFTPOSRecovery:
+				_processEftposRecoveryTransaction( PaymentTransaction ); 	// similar to eTransRewardsRecovery ?
+				break;
+			case eTransRewardsRecovery:
+				_processRewardsRecoveryTransaction( PaymentTransaction ); 	// similar to eTransEftposRecovery ?
+				break;
+			default:
+				break;
 		}
         //Calling Post Ticket method
         if(TGlobalSettings::Instance().EnableStoreTicketPosting && TGlobalSettings::Instance().PMSType == SiHot && TGlobalSettings::Instance().PMSPostSuccessful)
@@ -859,13 +860,13 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
         SetCashDrawerStatus(PaymentTransaction);
 
 		if ( reprintEftposReceipt )
-		EftPos->ReprintReceipt();
+			EftPos->ReprintReceipt();
         bool earnpoints = TGlobalSettings::Instance().SystemRules.Contains(eprEarnsPointsWhileRedeemingPoints);
         bool onlyearns = TGlobalSettings::Instance().SystemRules.Contains(eprOnlyEarnsPointsWhileRedeemingPoints);
 		if (PaymentComplete)
 		{
             if(TGlobalSettings::Instance().IsDrinkCommandEnabled)
-             {
+            {
                 PaymentTransaction.Membership.Member.Points.getPointsBalance();
                 PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased();
 
@@ -878,8 +879,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
                 Points = PaymentTransaction.Money.TotalAdjustment;
                 PointsBuy = CurrToStrF(Points,ffNumber,2);
                 PointsBuy = PointsBuy * 100;
-                if(/*(PaymentTransaction.Membership.Member.Points.getCurrentPointsRedeemed()>0)*/
-                   PaymentTransaction.Money.TotalProduct > 0||
+                if(PaymentTransaction.Money.TotalProduct > 0||
                   PaymentTransaction.Money.TotalProduct - PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() != 0)
                 {
                     UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
@@ -889,8 +889,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
                     AnsiString session_uuid = TDrinkCommandData::Instance().CheckForOpenSession(Card_Id);
                     if (session_uuid.Length() != 0)
                     {
-//                    if( (Pts >= BillPts))                                                                                //Closing session after consuming points
-//                    {
                         UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
                         AnsiString path = AnsiString(serverPath);
                         int serverPort = TGlobalSettings::Instance().DrinkCommandServerPort;
@@ -900,65 +898,65 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
                         {
                             dcCommand->CloseSession(path , serverPort , session_uuid);
                         }
-                    }
-                }
-                else
-                {
-                     TDrinkCommandData::Instance().UpdateTimeStampToNull(Card_Id);
-                }
-                // Case of complete refund closes the session
+					}
+					else
+					{
+						 TDrinkCommandData::Instance().UpdateTimeStampToNull(Card_Id);
+					}
+					// Case of complete refund closes the session
 
-                if(((double(Points.Val) + double(Pts.Val) )== 0))
-                {
-                    UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
-                    AnsiString path = AnsiString(serverPath);
-                    int serverPort = TGlobalSettings::Instance().DrinkCommandServerPort;
-                    std::auto_ptr<TDrinkCommandManager> dcCommand (new TDrinkCommandManager());
-                    AnsiString session_uuid = TDrinkCommandData::Instance().CheckForOpenSession(Card_Id) ;
-                    if (session_uuid.Length() != 0)
-                    {
-                        dcCommand->CloseSession(path , serverPort , session_uuid);
-                    }
-                }
-                // Adds cash in case of session exists or make a new session because points are purchased
-                if((PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() > 0)
-                   ||(PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned() > 0 ))
-                {
+					if(((double(Points.Val) + double(Pts.Val) )== 0))
+					{
+						UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
+						AnsiString path = AnsiString(serverPath);
+						int serverPort = TGlobalSettings::Instance().DrinkCommandServerPort;
+						std::auto_ptr<TDrinkCommandManager> dcCommand (new TDrinkCommandManager());
+						AnsiString session_uuid = TDrinkCommandData::Instance().CheckForOpenSession(Card_Id) ;
+						if (session_uuid.Length() != 0)
+						{
+							dcCommand->CloseSession(path , serverPort , session_uuid);
+						}
+					}
+					// Adds cash in case of session exists or make a new session because points are purchased
+					if((PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() > 0)
+					   ||(PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned() > 0 ))
+					{
 
-                   Currency morePoints = PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() +
-                                         PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
+					   Currency morePoints = PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() +
+											 PaymentTransaction.Membership.Member.Points.getCurrentPointsEarned();
 
-                    AnsiString pts = CurrToStrF(morePoints,ffNumber,2);
-                    pts = pts * 100;
+						AnsiString pts = CurrToStrF(morePoints,ffNumber,2);
+						pts = pts * 100;
 
-                    UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
-                    AnsiString path = AnsiString(serverPath);
-                    int serverPort = TGlobalSettings::Instance().DrinkCommandServerPort;
-                    std::auto_ptr<TDrinkCommandManager> dcCommand (new TDrinkCommandManager());
-                    AnsiString session_uuid = TDrinkCommandData::Instance().CheckForOpenSession(Card_Id);
-                    AnsiString session_id = session_uuid;
-                    if (session_uuid.Length() != 0)
-                    {
-                        dcCommand->SendCashInfo(path , serverPort ,PointsBuy ,session_id);
-                    }
-                    else
-                    {
-                        int key = PaymentTransaction.Membership.Member.ContactKey;
-                        AnsiString memberNo = PaymentTransaction.Membership.Member.MembershipNumber;
-                        AnsiString points = PaymentTransaction.Membership.Member.Points.getPointsBalance();
-                        points = points * 100;
-                        int memPoints = atoi(points.c_str());
-                        std::auto_ptr<TInitializeDCSession> im(
-                                                                new TInitializeDCSession());
-                        im->StartSession(memPoints,points,memberNo,key);
-                        sessionStartedAlready = true;
-                        if (PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() ==
-                            PaymentTransaction.Membership.Member.Points.getPointsBalance())
-                         {
-                            skipPaymentFormDeletion = true;
-                         }
-                   }
-                }
+						UnicodeString serverPath = TGlobalSettings::Instance().DrinkCommandServerPath;
+						AnsiString path = AnsiString(serverPath);
+						int serverPort = TGlobalSettings::Instance().DrinkCommandServerPort;
+						std::auto_ptr<TDrinkCommandManager> dcCommand (new TDrinkCommandManager());
+						AnsiString session_uuid = TDrinkCommandData::Instance().CheckForOpenSession(Card_Id);
+						AnsiString session_id = session_uuid;
+						if (session_uuid.Length() != 0)
+						{
+							dcCommand->SendCashInfo(path , serverPort ,PointsBuy ,session_id);
+						}
+						else
+						{
+							int key = PaymentTransaction.Membership.Member.ContactKey;
+							AnsiString memberNo = PaymentTransaction.Membership.Member.MembershipNumber;
+							AnsiString points = PaymentTransaction.Membership.Member.Points.getPointsBalance();
+							points = points * 100;
+							int memPoints = atoi(points.c_str());
+							std::auto_ptr<TInitializeDCSession> im(
+																	new TInitializeDCSession());
+							im->StartSession(memPoints,points,memberNo,key);
+							sessionStartedAlready = true;
+							if (PaymentTransaction.Membership.Member.Points.getCurrentPointsPurchased() ==
+								PaymentTransaction.Membership.Member.Points.getPointsBalance())
+							 {
+								skipPaymentFormDeletion = true;
+							 }
+					    }
+					}
+				}
             }
             UpdateCachedRewardPoints(PaymentTransaction);
             PerformPostTransactionOperations( PaymentTransaction );
@@ -989,9 +987,7 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
                resetPaymentControlForms();
             }
         }
-        TStringList* logList = new TStringList();
-        logList->Add("Payment reset() called ");
-        TSaveLogs::RecordFiscalLogs(logList);
+        RecordFiscalLogsPaymentSystem(logList.get(),"Payment reset() called");
 
 		Reset(PaymentTransaction);
         if(!IsClippSale)
@@ -1006,8 +1002,6 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
             std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
             managerAustria->UnsetPostingFlag();
         }
-        delete logList;
-        logList = NULL;
 	}
 	catch(Exception & E)
 	{
@@ -1022,30 +1016,16 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
             std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
             managerAustria->UnsetPostingFlag();
         }
-
-        TStringList* logList = new TStringList();
-        logList->Add("Exception in  ProcessTransaction()");
-        TSaveLogs::RecordFiscalLogs(logList);
-        delete logList;
-        logList = NULL;
+        RecordFiscalLogsPaymentSystem(logList.get(),"Exception in  ProcessTransaction()");
 
 		throw;
 	}
 	Busy = false;
 
-//    if(TGlobalSettings::Instance().IsPanasonicIntegrationEnabled)
-//    {
-//        TManagerPanasonic::Instance()->TriggerTransactionSync();
-//    }
-    TStringList* logList = new TStringList();
-    logList->Add("ProcessTransaction() Executed.");
-    TSaveLogs::RecordFiscalLogs(logList);
-    delete logList;
-    logList = NULL;
+    RecordFiscalLogsPaymentSystem(logList.get(),"ProcessTransaction() Executed.");
 
     //Unsetting the Global settings used for Store Ticket Post
     TGlobalSettings::Instance().PMSPostSuccessful = false;
-
 	return PaymentComplete;
 }
 
@@ -1088,35 +1068,23 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
         ReceiptPrint(PaymentTransaction, RequestEFTPOSReceipt, frmControlTransaction->UserOption == eCloseandPrint);
     }
 
-    TStringList* logList = new TStringList();
-    logList->Add("Calling FormatSpendChit()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"Calling FormatSpendChit()");
 	FormatSpendChit(PaymentTransaction);
 
-    logList->Clear();
-    logList->Add("Calling ProcessSecurity()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"Calling ProcessSecurity()");
 	ProcessSecurity(PaymentTransaction);
 
-    logList->Clear();
-    logList->Add("Calling SaveToFileCSV()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"Calling SaveToFileCSV()");
 	SaveToFileCSV(PaymentTransaction);
 
-    logList->Clear();
-    logList->Add("Calling RemoveTabs()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"Calling RemoveTabs()");
 	RemoveTabs(PaymentTransaction); // Remove any empty Tabs.
 
-    logList->Clear();
-    logList->Add("Calling ProcessSecurity()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"Calling ProcessSecurity()");
 
 	if (PaymentTransaction.Membership.Applied())
 	{
-        logList->Clear();
-        logList->Add("Inside PaymentTransaction.Membership.Applied() if block");
-        TSaveLogs::RecordFiscalLogs(logList);
+        RecordFiscalLogsPaymentSystem(logList.get(),"Inside PaymentTransaction.Membership.Applied() if block");
 
 		TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem->TransactionClosed(
 		PaymentTransaction.DBTransaction,
@@ -1138,9 +1106,7 @@ void TListPaymentSystem::PerformPostTransactionOperations( TPaymentTransaction &
                }
         }
 	}
-    logList->Clear();
-    logList->Add("End of PerformPostTransactionOperations()");
-    TSaveLogs::RecordFiscalLogs(logList);
+    RecordFiscalLogsPaymentSystem(logList.get(),"End of PerformPostTransactionOperations()");
 }
 
 void TListPaymentSystem::TransRetriveInvoiceResult(TPaymentTransaction &PaymentTransaction, TPayment *Payment)
@@ -3522,10 +3488,9 @@ void TListPaymentSystem::StoreInfo(TPaymentTransaction &PaymentTransaction)
 
 void TListPaymentSystem::Reset(TPaymentTransaction &PaymentTransaction)
 {
-	if (PaymentTransaction.Type == eTransSplitPayment || PaymentTransaction.Type == eTransPartialPayment || PaymentTransaction.Type ==
-			eTransTabSet)
+	if (CanResetOrdersInPaymentTransaction(PaymentTransaction))
 	{
-		while (PaymentTransaction.Orders->Count != 0)
+		while(PaymentTransaction.Orders->Count != 0)
 		{
 			delete(TItemComplete*)PaymentTransaction.Orders->Items[0];
 			PaymentTransaction.Orders->Delete(0);
@@ -3687,79 +3652,30 @@ void TListPaymentSystem::PrintSpendChit(TStringList *Docket)
 
 void TListPaymentSystem::ReceiptPrint(TPaymentTransaction &PaymentTransaction, bool RequestEFTPOSReceipt, bool CloseAndPrint)
 {
-    if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+    if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
-        TStringList* logList = new TStringList();
-        logList->Add("----------------------------------------------New BILL-------------------------------------------");
-        logList->Add("Use Italy Fiscal Printer setting is true.");
-        logList->Add("Logs For invoice number: "  + PaymentTransaction.InvoiceNumber);
-        logList->Add("time is: " + Now().FormatString("hh:nn:ss am/pm"));
-
-        if(CloseAndPrint ||
-            ( (IsAnyDiscountApplied(PaymentTransaction) && TGlobalSettings::Instance().PrintSignatureWithDiscountSales) && (( PaymentTransaction.Type != eTransQuickSale && Receipt->AlwaysPrintReceiptTenderedSales ) ||
-																	(Receipt->AlwaysPrintReceiptCashSales &&  PaymentTransaction.Type == eTransQuickSale) || (Receipt->AlwaysPrintReceiptDiscountSales) ||
-																	(Receipt->AlwaysPrintReceiptTenderedSales && Receipt->AlwaysPrintReceiptCashSales )))
-            || ((Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction))) &&
-                TGlobalSettings::Instance().PrintSignatureWithRoomSales &&
-                (IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRMSInterface) || IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeRoomInterface))) )
+        if(CloseAndPrint || TTransactionHelper::IsNormalPrintRequiredWithFiscal(Receipt,PaymentTransaction))
         {
             PrintReceipt(RequestEFTPOSReceipt);
-            logList->Add("Print to normal receipt printer has been sent.");
+            RecordFiscalLogsPaymentSystem(logList.get(),"Print to normal receipt printer has been sent.");
         }
-
-        logList->Add("Calling Fiscal Printer class for sending data to fiscal printer.");
-        TSaveLogs::RecordFiscalLogs(logList);
-
-        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
-        UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(PaymentTransaction);
-
-        logList->Clear();
-        logList->Add("Response Message received in ListPaymentSystem is: " + responseMessage);
-        TSaveLogs::RecordFiscalLogs(logList);
-        if(responseMessage != "OK")
-        {
-            MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
-            logList->Clear();
-            logList->Add("Printing To Fiscal Printer Failed: ");
-            TSaveLogs::RecordFiscalLogs(logList);
-            for(int i = 0; i < LastReceipt->Printouts->Count; i++)
-            {
-               ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
-            }
-            if(LastReceipt->Printouts->Count)
-            {
-                logList->Clear();
-                logList->Add("Call to Print receipt Function after printing failed to fiscal.");
-                PrintReceipt(RequestEFTPOSReceipt);
-                logList->Add("Control returned after calling Print receipt Function in ReceiptPrint() function.");
-                TSaveLogs::RecordFiscalLogs(logList);
-            }
-        }
-        else
-        {
-            logList->Clear();
-            logList->Add("Response message Received from Fiscal printer is OK ");
-            TSaveLogs::RecordFiscalLogs(logList);
-        }
-        delete logList;
-        logList = NULL;
     }
     else
     {
         bool duplicateReceipt = false;
         if(TGlobalSettings::Instance().EnableEftPosPreAuthorisation)
-            duplicateReceipt = IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeIntegratedEFTPOS);
+            duplicateReceipt = TTransactionHelper::IsPaymentDoneWithParamPaymentType(PaymentTransaction, ePayTypeIntegratedEFTPOS);
 
         if (PaymentTransaction.Type == eTransQuickSale)
         {
-            if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            if (Receipt->AlwaysPrintReceiptCashSales || (Receipt->AlwaysPrintReceiptDiscountSales && TTransactionHelper::IsAnyDiscountApplied(PaymentTransaction)))
             {
                 PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
         }
         else
         {
-            if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && IsAnyDiscountApplied(PaymentTransaction)))
+            if (Receipt->AlwaysPrintReceiptTenderedSales || (Receipt->AlwaysPrintReceiptDiscountSales && TTransactionHelper::IsAnyDiscountApplied(PaymentTransaction)))
             {
                 PrintReceipt(RequestEFTPOSReceipt, duplicateReceipt);
             }
@@ -3839,7 +3755,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         if(!PhoenixHSOk)
             ResetPayments(PaymentTransaction);
 	}
-    else if(IsSiHotConfigured())
+    else if(TTransactionHelper::IsSiHotConfigured())
     {
             /*
                SiHot could be enabled but is not. Hence we need to try making it
@@ -3859,7 +3775,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
           }
         }
     }
-    else if(IsOracleConfigured())
+    else if(TTransactionHelper::IsOracleConfigured())
     {
         if(TGlobalSettings::Instance().IsOraclePOSServer)
         {
@@ -3896,7 +3812,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
             }
         }
     }
-    else if(IsMewsConfigured())
+    else if(TTransactionHelper::IsMewsConfigured())
     {
             /*
                mews could be enabled but is not. Hence we need to try making it
@@ -3919,7 +3835,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
 	if(!PhoenixHSOk)
 	   return RetVal;
 
-    if(TGlobalSettings::Instance().IsFiscalStorageEnabled && CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+    if(TGlobalSettings::Instance().IsFiscalStorageEnabled && TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
     {
         std::auto_ptr<TFiscalDataUtility> dataUtility(new TFiscalDataUtility());
         AnsiString fiscalData = dataUtility->GetPOSPlusData(PaymentTransaction);
@@ -3932,7 +3848,7 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
     if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
     {
 
-        if(CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
+        if(TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(PaymentTransaction))
         {
 
            std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
@@ -5331,7 +5247,6 @@ void TListPaymentSystem::_processPartialPaymentTransaction( TPaymentTransaction 
                         }
 						RemoveOrders(PaymentTransaction);
 						AdjustCredit(PaymentTransaction);
-
 					}
 				}
 				else
@@ -6592,57 +6507,6 @@ bool TListPaymentSystem::TryToEnableSiHot()
     }
     return retValue;
 }
-//--------------------------------------------------------------------------
-bool TListPaymentSystem::IsSiHotConfigured()
-{
-    return (TGlobalSettings::Instance().PMSType == SiHot &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->POSID != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "");
-}
-//--------------------------------------------------------------------------
-bool TListPaymentSystem::IsOracleConfigured()
-{
-    return (TGlobalSettings::Instance().PMSType == Oracle &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->Slots.size() > 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->RevenueCodesMap.size() > 0 &&
-        (TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory != NULL)&&
-        (TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->PointsCategory != NULL) &&
-        (TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->CreditCategory != NULL));
-}
-//--------------------------------------------------------------------------
-bool TListPaymentSystem::IsMewsConfigured()
-{
-    try
-    {
-        return (TGlobalSettings::Instance().PMSType == Mews &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress.Trim() != 0  &&
-        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->RevenueCentre.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->PointsCategory.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != "" &&
-        TDeviceRealTerminal::Instance().BasePMS->CreditCategory.Trim() != 0 &&
-        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" &&
-        TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0 &&
-        TDeviceRealTerminal::Instance().BasePMS->TipAccount.Trim() != "");
-    }
-    catch(Exception &Ex)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Ex.Message);
-    }
-    return false;
-}
 //---------------------------------------------------------------------------
 bool TListPaymentSystem::TryToEnableMews()
 {
@@ -6717,22 +6581,6 @@ void TListPaymentSystem::PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateR
       }
 }
 //-------------------------------------------------------------------------------------------
-bool TListPaymentSystem::IsAnyDiscountApplied(TPaymentTransaction &paymentTransaction)
-{
-    for(int index = 0 ; index < paymentTransaction.Orders->Count ; index++)
-    {
-        TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[index];
-
-        BillCalculator::DISCOUNT_RESULT_LIST::iterator drIT = itemComplete->BillCalcResult.Discount.begin();
-
-        for( ; drIT != itemComplete->BillCalcResult.Discount.end(); drIT++ )
-        {
-            return true;
-        }
-    }
-    return false;
-}
-//-------------------------------------------------------------------------------------------
 char* TListPaymentSystem::Formatdateseparator(UnicodeString dateformat)
 {
      char *storedate;
@@ -6769,21 +6617,6 @@ bool TListPaymentSystem::TryToEnableOracle()
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
     return retValue;
-}
-//----------------------------------------------------------------------------
-bool TListPaymentSystem::IsPaymentDoneWithParamPaymentType(TPaymentTransaction &paymentTransaction, ePaymentAttribute attributeIndex)
-{
-    bool retVal = false;
-    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
-	{
-		TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(attributeIndex) && payment->GetPayTendered() != 0)
-		{
-            retVal = true;
-            break;
-        }
-    }
-    return retVal;
 }
 //--------------------------------------------------------------------------------------
 void TListPaymentSystem::SetPMSPaymentType(Database::TDBTransaction &DBTransaction,int paymentKey, TPayment payment, bool isNewPayment, bool isMMPayType)
@@ -7147,13 +6980,12 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
     return invoiceTransactionModel;
 }
 //----------------------------------------------------------
- bool TListPaymentSystem:: IsRoomReceiptSettingEnable()
- {
-  return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
-
- }
+bool TListPaymentSystem:: IsRoomReceiptSettingEnable()
+{
+    return ((TDeviceRealTerminal::Instance().BasePMS->Enabled) && (frmControlTransaction->UserOption == eClose && TGlobalSettings::Instance().AutoPrintRoomReceipts));
+}
  //-------------------------------------------------------------
- bool TListPaymentSystem::ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount)
+bool TListPaymentSystem::ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount)
 {
 	bool retVal = false;
 
@@ -7175,40 +7007,93 @@ TInvoiceTransactionModel TListPaymentSystem::GetInvoiceTransaction(TPaymentTrans
 
 	return retVal;
 }
-//---------------------------------------------------------------------
-bool TListPaymentSystem::CheckRoomPaytypeWhenFiscalSettingEnable(TPaymentTransaction PaymentTransaction)
+//-------------------------------------------------------------
+void TListPaymentSystem::PrintFiscalReceipt(TPaymentTransaction &paymentTransactionNew)
 {
-	bool retVal = true;
+    TMMProcessingState State(Screen->ActiveForm, "Waiting for Italy Fiscal Printer to process the bill...", "Processing Bill");
+    TDeviceRealTerminal::Instance().ProcessingController.PushOnce(State);
     try
     {
-        if(TGlobalSettings::Instance().IsFiscalPostingDisable)
-        {
+        logList->Add("----------------------------------------------New BILL-------------------------------------------");
+        logList->Add("Use Italy Fiscal Printer setting is true.");
+        logList->Add("Logs For invoice number: "  + paymentTransactionNew.InvoiceNumber);
+        logList->Add("time is: " + Now().FormatString("hh:nn:ss am/pm"));
 
-            if(IsPaymentDoneForFiscal(PaymentTransaction))
+        logList->Add("Calling Fiscal Printer class for sending data to fiscal printer.");
+        RecordFiscalLogsPaymentSystem(logList.get(),"");
+
+        std::auto_ptr<TFiscalPrinterAdapter> fiscalAdapter(new TFiscalPrinterAdapter());
+        UnicodeString responseMessage = fiscalAdapter->ConvertInToFiscalData(paymentTransactionNew);
+
+        logList->Add("Response Message received in ListPaymentSystem is: " + responseMessage);
+        RecordFiscalLogsPaymentSystem(logList.get(),"Response Message received in ListPaymentSystem is: " + (AnsiString)responseMessage);
+        if(responseMessage != "OK")
+        {
+            MessageBox("Printing To Fiscal Printer Failed","Please Select Another Printer",MB_OK + MB_ICONWARNING);
+            RecordFiscalLogsPaymentSystem(logList.get(),"Printing To Fiscal Printer Failed: ");
+            paymentTransactionNew.DBTransaction.StartTransaction();
+            try
             {
-               retVal = false;
+                for(int i = 0; i < LastReceipt->Printouts->Count; i++)
+                {
+                   ((TPrintout *)LastReceipt->Printouts->Items[i])->Printer.PhysicalPrinterKey = 0;
+                }
+
+                if(LastReceipt->Printouts->Count)
+                {
+                    logList->Add("Call to Print receipt Function after printing failed to fiscal.");
+                    PrintReceipt(RequestEFTPOSReceipt);
+                    RecordFiscalLogsPaymentSystem(logList.get(),"");
+                }
+                paymentTransactionNew.DBTransaction.Commit();
+            }
+            catch(Exception &ex)
+            {
+                TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+                paymentTransactionNew.DBTransaction.Rollback();
             }
         }
-    }
-    catch(Exception &err)
-	{
-		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, err.Message);
-        retVal = true;
-    }
-	return retVal;
-}
-//-----------------------------------------------------------------------
-bool TListPaymentSystem::IsPaymentDoneForFiscal(TPaymentTransaction paymentTransaction)
-{
-    bool retVal = false;
-    for (int i = 0; i < paymentTransaction.PaymentsCount(); i++)
-	{
-		TPayment *payment = paymentTransaction.PaymentGet(i);
-        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && payment->GetPayTendered() != 0)
-		{
-            retVal = true;
-            break;
+        else
+        {
+            RecordFiscalLogsPaymentSystem(logList.get(),"Response message Received from Fiscal printer is OK ");
         }
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
     }
-    return retVal;
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        TDeviceRealTerminal::Instance().ProcessingController.Pop();
+        //throw;
+    }
+}
+void TListPaymentSystem::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue)
+{
+    try
+    {
+        logList->Add(logValue);
+        TSaveLogs::RecordFiscalLogs(logList);
+        logList->Clear();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
+    }
+}
+bool TListPaymentSystem::CanResetOrdersInPaymentTransaction(TPaymentTransaction paymentTransaction)
+{
+    bool retValue = false;
+    try
+    {
+        retValue = ((paymentTransaction.Type == eTransSplitPayment || paymentTransaction.Type == eTransPartialPayment ||
+                     paymentTransaction.Type == eTransTabSet)
+                              &&
+                     !(TGlobalSettings::Instance().UseItalyFiscalPrinter &&
+                        TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(paymentTransaction)));
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
 }

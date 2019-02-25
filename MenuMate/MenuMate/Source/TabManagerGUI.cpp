@@ -30,6 +30,7 @@
 #include "DBSecurity.h"
 #include "DBTax.h"
 #include "TaxProfileDBAccessManager_MM.h"
+#include "TransactionHelper.h"
 #include "TaxProfile.h"
 #include "DBTab.h"
 // ---------------------------------------------------------------------------
@@ -771,7 +772,7 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
-
+        TPaymentTransaction CreditTransaction(DBTransaction);
 		bool Proceed = true;
 		if (CurrentDisplayMode == eTabs && CurrentTabType == TabStaff)
 		{
@@ -815,7 +816,6 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
 			{
 				if (frmTouchNumpad->CURResult != 0)
 				{
-					TPaymentTransaction CreditTransaction(DBTransaction);
 					CreditTransaction.Type = eTransCreditPurchase;
 					CreditTransaction.SalesType = eCreditPurchase;
 					CreditTransaction.Money.Change = 0;
@@ -847,6 +847,7 @@ void __fastcall TfrmTabManager::btnAddCreditToTabClick()
 			}
 		}
 		DBTransaction.Commit();
+        SendFiscalPrint(CreditTransaction);
 		RefreshTabDetails();
 
 	}
@@ -872,7 +873,7 @@ void __fastcall TfrmTabManager::btnRefundCreditToTabClick()
 		Database::TDBTransaction DBTransaction(DBControl);
 		TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
 		DBTransaction.StartTransaction();
-
+        TPaymentTransaction CreditTransaction(DBTransaction);
 		bool Proceed = true;
 		if (CurrentDisplayMode == eTabs && CurrentTabType == TabStaff)
 		{
@@ -915,7 +916,6 @@ void __fastcall TfrmTabManager::btnRefundCreditToTabClick()
 			{
 				if (frmTouchNumpad->CURResult != 0)
 				{
-                    TPaymentTransaction CreditTransaction(DBTransaction);
                     CreditTransaction.Type = eTransCreditPurchase;
                     CreditTransaction.SalesType = eCreditPurchase;
                     CreditTransaction.Money.Change = 0;
@@ -944,6 +944,7 @@ void __fastcall TfrmTabManager::btnRefundCreditToTabClick()
             }
 		}
 		DBTransaction.Commit();
+        SendFiscalPrint(CreditTransaction);
 		RefreshTabDetails();
 	}
 	catch(Exception & E)
@@ -1906,4 +1907,17 @@ void TfrmTabManager::CustomizeForOnlineOrderingTabs(int SelectedTab)
     }
 }
 //---------------------------------------------------------------------------
-
+void TfrmTabManager::SendFiscalPrint(TPaymentTransaction &CreditTransaction)
+{
+    try
+    {
+        if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(CreditTransaction))
+        {
+            TDeviceRealTerminal::Instance().PaymentSystem->PrintFiscalReceipt(CreditTransaction);
+        }
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}

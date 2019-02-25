@@ -14,6 +14,7 @@
 TMMPaymentSystem::TMMPaymentSystem()
 {
     Security = new TListSecurityRefContainer;
+    logList.reset(new TStringList());
 //    frmPaymentType = NULL;
 //    frmControlTransaction = NULL;
 }

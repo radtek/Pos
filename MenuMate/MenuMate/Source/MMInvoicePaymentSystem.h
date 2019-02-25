@@ -14,6 +14,7 @@ class TMMInvoicePaymentSystem : public TListPaymentSystem
 
         // for InvoicePaymentSystem, the MasterPaymentTransaction will contain the combined orders from all the invoices
         bool ProcessTransaction(TPaymentTransaction &MasterPaymentTransaction, bool isRecovery = false);
+        void SendFiscalPrint(TPaymentTransaction &MasterPaymentTransaction);
 
 	private:
 
