@@ -172,7 +172,7 @@ bool TfrmServingTime::ValidateData(UnicodeString &Title , int &value)
    }
    else
    {
-          MessageBox("Invalid Minute, Please Enter Valid Second", "Invalid Second", MB_OK + MB_ICONERROR);
+          MessageBox("Invalid Second, Please Enter Valid Second", "Invalid Second", MB_OK + MB_ICONERROR);
 
    }
   }

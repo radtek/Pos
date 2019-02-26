@@ -23,7 +23,7 @@ object frmServingTime: TfrmServingTime
     TabOrder = 0
     object btnCancel: TTouchBtn
       Left = 264
-      Top = 104
+      Top = 132
       Width = 121
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -41,7 +41,7 @@ object frmServingTime: TfrmServingTime
     end
     object btnClose: TTouchBtn
       Left = 264
-      Top = 19
+      Top = 12
       Width = 121
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
@@ -72,40 +72,40 @@ object frmServingTime: TfrmServingTime
       object lbeHour: TLabel
         Left = 20
         Top = 40
-        Width = 30
+        Width = 35
         Height = 17
         Caption = 'Hour'
         Font.Charset = ANSI_CHARSET
         Font.Color = 4342338
         Font.Height = -14
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object lbeMinute: TLabel
         Left = 95
         Top = 40
-        Width = 40
+        Width = 47
         Height = 17
         Caption = 'Minute'
         Font.Charset = ANSI_CHARSET
         Font.Color = 4342338
         Font.Height = -14
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object lbeSecond: TLabel
         Left = 170
         Top = 40
-        Width = 46
+        Width = 51
         Height = 17
         Caption = 'Second'
         Font.Charset = ANSI_CHARSET
         Font.Color = 4342338
         Font.Height = -14
         Font.Name = 'Tahoma'
-        Font.Style = []
+        Font.Style = [fsBold]
         ParentFont = False
       end
       object BtnServingTimeHour: TTouchBtn
