@@ -20,6 +20,7 @@
 #include "TouchControls.h"
 #include "MMContactInfo.h"
 #include "TouchGrid.h"
+#include "PaymentTransaction.h"
 //---------------------------------------------------------------------------
 class TfrmTabManager : public TZForm
 {
@@ -108,6 +109,7 @@ private:	// User declarations
     void RedrawDiscounts();
     AnsiString CheckDiscountApplicability(int discountKey);
     void CustomizeForOnlineOrderingTabs(int SelectedTabs);
+    void SendFiscalPrint(TPaymentTransaction &CreditTransaction);
 
 public:		// User declarations
 

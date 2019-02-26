@@ -12,7 +12,9 @@
 #include "ReceiptManager.h"
 //#include "ManagerPanasonic.h"
 #include "ManagerAustriaFiscal.h"
-
+#include "SaveLogs.h"
+#include "Printout.h"
+#include "TransactionHelper.h"
 //---------------------------------------------------------------------------
 
 TMMInvoicePaymentSystem::TMMInvoicePaymentSystem()
@@ -70,6 +72,7 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 	    _clearArchivedReceipt();
 		// all the payments are done. hence print the receipt and remove any empty tabs using MasterTransaction
 		PerformPostTransactionOperations( MasterPaymentTransaction );
+        SendFiscalPrint(MasterPaymentTransaction);
 	}
 	else
 	{
@@ -97,6 +100,7 @@ bool TMMInvoicePaymentSystem::ProcessTransaction(TPaymentTransaction &MasterPaym
 //    {
 //        TManagerPanasonic::Instance()->TriggerTransactionSync();
 //    }
+    return PaymentComplete;
 }
 //---------------------------------------------------------------------------
 
@@ -742,5 +746,21 @@ void TMMInvoicePaymentSystem::_clearArchivedReceipt()
 	ManagerReceipt->ReceiptToArchive->Clear();
 }
 //---------------------------------------------------------------------------
-
+void TMMInvoicePaymentSystem::SendFiscalPrint(TPaymentTransaction &masterPaymentTransaction)
+{
+    try
+    {
+        if(TGlobalSettings::Instance().UseItalyFiscalPrinter &&  TTransactionHelper::CheckRoomPaytypeWhenFiscalSettingEnable(masterPaymentTransaction))
+        {
+            masterPaymentTransaction.DBTransaction.Commit();                    /* Transaction is active and and process is completed */
+            PrintFiscalReceipt(masterPaymentTransaction);                       /* It has been committed, and sent for fiscal print */
+            masterPaymentTransaction.DBTransaction.StartTransaction();          /* This is required since fiscal process needs to be out of transactio scope */
+        }                                                                       /* Once we get a new implementation, it can be changed*/
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+    }
+}
+//---------------------------------------------------------------------------
 #pragma package(smart_init)

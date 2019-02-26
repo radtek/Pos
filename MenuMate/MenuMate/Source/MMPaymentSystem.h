@@ -24,7 +24,7 @@ class TMMPaymentSystem
 		virtual bool ProcessTransaction(TPaymentTransaction &PaymentTransaction, bool isRecovery = false, bool isClippSale = false ) = 0;
 
 		TListSecurityRefContainer *Security;
-
+        std::auto_ptr<TStringList> logList;
 	protected:
 
 		bool PaymentComplete;
