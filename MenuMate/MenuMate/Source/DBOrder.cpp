@@ -5155,3 +5155,28 @@ bool TDBOrder::IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int 
 
     return isOrderExist;
 }
+//------------------------------------------------------------------------------
+UnicodeString TDBOrder::GetOrderEmail(Database::TDBTransaction &DBTransaction,int tabKey)
+{
+   UnicodeString email = "";
+   try
+   {
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "SELECT first(1) EMAIL FROM ORDERS "
+                                      " WHERE TAB_KEY =:TAB_KEY";
+       IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+
+       IBInternalQuery->ExecQuery();
+       if(!IBInternalQuery->Eof && IBInternalQuery->Fields[0]->AsString != "")
+       {
+         email = IBInternalQuery->Fields[0]->AsString;
+       }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+    return email;
+}

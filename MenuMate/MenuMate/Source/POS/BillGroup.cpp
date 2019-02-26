@@ -1761,6 +1761,8 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
                     }
 
 					TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeMoved);
+                    if(!CheckIfMembershipUpdateRequired(DBTransaction, source_key, TabTransferTo))
+                        return;
 					if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), TabTransferTo))
 					{
 						TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), TabTransferTo, TDeviceRealTerminal::Instance().User.ContactKey, source_key);
@@ -5741,4 +5743,33 @@ void TfrmBillGroup::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiStri
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
         MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
     }
+}
+//--------------------------------------------------------
+bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey)
+{
+    bool retValue = true;
+    UnicodeString SourceEmail = "";
+    UnicodeString DestinationEmail = "";
+    try
+    {
+        SourceEmail        = TDBOrder::GetOrderEmail(DBTransaction, source_key);
+        DestinationEmail   = TDBOrder::GetOrderEmail(DBTransaction, DestTabKey);
+        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+        {
+            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentTable);
+            if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
+            {
+                TDBTables::UpdateMemberEmail(DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
+            }
+            else
+            {
+                retValue = false;
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+    return retValue;
 }

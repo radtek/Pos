@@ -2111,22 +2111,22 @@ TModalResult TfrmTransfer::ShowTabDetails(Database::TDBTransaction &DBTransactio
                }
             }
             UnicodeString email = TDBTab::GetMemberEmail(tabKey);
-            if(email.Trim() != "")
-            {
-                MessageBox("Tab is having Loyaltymate membership associated with it.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
-                Retval = mrAbort;
-                if(Section == "Select Transfer To")
-                {
-                    btnTransferTo->Caption =  "Select";
-                    lbDisplayTransferto->Clear();
-                }
-                else
-                {
-                    btnTransferFrom->Caption =  "Select";
-                    lbDisplayTransferfrom->Clear();
-                }
-                return mrAbort;
-            }
+//            if(email.Trim() != "")
+//            {
+//                MessageBox("Tab is having Loyaltymate membership associated with it.\rPlease Select some other Tab.","Info",MB_OK+MB_ICONINFORMATION);
+//                Retval = mrAbort;
+//                if(Section == "Select Transfer To")
+//                {
+//                    btnTransferTo->Caption =  "Select";
+//                    lbDisplayTransferto->Clear();
+//                }
+//                else
+//                {
+//                    btnTransferFrom->Caption =  "Select";
+//                    lbDisplayTransferfrom->Clear();
+//                }
+//                return mrAbort;
+//            }
             PopulateSourceDestTabDetails(DBTransaction, tabname, tabKey, listbox, true);
             UpdateListBox(listbox);
         }
@@ -2305,13 +2305,13 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                            {
                               lbDisplayTransferto->Clear();
                               UnicodeString email = TDBTables::GetMemberEmail(floorPlanReturnParams.TabContainerNumber);
-                              if(email.Trim() != "")
-                              {
-                                MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
-                                Retval = mrAbort;
-                                btnTransferTo->Caption =  "Select";
-                                break;
-                              }
+//                              if(email.Trim() != "")
+//                              {
+//                                MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+//                                Retval = mrAbort;
+//                                btnTransferTo->Caption =  "Select";
+//                                break;
+//                              }
 
                               if(TGlobalSettings::Instance().IsTableLockEnabled)
                               {
@@ -2328,9 +2328,11 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
                               {
                                  CurrentDestTable = floorPlanReturnParams.TabContainerNumber;
                               }
+
                               UpdateDestTableDetails(DBTransaction);
                               UpdateDestSeatDetails(DBTransaction);
                               CurrentDestDisplayMode =eTables;
+
                            }
                            else
                            {
@@ -2349,14 +2351,14 @@ void TfrmTransfer::ShowSelectScreen(Database::TDBTransaction &DBTransaction, Ans
 //                           if( TEnableFloorPlan::Instance()->Run( ( TForm* )this, false, floorPlanReturnParams ) )
                            {
                                 UnicodeString email = TDBTables::GetMemberEmail(floorPlanReturnParams.TabContainerNumber);
-                                if(email.Trim() != "")
-                                {
-                                    MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
-                                    Retval = mrAbort;
-                                    btnTransferFrom->Caption =  "Select";
-                                    lbDisplayTransferfrom->Clear();
-                                    break;
-                                }
+//                                if(email.Trim() != "")
+//                                {
+//                                    MessageBox("Table is having Loyaltymate membership associated with it.\rPlease Select some other table.","Info",MB_OK+MB_ICONINFORMATION);
+//                                    Retval = mrAbort;
+//                                    btnTransferFrom->Caption =  "Select";
+//                                    lbDisplayTransferfrom->Clear();
+//                                    break;
+//                                }
 
                                  if(TGlobalSettings::Instance().IsTableLockEnabled)
                                  {
@@ -2804,6 +2806,10 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             {
                DestTabKey = TDBTab::GetOrCreateTab(*DBTransaction, TDBTables::GetTabKey(*DBTransaction, SeatKey));
             }
+            //Update Membership At Destination In Case Membership Present At Both Source And Destination Location
+            if(!CheckIfMembershipUpdateRequired(source_key, DestTabKey))
+                break;
+
 			TDBTab::SetTabType(*DBTransaction, DestTabKey, TabTableSeat);
 			TDBTables::SetSeatTab(*DBTransaction, SeatKey, DestTabKey);
 			std::auto_ptr <TList> OrdersList(new TList);
@@ -4211,3 +4217,33 @@ void TfrmTransfer::PrintTransferChefNotification(Database::TDBTransaction &DBTra
         delete TransferComplete;
     }
 }
+//------------------------------------------------------------------------------
+bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKey)
+{
+    bool retValue = true;
+    UnicodeString SourceEmail = "";
+    UnicodeString DestinationEmail = "";
+    try
+    {   
+        SourceEmail        = TDBOrder::GetOrderEmail(*DBTransaction, source_key);
+        DestinationEmail   = TDBOrder::GetOrderEmail(*DBTransaction, DestTabKey);
+        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+        {
+            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentDestTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentSourceTable);
+            if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
+            {
+                TDBTables::UpdateMemberEmail(*DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
+            }
+            else
+            {
+                retValue = false;
+            }
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+    return retValue;
+}
+

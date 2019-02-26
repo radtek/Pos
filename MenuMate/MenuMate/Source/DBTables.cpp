@@ -1869,6 +1869,28 @@ bool TDBTables::IsTableBilled(Database::TDBTransaction &dBTransaction, int selec
     return isTableBilled;
 
 }
+//------------------------------------------------------------------------------
+void TDBTables::UpdateMemberEmail(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+        query->SQL->Text = "UPDATE ORDERS SET EMAIL =:SOURCE_EMAIL WHERE "
+                           "EMAIL =:DESTINATION_EMAIL AND TAB_KEY =:TAB_KEY ";
+        query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
+        query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ExecQuery();
+
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+}
 
 
 
