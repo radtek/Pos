@@ -298,6 +298,7 @@ public:		// User declarations
     bool isClipLongPress;
     std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
     void SaveItemsGuestToPrint();
+    bool IsOrderKey;
 };
 //---------------------------------------------------------------------------
 #endif

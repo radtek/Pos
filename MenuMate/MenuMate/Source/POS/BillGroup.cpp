@@ -5623,11 +5623,11 @@ void TfrmBillGroup::DisableTransferButtonWhenLMIsEnabled()
         else if(CurrentDisplayMode == eTables)
             email = TDBTables::GetMemberEmail(CurrentTable);
 
-        if(email.Trim() != "")
-        {
-            btnTransfer->Enabled = false;
-            tbtnMove->Enabled = false;
-        }
+//        if(email.Trim() != "")
+//        {
+//            btnTransfer->Enabled = false;
+//            tbtnMove->Enabled = false;
+//        }
     }
 }
 //--------------------------------------------------
@@ -5746,26 +5746,26 @@ void TfrmBillGroup::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiStri
 }
 //--------------------------------------------------------
 bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey)
-{
+{  MessageBox("CheckIfMembershipUpdateRequired","Bill group",MB_OK);
     bool retValue = true;
     UnicodeString SourceEmail = "";
     UnicodeString DestinationEmail = "";
     try
     {
-        SourceEmail        = TDBOrder::GetOrderEmail(DBTransaction, source_key);
-        DestinationEmail   = TDBOrder::GetOrderEmail(DBTransaction, DestTabKey);
-        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
-        {
-            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentTable);
-            if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
-            {
-                TDBTables::UpdateMemberEmail(DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
-            }
-            else
-            {
-                retValue = false;
-            }
-        }
+//        SourceEmail        = TDBOrder::GetOrderEmail(DBTransaction, source_key);
+//        DestinationEmail   = TDBOrder::GetOrderEmail(DBTransaction, DestTabKey);
+//        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+//        {
+//            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentTable);
+//            if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
+//            {
+//                TDBTables::UpdateMemberEmail(DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
+//            }
+//            else
+//            {
+//                retValue = false;
+//            }
+//        }
     }
     catch(Exception & E)
     {

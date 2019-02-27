@@ -5156,14 +5156,13 @@ bool TDBOrder::IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int 
     return isOrderExist;
 }
 //------------------------------------------------------------------------------
-UnicodeString TDBOrder::GetOrderEmail(Database::TDBTransaction &DBTransaction,int tabKey)
+void TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(Database::TDBTransaction &DBTransaction,int tabKey,UnicodeString &email,int &loyaltyKey)
 {
-   UnicodeString email = "";
    try
    {
        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
        IBInternalQuery->Close();
-       IBInternalQuery->SQL->Text = "SELECT first(1) EMAIL FROM ORDERS "
+       IBInternalQuery->SQL->Text = "SELECT FIRST(1) EMAIL, LOYALTY_KEY FROM ORDERS "
                                       " WHERE TAB_KEY =:TAB_KEY";
        IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
 
@@ -5171,6 +5170,7 @@ UnicodeString TDBOrder::GetOrderEmail(Database::TDBTransaction &DBTransaction,in
        if(!IBInternalQuery->Eof && IBInternalQuery->Fields[0]->AsString != "")
        {
          email = IBInternalQuery->Fields[0]->AsString;
+         loyaltyKey = IBInternalQuery->Fields[1]->AsInteger;
        }
     }
     catch(Exception &E)
@@ -5178,5 +5178,78 @@ UnicodeString TDBOrder::GetOrderEmail(Database::TDBTransaction &DBTransaction,in
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
     }
-    return email;
+}
+//------------------------------------------------------------------------------
+void TDBOrder::UpdateMemberLoyaltyForTabKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey, int destinationLoyaltyKey)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "UPDATE ORDERS SET EMAIL =:DESTINATION_EMAIL,LOYALTY_KEY =:LOYALTY_KEY WHERE "
+                           "EMAIL =:SOURCE_EMAIL AND TAB_KEY =:TAB_KEY ";
+
+        query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
+        query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("LOYALTY_KEY")->AsInteger = destinationLoyaltyKey;
+
+        query->ExecQuery();
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+}
+//------------------------------------------------------------------------------
+void TDBOrder::LoadEmailAndLoyaltyKeyByOrderKey(Database::TDBTransaction &DBTransaction,int orderKey,UnicodeString &email,int &loyaltyKey)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT EMAIL, LOYALTY_KEY FROM ORDERS "
+                                      " WHERE ORDER_KEY =:ORDER_KEY";
+        IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof && IBInternalQuery->Fields[0]->AsString != "")
+        {
+            email = IBInternalQuery->Fields[0]->AsString;
+            loyaltyKey = IBInternalQuery->Fields[1]->AsInteger;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TDBOrder::UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int orderKey, int destinationLoyaltyKey)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "UPDATE ORDERS SET EMAIL =:DESTINATION_EMAIL,LOYALTY_KEY =:LOYALTY_KEY WHERE "
+                           "EMAIL =:SOURCE_EMAIL AND ORDER_KEY =:ORDER_KEY ";
+
+        query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
+        query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
+        query->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+        query->ParamByName("LOYALTY_KEY")->AsInteger = destinationLoyaltyKey;
+
+        query->ExecQuery();
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
 }

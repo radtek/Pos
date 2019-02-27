@@ -150,7 +150,10 @@ public:
     static void SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email);
     static void SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransaction,int tabKey,int loyaltyKey, UnicodeString email);
     static bool IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int tableNumber);
-    static UnicodeString GetOrderEmail(Database::TDBTransaction &DBTransaction,int tabKey);
+    static void LoadEmailAndLoyaltyKeyByTabKey(Database::TDBTransaction &DBTransaction,int tabKey,UnicodeString &email,int &loyaltyKey);
+    static void UpdateMemberLoyaltyForTabKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey, int destinationLoyaltyKey);
+    static void LoadEmailAndLoyaltyKeyByOrderKey(Database::TDBTransaction &DBTransaction,int orderKey,UnicodeString &email,int &loyaltyKey);
+    static void UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int orderKey, int destinationLoyaltyKey);
 };
 //---------------------------------------------------------------------------
 #endif

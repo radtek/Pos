@@ -71,6 +71,7 @@ void __fastcall TfrmTransfer::FormCreate(TObject *Sender)
    CurrentSourceDisplayMode = eNoDisplayMode;
    CurrentDestDisplayMode = eNoDisplayMode;
    CurrentSourceTabType = TabNone;
+   IsOrderKey = false;
     // reset the cmClientManager for Chefmate
    cmClientManager.reset( new TChefmateClientManager() );
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -887,7 +888,7 @@ void __fastcall TfrmTransfer::btnOKClick(TObject *Sender)
 }
 //----------------------------------------------------------------------------
 void __fastcall TfrmTransfer::lbDisplayTransferfromClick(TObject *Sender)
-{
+{  
   if(CheckStaffTabAccess(*DBTransaction))
   {
       TimerLongPress->Enabled = false;
@@ -1590,7 +1591,7 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
               {
                  dest_tabkey = frmTransferItemOrGuest->dest_tab_key;
                 int sourceTabKey = GetTabKeyFromListBox(lbDisplayTransferfrom, itemPosition);
-
+                
                 TMMTabType sourceTabType = TDBTab::GetLinkedTableAndClipTab(*DBTransaction, sourceTabKey);
                 int seatNo= dest_tabkey;
                  if(btnTransferFrom->Caption == btnTransferTo->Caption)
@@ -1598,6 +1599,7 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
                     if(!isTabSelected)
                     {
                        source_key = GetOrderKeyFromSavedList(*DBTransaction, 1, lbDisplayTransferfrom, k);
+                       IsOrderKey = true;
                     }
                     seat_key = GetSeatNumber(*DBTransaction, source_key, isTabSelected, CurrentSourceTable);
                     if(seat_key == dest_tabkey)
@@ -1613,6 +1615,7 @@ void __fastcall TfrmTransfer::TimerLongPressTimer(TObject *Sender)
                      if(!isTabSelected)
                      {
                          GetOrderKeyFromSavedList(*DBTransaction, transfer_qty, lbDisplayTransferfrom, k, true);
+                         IsOrderKey = true;
                          for(std::vector<int>::iterator it = GetSavedOrderKey.begin(); it != GetSavedOrderKey.end(); ++it)
                          {
                            TransferTotal(*it, dest_tabkey, false,  isTabSelected);
@@ -1715,11 +1718,13 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
                  dest_tabkey = frmTransferItemOrGuest->dest_tab_key;
                    int sourceTabKey = GetTabKeyFromListBox(lbDisplayTransferto, itemPosition);
                     int seatNo= dest_tabkey;
+                   
                  if(btnTransferFrom->Caption == btnTransferTo->Caption)
                  {
                     if(!isTabSelected)
                     {
                        tab_key = GetOrderKeyFromSavedList(*DBTransaction, 1, lbDisplayTransferto, k);
+                        IsOrderKey = true;
                     }
                     seat_key = GetSeatNumber(*DBTransaction, tab_key, isTabSelected, CurrentDestTable);
                     if(seat_key == dest_tabkey)
@@ -1735,6 +1740,7 @@ void __fastcall TfrmTransfer::TimerDestLongPressTimer(TObject *Sender)
                      if(!isTabSelected)
                      {
                          GetOrderKeyFromSavedList(*DBTransaction, transfer_qty, lbDisplayTransferto, k, true);
+                         IsOrderKey = true;
                          for(std::vector<int>::iterator it = GetSavedOrderKey.begin(); it != GetSavedOrderKey.end(); ++it)
                          {
                            ReverseTransferTotal(*it, dest_tabkey, true,  isTabSelected);
@@ -2477,9 +2483,10 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
            if (CurrentSourceDisplayMode == eTables && CurrentDestDisplayMode == eTables)
            {
               if(!isTabSelected)
-              {
+              {  
                  sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferfrom, k);
                  dest_key = GetSeatNumber(DBTransaction, sourcekey, isTabSelected, CurrentSourceTable);
+                 IsOrderKey = true;
               }
               else
               {
@@ -2560,6 +2567,7 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
                  {
                      sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferto, k);
                      dest_key = GetSeatNumber(DBTransaction, sourcekey, isTabSelected, CurrentDestTable);
+                     IsOrderKey = true;
                  }
               }
               else
@@ -2664,6 +2672,9 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
             {
                DestTabKey = TDBTab::GetOrCreateTab(*DBTransaction, TDBTables::GetTabKey(*DBTransaction, SeatKey));
             }
+            //Update Membership At Destination In Case Membership Present At Both Source And Destination Location
+            if(!CheckIfMembershipUpdateRequired(source_key, DestTabKey))
+                break;
 			TDBTab::SetTabType(*DBTransaction, DestTabKey, TabTableSeat);
 			TDBTables::SetSeatTab(*DBTransaction, SeatKey, DestTabKey);
             std::auto_ptr <TList> OrdersList(new TList);
@@ -4223,16 +4234,29 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
     bool retValue = true;
     UnicodeString SourceEmail = "";
     UnicodeString DestinationEmail = "";
+    int sourceLoyaltyKey = 0;
+    int destinationLoyaltyKey = 0; 
     try
-    {   
-        SourceEmail        = TDBOrder::GetOrderEmail(*DBTransaction, source_key);
-        DestinationEmail   = TDBOrder::GetOrderEmail(*DBTransaction, DestTabKey);
+    {
+        if(IsOrderKey)
+            TDBOrder::LoadEmailAndLoyaltyKeyByOrderKey(*DBTransaction, source_key, SourceEmail, sourceLoyaltyKey);
+        else
+            TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, source_key, SourceEmail, sourceLoyaltyKey);
+            
+        TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, DestTabKey, DestinationEmail, destinationLoyaltyKey);
         if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
         {
-            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentDestTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentSourceTable);
+            UnicodeString message = SourceEmail +" on Table " + IntToStr(CurrentSourceTable) + " will be replaced by "+ DestinationEmail +" of Table " + IntToStr(CurrentDestTable);
             if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
             {
-                TDBTables::UpdateMemberEmail(*DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
+                if(IsOrderKey)
+                {
+                    TDBOrder::UpdateMemberLoyaltyForOrderKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
+                }
+                else
+                {
+                    TDBOrder::UpdateMemberLoyaltyForTabKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
+                }
             }
             else
             {
@@ -4244,6 +4268,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
+    IsOrderKey = false;
     return retValue;
 }
 
