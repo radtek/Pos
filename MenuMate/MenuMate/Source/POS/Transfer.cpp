@@ -4244,6 +4244,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
             TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, source_key, SourceEmail, sourceLoyaltyKey);
             
         TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, DestTabKey, DestinationEmail, destinationLoyaltyKey);
+        //To Handle Scenario Where Loyaltymate Membership Exist On Both Source And Destination Tab's
         if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
         {
             UnicodeString message = SourceEmail +" on Table " + IntToStr(CurrentSourceTable) + " will be replaced by "+ DestinationEmail +" of Table " + IntToStr(CurrentDestTable);
@@ -4261,6 +4262,18 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
             else
             {
                 retValue = false;
+            }
+        }
+        //To Handle Scenario Where Loyaltymate Membership Exist Only On Destination Tab
+        if(SourceEmail.Trim() == "" && DestinationEmail.Trim() != "")
+        {
+            if(IsOrderKey)
+            {
+                TDBOrder::UpdateMemberLoyaltyForOrderKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
+            }
+            else
+            {
+                TDBOrder::UpdateMemberLoyaltyForTabKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
             }
         }
     }

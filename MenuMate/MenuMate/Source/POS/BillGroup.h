@@ -197,7 +197,7 @@ private:	// User declarations
     void ResetTransactionAfterCommit(TPaymentTransaction &paymentTransaction);
     void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
     std::auto_ptr<TStringList> logList;
-    bool CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction, int source_key, int DestTabKey);
+    bool CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction, int source_key, int DestTabKey,std::set<__int64> &OrderKeys);
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);

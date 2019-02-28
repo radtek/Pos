@@ -1759,13 +1759,12 @@ void __fastcall TfrmBillGroup::tbtnMoveMouseClick(TObject *Sender)
                             return;
                         }
                     }
-
-					TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeMoved);
-                    if(!CheckIfMembershipUpdateRequired(DBTransaction, source_key, TabTransferTo))
+                    if(!CheckIfMembershipUpdateRequired(DBTransaction, source_key, TabTransferTo, ItemsToBeMoved))
                         return;
+					TDBOrder::GetOrdersFromOrderKeys(DBTransaction, OrdersList.get(), ItemsToBeMoved);
 					if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), TabTransferTo))
 					{
-						TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), TabTransferTo, TDeviceRealTerminal::Instance().User.ContactKey, source_key);
+                        TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), TabTransferTo, TDeviceRealTerminal::Instance().User.ContactKey, source_key);
             		}
 					else
 					{
@@ -4949,10 +4948,10 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
 		OrdersList->Delete(0);
     }
 
-    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
-    {
-        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
-    }
+//    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
+//    {
+//        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
+//    }
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransaction)
@@ -5005,13 +5004,13 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
-   {
-      allow = true;
-   }
-   else
-   {
+//   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+//                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+//   {
+//      allow = true;
+//   }
+//   else
+//   {
         Database::TDBTransaction DBTransaction(DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
         DBTransaction.StartTransaction();
@@ -5019,17 +5018,17 @@ void TfrmBillGroup::CheckLoyalty()
         ClearLoyaltyVoucher();
         DBTransaction.Commit();
 
-   }
-
-    if (allow)
-	{
+//   }
+//
+//    if (allow)
+//	{
         std::set <__int64> ReceiptItemKeys;
         for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
         {
             ReceiptItemKeys.insert(itItem->first);
         }
         CheckLoyalty(ReceiptItemKeys);
-	}
+//	}
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
@@ -5635,7 +5634,8 @@ void TfrmBillGroup::SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction
 {
     if(CurrentDisplayMode == eTables)
     {
-        TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, CurrentTable, info.ContactKey, info.EMail);
+        //TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, CurrentTable, info.ContactKey, info.EMail);
+        TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, CurrentSelectedTab, info.ContactKey, info.EMail);
     }
     else if(CurrentDisplayMode == eTabs)
     {
@@ -5744,32 +5744,64 @@ void TfrmBillGroup::RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiStri
         MessageBox(ex.Message,"Error in logging for Fiscal Printer",MB_OK+MB_ICONERROR);
     }
 }
-//--------------------------------------------------------
-bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction,int source_key, int DestTabKey)
-{  MessageBox("CheckIfMembershipUpdateRequired","Bill group",MB_OK);
+//------------------------------------------------------------------------------
+bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction, int source_key, int DestTabKey, std::set<__int64> &OrderKeys)
+{
     bool retValue = true;
-    UnicodeString SourceEmail = "";
+    UnicodeString oldSourceEmail = "";
     UnicodeString DestinationEmail = "";
+    int sourceLoyaltyKey = 0;
+    int destinationLoyaltyKey = 0;
+    bool IsTransferApproved = false;
     try
     {
-//        SourceEmail        = TDBOrder::GetOrderEmail(DBTransaction, source_key);
-//        DestinationEmail   = TDBOrder::GetOrderEmail(DBTransaction, DestTabKey);
-//        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
-//        {
-//            UnicodeString message = DestinationEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ SourceEmail +" of Table " + IntToStr(CurrentTable);
-//            if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
-//            {
-//                TDBTables::UpdateMemberEmail(DBTransaction, SourceEmail, DestinationEmail, DestTabKey);
-//            }
-//            else
-//            {
-//                retValue = false;
-//            }
-//        }
+        TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(DBTransaction, DestTabKey, DestinationEmail, destinationLoyaltyKey);
+        for (std::set<__int64>::iterator pOrderKey = OrderKeys.begin(); pOrderKey != OrderKeys.end(); advance(pOrderKey,1))
+        {
+            int orderKey = (int)*pOrderKey;
+            UnicodeString SourceEmail = "";
+            TDBOrder::LoadEmailAndLoyaltyKeyByOrderKey(DBTransaction, orderKey, SourceEmail, sourceLoyaltyKey);
+            MessageBox(orderKey,"orderKey",MB_OK);
+            MessageBox(DestTabKey,"DestTabKey",MB_OK);
+            //To Handle Scenario Where Loyaltymate Membership Exist On Both Source And Destination Tab's
+            if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+            {
+                if(!SameStr(oldSourceEmail.Trim(),SourceEmail.Trim()))
+                {
+                    UnicodeString message = SourceEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ DestinationEmail +" of Table " + IntToStr(CurrentTable);
+                    if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
+                    {
+                        TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
+                        IsTransferApproved = true;
+                        oldSourceEmail = SourceEmail;
+                    }
+                    else
+                    {
+                        retValue = false;
+                        OrderKeys.erase(pOrderKey);
+                    }
+                }
+                else
+                {
+                    TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
+                }
+            }
+            //To Handle Scenario Where Loyaltymate Membership Exist Only On Destination Tab
+            if(SourceEmail.Trim() == "" && DestinationEmail.Trim() != "")
+            {   MessageBox("code","",MB_OK);
+                TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
+                IsTransferApproved = true;
+            }
+            SourceEmail = "";
+            sourceLoyaltyKey = 0;
+        }
+        if(IsTransferApproved)
+            retValue = true;
     }
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
+
     return retValue;
 }
