@@ -80,7 +80,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label9: TLabel
-        Left = 140
+        Left = 77
         Top = 67
         Width = 25
         Height = 17
@@ -93,8 +93,8 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label2: TLabel
-        Left = 230
-        Top = 67
+        Left = 164
+        Top = 69
         Width = 39
         Height = 17
         Caption = 'Month'
@@ -106,7 +106,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label3: TLabel
-        Left = 320
+        Left = 247
         Top = 67
         Width = 27
         Height = 17
@@ -119,7 +119,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label5: TLabel
-        Left = 140
+        Left = 77
         Top = 133
         Width = 30
         Height = 17
@@ -132,7 +132,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label6: TLabel
-        Left = 230
+        Left = 164
         Top = 133
         Width = 40
         Height = 17
@@ -145,7 +145,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label7: TLabel
-        Left = 320
+        Left = 323
         Top = 133
         Width = 41
         Height = 17
@@ -171,7 +171,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label8: TLabel
-        Left = 140
+        Left = 77
         Top = 199
         Width = 30
         Height = 17
@@ -184,7 +184,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label10: TLabel
-        Left = 230
+        Left = 164
         Top = 199
         Width = 40
         Height = 17
@@ -197,7 +197,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         ParentFont = False
       end
       object Label11: TLabel
-        Left = 320
+        Left = 323
         Top = 199
         Width = 41
         Height = 17
@@ -205,6 +205,32 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         Font.Charset = ANSI_CHARSET
         Font.Color = 4342338
         Font.Height = -14
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lbStartSecond: TLabel
+        Left = 247
+        Top = 133
+        Width = 47
+        Height = 18
+        Caption = 'Second'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 4342338
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object lbEndSecond: TLabel
+        Left = 247
+        Top = 199
+        Width = 47
+        Height = 18
+        Caption = 'Second'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 4342338
+        Font.Height = -15
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
@@ -252,7 +278,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnDblClick = cbHappyHourProfileDblClick
       end
       object BtnDate: TTouchBtn
-        Left = 140
+        Left = 77
         Top = 89
         Width = 60
         Height = 40
@@ -270,8 +296,8 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnDateMouseClick
       end
       object BtnMonth: TTouchBtn
-        Left = 230
-        Top = 87
+        Left = 164
+        Top = 89
         Width = 60
         Height = 40
         Font.Charset = DEFAULT_CHARSET
@@ -288,7 +314,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnMonthMouseClick
       end
       object BtnYear: TTouchBtn
-        Left = 320
+        Left = 247
         Top = 88
         Width = 60
         Height = 40
@@ -306,7 +332,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnYearMouseClick
       end
       object BtnReset: TTouchBtn
-        Left = 386
+        Left = 323
         Top = 87
         Width = 60
         Height = 40
@@ -325,7 +351,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnResetMouseClick
       end
       object BtnStartHour: TTouchBtn
-        Left = 140
+        Left = 77
         Top = 155
         Width = 60
         Height = 40
@@ -343,8 +369,8 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnStartHourMouseClick
       end
       object BtnStartMinute: TTouchBtn
-        Left = 230
-        Top = 156
+        Left = 164
+        Top = 155
         Width = 60
         Height = 40
         Font.Charset = DEFAULT_CHARSET
@@ -379,7 +405,7 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnStartAMPMMouseClick
       end
       object BtnEndHour: TTouchBtn
-        Left = 140
+        Left = 77
         Top = 221
         Width = 60
         Height = 40
@@ -397,8 +423,8 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         OnMouseClick = BtnEndHourMouseClick
       end
       object BtnEndMinute: TTouchBtn
-        Left = 230
-        Top = 222
+        Left = 164
+        Top = 221
         Width = 60
         Height = 40
         Font.Charset = DEFAULT_CHARSET
@@ -431,6 +457,42 @@ object frmHappyHourSettings: TfrmHappyHourSettings
         DisabledButtonColor = clBtnFace
         LatchingProperties = [lkLatchColor, lkStayDown]
         OnMouseClick = BtnEndAMPMMouseClick
+      end
+      object BtnStartSecond: TTouchBtn
+        Left = 247
+        Top = 155
+        Width = 60
+        Height = 40
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 9933970
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnStartSecondMouseClick
+      end
+      object BtnEndSecond: TTouchBtn
+        Left = 247
+        Top = 221
+        Width = 60
+        Height = 40
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -15
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+        ParentColor = True
+        ButtonColor = 9933970
+        LatchedColor = clBtnFace
+        DisabledButtonColor = clBtnFace
+        LatchingProperties = [lkLatchColor, lkStayDown]
+        OnMouseClick = BtnEndSecondMouseClick
       end
     end
     object GroupBox2: TGroupBox
