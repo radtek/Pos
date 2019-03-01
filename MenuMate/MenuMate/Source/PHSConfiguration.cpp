@@ -165,8 +165,11 @@ void TfrmPHSConfiguration::UpdateGUI()
     tbRevenueCentre->Caption = "Revenue Centre\r" + TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
     tbServiceCharge->Caption = "Service Charge\r" + TDeviceRealTerminal::Instance().BasePMS->ServiceChargeAccount;
     tbSurchargeCat->Caption = "Surcharge Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
+
     if(PMSType == siHot)
     {
+        tbRoomServiceMenu->Caption = "Room Service Menu\r" + TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu;
+        tbRoomServiceRevenueCenter->Caption = "Room Service Revenue Center\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbExpensesAccount->Caption = "Expenses Account\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
 		tbTipAccount->Caption = "Tip Account\r" + TDeviceRealTerminal::Instance().BasePMS->TipAccount;
@@ -191,9 +194,13 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableStoreTicketPosting->Checked = TGlobalSettings::Instance().EnableStoreTicketPosting;
 
 
+
+
     }
     else if(PMSType == oracle)
     {
+        tbRoomServiceMenu->Caption = "Room Service Menu\r" + TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu;
+        tbRoomServiceRevenueCenter->Caption = "Room Service Revenue Center\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
         tbPhoenixIPAddress->Caption = "Server IP Address\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         tbPhoenixPortNumber->Caption = "Server Port Number\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->TCPPort);
         tbExpensesAccount->Enabled = false;
@@ -264,6 +271,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableItemDetailsPosting->Checked = false;
         cbEnableStoreTicketPosting->Enabled = false;
         cbEnableStoreTicketPosting->Checked = false;
+        tbRoomServiceRevenueCenter->Enabled = false;
+        tbRoomServiceMenu->Enabled = false;
         TouchBtn1->Caption = "Get Details";
         tbPhoenixIPAddress->Caption = "Server URL\r" + TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress;
         //tbPhoenixPortNumber->Caption = "Client Token\r" + TDeviceRealTerminal::Instance().BasePMS->ExpensesAccount;
@@ -316,6 +325,8 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableItemDetailsPosting->Enabled = false;
         cbEnableStoreTicketPosting->Enabled = false;
         cbEnableStoreTicketPosting->Checked = false;
+        tbRoomServiceRevenueCenter->Enabled = false;
+        tbRoomServiceMenu->Enabled = false;
     }
 	tbRoundingCategory->Caption = "Rounding Account\r" + TDeviceRealTerminal::Instance().BasePMS->RoundingCategory;
     tbTimeOut->Caption = "Request Time Out\r" + IntToStr(TGlobalSettings::Instance().PMSTimeOut);
@@ -1087,4 +1098,136 @@ void __fastcall TfrmPHSConfiguration::cbEnableStoreTicketPostingClick(TObject *S
     TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmEnableStoreTicketPosting, TGlobalSettings::Instance().EnableStoreTicketPosting);
     DBTransaction.Commit();
 }
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbRoomServiceRevenueCenterMouseClick(TObject *Sender)
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+        MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
 
+        UnicodeString caption = "Room Service Revenue Center.";
+        int value = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+
+        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+        frmTouchNumpad->Caption = caption;
+        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+        frmTouchNumpad->btnSurcharge->Visible = true;
+        frmTouchNumpad->btnDiscount->Visible = false;
+        frmTouchNumpad->Mode = pmNumber;
+        frmTouchNumpad->INTInitial = value;
+
+        if(frmTouchNumpad->ShowModal() == mrOk)
+            TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter = frmTouchNumpad->INTResult;
+
+        if(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter <= 99999)
+        {
+            tbRoomServiceRevenueCenter->Caption = "Room Service Revenue Center\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
+        }
+        else
+        {
+            MessageBox("Please enter Revenue Centre from 1 to 99999", "Room Service Revenue Centre can't be more than 99999", MB_OK);
+        }
+        DBTransaction.Commit();
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmPHSConfiguration::tbRoomServiceMenuMouseClick(TObject *Sender)
+
+{
+    if(!TDeviceRealTerminal::Instance().BasePMS->Registered)
+	{
+		MessageBox("You must have the PMS Module in order to Interface with PMS Hotel System .", "Error", MB_OK);
+	}
+	else
+	{
+        Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+        DBTransaction.StartTransaction();
+        std::vector<UnicodeString> menuNames;
+        menuNames.clear();
+        LoadActiveMenu(menuNames);
+        if(menuNames.size() > 0)
+        {
+            UnicodeString menuNameSelected = GetMenuName(menuNames);
+            if(menuNameSelected != "")
+            {
+                TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu = menuNameSelected;
+                tbRoomServiceMenu->Caption = "Room Service Menu\r" + TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu;
+                TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmRoomServiceMenu,TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu);
+            }
+        }
+        else
+        {
+            MessageBox("There are no active Menus in the system. Please add a menu first","Information",MB_OK+MB_ICONINFORMATION);
+        }
+        DBTransaction.Commit();
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmPHSConfiguration::LoadActiveMenu(std::vector<UnicodeString> &menuName)
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT MENU_NAME FROM MENU WHERE DELETED = 'F'";
+        IBInternalQuery->ExecQuery();
+
+        for(;!IBInternalQuery->Eof;IBInternalQuery->Next())
+        {
+            menuName.push_back(IBInternalQuery->FieldByName("MENU_NAME")->AsString);
+        }
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        DBTransaction.Rollback();
+    }
+}
+//---------------------------------------------------------------------------
+UnicodeString TfrmPHSConfiguration::GetMenuName(std::vector<UnicodeString> menuNames)
+{
+    UnicodeString retValue = "";
+    try
+    {
+        std::auto_ptr<TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create<TfrmVerticalSelect>(this));
+
+        TVerticalSelection Item;
+        Item.Title = "Cancel";
+        Item.Properties["Color"] = IntToStr(clMaroon);
+        Item.CloseSelection = true;
+        SelectionForm->Items.push_back(Item);
+
+        for(int i = 0; i < menuNames.size() ; i++)
+        {
+            TVerticalSelection Item;
+            Item.Title = menuNames[i];
+            Item.Properties["Action"] = menuNames[i];
+            Item.Properties["Color"] = IntToStr(clNavy);
+            Item.CloseSelection = true;
+            SelectionForm->Items.push_back(Item);
+        }
+
+        SelectionForm->ShowModal();
+        TVerticalSelection SelectedItem;
+
+        if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel" )
+        {
+            retValue = SelectedItem.Properties["Action"];
+        }
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+    return retValue;
+}

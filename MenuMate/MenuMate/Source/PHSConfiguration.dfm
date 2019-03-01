@@ -4,7 +4,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
   BorderIcons = []
   BorderStyle = bsDialog
   Caption = 'Property Management System Configuration'
-  ClientHeight = 725
+  ClientHeight = 787
   ClientWidth = 759
   Color = clBlack
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     Left = 9
     Top = 8
     Width = 600
-    Height = 712
+    Height = 774
     Color = 10011108
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
@@ -33,7 +33,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     TabOrder = 0
     DesignSize = (
       600
-      712)
+      774)
     object Label4: TLabel
       Left = 152
       Top = 7
@@ -105,8 +105,8 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     object lblEnableStoreTicketPosting: TLabel
       Left = 310
       Top = 649
-      Width = 201
-      Height = 44
+      Width = 191
+      Height = 22
       Caption = 'POS Receipt Posting'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -403,7 +403,7 @@ object frmPHSConfiguration: TfrmPHSConfiguration
     end
     object tbRevenueCentre: TTouchBtn
       Left = 16
-      Top = 88
+      Top = 87
       Width = 266
       Height = 49
       Font.Charset = DEFAULT_CHARSET
@@ -525,12 +525,50 @@ object frmPHSConfiguration: TfrmPHSConfiguration
       TabOrder = 22
       OnClick = cbEnableItemDetailsPostingClick
     end
+    object tbRoomServiceMenu: TTouchBtn
+      Left = 16
+      Top = 711
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Room Service Menu'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbRoomServiceMenuMouseClick
+    end
+    object tbRoomServiceRevenueCenter: TTouchBtn
+      Left = 310
+      Top = 711
+      Width = 266
+      Height = 49
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ParentColor = True
+      Caption = 'Room Service Revenue Center'
+      ButtonColor = clGreen
+      LatchedColor = clBtnFace
+      DisabledButtonColor = clBtnFace
+      LatchingProperties = [lkLatchColor, lkStayDown]
+      OnMouseClick = tbRoomServiceRevenueCenterMouseClick
+    end
   end
   object Panel2: TPanel
     Left = 615
     Top = 8
     Width = 137
-    Height = 712
+    Height = 774
     Color = 10011108
     ParentBackground = False
     TabOrder = 1

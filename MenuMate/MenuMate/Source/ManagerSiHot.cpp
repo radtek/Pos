@@ -91,6 +91,8 @@ void TManagerSiHot::Initialise()
     DefaultAccountNumber        = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber       = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
     ApiKey                      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSAPIKey);
+    RoomServiceRevenueCenter    = TManagerVariable::Instance().GetInt(DBTransaction,vmRoomServiceRevenueCenter);
+    RoomServiceMenu             = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
     RevenueCodesMap.clear();
     UnsetPostingFlag();
 

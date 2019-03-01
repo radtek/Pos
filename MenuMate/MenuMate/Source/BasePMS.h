@@ -39,6 +39,8 @@ class TBasePMS
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
+        int RoomServiceRevenueCenter;
+        AnsiString RoomServiceMenu;
         public :
         bool Registered;
         TPhoenixHM(Database::TDBControl &inDBControl);

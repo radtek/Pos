@@ -65,5 +65,8 @@ class TOracleDataBuilder
        AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
        void AdjustRounding(std::map<int,double> &subtotals, std::map<int, double> &discMap,
                              std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap);
+        AnsiString GetRevenueCentre(TPayment *payment, TPaymentTransaction paymentTransaction);
+
 };
+
 #endif

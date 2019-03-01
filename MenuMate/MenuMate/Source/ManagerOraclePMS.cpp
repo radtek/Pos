@@ -58,6 +58,8 @@ void TManagerOraclePMS::Initialise()
         DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
         RoundingAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
         RevenueCentre = TManagerVariable::Instance().GetStr(DBTransaction,vmRevenueCentre);
+        RoomServiceRevenueCenter = TManagerVariable::Instance().GetInt(DBTransaction,vmRoomServiceRevenueCenter);
+        RoomServiceMenu = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
         LoadMeals(DBTransaction);
         TOracleTCPIP::Instance().UnsetPostingFlag();
         if(Registered && TCPIPAddress != "")
