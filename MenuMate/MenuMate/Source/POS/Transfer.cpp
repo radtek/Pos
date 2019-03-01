@@ -2499,6 +2499,7 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
               if(!isTabSelected)
               {
                  sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferfrom, k);
+                 IsOrderKey = true;
               }
            }
            else if(CurrentDestDisplayMode == eTabs  || CurrentDestDisplayMode == eInvoices || CurrentDestDisplayMode == eRooms)
@@ -2507,6 +2508,7 @@ void TfrmTransfer::TransferData(Database::TDBTransaction &DBTransaction)
               if(!isTabSelected)
               {
                  sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferfrom, k);
+                 IsOrderKey = true;
               }
            }
 
@@ -2576,6 +2578,7 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
                   if(!isTabSelected)
                   {
                      sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferto, k);
+                     IsOrderKey = true;
                   }
               }
 
@@ -2586,6 +2589,7 @@ void TfrmTransfer::ReverseData(Database::TDBTransaction &DBTransaction)
               if(!isTabSelected)
               {
                  sourcekey = GetOrderKeyFromSavedList(DBTransaction, 1, lbDisplayTransferto, k);
+                 IsOrderKey = true;
               }
 
            }
@@ -2642,6 +2646,9 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
            int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTab(*DBTransaction,dest_tabkey);
 
             TMMTabType TabType = TDBTab::GetTabType(*DBTransaction, dest_tabkey);
+            //Update Membership At Destination In Case Membership Present At Both Source And Destination Location
+            if(!CheckIfMembershipUpdateRequired(source_key, dest_tabkey))
+                break;
             TList *Orders = OrdersList.get();
             bool isSCDApplied = false;
             bool isPWDAppplied = false;
@@ -2787,6 +2794,9 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
            int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTab(*DBTransaction,dest_tabkey);
 
             TMMTabType TabType = TDBTab::GetTabType(*DBTransaction, dest_tabkey);
+            //Update Membership At Destination In Case Membership Present At Both Source And Destination Location
+            if(!CheckIfMembershipUpdateRequired(source_key, dest_tabkey))
+                break;
             TList *Orders = OrdersList.get();
             bool isSCDApplied = false;
             bool isPWDAppplied = false;
@@ -4244,6 +4254,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
             TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, source_key, SourceEmail, sourceLoyaltyKey);
             
         TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(*DBTransaction, DestTabKey, DestinationEmail, destinationLoyaltyKey);
+
         //To Handle Scenario Where Loyaltymate Membership Exist On Both Source And Destination Tab's
         if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
         {

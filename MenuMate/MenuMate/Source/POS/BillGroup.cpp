@@ -174,6 +174,7 @@ void __fastcall TfrmBillGroup::FormCreate(TObject *Sender)
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardInserted.RegisterForEvent(OnSmartCardInserted);
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.RegisterForEvent(OnSmartCardRemoved);
     cmClientManager.reset( new TChefmateClientManager() );
+    IsMembershipApplied = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormDestroy(TObject *Sender)
@@ -873,7 +874,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     TPaymentTransaction PaymentTransaction(DBTransaction);
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled )     //&& HasOnlineOrders
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled /*&& !IsMembershipApplied*/)     //&& HasOnlineOrders
         DownloadOnlineMember();
 	try
 	{
@@ -1005,7 +1006,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 return;
             }
         }
-        if(TGlobalSettings::Instance().LoyaltyMateEnabled )    //&& HasOnlineOrders
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled /*&& !IsMembershipApplied*/ )    //&& HasOnlineOrders
             DownloadOnlineMember();
     }
 
@@ -1260,7 +1261,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 			if (Proceed)
 			{
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables))
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) /*&& !IsMembershipApplied*/)
                     DownloadOnlineMember();
 
 				DBTransaction.StartTransaction();
@@ -1365,7 +1366,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			{
 				DBTransaction.StartTransaction();
 
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables))
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) /*&& !IsMembershipApplied*/)
                     DownloadOnlineMember();
 
 				std::set <__int64> SelectedItemKeys;
@@ -2597,12 +2598,17 @@ void __fastcall TfrmBillGroup::tgridContainerListMouseClick(TObject *Sender, TMo
            RemoveMembershipDiscounts(DBTransaction);
         }
         DBTransaction.Commit();
+        IsMembershipApplied = false;
         if(!TGlobalSettings::Instance().IsThorlinkSelected)
         {
             if((TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() == 0)
               || !TGlobalSettings::Instance().LoyaltyMateEnabled)
             {
                 CheckLoyalty();
+            }
+            else if(TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() > 0)
+            {
+                CheckIfMultiLoyaltyExist();
             }
         }
         ShowReceipt();
@@ -2727,6 +2733,7 @@ void __fastcall TfrmBillGroup::SplitTimerTick(TObject *Sender)
 void __fastcall TfrmBillGroup::tgridItemListMouseDown(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton, int X, int Y)
 {
+    IsMembershipApplied = false;
    if(TGlobalSettings::Instance().MergeSimilarItem)
    {
         SplitTimer->Enabled = true;
@@ -2825,6 +2832,7 @@ void TfrmBillGroup::DeselectItem(TGridButton *GridButton)
 void __fastcall TfrmBillGroup::tgridItemListMouseUp(TObject *Sender, TMouseButton Button,
           TShiftState Shift, TGridButton *GridButton, int X, int Y)
 {
+    IsMembershipApplied = false;
     SelectedItemKey = 0;
     SplitTimer->Enabled = false;
 //    GridButton->Latched = (VisibleItems[GridButton->Tag].Qty  - (int)VisibleItems[GridButton->Tag].Qty) > 0;
@@ -4947,11 +4955,10 @@ void TfrmBillGroup::RemoveMembership(Database::TDBTransaction &DBTransaction)
 		delete(TItemComplete*)OrdersList->Items[0];
 		OrdersList->Delete(0);
     }
-
-//    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
-//    {
-//        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
-//    }
+    for (std::set <__int64> ::iterator itTabs = SelectedTabs.begin(); itTabs != SelectedTabs.end() ; advance(itTabs, 1))
+    {
+        TDBTab::SetTabOrdersLoyalty(DBTransaction,*itTabs,0);
+    }
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::RemoveMembershipFreeItems(Database::TDBTransaction &DBTransaction)
@@ -5004,13 +5011,13 @@ void TfrmBillGroup::SendPointValueToRunRate( TPaymentTransaction &inTransaction 
 void TfrmBillGroup::CheckLoyalty()
 {
    bool allow = false;
-//   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
-//                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
-//   {
-//      allow = true;
-//   }
-//   else
-//   {
+   if(!TGlobalSettings::Instance().LoyaltyMateEnabled ||
+                (TGlobalSettings::Instance().LoyaltyMateEnabled &&  !TGlobalSettings::Instance().IsPOSOffline))
+   {
+      allow = true;
+   }
+   else
+   {     MessageBox("CheckLoyalty","5020",MB_OK);
         Database::TDBTransaction DBTransaction(DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
         DBTransaction.StartTransaction();
@@ -5018,17 +5025,17 @@ void TfrmBillGroup::CheckLoyalty()
         ClearLoyaltyVoucher();
         DBTransaction.Commit();
 
-//   }
-//
-//    if (allow)
-//	{
+   }
+
+    if (allow)
+	{
         std::set <__int64> ReceiptItemKeys;
         for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
         {
             ReceiptItemKeys.insert(itItem->first);
         }
         CheckLoyalty(ReceiptItemKeys);
-//	}
+	}
 }
 // ---------------------------------------------------------------------------
 void TfrmBillGroup::CheckLoyalty(std::set <__int64> ReceiptItemKeys)
@@ -5804,4 +5811,105 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
     }
 
     return retValue;
+}
+//------------------------------------------------------------------------------
+void TfrmBillGroup::CheckIfMultiLoyaltyExist()
+{
+    try
+    {
+        MessageBox("CheckIfMultiLoyaltyExist","else",MB_OK);
+        std::set <__int64> ReceiptItemKeys;
+        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+        {
+            ReceiptItemKeys.insert(itItem->first);
+        }
+        ShowMemberSelectScreen(ReceiptItemKeys);
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+}
+//------------------------------------------------------------------------------
+void TfrmBillGroup::ShowMemberSelectScreen(std::set <__int64> ReceiptItemKeys)
+{
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        std::vector<UnicodeString> PossibleMembers;
+
+        TDBOrder::GetMemberEmailsFromOrderKeys(DBTransaction, PossibleMembers, ReceiptItemKeys);
+        //Need to add method to get the members
+        if(PossibleMembers.size() == 0 && CurrentTabType != TabMember)
+        {        MessageBox("ShowMemberSelectScreen","0",MB_OK);
+            Membership.Clear();
+            ClearLoyaltyVoucher();
+            MembershipConfirmed = false;
+            lbeMembership->Visible = false;
+            lbeMembership->Caption = "";
+        }
+        else if(PossibleMembers.size() > 0)
+        {     MessageBox("ShowMemberSelectScreen","1",MB_OK);
+            UnicodeString email = "";
+            if (PossibleMembers.size() > 1)
+            {
+                std::auto_ptr <TfrmVerticalSelect> SelectionForm(TfrmVerticalSelect::Create <TfrmVerticalSelect> (this));
+                for (int i = 0; i < PossibleMembers.size(); i++)
+                {
+                    TVerticalSelection Item;
+                    Item.Title = PossibleMembers[i];
+                    Item.Properties["Color"] = IntToStr(clNavy);
+                    Item.Properties["Member"] = PossibleMembers[i];
+                    Item.CloseSelection = true;
+                    SelectionForm->Items.push_back(Item);
+                }
+                if (SelectionForm->Items.size() > 0)
+                {
+                    SelectionForm->ShowModal();
+                    TVerticalSelection SelectedItem;
+                    if(SelectionForm->GetFirstSelectedItem(SelectedItem) && SelectedItem.Title != "Cancel")
+                        email = SelectedItem.Properties["Member"];
+                }
+            }
+            else
+            {
+                email = PossibleMembers[0];
+            }
+            if(email.Trim() != "")
+                ApplyMembershipIfLoyaltyEnabled(DBTransaction, email);
+        }
+        DBTransaction.Commit();
+
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        DBTransaction.Rollback();
+    }
+}
+//------------------------------------------------------------------------------
+void TfrmBillGroup::ApplyMembershipIfLoyaltyEnabled(Database::TDBTransaction &DBTransaction, UnicodeString email)
+{
+    try
+    {
+        TMMContactInfo contactInfo;
+        contactInfo.EMail = email;
+        TManagerSyndCode ManagerSyndicateCode;
+        ManagerSyndicateCode.Initialise(DBTransaction);
+        if(TDeviceRealTerminal::Instance().ManagerMembership->GetMemberFromCloudForOO(contactInfo))
+        {
+            int contactKey = TDBContacts::GetContactByEmail(DBTransaction,email);
+            TDBContacts::GetContactDetails(DBTransaction, contactKey, contactInfo);
+            TManagerLoyaltyVoucher ManagerLoyaltyVoucher;
+            ManagerLoyaltyVoucher.DisplayMemberVouchers(DBTransaction,contactInfo);
+            ApplyMembership(DBTransaction, contactInfo);
+            IsMembershipApplied = true;
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
 }

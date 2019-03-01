@@ -154,6 +154,8 @@ public:
     static void UpdateMemberLoyaltyForTabKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey, int destinationLoyaltyKey);
     static void LoadEmailAndLoyaltyKeyByOrderKey(Database::TDBTransaction &DBTransaction,int orderKey,UnicodeString &email,int &loyaltyKey);
     static void UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int orderKey, int destinationLoyaltyKey);
+    static void GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransaction,std::vector<UnicodeString> &MemberKeys, std::set<__int64> OrderKeys);
+
 };
 //---------------------------------------------------------------------------
 #endif

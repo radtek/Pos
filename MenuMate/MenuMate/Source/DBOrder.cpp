@@ -5253,3 +5253,53 @@ void TDBOrder::UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransa
     }
 
 }
+//------------------------------------------------------------------------------
+void TDBOrder::GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransaction,std::vector<UnicodeString> &MemberKeys, std::set<__int64> OrderKeys)
+{
+	if(OrderKeys.empty())
+	{
+		return;
+	}
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		std::auto_ptr<TStringList> KeysList(new TStringList);
+		KeysList->QuoteChar = ' ';
+		KeysList->Delimiter = ',';
+
+		int i = 1;
+		for (std::set<__int64>::const_iterator pOrderKey = OrderKeys.begin(); pOrderKey != OrderKeys.end(); advance(pOrderKey,1), i++)
+		{
+			UnicodeString OrderKey = IntToStr((int)*pOrderKey);
+			if(i%1000 == 0)
+			{
+				i = 1;
+				OrderKey = OrderKey + ") OR ORDER_KEY IN ( " + OrderKey;
+			}
+			KeysList->Add(OrderKey);
+		}
+
+		IBInternalQuery->SQL->Text =
+		"SELECT "
+		"DISTINCT EMAIL "
+		"FROM "
+		"ORDERS "
+		"WHERE "
+		"ORDER_KEY IN (" + KeysList->DelimitedText + ") "
+		"ORDER BY ORDER_KEY";
+		IBInternalQuery->ExecQuery();
+		if (IBInternalQuery->RecordCount > 0)
+		{
+			for(; !IBInternalQuery->Eof;	IBInternalQuery->Next())
+			{
+				MemberKeys.push_back(IBInternalQuery->FieldByName("EMAIL")->AsString);
+			}
+		}
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
