@@ -935,27 +935,17 @@ void TfrmMessageMaintenance::AddServingTime(TObject *Sender)
         frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
         if(frmServingTime->ShowModal() == mrOk)
         {
-            if(frmServingTime->Time1 == "00:00:00")
-            {
-                MessageBox("Invalid Start Time","",MB_OK);
-                return;
-            }
-            if(ValidateTimeSlot(frmServingTime->Time1, 0))
+           if(ValidateTimeSlot(frmServingTime->Time1, 0))
             {
                 frmServingTime->TimeType = endTime;
                 frmServingTime->Caption = "Meal End Time";
                 if(frmServingTime->ShowModal() == mrOk)
                 {
-                    if(frmServingTime->Time2 == "00:00:00")
-                    {
-                        MessageBox("Invalid End Time","WARNING",MB_OK);
-                        return;
-                    }
                     if(ValidateTimeSlot(frmServingTime->Time2, 0))
                     {
                         slots.MealName = mealName;
                         slots.StartTime = frmServingTime->Time1;
-                        slots.EndTime  =  frmServingTime->Time2;
+                         slots.EndTime  =  frmServingTime->Time2;
                         if(managerPMSCodes->TimeSlots.size() == 0)
                         {
                             slots.IsDefault = true;
@@ -1064,22 +1054,12 @@ void TfrmMessageMaintenance::UpdateMealDetails(Database::TDBTransaction &DBTrans
         frmServingTime->Top  = (Screen->Height - frmServingTime->Height) / 2;
         if(frmServingTime->ShowModal() == mrOk)
         {
-            if(frmServingTime->Time1 == "00:00:00")
-            {
-                MessageBox("Invalid Start Time","WARNING",MB_OK);
-                return;
-            }
-            if(ValidateTimeSlot(frmServingTime->Time1,key))
+           if(ValidateTimeSlot(frmServingTime->Time1,key))
             {
                 frmServingTime->TimeType = endTime;
                 frmServingTime->Caption = "Meal End Time";
                 if(frmServingTime->ShowModal() == mrOk)
                 {
-                    if(frmServingTime->Time2 == "00:00:00")
-                    {
-                        MessageBox("Invalid End Time","WARNING",MB_OK);
-                        return;
-                    }
                     if(ValidateTimeSlot(frmServingTime->Time2,key))
                     {
                         slots.key = key;
