@@ -32,6 +32,7 @@ __fastcall TAccess:: operator long long int ()const
 	   (PaymentTypesSec1 << 19) + (PaymentTypesSec2 << 20) + (PaymentTypesSec3 << 21) + (TabPINOverride << 22) + (OpenDrawer << 23) +
 	   (AccountManager << 24) + (PayInvoice << 25) + (ChargeToInvoice << 26) + (AccountCreation << 27) + (WriteOff << 28) + (ReprintReceipt << 29) +
        (PaymentAccess << 30) + (TaxRemoval << 31)   +(ComboDiscounts >> 1) + (TransactionAuditAccess << 32) + (AllowPointsRefund << 33)+(AllowReprintOrders << 34) +(AllowForcedHappyHour << 35);
+
    return Temp;
 }
 // ---------------------------------------------------------------------------
