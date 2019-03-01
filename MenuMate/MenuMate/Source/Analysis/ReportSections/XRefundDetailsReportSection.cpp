@@ -167,8 +167,8 @@ void XRefundDetailsReportSection::GetRefundItemForNormalZed(TIBSQL *creditQuery,
                                     "LEFT JOIN SECURITY ON DAYARCHIVE.SECURITY_REF = SECURITY.SECURITY_REF "
                                     "LEFT JOIN CONTACTS ON SECURITY.USER_KEY = CONTACTS.CONTACTS_KEY "
                                     " WHERE " + terminalNamePredicate + " ORDER_TYPE = " + IntToStr(CreditNonExistingOrder) + " " "AND "
-                                    "(SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
-                                     "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "') "  "ORDER BY " "CONTACTS.NAME";
+                                    "( SECURITY.SECURITY_EVENT = '" + SecurityTypes[secCredit] + "' "
+                                     "OR "  "SECURITY.SECURITY_EVENT = '" + SecurityTypes[secWriteOff] + "' ) "  "ORDER BY " "CONTACTS.NAME";
     }
      catch(Exception &E)
     {
