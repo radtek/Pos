@@ -72,6 +72,8 @@ void __fastcall TfrmTransfer::FormCreate(TObject *Sender)
    CurrentDestDisplayMode = eNoDisplayMode;
    CurrentSourceTabType = TabNone;
    IsOrderKey = false;
+   IsTransferPerformed = false;
+   IsReverseTransfer = false;
     // reset the cmClientManager for Chefmate
    cmClientManager.reset( new TChefmateClientManager() );
    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -2641,6 +2643,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 		 }break;
 	  case eTabs:
 		 {
+            IsReverseTransfer = true;
            std::auto_ptr <TList> OrdersList(new TList);
            PrepareItemList(*DBTransaction, source_key, isTabSelected , OrdersList.get()) ;
            int identificationNumber = TDBOrder::GetOrderIdentificationNumberForTab(*DBTransaction,dest_tabkey);
@@ -2668,6 +2671,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
 		 }break;
 	  case eTables:
 		 {
+            IsReverseTransfer = true;
             int DestTabKey = 0;
             int SeatKey = TDBTables::GetOrCreateSeat(*DBTransaction, CurrentSourceTable, dest_tabkey);
             bool tabName = CheckNameIsNullOrNot(*DBTransaction, CurrentSourceTable, dest_tabkey, SeatKey); //reverse
@@ -2706,6 +2710,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
             {
                TDBOrder::TransferOrders(*DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key, true);
                TDBOrder::SetOrderIdentificationNumberForTable(*DBTransaction,CurrentSourceTable,identificationNumber);
+               CheckAndTableStateForOO();
                if(cmClientManager->ChefMateEnabled())
                 {
                    //CollectDataForChefmateTransfer(dest_tabkey, OrdersList.get(), lbDisplayTransferto);
@@ -2830,7 +2835,6 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             //Update Membership At Destination In Case Membership Present At Both Source And Destination Location
             if(!CheckIfMembershipUpdateRequired(source_key, DestTabKey))
                 break;
-
 			TDBTab::SetTabType(*DBTransaction, DestTabKey, TabTableSeat);
 			TDBTables::SetSeatTab(*DBTransaction, SeatKey, DestTabKey);
 			std::auto_ptr <TList> OrdersList(new TList);
@@ -2861,6 +2865,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             {
                 TDBOrder::TransferOrders(*DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key, true);
                 TDBOrder::SetOrderIdentificationNumberForTable(*DBTransaction,CurrentDestTable,identificationNumber);
+                CheckAndTableStateForOO();
                 if(cmClientManager->ChefMateEnabled())
                 {
                     CollectDataForChefmateTransfer(dest_tabkey, OrdersList.get(), lbDisplayTransferfrom);
@@ -4258,7 +4263,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
         //To Handle Scenario Where Loyaltymate Membership Exist On Both Source And Destination Tab's
         if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
         {
-            UnicodeString message = SourceEmail +" on Table " + IntToStr(CurrentSourceTable) + " will be replaced by "+ DestinationEmail +" of Table " + IntToStr(CurrentDestTable);
+            UnicodeString message = GetWarningMessage(source_key, DestTabKey, SourceEmail, DestinationEmail);
             if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
             {
                 if(IsOrderKey)
@@ -4269,6 +4274,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
                 {
                     TDBOrder::UpdateMemberLoyaltyForTabKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
                 }
+                IsTransferPerformed = true;
             }
             else
             {
@@ -4286,7 +4292,13 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
             {
                 TDBOrder::UpdateMemberLoyaltyForTabKey(*DBTransaction, SourceEmail, DestinationEmail, source_key, destinationLoyaltyKey);
             }
+            IsTransferPerformed = true;
         }
+        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "" || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+        {
+            IsTransferPerformed = true;
+        }
+
     }
     catch(Exception & E)
     {
@@ -4294,5 +4306,95 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
     }
     IsOrderKey = false;
     return retValue;
+}
+//------------------------------------------------------------------------------
+void TfrmTransfer::CheckAndTableStateForOO()
+{
+    bool IsTableSeated = false;
+    try
+    {
+        if(TDBTables::IsTableMarked(*DBTransaction, CurrentSourceTable))
+        {
+            if(TDBOrder::CheckIfOrderExistOnSeatedTable(*DBTransaction, CurrentSourceTable))
+            {
+                if(IsTransferPerformed)
+                {    MessageBox("if","",MB_OK);
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentDestTable, true);
+                }
+            }
+            else
+            {
+                if(IsTransferPerformed)
+                {   MessageBox("else","",MB_OK);
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentSourceTable, false);
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentDestTable, true);
+                }
+            }
+        }
+
+        IsTransferPerformed = false;
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+}
+//------------------------------------------------------------------------------
+UnicodeString TfrmTransfer::GetWarningMessage(int source_key, int DestTabKey, UnicodeString SourceEmail, UnicodeString DestinationEmail)
+{
+    UnicodeString warningMessage = "";
+    try
+    {
+        UnicodeString memNameFrm   =   (TDBContacts::GetContactNameByEmail(*DBTransaction, SourceEmail)).UpperCase();
+        UnicodeString tableNoFrom  =   "";
+        UnicodeString guestNo      =   "";
+        UnicodeString memNameTo    =   (TDBContacts::GetContactNameByEmail(*DBTransaction, DestinationEmail)).UpperCase();
+
+        if(IsReverseTransfer)
+            tableNoFrom  =   IntToStr(CurrentDestTable);
+        else
+            tableNoFrom  =   IntToStr(CurrentSourceTable);
+
+        if(IsOrderKey)
+            guestNo  =   TDBOrder::GetTabNameFromOrderKey(*DBTransaction, source_key);
+        else
+            guestNo  =   TDBTab::GetTabName(*DBTransaction, source_key);
+
+
+        if(CurrentSourceDisplayMode == eTables && CurrentDestDisplayMode == eTables)
+        {
+            if(IsOrderKey)
+                warningMessage = "Member " + memNameFrm + " on Table " + tableNoFrom + " " + guestNo + " of selected Item will be replaced with Member " + memNameTo;
+            else
+                warningMessage = "Member " + memNameFrm + " on Table " + tableNoFrom + " "  + guestNo + " will be replaced with Member " + memNameTo;
+        }
+        if(CurrentSourceDisplayMode == eTables && CurrentDestDisplayMode == eTabs)
+        {
+            if(IsOrderKey)
+                warningMessage = "Member " + memNameFrm + " on Table " + tableNoFrom + " "  + guestNo + " of selected Item will be replaced with Member " + memNameTo;
+            else
+                warningMessage = "Member " + memNameFrm + " on Table " + tableNoFrom + " "  + guestNo + " will be replaced with Member " + memNameTo;
+        }
+        if(CurrentSourceDisplayMode == eTabs && CurrentDestDisplayMode == eTabs)
+        {
+            if(IsOrderKey)
+                warningMessage = "Member " + memNameFrm + " on Tab "+ guestNo + " of selected Item will be replaced with Member " + memNameTo;
+            else
+                warningMessage = "Member " + memNameFrm + " on Tab "+ guestNo + " will be replaced with Member " + memNameTo;
+        }
+        if(CurrentSourceDisplayMode == eTabs && CurrentDestDisplayMode == eTables)
+        {
+            if(IsOrderKey)
+                warningMessage = "Member " + memNameFrm + " on Tab "+ guestNo + " of selected Item will be replaced with Member " + memNameTo;
+            else
+                warningMessage = "Member " + memNameFrm + " on Tab "+ guestNo + " will be replaced with Member " + memNameTo;
+        }
+        IsReverseTransfer = false;
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+    return warningMessage;
 }
 

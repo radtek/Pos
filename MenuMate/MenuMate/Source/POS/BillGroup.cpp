@@ -874,7 +874,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
     TPaymentTransaction PaymentTransaction(DBTransaction);
-    if(TGlobalSettings::Instance().LoyaltyMateEnabled /*&& !IsMembershipApplied*/)     //&& HasOnlineOrders
+    if(TGlobalSettings::Instance().LoyaltyMateEnabled && !IsMembershipApplied)     //&& HasOnlineOrders
         DownloadOnlineMember();
 	try
 	{
@@ -1006,7 +1006,7 @@ void __fastcall TfrmBillGroup::btnBillSelectedMouseClick(TObject *Sender)
                 return;
             }
         }
-        if(TGlobalSettings::Instance().LoyaltyMateEnabled /*&& !IsMembershipApplied*/ )    //&& HasOnlineOrders
+        if(TGlobalSettings::Instance().LoyaltyMateEnabled && !IsMembershipApplied )    //&& HasOnlineOrders
             DownloadOnlineMember();
     }
 
@@ -1261,7 +1261,7 @@ void __fastcall TfrmBillGroup::btnPartialPaymentMouseClick(TObject *Sender)
 			DBTransaction.Commit();
 			if (Proceed)
 			{
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) /*&& !IsMembershipApplied*/)
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) && !IsMembershipApplied)
                     DownloadOnlineMember();
 
 				DBTransaction.StartTransaction();
@@ -1366,7 +1366,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 			{
 				DBTransaction.StartTransaction();
 
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) /*&& !IsMembershipApplied*/)
+                if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) && !IsMembershipApplied)
                     DownloadOnlineMember();
 
 				std::set <__int64> SelectedItemKeys;
@@ -5017,7 +5017,7 @@ void TfrmBillGroup::CheckLoyalty()
       allow = true;
    }
    else
-   {     MessageBox("CheckLoyalty","5020",MB_OK);
+   {
         Database::TDBTransaction DBTransaction(DBControl);
         TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
         DBTransaction.StartTransaction();
@@ -5487,10 +5487,10 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
     {
         btnBillSelected->Color      = clSilver;
         btnBillSelected->Enabled    = false;
-        btnTransfer->Color          = clSilver;
-        btnTransfer->Enabled        = false;
-        tbtnMove->Color             = clSilver;
-        tbtnMove->Enabled           = false;
+//        btnTransfer->Color          = clSilver;
+//        btnTransfer->Enabled        = false;
+//        tbtnMove->Color             = clSilver;
+//        tbtnMove->Enabled           = false;
         btnPartialPayment->Color    = clSilver;
         btnPartialPayment->Enabled  = false;
         btnSplitPayment->Color      = clSilver;
@@ -5505,10 +5505,10 @@ void TfrmBillGroup::UpdateTabForOnlineOrdering()
     bool isTableGuest = CurrentTable && TDBTables::HasOnlineOrders(CurrentTable);
     if((CurrentDisplayMode == eTabs && HasOnlineOrders) || (isTableGuest))
     {
-        btnTransfer->Color          = clSilver;
-        btnTransfer->Enabled        = false;
-        tbtnMove->Color             = clSilver;
-        tbtnMove->Enabled           = false;
+//        btnTransfer->Color          = clSilver;
+//        btnTransfer->Enabled        = false;
+//        tbtnMove->Color             = clSilver;
+//        tbtnMove->Enabled           = false;
         btnPartialPayment->Color    = clSilver;
         btnPartialPayment->Enabled  = false;
         btnSplitPayment->Color      = clSilver;
@@ -5760,6 +5760,7 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
     int sourceLoyaltyKey = 0;
     int destinationLoyaltyKey = 0;
     bool IsTransferApproved = false;
+
     try
     {
         TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(DBTransaction, DestTabKey, DestinationEmail, destinationLoyaltyKey);
@@ -5768,14 +5769,13 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
             int orderKey = (int)*pOrderKey;
             UnicodeString SourceEmail = "";
             TDBOrder::LoadEmailAndLoyaltyKeyByOrderKey(DBTransaction, orderKey, SourceEmail, sourceLoyaltyKey);
-            MessageBox(orderKey,"orderKey",MB_OK);
-            MessageBox(DestTabKey,"DestTabKey",MB_OK);
+
             //To Handle Scenario Where Loyaltymate Membership Exist On Both Source And Destination Tab's
             if(SourceEmail.Trim() != "" && DestinationEmail.Trim() != "" && !SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
             {
                 if(!SameStr(oldSourceEmail.Trim(),SourceEmail.Trim()))
                 {
-                    UnicodeString message = SourceEmail +" on Table " + IntToStr(CurrentTable) + " will be replaced by "+ DestinationEmail +" of Table " + IntToStr(CurrentTable);
+                    UnicodeString message = GetWarningMessage(DBTransaction,source_key, SourceEmail, DestinationEmail);
                     if(MessageBox(message,"Warning",MB_YESNO  + MB_ICONWARNING) == IDYES)
                     {
                         TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
@@ -5784,26 +5784,29 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                     }
                     else
                     {
+                        IsTransferApproved = false;
                         retValue = false;
                         OrderKeys.erase(pOrderKey);
                     }
                 }
                 else
                 {
-                    TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
+                    if(IsTransferApproved)
+                        TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
+                    else
+                        OrderKeys.erase(pOrderKey);
                 }
             }
             //To Handle Scenario Where Loyaltymate Membership Exist Only On Destination Tab
             if(SourceEmail.Trim() == "" && DestinationEmail.Trim() != "")
-            {   MessageBox("code","",MB_OK);
+            {
                 TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
-                IsTransferApproved = true;
+                retValue = true;
             }
             SourceEmail = "";
             sourceLoyaltyKey = 0;
         }
-        if(IsTransferApproved)
-            retValue = true;
+
     }
     catch(Exception & E)
     {
@@ -5817,7 +5820,7 @@ void TfrmBillGroup::CheckIfMultiLoyaltyExist()
 {
     try
     {
-        MessageBox("CheckIfMultiLoyaltyExist","else",MB_OK);
+
         std::set <__int64> ReceiptItemKeys;
         for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
         {
@@ -5843,7 +5846,7 @@ void TfrmBillGroup::ShowMemberSelectScreen(std::set <__int64> ReceiptItemKeys)
         TDBOrder::GetMemberEmailsFromOrderKeys(DBTransaction, PossibleMembers, ReceiptItemKeys);
         //Need to add method to get the members
         if(PossibleMembers.size() == 0 && CurrentTabType != TabMember)
-        {        MessageBox("ShowMemberSelectScreen","0",MB_OK);
+        {
             Membership.Clear();
             ClearLoyaltyVoucher();
             MembershipConfirmed = false;
@@ -5851,7 +5854,7 @@ void TfrmBillGroup::ShowMemberSelectScreen(std::set <__int64> ReceiptItemKeys)
             lbeMembership->Caption = "";
         }
         else if(PossibleMembers.size() > 0)
-        {     MessageBox("ShowMemberSelectScreen","1",MB_OK);
+        {
             UnicodeString email = "";
             if (PossibleMembers.size() > 1)
             {
@@ -5912,4 +5915,32 @@ void TfrmBillGroup::ApplyMembershipIfLoyaltyEnabled(Database::TDBTransaction &DB
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
     }
+}
+//------------------------------------------------------------------------------
+UnicodeString TfrmBillGroup::GetWarningMessage(Database::TDBTransaction &DBTransaction,int source_key, UnicodeString SourceEmail, UnicodeString DestinationEmail)
+{
+    UnicodeString warningMessage = "";
+    try
+    {
+        UnicodeString memNameFrm   =   (TDBContacts::GetContactNameByEmail(DBTransaction, SourceEmail)).UpperCase();
+        UnicodeString tableNoFrom  =   IntToStr(CurrentTable);
+        UnicodeString guestNo      =   TDBOrder::GetTabNameFromOrderKey(DBTransaction, source_key);
+        UnicodeString memNameTo    =   (TDBContacts::GetContactNameByEmail(DBTransaction, DestinationEmail)).UpperCase();
+
+
+        if(CurrentDisplayMode == eTables)
+        {
+            warningMessage = "Member " + memNameFrm + " on Table " + tableNoFrom + " "  + guestNo + " will be replaced with Member " + memNameTo;
+        }
+        if(CurrentDisplayMode == eTabs)
+        {
+            warningMessage = "Member " + memNameFrm + " on Tab "+ guestNo + " will be replaced with Member " + memNameTo;
+        }
+
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+    }
+    return warningMessage;
 }

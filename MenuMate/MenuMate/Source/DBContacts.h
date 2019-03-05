@@ -87,6 +87,7 @@ class TDBContacts
         static  int CheckUUID(Database::TDBTransaction &DBTransaction, AnsiString uid);
         static UnicodeString GetContactSurnameName(Database::TDBTransaction &DBTransaction, int ContactKey);
         static UnicodeString GetEmailIdOfMember(Database::TDBTransaction &DBTransaction,int contactKey);
+        static UnicodeString GetContactNameByEmail(Database::TDBTransaction &DBTransaction,UnicodeString email);
 
 
 };

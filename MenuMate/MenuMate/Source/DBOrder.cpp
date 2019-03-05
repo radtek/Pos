@@ -5303,3 +5303,58 @@ void TDBOrder::GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransact
 		throw;
 	}
 }
+//------------------------------------------------------------------------------
+bool TDBOrder::CheckIfOrderExistOnSeatedTable(Database::TDBTransaction &DBTransaction, int tableNo)
+{
+    bool retValue = false;
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "SELECT COUNT(ORDER_KEY) ORDER_ID FROM ORDERS "
+                           "WHERE TABLE_NUMBER =:TABLE_NUMBER ";
+
+        query->ParamByName("TABLE_NUMBER")->AsInteger = tableNo;
+        query->ExecQuery();
+
+        if(query->FieldByName("ORDER_ID")->AsInteger > 0)
+            retValue = true;
+
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------
+UnicodeString TDBOrder::GetTabNameFromOrderKey(Database::TDBTransaction &DBTransaction,int orderKey)
+{
+    UnicodeString retValue = "";
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "SELECT TAB_NAME FROM ORDERS "
+                           "WHERE ORDER_KEY =:ORDER_KEY ";
+
+        query->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+        query->ExecQuery();
+
+        if(!query->Eof && query->FieldByName("TAB_NAME")->AsString != "")
+        {
+            retValue = query->FieldByName("TAB_NAME")->AsString;
+        }
+
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+    return retValue;
+}
+

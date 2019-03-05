@@ -256,6 +256,8 @@ private:	// User declarations
     bool IsDisplayTransferFromPressed;
     bool IsDisplayTransfertoPressed;
     bool CheckIfMembershipUpdateRequired(int source_key, int DestTabKey);
+    void CheckAndTableStateForOO();
+    UnicodeString GetWarningMessage(int source_key, int DestTabKey, UnicodeString SourceEmail, UnicodeString DestinationEmail);
 
 
 public:		// User declarations
@@ -299,6 +301,8 @@ public:		// User declarations
     std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
     void SaveItemsGuestToPrint();
     bool IsOrderKey;
+    bool IsTransferPerformed;
+    bool IsReverseTransfer;
 };
 //---------------------------------------------------------------------------
 #endif
