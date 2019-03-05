@@ -187,7 +187,7 @@ TButton *SyncStockLocation;
     TIBSQL *qrUpdateItemSizePriceLevels;
     TNumericEdit *edNoOfPriceLevels;
     TIBSQL *qrGetExistingPriceNames;
-
+    TIBSQL *qrupdateregistry;
 	void __fastcall chbMMRemoteClick(TObject *Sender);
 	void __fastcall chbStockRemoteClick(TObject *Sender);
 	void __fastcall FormShow(TObject *Sender);
@@ -286,6 +286,8 @@ private:	// User declarations
     void UpdateItemSizePriceLevels(AnsiString isenabled, AnsiString alreadyEnabled, int currentPriceLevelsEnabled);
     bool ShowNoOfPriceLevelMessage();
     AnsiString getSuffixValue(AnsiString priceLevelName);
+    void IsSyncRequired();
+    bool IsPathChange();
 
 
 public:		// User declarations

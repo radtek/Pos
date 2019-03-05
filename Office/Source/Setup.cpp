@@ -85,7 +85,7 @@ void __fastcall TfrmSetup::FormShow(TObject *Sender)
 	LoadSettings();
 	tcCompanyNames->TabIndex = tcCompanyNames->Tabs->IndexOf(CurrentConnection.CompanyName);
 	if (tcCompanyNames->TabIndex == -1) tcCompanyNames->TabIndex = 0;
-	tcCompanyNamesChange(NULL);
+      	tcCompanyNamesChange(NULL);
 }
 //---------------------------------------------------------------------------
 void TfrmSetup::LoadSettings()
@@ -1154,6 +1154,11 @@ void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
             TConnectionDetails *CurrentCompany = GetCurrentCompany();
             if (CurrentCompany)
             {
+
+                if(IsPathChange())
+                 {
+                   IsSyncRequired();
+                 }
                 if (CurrentConnection.CompanyName == CurrentCompany->CompanyName)
                 {
                     btnConnectCompanyClick(NULL);
@@ -1238,8 +1243,9 @@ void TfrmSetup::SaveSettings(TConnectionDetails *CurrentCompany)
    	RegistryWrite(Key, "AutoPrintStockTransferAudit",								AnsiString(chbAutoPrintStockTransferAudit->Checked?"1":"0"));
    	RegistryWrite(Key, "AutoPrintReceiveTransferAudit",								AnsiString(chbAutoPrintReceiveTransferAudit->Checked?"1":"0"));
     RegistryWrite(Key, "SuppliersFromDefaultLocationsOnly",								AnsiString(chbSuppliersFromDefaultLocationsOnly->Checked?"1":"0"));
+    RegistryWrite(Key, "Flag",							AnsiString(IsPathChange()?"1":"0"));
 
-  //  RegistryWrite(Key, "NoOfPriceLevels",								edNoOfPriceLevels->Text);
+
 
 
 }
@@ -1369,7 +1375,7 @@ void __fastcall TfrmSetup::btnConnectCompanyClick(TObject *Sender)
         TConnectionDetails *CurrentCompany = GetCurrentCompany();
         if (CurrentCompany)
         {
-            SaveSettings(CurrentCompany);
+           SaveSettings(CurrentCompany);
             CurrentConnection.CompanyName = CurrentCompany->CompanyName;
             CurrentConnection.LoadSettings();
             CurrentConnection.StockDB.CreateDB = FirstRun;
@@ -2407,5 +2413,50 @@ bool TfrmSetup::ShowNoOfPriceLevelMessage()
     }
     return false;
 }
+
+//----------------------------------------------------------------------------------
+void TfrmSetup::IsSyncRequired()
+{
+   try
+    {
+      qrupdateregistry->Transaction->StartTransaction();
+	  qrupdateregistry->Close();
+      qrupdateregistry->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+      qrupdateregistry->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+      qrupdateregistry->ExecQuery();
+      qrupdateregistry->Transaction->Commit();
+     }
+    catch(Exception &E)
+    {
+       throw;
+    }
+
+}
+//--------------------------------------------------------------
+bool TfrmSetup:: IsPathChange()
+{
+  try
+   {
+     TConnectionDetails *CurrentCompany = GetCurrentCompany();
+     bool Isdatabasepathcorrect = false;
+     AnsiString Text;
+     AnsiString DefaultCompany;
+     RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+     AnsiString Key = OfficeKey + "\\" + DefaultCompany;
+     RegistryRead(Key, "StockDataFile", Text);
+     if(dmStockData->dbStock->DatabaseName == Text)
+     {
+       Isdatabasepathcorrect = true;
+     }
+       return Isdatabasepathcorrect;
+    }
+    catch(Exception &E)
+    {
+       throw;
+    }
+
+
+}
+//---------------------------------------------------------------------------------------------
 
 

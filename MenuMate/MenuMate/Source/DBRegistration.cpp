@@ -7,6 +7,7 @@
 #include "DBRegistration.h"
 #include "ManagerPhysicalPrinter.h"
 #include "StockInterface.h"
+#include "MMRegistry.h"
 
 using namespace StockInterface;
 
@@ -44,7 +45,7 @@ std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Dat
     std::list<TLicenceSettingModel> licenceSettingModelList;
     try
     {
-        for(int settingType = eEftpos; settingType <= eStock; settingType++)
+        for(int settingType = eEftpos; settingType <= eOffice; settingType++)
         {
             LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
         }
@@ -134,6 +135,10 @@ void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbT
             case eStock:
                 {
                     LoadStockSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
+            case eOffice:
+                {
+                   LoadOfficeSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             default:
             {
@@ -1084,4 +1089,37 @@ void TDBRegistration::UpdateIsStockEnabledFlag(bool status)
 		throw;
 	}
 }
+//--------------------------------------------------------------------------------------------------------------
+void TDBRegistration::LoadOfficeSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType)
+{
+    try
+    {
+        TLicenceSettingModel licenceSettingModel;
+        licenceSettingModel.SettingType       = licenceType;
+        licenceSettingModel.SettingSubType    = "0";
+        licenceSettingModel.IsActive          =  GetFlagCode();
+        licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}//---------------------------------------------------------------------------------------------------bool TDBRegistration::GetFlagCode(){
+     bool retVal = false;
+     UnicodeString DefaultCompany;
+     UnicodeString Flag;
+     RegistryRead("Software\\IQWorks\\MenuMate\\Office\\", "DefaultCompany", DefaultCompany);
+     UnicodeString Key =  "Software\\IQWorks\\MenuMate\\Office" ;
+     UnicodeString Fullpath = Key + "\\" + DefaultCompany;
+     RegistryRead(Fullpath, "Flag", Flag);
+     if(Flag == "1")
+     {
+       retVal = true;
+
+     }
+     return retVal;
+
+}
 

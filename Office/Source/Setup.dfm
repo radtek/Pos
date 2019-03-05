@@ -1925,4 +1925,10 @@ object frmSetup: TfrmSetup
     Left = 88
     Top = 432
   end
+  object qrupdateregistry: TIBSQL
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    Left = 48
+    Top = 312
+  end
 end

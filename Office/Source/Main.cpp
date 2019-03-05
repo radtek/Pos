@@ -162,10 +162,11 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			AnsiString RegisteredName = "";
 			bool Registered = false;
-			dmMMData->Registered(&Registered, NULL, &RegisteredName);
-			if (Registered)
-			{
-				frmSplash->lbeRegistration->Caption = "Registered to " + RegisteredName;
+           // dmMMData->Registered(&Registered, NULL, &RegisteredName);
+		    if (IsPosRegistered() && IsDisplayStockPath())
+            {
+               
+               frmSplash->lbeRegistration->Caption = "Registered to " + DefaultCompany;
 			}
 			else
 			{
@@ -688,4 +689,53 @@ void TfrmMain::ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount )
 	}
 }
 //---------------------------------------------------------------------------
+bool TfrmMain:: IsDisplayStockPath()
+{
+  try
+   {
+     bool Isdatabasepathcorrect = false;
+
+	 RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+     AnsiString Text;
+     AnsiString Key = OfficeKey + "\\" + DefaultCompany;
+     RegistryRead(Key, "StockDataFile", Text);
+     if(dmStockData->dbStock->DatabaseName == Text)
+     {
+       Isdatabasepathcorrect = true;
+     }
+     else
+     {
+         RegistryWrite(Key, "Flag",			   "0");
+         Isdatabasepathcorrect = false;
+     }
+       return Isdatabasepathcorrect;
+    }
+    catch(Exception &E)
+    {
+       throw;
+    }
+
+
+}
+//-------------------------------------------------------------------------------------------------------------
+bool TfrmMain::IsPosRegistered()
+{
+      bool RetVal = false;
+      qrComflag->Transaction->StartTransaction();
+	  qrComflag->Close();
+      qrComflag->SQL->Text = "SELECT VARIABLES_KEY FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
+      qrComflag->ParamByName("VARIABLES_KEY")->AsInteger = 2302;
+      qrComflag->ExecQuery();
+      if(qrComflag->RecordCount)
+       {
+            RetVal = true;
+       }
+      qrComflag->Transaction->Commit();
+      return  RetVal;
+
+}
+
+
+
+
 
