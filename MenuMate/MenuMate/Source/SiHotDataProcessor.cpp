@@ -34,7 +34,7 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     _roomCharge.TransactionNumber = GetTransNumber();
     _roomCharge.AccountNumber     = _paymentTransaction.Phoenix.AccountNumber;
     _roomCharge.RoomNumber        = _paymentTransaction.Phoenix.RoomNumber;
-    CurrentPOSID                  = StrToInt(GetRevenueCentreSiHot(_paymentTransaction));
+    CurrentPOSID                  = GetRevenueCentreSiHot(_paymentTransaction);
     MessageBox(CurrentPOSID,"CreateRoomChargePost 38",MB_OK);
 
     if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
@@ -1146,7 +1146,7 @@ AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &payme
         }
         MessageBox(retValue,"retValue",MB_OK);
         if(retValue == "")
-            retValue = TDeviceRealTerminal::Instance().BasePMS->POSID;
+            retValue = IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 
         return retValue;
     }
@@ -1154,7 +1154,7 @@ AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &payme
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
-        return TDeviceRealTerminal::Instance().BasePMS->POSID;
+        return IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 
 }
 
