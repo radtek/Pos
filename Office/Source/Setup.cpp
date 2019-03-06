@@ -1148,20 +1148,26 @@ void __fastcall TfrmSetup::btnDeleteCompanyClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
 {
-
+        AnsiString  TextOldPath = GetOldPath();
         if(!ShowNoOfPriceLevelMessage())
         {
             TConnectionDetails *CurrentCompany = GetCurrentCompany();
             if (CurrentCompany)
             {
-
-                if(IsPathChange())
-                 {
-                   IsSyncRequired();
-                 }
                 if (CurrentConnection.CompanyName == CurrentCompany->CompanyName)
                 {
+    
                     btnConnectCompanyClick(NULL);
+                    if(dmStockData->dbStock->Connected)
+                    {
+
+                        IsPathChange(true, TextOldPath);
+                    }
+                    else
+                    {
+                        IsPathChange(false, TextOldPath);
+                    }
+
                     ModalResult = mrOk;
                     return;
                 }
@@ -1243,7 +1249,7 @@ void TfrmSetup::SaveSettings(TConnectionDetails *CurrentCompany)
    	RegistryWrite(Key, "AutoPrintStockTransferAudit",								AnsiString(chbAutoPrintStockTransferAudit->Checked?"1":"0"));
    	RegistryWrite(Key, "AutoPrintReceiveTransferAudit",								AnsiString(chbAutoPrintReceiveTransferAudit->Checked?"1":"0"));
     RegistryWrite(Key, "SuppliersFromDefaultLocationsOnly",								AnsiString(chbSuppliersFromDefaultLocationsOnly->Checked?"1":"0"));
-    RegistryWrite(Key, "Flag",							AnsiString(IsPathChange()?"1":"0"));
+
 
 
 
@@ -1383,6 +1389,7 @@ void __fastcall TfrmSetup::btnConnectCompanyClick(TObject *Sender)
             dmStockData->Connect(NULL);
             dmChefMateData->Connect(NULL);
 
+          
             if (RASAvailable)
             {
                 cbMMRASEntryChange(NULL);
@@ -2433,22 +2440,28 @@ void TfrmSetup::IsSyncRequired()
 
 }
 //--------------------------------------------------------------
-bool TfrmSetup:: IsPathChange()
+void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath)
 {
   try
    {
-     TConnectionDetails *CurrentCompany = GetCurrentCompany();
-     bool Isdatabasepathcorrect = false;
-     AnsiString Text;
+     AnsiString TextNewPath;
      AnsiString DefaultCompany;
      RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-     RegistryRead(Key, "StockDataFile", Text);
-     if(dmStockData->dbStock->DatabaseName == Text)
+     RegistryRead(Key, "StockDataFile", TextNewPath);
+     if(status)
      {
-       Isdatabasepathcorrect = true;
+        RegistryWrite(Key,"Flag","1");
      }
-       return Isdatabasepathcorrect;
+     else
+     {
+        RegistryWrite(Key,"Flag","0");
+     }
+
+     if(TextNewPath != TextOldPath)
+     {
+        IsSyncRequired();
+     }
     }
     catch(Exception &E)
     {
@@ -2458,5 +2471,21 @@ bool TfrmSetup:: IsPathChange()
 
 }
 //---------------------------------------------------------------------------------------------
+AnsiString TfrmSetup::GetOldPath()
+{
+    AnsiString TextOldPath = "";
+    try
+    {
+        AnsiString DefaultCompany;
+        RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+        AnsiString Key = OfficeKey + "\\" + DefaultCompany;
+        RegistryRead(Key, "StockDataFile", TextOldPath);
+    }
+    catch(Exception &E)
+    {
+        throw;
+    }
+    return TextOldPath;
+}
 
 

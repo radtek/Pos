@@ -287,7 +287,8 @@ private:	// User declarations
     bool ShowNoOfPriceLevelMessage();
     AnsiString getSuffixValue(AnsiString priceLevelName);
     void IsSyncRequired();
-    bool IsPathChange();
+    void IsPathChange(bool status, AnsiString TextOldPath);
+    AnsiString GetOldPath();
 
 
 public:		// User declarations

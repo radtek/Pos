@@ -162,7 +162,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			AnsiString RegisteredName = "";
 			bool Registered = false;
-           // dmMMData->Registered(&Registered, NULL, &RegisteredName);
+           dmMMData->Registered(&Registered, NULL, &RegisteredName);
 		    if (IsPosRegistered() && IsDisplayStockPath())
             {
                
@@ -694,21 +694,15 @@ bool TfrmMain:: IsDisplayStockPath()
   try
    {
      bool Isdatabasepathcorrect = false;
-
+     AnsiString value;
 	 RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
      AnsiString Text;
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
      RegistryRead(Key, "StockDataFile", Text);
-     if(dmStockData->dbStock->DatabaseName == Text)
-     {
-       Isdatabasepathcorrect = true;
-     }
-     else
-     {
-         RegistryWrite(Key, "Flag",			   "0");
-         Isdatabasepathcorrect = false;
-     }
-       return Isdatabasepathcorrect;
+     RegistryRead(Key,"Flag",value);
+     if(value == "1")
+        Isdatabasepathcorrect = true;
+     return Isdatabasepathcorrect;
     }
     catch(Exception &E)
     {
