@@ -256,7 +256,7 @@ private:	// User declarations
     bool IsDisplayTransferFromPressed;
     bool IsDisplayTransfertoPressed;
     bool CheckIfMembershipUpdateRequired(int source_key, int DestTabKey);
-    void CheckAndTableStateForOO();
+    void CheckAndTableStateForOO(bool IsNormalTransfer);
     UnicodeString GetWarningMessage(int source_key, int DestTabKey, UnicodeString SourceEmail, UnicodeString DestinationEmail);
 
 

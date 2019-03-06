@@ -2710,7 +2710,7 @@ void TfrmTransfer::ReverseTransferTotal(int source_key, int dest_tabkey, bool is
             {
                TDBOrder::TransferOrders(*DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key, true);
                TDBOrder::SetOrderIdentificationNumberForTable(*DBTransaction,CurrentSourceTable,identificationNumber);
-               CheckAndTableStateForOO();
+               CheckAndTableStateForOO(false);
                if(cmClientManager->ChefMateEnabled())
                 {
                    //CollectDataForChefmateTransfer(dest_tabkey, OrdersList.get(), lbDisplayTransferto);
@@ -2865,7 +2865,7 @@ void TfrmTransfer::TransferTotal(int source_key, int dest_tabkey, bool isReverse
             {
                 TDBOrder::TransferOrders(*DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,source_key, true);
                 TDBOrder::SetOrderIdentificationNumberForTable(*DBTransaction,CurrentDestTable,identificationNumber);
-                CheckAndTableStateForOO();
+                CheckAndTableStateForOO(true);
                 if(cmClientManager->ChefMateEnabled())
                 {
                     CollectDataForChefmateTransfer(dest_tabkey, OrdersList.get(), lbDisplayTransferfrom);
@@ -4298,6 +4298,8 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
         {
             IsTransferPerformed = true;
         }
+        if(IsTransferPerformed)
+            retValue = true;
 
     }
     catch(Exception & E)
@@ -4308,26 +4310,38 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
     return retValue;
 }
 //------------------------------------------------------------------------------
-void TfrmTransfer::CheckAndTableStateForOO()
+void TfrmTransfer::CheckAndTableStateForOO(bool IsNormalTransfer)
 {
     bool IsTableSeated = false;
+    int sourceTable = 0;
+    int destTable = 0;
     try
     {
-        if(TDBTables::IsTableMarked(*DBTransaction, CurrentSourceTable))
+        if(IsNormalTransfer)
         {
-            if(TDBOrder::CheckIfOrderExistOnSeatedTable(*DBTransaction, CurrentSourceTable))
+            sourceTable = CurrentSourceTable;
+            destTable = CurrentDestTable;
+        }
+        else
+        {
+            sourceTable = CurrentDestTable;
+            destTable = CurrentSourceTable;
+        }
+        if(TDBTables::IsTableMarked(*DBTransaction, sourceTable))
+        {
+            if(TDBOrder::CheckIfOrderExistOnSeatedTable(*DBTransaction, sourceTable))
             {
                 if(IsTransferPerformed)
-                {    MessageBox("if","",MB_OK);
-                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentDestTable, true);
+                {
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, destTable, true);
                 }
             }
             else
             {
                 if(IsTransferPerformed)
-                {   MessageBox("else","",MB_OK);
-                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentSourceTable, false);
-                    TDBTables::UpdateTableStateForOO(*DBTransaction, CurrentDestTable, true);
+                {
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, sourceTable, false);
+                    TDBTables::UpdateTableStateForOO(*DBTransaction, destTable, true);
                 }
             }
         }

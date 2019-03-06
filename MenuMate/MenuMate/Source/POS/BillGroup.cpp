@@ -5780,6 +5780,7 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                     {
                         TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
                         IsTransferApproved = true;
+                        retValue = true;
                         oldSourceEmail = SourceEmail;
                     }
                     else
@@ -5803,6 +5804,10 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                 TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
                 retValue = true;
             }
+            if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "" || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+            {
+                retValue = true;
+            }
             SourceEmail = "";
             sourceLoyaltyKey = 0;
         }
@@ -5820,7 +5825,6 @@ void TfrmBillGroup::CheckIfMultiLoyaltyExist()
 {
     try
     {
-
         std::set <__int64> ReceiptItemKeys;
         for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
         {
