@@ -561,6 +561,7 @@ public:
     bool IsCloudSyncRequired;
     UnicodeString CompanyName;
     bool IsStockEnabled;
+    UnicodeString PreviousVersion;
 };
 
 #endif

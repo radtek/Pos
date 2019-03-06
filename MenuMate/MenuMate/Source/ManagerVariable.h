@@ -128,6 +128,7 @@ enum vmVariables
     vmIsTableLockEnabled,
     vmHideFreeSides,
     vmCompanyName,
+    vmPreviousVersion,
    // Happy Hour ------------------------------------------------------------------
    vmHappyHourExempt = 5000, vmHappyHourStart, vmHappyHourFinish, vmHHSunday, vmHHMonday, vmHHTuesday, vmHHWednesday, vmHHThursday,
    vmHHFridays, vmHHSaturday, vmLuckyMemberPeriod, vmHappyHourMembersOnly, vmLuckyMemberDrawByLocationOnly, vmNoPtsEarnedDuringHappyHour, vmNoOfPriceLevels,

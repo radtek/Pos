@@ -3431,6 +3431,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction, vmIsCloudSyncRequired,"Is Cloud Sync Required", "Is Cloud Sync Required", vmgPOS, false);
         SetVarStr(DBTransaction, vmCompanyName, "Registered Company Name", "Registered Company Name", vmgPOS, "");
         SetVarBool(DBTransaction, vmIsStockEnabled,"Is Stock Enabled", "Is Stock Enabled", vmgPOS, false);
+        SetVarStr(DBTransaction, vmPreviousVersion, "Previous Version", "Previous Version", vmgPOS, "");
 	}
 	catch(Exception &E)
 	{

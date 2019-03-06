@@ -466,5 +466,6 @@ TGlobalSettings::TGlobalSettings()
     IsCloudSyncRequired = false;
     CompanyName = " ";
     IsStockEnabled = false;
+    PreviousVersion = "";
 }
 
