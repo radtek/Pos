@@ -14982,7 +14982,7 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		Membership.Assign(Member, MemberSource);
 		// Sort out Free Drinks and stuff.
 		std::vector<int>SeatsToApply;
-		if (ApplyToAllSeats == true)
+		if (false)
 		{
 			for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
 			{

@@ -2992,10 +2992,13 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
 
                             //if destination is clipp tab and source have scd discount applied then it can't be transfer
                             source_key = *itTab;
+                            if(!CheckIfMembershipUpdateRequired(source_key, dest_key))
+                                return;
                             if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), dest_key))
                             {
                               TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), dest_key ,TDeviceRealTerminal::Instance().User.ContactKey,source_key);
                               TDBOrder::SetOrderIdentificationNumberForTab(DBTransaction, dest_key ,identificationNumber);
+                              CheckAndTableStateForOO(true);
                               if (cmClientManager->ChefMateEnabled())
                               {
                                   CollectDataForChefmateTransfer(dest_key, OrdersList.get(), lbDisplayTransferfrom);
@@ -3014,6 +3017,8 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                    {
                        source_key = GetTabKeyFromListBox(lbDisplayTransferfrom, 0);
                        SelectedTabs.insert(source_key);
+                       if(!CheckIfMembershipUpdateRequired(source_key, dest_key))
+                            return;
                        TDBOrder::GetOrdersIncludingSidesFromTabKeys(DBTransaction, OrdersList.get(), SelectedTabs);
 
                         if (TDBOrder::CheckTransferCredit(DBTransaction, OrdersList.get(), dest_key))
@@ -3051,6 +3056,8 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                              TDBTables::GetTableSeat(DBTransaction, *itTab, &Info);
                              int SeatKey = TDBTables::GetOrCreateSeat(DBTransaction, CurrentDestTable, Info.SeatNo);
                              int DestTabKey = TDBTab::GetOrCreateTab(DBTransaction, TDBTables::GetTabKey(DBTransaction, SeatKey));
+                             if(!CheckIfMembershipUpdateRequired(*itTab, DestTabKey))
+                                return;
                              TDBTab::SetTabType(DBTransaction, DestTabKey, TabTableSeat);
                              TDBTables::SetSeatTab(DBTransaction, SeatKey, DestTabKey);
                              bool Proceed = false;
@@ -3086,6 +3093,7 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                                 {
                                    TDBOrder::TransferOrders(DBTransaction, OrdersList.get(), DestTabKey,TDeviceRealTerminal::Instance().User.ContactKey,*itTab);
                                    TDBOrder::SetOrderIdentificationNumberForTable(DBTransaction,CurrentDestTable,identificationNumber);
+                                   CheckAndTableStateForOO(true);
                                    if (cmClientManager->ChefMateEnabled())
                                    {
                                         CollectDataForChefmateTransfer(0, OrdersList.get(), lbDisplayTransferfrom);
@@ -3117,6 +3125,8 @@ void TfrmTransfer::TotalTransferTableOrTab(Database::TDBTransaction &DBTransacti
                       int dest_tabkey = 1;
                       int SeatKey = TDBTables::GetOrCreateSeat(DBTransaction, CurrentDestTable, dest_tabkey);
                       int DestTabKey = TDBTab::GetOrCreateTab(DBTransaction, TDBTables::GetTabKey(DBTransaction, SeatKey));
+                      if(!CheckIfMembershipUpdateRequired(source_key, DestTabKey))
+                        return;
                       TDBTab::SetTabType(DBTransaction, DestTabKey, TabTableSeat);
                       TDBTables::SetSeatTab(DBTransaction, SeatKey, DestTabKey);
                       SelectedTabs.insert(source_key);

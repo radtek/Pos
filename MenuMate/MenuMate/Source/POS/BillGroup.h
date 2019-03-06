@@ -253,6 +253,7 @@ public:		// User declarations
    void CheckLinkedTable(int TableNumber);
    int PatronCountForMallExport;
    bool IsMembershipApplied;
+   bool AllTabSelected;
 };
 #endif
 

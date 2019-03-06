@@ -175,6 +175,7 @@ void __fastcall TfrmBillGroup::FormCreate(TObject *Sender)
 	TDeviceRealTerminal::Instance().ManagerMembership->ManagerSmartCards->OnCardRemoved.RegisterForEvent(OnSmartCardRemoved);
     cmClientManager.reset( new TChefmateClientManager() );
     IsMembershipApplied = false;
+    AllTabSelected = false;
 }
 // ---------------------------------------------------------------------------
 void __fastcall TfrmBillGroup::FormDestroy(TObject *Sender)
@@ -1692,6 +1693,10 @@ void __fastcall TfrmBillGroup::tbtnSelectAllMouseClick(TObject *Sender)
             || !TGlobalSettings::Instance().LoyaltyMateEnabled)
         {
 	        CheckLoyalty();
+        }
+        else if(TGlobalSettings::Instance().LoyaltyMateEnabled && SelectedItems.size() > 0)
+        {
+            CheckIfMultiLoyaltyExist();
         }
     }
 	ShowReceipt();
@@ -3280,7 +3285,7 @@ void TfrmBillGroup::UpdateContainerListColourDisplay()
 			}
 		}
 	}
-
+    AllTabSelected = AllItemsAreSelected;
 	// Go back and shade the Selected button for all guests if every thhing is selected.
 	if (AllItemsAreSelected)
 	{
@@ -5581,7 +5586,8 @@ UnicodeString TfrmBillGroup::GetMemberEmailIdForOrder()
     }
     else if(CurrentDisplayMode == eTables)
     {
-        emailId = TDBTables::GetMemberEmail(CurrentTable);
+        emailId = TDBTab::GetMemberEmail(CurrentSelectedTab);
+//        emailId = TDBTables::GetMemberEmail(CurrentTable);
     }
     return emailId;
 }
@@ -5641,8 +5647,10 @@ void TfrmBillGroup::SetLoyaltyMemberInfo(Database::TDBTransaction &DBTransaction
 {
     if(CurrentDisplayMode == eTables)
     {
-        //TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, CurrentTable, info.ContactKey, info.EMail);
-        TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, CurrentSelectedTab, info.ContactKey, info.EMail);
+        if(AllTabSelected)
+            TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, CurrentTable, info.ContactKey, info.EMail);
+        else
+            TDBOrder::SetMemberEmailLoyaltyKeyForTab(DBTransaction, CurrentSelectedTab, info.ContactKey, info.EMail);
     }
     else if(CurrentDisplayMode == eTabs)
     {

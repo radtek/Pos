@@ -5293,7 +5293,8 @@ void TDBOrder::GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransact
 		{
 			for(; !IBInternalQuery->Eof;	IBInternalQuery->Next())
 			{
-				MemberKeys.push_back(IBInternalQuery->FieldByName("EMAIL")->AsString);
+                if(IBInternalQuery->FieldByName("EMAIL")->AsString.Trim() != "")
+				    MemberKeys.push_back(IBInternalQuery->FieldByName("EMAIL")->AsString);
 			}
 		}
 	}
