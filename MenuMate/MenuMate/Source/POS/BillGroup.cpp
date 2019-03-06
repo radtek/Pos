@@ -5804,7 +5804,7 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                 TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
                 retValue = true;
             }
-            if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "" || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+            if((SourceEmail.Trim() != "" && DestinationEmail.Trim() == "") || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
             {
                 retValue = true;
             }

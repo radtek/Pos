@@ -4294,7 +4294,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
             }
             IsTransferPerformed = true;
         }
-        if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "" || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+        if((SourceEmail.Trim() != "" && DestinationEmail.Trim() == "") || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
         {
             IsTransferPerformed = true;
         }
