@@ -15,22 +15,36 @@ namespace Loyaltymate.Sevices
 {
     public class LoyaltymateService : ILoyaltymateService
     {
-        public ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode)
+        public ApiMemberViewModel SaveMember(ApiMemberViewModel member, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SaveMember, syndicateCode, null,
                 WebRequestMethods.Http.Post, member);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(member);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+                string responseStr = memberStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -42,21 +56,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode)
+        public ApiMemberViewModel GetMemberByUniqueId(ApiRequestViewModel requestViewModel, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByUniqueId, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+                string responseStr = memberStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -68,21 +96,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode)
+        public ApiMemberViewModel GetMemberByCardCode(ApiRequestViewModel requestViewModel, string syndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByCardCode, syndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+                string responseStr = memberStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -94,21 +136,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode)
+        public ApiMemberViewModel GetMemberByEmail(ApiRequestViewModel requestViewModel, string inSyndicateCode, List<string> loyaltyLogs)
         {
             ApiMemberViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetMemberByEmail, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var memberStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiMemberViewModel>(memberStream.ReadToEnd());
+                string responseStr = memberStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiMemberViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -120,21 +176,34 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool UpdateMemberCardCode(string inSyndicateCode, ApiUpdateCardCodeRequestViewModel requestViewModel)
+        public bool UpdateMemberCardCode(string inSyndicateCode, ApiUpdateCardCodeRequestViewModel requestViewModel, List<string> loyaltyLogs)
         {
             bool response = false;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateMemberCardCode, inSyndicateCode, null,
                 WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -147,21 +216,34 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode)
+        public bool PostTransaction(PointsTransactionViewModel pointsTransaction, string syndicateCode, List<string> loyaltyLogs)
         {
             bool response = false;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.PostTransaction, syndicateCode, null,
                 WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(pointsTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -174,21 +256,34 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel pointsTransaction, string syndicateCode)
+        public bool PostInvoiceTransaction(ApiMemberInvoiceTransactionViewModel pointsTransaction, string syndicateCode, List<string> loyaltyLogs)
         {
             bool response = false;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.PostInvoiceTransaction, syndicateCode, null,
                 WebRequestMethods.Http.Post, pointsTransaction);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(pointsTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -201,9 +296,10 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode)
+        public ApiCompanyViewModel GetCompanyDetail(string inSyndicateCode, List<string> loyaltyLogs)
         {
             ApiCompanyViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetCompanyDetail, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
@@ -211,12 +307,23 @@ namespace Loyaltymate.Sevices
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiCompanyViewModel>(responseStream.ReadToEnd());
+                string responseStr = responseStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiCompanyViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -228,21 +335,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public GiftCardApiViewModel GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel)
+        public GiftCardApiViewModel GetGiftCardBalance(string inSyndicateCode, ApiRequestViewModel requestViewModel, List<string> loyaltyLogs)
         {
             GiftCardApiViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetGiftCardInfo, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<GiftCardApiViewModel>(responseStream.ReadToEnd());
+                string responseStr = responseStream.ReadToEnd();
+                response = JsonUtility.Deserialize<GiftCardApiViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -254,21 +375,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel)
+        public ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel, List<string> loyaltyLogs)
         {
             ApiPocketVoucherViewModel response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.GetPocketVoucher, inSyndicateCode, null, WebRequestMethods.Http.Post, requestViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(requestViewModel);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<ApiPocketVoucherViewModel>(responseStream.ReadToEnd());
+                string responseStr = responseStream.ReadToEnd();
+                response = JsonUtility.Deserialize<ApiPocketVoucherViewModel>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -280,23 +415,38 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction)
+        public List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction, List<string> loyaltyLogs)
         {
             voucherTransaction.RequestTime = DateTime.Now;
             List<ApiProcessingResult> response = null;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.ProcessVoucherTransaction, inSyndicateCode, null,
                 WebRequestMethods.Http.Post, voucherTransaction);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(voucherTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
                 var responseStream = new StreamReader(webResponse.GetResponseStream());
-                response = JsonUtility.Deserialize<List<ApiProcessingResult>>(responseStream.ReadToEnd());
+                string responseStr = responseStream.ReadToEnd();
+                response = JsonUtility.Deserialize<List<ApiProcessingResult>>(responseStr);
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyLogs.Add("Response is                                        " + responseStr);
+
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -308,21 +458,35 @@ namespace Loyaltymate.Sevices
             return response;
         }
 
-        public bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction)
+        public bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction, List<string> loyaltyLogs)
         {
             bool response = false;
+            loyaltyLogs.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.ReleaseVouchers, inSyndicateCode, null,
                 WebRequestMethods.Http.Post, voucherTransaction);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(voucherTransaction);
+                loyaltyLogs.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                loyaltyLogs.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                loyaltyLogs.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                loyaltyLogs.Add("WebException                                       " + we.Message);
+                loyaltyLogs.Add("WebException Status                                " + we.Status.ToString());
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
+            }
+            catch (Exception ex)
+            {
+                loyaltyLogs.Add("Exception                                          " + ex.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -343,7 +507,7 @@ namespace Loyaltymate.Sevices
                 {
                     throw new AuthenticationFailedException();
                 }
-                else if ((int)webResponse.StatusCode == 300 )
+                else if ((int)webResponse.StatusCode == 300)
                 {
                     throw new MultipleGUIDException();
                 }
@@ -552,11 +716,11 @@ namespace Loyaltymate.Sevices
             }
             catch (WebException we)
             {
-                
+
             }
             catch (Exception ex)
             {
-                
+
             }
             finally
             {

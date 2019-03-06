@@ -237,6 +237,9 @@ protected:
      bool TryToEnableMews();
      void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
      bool CanResetOrdersInPaymentTransaction(TPaymentTransaction paymentTransaction);
+     UnicodeString TransactionType(int trans);
+     void LogDetailsForVoucherProcess(TPaymentTransaction &PaymentTransaction,AnsiString voucherName,TVoucherUsageDetail &VoucherUsageDetail) ;
+
 };
 
 #endif

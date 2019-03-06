@@ -266,6 +266,17 @@ bool TfrmSelectDateTime::ValidateData(AnsiString &Title, int &value)
        MessageBox("Invalid Minute, Please Enter Valid Minute", "Invalid Minute", MB_OK + MB_ICONERROR);
      }
   }
+  else if(Title == "Enter the Second")
+  {
+     if(value < 60)
+     {
+        retval = true;
+     }
+     else
+     {
+       MessageBox("Invalid Second, Please Enter Valid Second", "Invalid Second", MB_OK + MB_ICONERROR);
+     }
+  }
   return retval;
 }
 
