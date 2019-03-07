@@ -35,7 +35,6 @@ void TSiHotDataProcessor::CreateRoomChargePost(TPaymentTransaction &_paymentTran
     _roomCharge.AccountNumber     = _paymentTransaction.Phoenix.AccountNumber;
     _roomCharge.RoomNumber        = _paymentTransaction.Phoenix.RoomNumber;
     CurrentPOSID                  = GetRevenueCentreSiHot(_paymentTransaction);
-    MessageBox(CurrentPOSID,"CreateRoomChargePost 38",MB_OK);
 
     if(_roomCharge.AccountNumber == "" || _roomCharge.AccountNumber == TDeviceRealTerminal::Instance().BasePMS->DefaultAccountNumber)
     {
@@ -190,7 +189,6 @@ bool TSiHotDataProcessor::AddItemToSiHotService(TItemComplete *itemComplete,Unic
     siHotService.VATPercentage        = fabs(taxPercentage);
     siHotService.Billno               = billNo;
     siHotService.Cashno               = CurrentPOSID;
-    MessageBox(CurrentPOSID,"AddItemToSiHotService 193",MB_OK);
     siHotService.Cashier              = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source               = "Guest";
     _roomCharge.SiHotServices.push_back(siHotService);
@@ -256,7 +254,6 @@ void TSiHotDataProcessor::AddExpensesToSiHotService(TPayment* payment, TRoomChar
     siHotService.VATPercentage        = 0;
     siHotService.Billno               = billno;
     siHotService.Cashno               = CurrentPOSID;
-    MessageBox(CurrentPOSID,"AddExpensesToSiHotService 2",MB_OK);
     siHotService.Cashier              = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source               = "Guest";
     _roomCharge.SiHotServices.push_back(siHotService);
@@ -343,7 +340,6 @@ void TSiHotDataProcessor::AddDiscountPartToService(TItemComplete *itemComplete,T
         siHotService.VATPercentage         = 0;
         siHotService.Billno                = _billNo;
         siHotService.Cashno                = CurrentPOSID;
-        MessageBox(CurrentPOSID,"AddDiscountPartToService",MB_OK);
         siHotService.Cashier               = TDeviceRealTerminal::Instance().User.Name;
         siHotService.Source                = "Guest";
         serviceSiHotDiscPart[categoryCode] = siHotService;
@@ -379,7 +375,6 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
         siHotService.VATPercentage          = 0;
         siHotService.Billno                 = _billNo;
         siHotService.Cashno                 = CurrentPOSID;
-        MessageBox(CurrentPOSID,"tipAmount != 0",MB_OK);
         siHotService.Cashier                = TDeviceRealTerminal::Instance().User.Name;
         siHotService.Source                 = "Guest";
         _roomCharge.SiHotServices.push_back(siHotService);
@@ -403,7 +398,6 @@ void TSiHotDataProcessor::AddSurchargeAndTip( TRoomCharge &_roomCharge, double s
         siHotServiceSurcharge.VATPercentage         = 0;
         siHotServiceSurcharge.Billno                = _billNo;
         siHotServiceSurcharge.Cashno                = CurrentPOSID;
-         MessageBox(CurrentPOSID,"AddSurchargeAndTip",MB_OK);
         siHotServiceSurcharge.Cashier               = TDeviceRealTerminal::Instance().User.Name;
         siHotServiceSurcharge.Source                = "Guest";
         _roomCharge.SiHotServices.push_back(siHotServiceSurcharge);
@@ -584,7 +578,6 @@ void TSiHotDataProcessor::AddServiceChargeAsService(TRoomCharge &_roomCharge, Un
         siHotService.VATPercentage      = 0;
     siHotService.Billno                 = billNo;
     siHotService.Cashno                 = CurrentPOSID;
-    MessageBox(CurrentPOSID,"AddServiceChargeAsService",MB_OK);
     siHotService.Cashier                = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source                 = "Guest";
     _roomCharge.SiHotServices.push_back(siHotService);
@@ -616,7 +609,6 @@ void TSiHotDataProcessor::AddRoundingAsService(TRoomCharge &_roomCharge, Unicode
         siHotService.VATPercentage      = 0;
     siHotService.Billno                 = billNo;
     siHotService.Cashno                 = CurrentPOSID;
-    MessageBox(CurrentPOSID,"AddRoundingAsService",MB_OK);
     siHotService.Cashier                = TDeviceRealTerminal::Instance().User.Name;
     siHotService.Source                 = "Guest";
     _roomCharge.SiHotServices.push_back(siHotService);
@@ -809,7 +801,6 @@ void TSiHotDataProcessor::AddPaymentMethods(TRoomCharge &_roomCharge, UnicodeStr
                 siHotPayment.Description    = payment->Name;
                 siHotPayment.Billno         = billNo;
                 siHotPayment.Cashno         = CurrentPOSID;
-                MessageBox(CurrentPOSID,"AddPaymentMethods",MB_OK);
                 siHotPayment.Cashier        = TDeviceRealTerminal::Instance().User.Name;
                 siHotPayment.Source         = "Guest";
                 paymentSiHot[siHotPayment.Type] = siHotPayment;
@@ -994,7 +985,6 @@ void TSiHotDataProcessor::CreateStoreTicketPost(UnicodeString invoiceNumber, TSt
     _storeTicket.StoreTicket   =     "";
     _storeTicket.Billno        =     invoiceNumber;
     _storeTicket.Cashno        =     CurrentPOSID;
-    MessageBox(CurrentPOSID,"CreateStoreTicketPost",MB_OK);
     _storeTicket.Signature     =     "";
     _storeTicket.Type          =     "TXT";
     _storeTicket.Document      =     receiptData;
@@ -1130,7 +1120,6 @@ AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &payme
             }
 
         }
-        MessageBox(retValue,retValue,MB_OK);
         if(isPaymentRoomType && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter != 0 &&
            TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu != "")
         {
@@ -1144,7 +1133,6 @@ AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &payme
                 }
             }
         }
-        MessageBox(retValue,"retValue",MB_OK);
         if(retValue == "")
             retValue = IntToStr(TDeviceRealTerminal::Instance().BasePMS->POSID);
 
