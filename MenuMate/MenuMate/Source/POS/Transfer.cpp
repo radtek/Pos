@@ -4375,9 +4375,9 @@ UnicodeString TfrmTransfer::GetWarningMessage(int source_key, int DestTabKey, Un
         UnicodeString memNameTo    =   (TDBContacts::GetContactNameByEmail(*DBTransaction, DestinationEmail)).UpperCase();
 
         if(IsReverseTransfer)
-            tableNoFrom  =   IntToStr(CurrentDestTable);
+            tableNoFrom  =   TDBTables::GetTableName(*DBTransaction, CurrentDestTable);
         else
-            tableNoFrom  =   IntToStr(CurrentSourceTable);
+            tableNoFrom  =   TDBTables::GetTableName(*DBTransaction, CurrentSourceTable);
 
         if(IsOrderKey)
             guestNo  =   TDBOrder::GetTabNameFromOrderKey(*DBTransaction, source_key);

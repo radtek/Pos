@@ -1583,6 +1583,7 @@ void __fastcall TfrmBillGroup::btnTransferMouseClick(TObject *Sender)
             CheckLoyalty();
         }
 		UpdateSeatDetails(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get());
+        ResetForm();
 		DBTransaction.Commit();
         delete Transfer;
         TGlobalSettings::Instance().IsPOSOffline = true;
@@ -3173,7 +3174,7 @@ void TfrmBillGroup::UpdateItemListDisplay(Database::TDBTransaction &DBTransactio
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Caption = QtyStr + ptrItem->Name;
 			tgridItemList->Buttons[i][ITEM_LIST_COLUMN]->Tag = ptrItem->Key;
 
-			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment || (CurrentDisplayMode == eTabs && HasOnlineOrders))
+			if (CurrentDisplayMode == eInvoices || CurrentTabType == TabDelayedPayment /*|| (CurrentDisplayMode == eTabs && HasOnlineOrders)*/)
 			{
 				tbtnMove->Enabled = false;
 			}
@@ -5503,6 +5504,16 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
     }
+    if((tgridContainerList->RowCount - 1) == 0 || !(CurrentDisplayMode == eTables && HasOnlineOrders))
+    {
+        btnBillSelected->Enabled    = true;
+        btnTransfer->Enabled        = true;
+        tbtnMove->Enabled           = true;
+        btnPartialPayment->Enabled  = true;
+        btnSplitPayment->Enabled    = true;
+        btnApplyMembership->Enabled = true;
+
+    }
 }
 //---------------------------------------------------------------------------
 void TfrmBillGroup::UpdateTabForOnlineOrdering()
@@ -5935,7 +5946,7 @@ UnicodeString TfrmBillGroup::GetWarningMessage(Database::TDBTransaction &DBTrans
     try
     {
         UnicodeString memNameFrm   =   (TDBContacts::GetContactNameByEmail(DBTransaction, SourceEmail)).UpperCase();
-        UnicodeString tableNoFrom  =   IntToStr(CurrentTable);
+        UnicodeString tableNoFrom  =   TDBTables::GetTableName(DBTransaction, CurrentTable);
         UnicodeString guestNo      =   TDBOrder::GetTabNameFromOrderKey(DBTransaction, source_key);
         UnicodeString memNameTo    =   (TDBContacts::GetContactNameByEmail(DBTransaction, DestinationEmail)).UpperCase();
 

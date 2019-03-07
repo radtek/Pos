@@ -5237,7 +5237,7 @@ void TDBOrder::UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransa
         query->Close();
 
         query->SQL->Text = "UPDATE ORDERS SET EMAIL =:DESTINATION_EMAIL,LOYALTY_KEY =:LOYALTY_KEY WHERE "
-                           "EMAIL =:SOURCE_EMAIL AND ORDER_KEY =:ORDER_KEY ";
+                           "EMAIL =:SOURCE_EMAIL AND (ORDER_KEY =:ORDER_KEY OR SIDE_ORDER_KEY =:ORDER_KEY) ";
 
         query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
         query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
