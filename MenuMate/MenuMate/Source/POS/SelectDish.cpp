@@ -10622,11 +10622,11 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
 
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
-                {
-                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
-                                                    Membership.Member.EMail);
-                }
+//                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+//                {
+//                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
+//                                                    Membership.Member.EMail);
+//                }
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
                             TGlobalSettings::Instance().EnableCustomerJourney )

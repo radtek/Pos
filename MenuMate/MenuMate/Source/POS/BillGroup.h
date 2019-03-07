@@ -198,7 +198,7 @@ private:	// User declarations
     void RecordFiscalLogsPaymentSystem(TStringList* logList, AnsiString logValue);
     std::auto_ptr<TStringList> logList;
     bool CheckIfMembershipUpdateRequired(Database::TDBTransaction &DBTransaction, int source_key, int DestTabKey,std::set<__int64> &OrderKeys);
-    void CheckIfMultiLoyaltyExist();
+    void CheckIfMultiLoyaltyExist(bool IsBillEntireSelected = false);
     void ShowMemberSelectScreen(std::set <__int64> ReceiptItemKeys);
     void ApplyMembershipIfLoyaltyEnabled(Database::TDBTransaction &DBTransaction, UnicodeString email);
     UnicodeString GetWarningMessage(Database::TDBTransaction &DBTransaction, int source_key, UnicodeString SourceEmail, UnicodeString DestinationEmail);

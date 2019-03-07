@@ -877,6 +877,7 @@ void __fastcall TfrmBillGroup::btnBillTableMouseClick(TObject *Sender)
     TPaymentTransaction PaymentTransaction(DBTransaction);
     if(TGlobalSettings::Instance().LoyaltyMateEnabled && !IsMembershipApplied)     //&& HasOnlineOrders
         DownloadOnlineMember();
+    CheckIfMultiLoyaltyExist(true);
 	try
 	{
         TGlobalSettings::Instance().IsThorPay = true;
@@ -5806,6 +5807,7 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                     {
                         IsTransferApproved = false;
                         retValue = false;
+                        oldSourceEmail = SourceEmail;
                         OrderKeys.erase(pOrderKey);
                     }
                 }
@@ -5823,7 +5825,12 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
                 TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, SourceEmail, DestinationEmail, orderKey, destinationLoyaltyKey);
                 retValue = true;
             }
-            if((SourceEmail.Trim() != "" && DestinationEmail.Trim() == "") || SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
+            if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "")
+            {
+                TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, DestinationEmail, SourceEmail, sourceLoyaltyKey, orderKey);
+                retValue = true;
+            }
+            if(SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
             {
                 retValue = true;
             }
@@ -5840,16 +5847,27 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
     return retValue;
 }
 //------------------------------------------------------------------------------
-void TfrmBillGroup::CheckIfMultiLoyaltyExist()
+void TfrmBillGroup::CheckIfMultiLoyaltyExist(bool IsBillEntireSelected)
 {
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
     try
     {
         std::set <__int64> ReceiptItemKeys;
-        for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+        if(IsBillEntireSelected)
         {
-            ReceiptItemKeys.insert(itItem->first);
+            TDBTables::GetOrderKeys(DBTransaction, CurrentTable, ReceiptItemKeys);
+        }
+        else
+        {
+            for (std::map <__int64, TPnMOrder> ::iterator itItem = SelectedItems.begin(); itItem != SelectedItems.end(); advance(itItem, 1))
+            {
+                ReceiptItemKeys.insert(itItem->first);
+            }
         }
         ShowMemberSelectScreen(ReceiptItemKeys);
+        DBTransaction.Commit();
     }
     catch(Exception & E)
     {
