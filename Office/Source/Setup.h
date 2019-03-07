@@ -287,9 +287,9 @@ private:	// User declarations
     bool ShowNoOfPriceLevelMessage();
     AnsiString getSuffixValue(AnsiString priceLevelName);
     void IsSyncRequired();
-    void IsPathChange(bool status, AnsiString TextOldPath);
+    void IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath);
     AnsiString GetOldPath();
-
+    AnsiString GetOldMenumatePath();
 
 public:		// User declarations
 	__fastcall TfrmSetup(TComponent* Owner);

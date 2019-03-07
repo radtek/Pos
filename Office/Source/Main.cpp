@@ -163,7 +163,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			AnsiString RegisteredName = "";
 			bool Registered = false;
            dmMMData->Registered(&Registered, NULL, &RegisteredName);
-		    if (IsPosRegistered() && IsDisplayStockPath())
+		    if (IsPosRegistered() && IsDisplayOfficePath())
             {
                
                frmSplash->lbeRegistration->Caption = "Registered to " + DefaultCompany;
@@ -689,7 +689,7 @@ void TfrmMain::ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount )
 	}
 }
 //---------------------------------------------------------------------------
-bool TfrmMain:: IsDisplayStockPath()
+bool TfrmMain:: IsDisplayOfficePath()
 {
   try
    {
@@ -698,8 +698,7 @@ bool TfrmMain:: IsDisplayStockPath()
 	 RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
      AnsiString Text;
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-     RegistryRead(Key, "StockDataFile", Text);
-     RegistryRead(Key,"Flag",value);
+     RegistryRead(Key,"IsOfficeConnected",value);
      if(value == "1")
         Isdatabasepathcorrect = true;
      return Isdatabasepathcorrect;
@@ -728,6 +727,7 @@ bool TfrmMain::IsPosRegistered()
       return  RetVal;
 
 }
+
 
 
 

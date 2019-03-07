@@ -74,7 +74,7 @@ private:	// User declarations
    bool       FailedXeroInvoivesToSend();
    void       SendFailedXeroInvoices();
    void       ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount );
-   bool       IsDisplayStockPath();
+   bool       IsDisplayOfficePath();
    bool       IsPosRegistered();
 
 public:		// User declarations

@@ -1149,6 +1149,8 @@ void __fastcall TfrmSetup::btnDeleteCompanyClick(TObject *Sender)
 void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
 {
         AnsiString  TextOldPath = GetOldPath();
+        AnsiString  MenumateOldPath = GetOldMenumatePath();
+
         if(!ShowNoOfPriceLevelMessage())
         {
             TConnectionDetails *CurrentCompany = GetCurrentCompany();
@@ -1158,14 +1160,14 @@ void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
                 {
     
                     btnConnectCompanyClick(NULL);
-                    if(dmStockData->dbStock->Connected)
+                    if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
                     {
-
-                        IsPathChange(true, TextOldPath);
+                       
+                        IsPathChange(true, TextOldPath, MenumateOldPath);
                     }
                     else
                     {
-                        IsPathChange(false, TextOldPath);
+                        IsPathChange(false, TextOldPath, MenumateOldPath);
                     }
 
                     ModalResult = mrOk;
@@ -2440,26 +2442,31 @@ void TfrmSetup::IsSyncRequired()
 
 }
 //--------------------------------------------------------------
-void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath)
+void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath)
 {
+ 
   try
    {
      AnsiString TextNewPath;
+     AnsiString TextNewMenumatePath;
      AnsiString DefaultCompany;
      RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
      RegistryRead(Key, "StockDataFile", TextNewPath);
+     RegistryRead(Key, "MMDataFile", TextNewMenumatePath);
+
      if(status)
      {
-        RegistryWrite(Key,"Flag","1");
+        RegistryWrite(Key,"IsOfficeConnected","1");
      }
      else
      {
-        RegistryWrite(Key,"Flag","0");
+        RegistryWrite(Key,"IsOfficeConnected","0");
      }
 
-     if(TextNewPath != TextOldPath)
+     if((TextNewPath != TextOldPath) || (TextNewMenumatePath != ManumateOldPath))
      {
+
         IsSyncRequired();
      }
     }
@@ -2486,6 +2493,23 @@ AnsiString TfrmSetup::GetOldPath()
         throw;
     }
     return TextOldPath;
+}
+//-----------------------------------------------------------------------------------------------------
+AnsiString TfrmSetup::GetOldMenumatePath()
+{
+    AnsiString MenumateOldPath = "";
+    try
+    {
+        AnsiString DefaultCompany;
+        RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+        AnsiString Key = OfficeKey + "\\" + DefaultCompany;
+        RegistryRead(Key, "MMDataFile", MenumateOldPath);
+    }
+    catch(Exception &E)
+    {
+        throw;
+    }
+    return MenumateOldPath;
 }
 
 

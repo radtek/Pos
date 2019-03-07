@@ -16,7 +16,7 @@ namespace Loyaltymate.Utility
             var request = WebUtility.CreateRequest(requestaddress, syndicateCode, parameters, requestMode);
             byte[] bytes = Encoding.UTF8.GetBytes(JsonUtility.Serialize(obj));
             request.ContentLength = bytes.Length;
-            request.Timeout = 500000;
+            request.Timeout = 90000;
             request.ContentType = "text/plain";
             request.GetRequestStream().Write(bytes, 0, bytes.Length);
             return request;

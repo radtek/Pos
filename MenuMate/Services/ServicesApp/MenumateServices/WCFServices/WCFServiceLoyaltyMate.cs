@@ -24,158 +24,215 @@ namespace MenumateServices.WCFServices
     {
 
         private List<string> stringList = new List<string>();
+        private List<string> loyaltyLogs = new List<string>();
         public LoyaltyMemberResponse SaveMember(string inSyndicateCode, MemberInfo inInfo)
         {
+            LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                return LoyaltyMember.Instance.SaveMember(inSyndicateCode, inInfo);
+                loyaltyLogs.Add("SaveMember of services at                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyMemberResponse = LoyaltyMember.Instance.SaveMember(inSyndicateCode, inInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
                 //EventLog.WriteEntry("In SaveMember LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 58, short.MaxValue);
+                loyaltyLogs.Add("Exception in SaveMember of services is             " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyMemberResponse;
         }
 
         public LoyaltyMemberResponse GetMemberByUniqueId(string inSyndicateCode, RequestInfo requestInfo)
         {
+            LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                return LoyaltyMember.Instance.GetMemberByUniqueCode(inSyndicateCode, requestInfo);
+                loyaltyLogs.Add("Getting Member By UniqueId of services at          " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyMemberResponse = LoyaltyMember.Instance.GetMemberByUniqueCode(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetMemberByUniqueId LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 59, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyMemberResponse;
         }
 
         public LoyaltyMemberResponse GetMemberByCardCode(string inSyndicateCode, RequestInfo requestInfo)
         {
+            LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                return LoyaltyMember.Instance.GetByCardCode(inSyndicateCode, requestInfo);
+                loyaltyLogs.Add("Getting Member By Card Code of services at         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyMemberResponse = LoyaltyMember.Instance.GetByCardCode(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetMemberByCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 60, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyMemberResponse;
         }
 
         public LoyaltyMemberResponse GetMemberByEmail(string inSyndicateCode, RequestInfo requestInfo)
         {
+            LoyaltyMemberResponse loyaltyMemberResponse = null;
             try
             {
-                return LoyaltyMember.Instance.GetByEmail(inSyndicateCode, requestInfo);
+                loyaltyLogs.Add("Getting Member By Email of services at             " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyMemberResponse = LoyaltyMember.Instance.GetByEmail(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetMemberByEmail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 61, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyMemberResponse;
         }
 
         public LoyaltyResponse UpdateMemberCardCode(string inSyndicateCode, string uniqueId, string memberCardCode)
         {
+            LoyaltyResponse loyaltyResponse = null;
             try
             {
-                return LoyaltyMember.Instance.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode);
+                loyaltyLogs.Add("Updating Member Card Code of services at           " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyResponse = LoyaltyMember.Instance.UpdateMemberCardCode(inSyndicateCode, uniqueId, memberCardCode, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In UpdateMemberCardCode LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 62, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyResponse;
         }
 
         public LoyaltyResponse PostTransaction(string inSyndicateCode, TransactionInfo transaction)
         {
+            LoyaltyResponse loyaltyResponse = null;
             try
             {
-                return LoyaltyMember.Instance.PostTransaction(inSyndicateCode, transaction);
+                loyaltyLogs.Add("Posting Transaction of services at                 " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyResponse = LoyaltyMember.Instance.PostTransaction(inSyndicateCode, transaction, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In PostTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 63, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyResponse;
         }
 
         public LoyaltyCompanyResponse GetCompanyInformation(string inSyndicateCode)
         {
+            LoyaltyCompanyResponse loyaltyCompanyResponse = null;
             try
             {
-                return LoyaltyCompany.Instance.GetCompanyInformation(inSyndicateCode);
+                loyaltyLogs.Add("Getting Company Information of services at         " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyCompanyResponse = LoyaltyCompany.Instance.GetCompanyInformation(inSyndicateCode, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetCompanyInformation LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 64, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyCompanyResponse;
         }
 
         public LoyaltyGiftCardResponse GetGiftCardBalance(string inSyndicateCode, RequestInfo requestInfo)
         {
+            LoyaltyGiftCardResponse loyaltyGiftCardResponse = null;
             try
             {
-                return LoyaltyVoucher.Instance.GetGiftCardBalance(inSyndicateCode, requestInfo);
+                loyaltyLogs.Add("Getting Gift card balance of services at           " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyGiftCardResponse = LoyaltyVoucher.Instance.GetGiftCardBalance(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetGiftCardBalance LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 65, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyGiftCardResponse;
         }
 
         public LoyaltyVoucherResponse GetPocketVoucherDetail(string inSyndicateCode, RequestInfo requestInfo)
         {
+
+            LoyaltyVoucherResponse loyaltyVoucherResponse = null;
             try
             {
-                return LoyaltyVoucher.Instance.GetPocketVoucherDetail(inSyndicateCode, requestInfo);
+                loyaltyLogs.Add("Getting Pocket Voucher Detail at                   " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyVoucherResponse = LoyaltyVoucher.Instance.GetPocketVoucherDetail(inSyndicateCode, requestInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In GetPocketVoucherDetail LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 66, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyVoucherResponse;
         }
 
         public VoucherTransactionResponse ProcessVoucherTransaction(string inSyndicateCode, VoucherTransactionInfo transaction)
         {
+            VoucherTransactionResponse voucherTransactionResponse = null;
             try
             {
-                return LoyaltyVoucher.Instance.ProcessVoucherTransaction(inSyndicateCode, transaction);
+                loyaltyLogs.Add("Processing Voucher Transaction at                  " + DateTime.Now.ToString("hh:mm:ss tt"));
+                voucherTransactionResponse = LoyaltyVoucher.Instance.ProcessVoucherTransaction(inSyndicateCode, transaction, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In ProcessVoucherTransaction LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 67, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return voucherTransactionResponse;
         }
 
         public LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo)
         {
+            LoyaltyResponse loyaltyResponse = null;
             try
             {
-                return LoyaltyVoucher.Instance.ReleaseVouchers(inSyndicateCode, releasedVoucherInfo);
+                loyaltyLogs.Add("Releasing Voucher at                               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                loyaltyResponse = LoyaltyVoucher.Instance.ReleaseVouchers(inSyndicateCode, releasedVoucherInfo, loyaltyLogs);
             }
             catch (Exception exc)
             {
+                loyaltyLogs.Add("Exception is                                       " + exc.Message);
+                loyaltyLogs.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 //EventLog.WriteEntry("In ReleaseVouchers LoyaltyMate", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 68, short.MaxValue);
             }
-            return null;
+            WriteAndClearLoyaltyList();
+            return loyaltyResponse;
         }
 
         public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
@@ -334,5 +391,13 @@ namespace MenumateServices.WCFServices
             FileWriter.WriteToFile(stringList, "Online Ordering Logs", "OnlineOrderingLogs ");
             stringList.Clear();
         }
+
+        private void WriteAndClearLoyaltyList()
+        {
+            loyaltyLogs.Add("======================================================================================================================");
+            FileWriter.WriteToFile(loyaltyLogs, "LoyaltyMate Post Logs", "LoyaltyMatePosts ");
+            loyaltyLogs.Clear();
+        }
+
     }
 }
