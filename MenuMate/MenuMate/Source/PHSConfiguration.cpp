@@ -1113,46 +1113,49 @@ void __fastcall TfrmPHSConfiguration::tbRoomServiceRevenueCenterMouseClick(TObje
 
         UnicodeString caption = "Room Service Revenue Center.";
         int value = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
-
-        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
-        frmTouchNumpad->Caption = caption;
-        frmTouchNumpad->btnSurcharge->Caption = "Ok";
-        frmTouchNumpad->btnSurcharge->Visible = true;
-        frmTouchNumpad->btnDiscount->Visible = false;
-        frmTouchNumpad->Mode = pmNumber;
-        frmTouchNumpad->INTInitial = value;
-
-        if(frmTouchNumpad->ShowModal() == mrOk)
-            TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter = frmTouchNumpad->INTResult;
-
-        if(PMSType == oracle)
+        if(tbRoomServiceMenu->Caption != "Room Service Menu\r")
         {
-            if (TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter <= 99999)
-                canProceed = true;
-            else
-            {
-                MessageBox("Please enter Revenue Centre from 1 to 99999", "Information", MB_OK + MB_ICONINFORMATION);
-                tbRoomServiceRevenueCenterMouseClick(NULL);
-                canProceed = false;
-            }
+	        std::auto_ptr<TfrmTouchNumpad> frmTouchNumpad(TfrmTouchNumpad::Create<TfrmTouchNumpad>(this));
+	        frmTouchNumpad->Caption = caption;
+	        frmTouchNumpad->btnSurcharge->Caption = "Ok";
+	        frmTouchNumpad->btnSurcharge->Visible = true;
+	        frmTouchNumpad->btnDiscount->Visible = false;
+	        frmTouchNumpad->Mode = pmNumber;
+	        frmTouchNumpad->INTInitial = value;
+	        if(frmTouchNumpad->ShowModal() == mrOk)
+	            TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter = frmTouchNumpad->INTResult;
+
+	        if(PMSType == oracle)
+	        {
+	            if (TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter <= 99999)
+	                canProceed = true;
+	            else
+	            {
+	                MessageBox("Please enter Revenue Centre from 1 to 99999", "Information", MB_OK + MB_ICONINFORMATION);
+	                tbRoomServiceRevenueCenterMouseClick(NULL);
+	                canProceed = false;
+	            }
+	        }
+	        else
+	        {
+	            if(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter <= 30)
+	                canProceed = true;
+	            else
+	            {
+	                MessageBox("Please enter Revenue Centre from 1 to 30", "Information", MB_OK + MB_ICONINFORMATION);
+	                tbRoomServiceRevenueCenterMouseClick(NULL);
+	                canProceed = false;
+	            }
+	        }
+	        if(canProceed)
+	        {
+	            tbRoomServiceRevenueCenter->Caption = "Room Service Revenue Center\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
+	            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
+	        }
+	        DBTransaction.Commit();
         }
         else
-        {
-            if(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter <= 30)
-                canProceed = true;
-            else
-            {
-                MessageBox("Please enter Revenue Centre from 1 to 30", "Information", MB_OK + MB_ICONINFORMATION);
-                tbRoomServiceRevenueCenterMouseClick(NULL);
-                canProceed = false;
-            }
-        }
-        if(canProceed)
-        {
-            tbRoomServiceRevenueCenter->Caption = "Room Service Revenue Center\r" + IntToStr(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
-            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter);
-        }
-        DBTransaction.Commit();
+        MessageBox("Please configure Room Service Menu first ", "Information", MB_OK + MB_ICONINFORMATION);
 	}
 }
 //---------------------------------------------------------------------------

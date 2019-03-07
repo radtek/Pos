@@ -15,7 +15,7 @@
 #include "ListCourse.h"
 #include "DBGroups.h"
 #include "SelectDish.h"
-
+#include "BasePMS.h"
 #include "MenuManagerItemSizeSelection.h"
 
 //---------------------------------------------------------------------------
@@ -444,7 +444,11 @@ void __fastcall TfrmMenuManager::btnRemoveMenuClick(TObject *Sender)
                      MessageBox("Menu has already been removed.", "Error", MB_ICONERROR + MB_OK);
                   }
                   DBTransaction.Commit();
-
+                  if(TDeviceRealTerminal::Instance().BasePMS->Enabled &&
+                        (TGlobalSettings::Instance().PMSType == Oracle || TGlobalSettings::Instance().PMSType == SiHot))
+                  {
+                     TDeviceRealTerminal::Instance().BasePMS->ValidateMenuAvailabilityForRoomRevenue();
+                  }
                   DBTransaction.StartTransaction();
                   TNetMessageMenuChanged * Request = new TNetMessageMenuChanged;
                   try

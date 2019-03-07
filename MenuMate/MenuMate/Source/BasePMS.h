@@ -60,6 +60,7 @@ class TBasePMS
         void virtual LogPMSEnabling(TriggerLocation triggerType);
         void virtual UnsetPostingFlag();
         void virtual StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *receiptStream);
+        void virtual ValidateMenuAvailabilityForRoomRevenue();
 };
 //extern TBasePMS *BasePMS;
 #endif

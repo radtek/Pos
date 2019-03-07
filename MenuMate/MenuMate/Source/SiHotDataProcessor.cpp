@@ -1118,19 +1118,39 @@ AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &payme
                 isPaymentRoomType = true;
                 break;
             }
-
         }
+//        if(!isPaymentRoomType)
+//        {
+//            if(paymentTransaction.Customer.RoomNumberStr.Trim() != "")
+//            {
+//                isPaymentRoomType = true;
+//            }
+//        }
         if(isPaymentRoomType && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter != 0 &&
            TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu != "")
         {
+            bool isItemFound = false;
             for(int indexItemsSiHotRoom = 0; indexItemsSiHotRoom < paymentTransaction.Orders->Count; indexItemsSiHotRoom++)
             {
                 TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[indexItemsSiHotRoom];
                 if(itemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
                 {
                     retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                    isItemFound = true;
                     break;
                 }
+                for(int indexSubItemsSiHotRooms = 0; indexSubItemsSiHotRooms < itemComplete->SubOrders->Count; indexSubItemsSiHotRooms++)
+                {
+                    TItemComplete *subItemComplete = (TItemComplete*)itemComplete->SubOrders->Items[indexSubItemsSiHotRooms];
+                    if(subItemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
+                    {
+                        retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                        isItemFound = true;
+                        break;
+                    }
+                }
+                if(isItemFound)
+                    break;
             }
         }
         if(retValue == "")

@@ -1282,6 +1282,7 @@ void TOracleDataBuilder::AdjustRounding(std::map<int,double> &subtotals, std::ma
         value = RoundTo(value,-2);
         itserviceChargeAdjustment->second = value;
     }
+
 }
 //----------------------------------------------------------------------------
 AnsiString TOracleDataBuilder::GetRevenueCentre(TPayment *payment, TPaymentTransaction paymentTransaction)
@@ -1292,14 +1293,28 @@ AnsiString TOracleDataBuilder::GetRevenueCentre(TPayment *payment, TPaymentTrans
         if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter != 0 &&
             TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu != "")
         {
+            bool isItemFound = false;
             for(int indexItemsRooms = 0; indexItemsRooms < paymentTransaction.Orders->Count; indexItemsRooms++)
             {
                 TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[indexItemsRooms];
                 if(itemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
                 {
                     retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                    isItemFound = true;
                     break;
                 }
+                for(int indexSubItemsRooms = 0; indexSubItemsRooms < itemComplete->SubOrders->Count; indexSubItemsRooms++)
+                {
+                    TItemComplete *subItemComplete = (TItemComplete*)itemComplete->SubOrders->Items[indexSubItemsRooms];
+                    if(subItemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
+                    {
+                        retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                        isItemFound = true;
+                        break;
+                    }
+                }
+                if(isItemFound)
+                    break;
             }
         }
         if(retValue == "" )

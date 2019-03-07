@@ -824,3 +824,36 @@ bool TManagerSiHot::CheckSihotPostingValidity(TPaymentTransaction paymentTransac
     }
     return  !isOnlyPointsTransaction && isNotCompleteCancel;
 }
+void TManagerSiHot::ValidateMenuAvailabilityForRoomRevenue()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+       TIBSQL *SelectQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+       SelectQuery->SQL->Text =  "SELECT * FROM MENU WHERE MENU_NAME = :MENU_NAME AND DELETED = :DELETED ";
+       SelectQuery->ParamByName("MENU_NAME")->AsString = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
+       SelectQuery->ParamByName("DELETED")->AsString   = "F";
+
+       SelectQuery->ExecQuery();
+
+       if(SelectQuery->RecordCount > 0)
+       {
+       }
+       else
+       {
+          if(RoomServiceMenu.Trim() != "")
+          {
+            RoomServiceMenu = "";
+            RoomServiceRevenueCenter = 0;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmRoomServiceMenu,RoomServiceMenu);
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,RoomServiceRevenueCenter);
+          }
+       }
+       DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+    }
+}

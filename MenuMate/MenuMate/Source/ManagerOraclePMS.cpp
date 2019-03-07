@@ -437,6 +437,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
             double portion = 1;
             postRequest = oracledata->CreatePost(_paymentTransaction,portion, 0,0);
             postRequest.CheckNumber = checkNumber;
+            ConfigurePostForSale(postRequest,_paymentTransaction);
             TiXmlDocument doc = oracledata->CreatePostXML(postRequest);
             AnsiString resultData = "";
             AnsiString data = oracledata->SerializeOut(doc);
@@ -572,3 +573,77 @@ void TManagerOraclePMS::MakeOracleSeedFile()
     List->SaveToFile(fileName );
 }
 //----------------------------------------------------------------------------
+void TManagerOraclePMS::ConfigurePostForSale(TPostRequest &postRequest,TPaymentTransaction &_paymentTransaction)
+{
+    try
+    {
+        MessageBox(_paymentTransaction.PMSClientDetails.RoomNumber,"_paymentTransaction.PMSClientDetails.RoomNumber before if in ConfigurePostForSale",MB_OK);
+        std::auto_ptr<TOracleDataBuilder> oracleBuilder(new TOracleDataBuilder());
+        std::map<int,TPMSPaymentType> paymentsMap;
+        oracleBuilder->GetPMSPaymentType(paymentsMap);
+        if(_paymentTransaction.PMSClientDetails.RoomNumber != NULL && _paymentTransaction.PMSClientDetails.RoomNumber.Trim() != "")
+        {
+           postRequest.RoomNumber        = _paymentTransaction.PMSClientDetails.RoomNumber;
+               MessageBox(postRequest.RoomNumber,"postRequest.RoomNumber after modification",MB_OK);
+           postRequest.ReservationId     = _paymentTransaction.PMSClientDetails.ReservationID;
+           postRequest.ProfileId         = _paymentTransaction.PMSClientDetails.ProfileID;
+           postRequest.LastName          = _paymentTransaction.PMSClientDetails.LastName;
+           postRequest.InquiryInformation = _paymentTransaction.PMSClientDetails.RoomNumber;;
+           postRequest.RequestType       = "4";
+
+
+           TPayment *payment             = _paymentTransaction.PaymentFindByProperty(ePayTypeRoomInterface);
+
+           postRequest.PaymentMethod     = oracleBuilder->GetPMSPaymentCode(payment,paymentsMap);
+           if(postRequest.PaymentMethod == NULL || postRequest.PaymentMethod == "")
+           {
+               postRequest.PaymentMethod = oracleBuilder->GetPMSDefaultCode(paymentsMap);
+           }
+           postRequest.MatchfromPostList = _paymentTransaction.PMSClientDetails.MatchIdentifier;
+           postRequest.RevenueCenter = oracleBuilder->GetRevenueCentre(payment, _paymentTransaction);
+        }
+        else
+        {
+            postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+            postRequest.PaymentMethod = oracleBuilder->GetPMSDefaultCode(paymentsMap);
+        }
+    }
+    catch (Exception &ex)
+    {
+        //MessageBox(ex.Message,"Exception in ConfigurePostForSale",MB_OK);
+    }
+}
+void TManagerOraclePMS::ValidateMenuAvailabilityForRoomRevenue()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+       TIBSQL *SelectQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+       SelectQuery->SQL->Text =  "SELECT * FROM MENU WHERE MENU_NAME = :MENU_NAME AND DELETED = :DELETED ";
+       SelectQuery->ParamByName("MENU_NAME")->AsString = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
+       SelectQuery->ParamByName("DELETED")->AsString   = "F";
+
+       SelectQuery->ExecQuery();
+
+       if(SelectQuery->RecordCount > 0)
+       {
+
+       }
+       else
+       {
+          if(RoomServiceMenu.Trim() != "")
+          {
+            RoomServiceMenu = "";
+            RoomServiceRevenueCenter = 0;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmRoomServiceMenu,RoomServiceMenu);
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,RoomServiceRevenueCenter);
+          }
+       }
+       DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+    }
+}
