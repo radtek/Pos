@@ -82,10 +82,20 @@ void TManagerOraclePMS::Initialise()
                                     {
                                        if(TGlobalSettings::Instance().OracleInterfacePortNumber != 0 && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "")
                                        {
-                                            if(TriggerApplication())
+                                            if ((TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0)
+                                                        || TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() == "")
                                             {
+                                                if(TriggerApplication())
+                                                {
                                                 Enabled = GetLinkStatus();
+                                                }
                                             }
+                                         else
+                                         {
+                                         MessageBox("Room Service Revenue Center is required for Oracle PMS set up","Information",MB_OK);
+                                         Enabled = false;
+                                         }
+
                                        }
                                        else
                                        {
