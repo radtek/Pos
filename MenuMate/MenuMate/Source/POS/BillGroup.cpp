@@ -1370,7 +1370,7 @@ void __fastcall TfrmBillGroup::btnSplitPaymentMouseClick(TObject *Sender)
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && (CurrentDisplayMode == eTabs || CurrentDisplayMode == eTables) && !IsMembershipApplied)
                     DownloadOnlineMember();
-
+                CheckIfMultiLoyaltyExist();
 				std::set <__int64> SelectedItemKeys;
 				std::set <__int64> BackupOfSelectedTabKeys;
 				BackupOfSelectedTabKeys = SelectedTabs;
@@ -5827,7 +5827,7 @@ bool TfrmBillGroup::CheckIfMembershipUpdateRequired(Database::TDBTransaction &DB
             }
             if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "")
             {
-                TDBOrder::UpdateMemberLoyaltyForOrderKey(DBTransaction, DestinationEmail, SourceEmail, sourceLoyaltyKey, orderKey);
+                TDBOrder::UpdateMemberLoyaltyForTabKey(DBTransaction, DestinationEmail , SourceEmail, DestTabKey, sourceLoyaltyKey);
                 retValue = true;
             }
             if(SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
@@ -5872,6 +5872,7 @@ void TfrmBillGroup::CheckIfMultiLoyaltyExist(bool IsBillEntireSelected)
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        DBTransaction.Rollback();
     }
 }
 //------------------------------------------------------------------------------

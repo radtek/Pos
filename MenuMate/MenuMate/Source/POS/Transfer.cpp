@@ -4306,7 +4306,7 @@ bool TfrmTransfer::CheckIfMembershipUpdateRequired(int source_key, int DestTabKe
         }
         if(SourceEmail.Trim() != "" && DestinationEmail.Trim() == "")
         {
-            TDBOrder::UpdateMemberLoyaltyForOrderKey(*DBTransaction, DestinationEmail, SourceEmail, sourceLoyaltyKey, source_key);
+            TDBOrder::UpdateMemberLoyaltyForTabKey(*DBTransaction, DestinationEmail , SourceEmail, DestTabKey, sourceLoyaltyKey);
             IsTransferPerformed = true;
         }
         if(SameStr(SourceEmail.Trim(),DestinationEmail.Trim()))
