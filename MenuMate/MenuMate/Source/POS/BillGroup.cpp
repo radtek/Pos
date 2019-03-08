@@ -5490,6 +5490,7 @@ bool TfrmBillGroup::NeedtoUpdateTableForOnlineOrdering()
 //---------------------------------------------------------------------------
 void TfrmBillGroup::UpdateTableForOnlineOrdering()
 {
+
     if(CurrentDisplayMode == eTables && HasOnlineOrders)
     {
         btnBillSelected->Color      = clSilver;
@@ -5505,7 +5506,7 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
         btnApplyMembership->Color   = clSilver;
         btnApplyMembership->Enabled = false;
     }
-    if((tgridContainerList->RowCount - 1) == 0 || !(CurrentDisplayMode == eTables && HasOnlineOrders))
+    if((CurrentDisplayMode != eInvoices &&  CurrentTabType != TabDelayedPayment) || CurrentDisplayMode == eTables)
     {
         btnBillSelected->Enabled    = true;
         btnTransfer->Enabled        = true;
@@ -5513,7 +5514,6 @@ void TfrmBillGroup::UpdateTableForOnlineOrdering()
         btnPartialPayment->Enabled  = true;
         btnSplitPayment->Enabled    = true;
         btnApplyMembership->Enabled = true;
-
     }
 }
 //---------------------------------------------------------------------------
