@@ -103,13 +103,23 @@ void TManagerSiHot::Initialise()
         //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
         if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
         {
-            Enabled = GetRoundingandDefaultAccount();
+            if((TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0)
+                                                        || TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() == "")
+            {
+                Enabled = GetRoundingandDefaultAccount();
+            }
+            else
+            {
+                MessageBox("Room Service Revenue Center is required for SiHot set up","Information",MB_OK);
+                Enabled = false;
+            }
         }
         else
         {
             MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
             Enabled = false;
         }
+
         if(Enabled)
         {
             DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
