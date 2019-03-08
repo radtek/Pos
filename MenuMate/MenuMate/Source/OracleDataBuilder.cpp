@@ -68,7 +68,12 @@ void TOracleDataBuilder::CreatePostRoomInquiry(TPostRoomInquiry &postRoomInquiry
         }
         postRoomInquiry.Date = Now().FormatString( "YYMMDD");
         postRoomInquiry.Time = Now().FormatString( "HHMMSS");
-        postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+
+        if(TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter != 0 && TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu != "")
+            postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+        else
+            postRoomInquiry.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+
         postRoomInquiry.WaiterId = TDeviceRealTerminal::Instance().User.Name + " " +
                                    TDeviceRealTerminal::Instance().User.Surname;
 //        char* id = new char[20];
@@ -273,7 +278,12 @@ TPostRequest TOracleDataBuilder::CreatePost(TPaymentTransaction &paymentTransact
         postRequest.CreditLimitOverride = "N";
         postRequest.PaymentMethod = paymentMethod;
         postRequest.Covers = CurrToStrF(patronCount,ffFixed,0);
-        postRequest.RevenueCenter = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+
+
+
+        //******************************************//
+        postRequest.RevenueCenter = GetRevenueCentre(payment, paymentTransaction);
+        //*****************************************//
         postRequest.ServingTime = mealName;//"BreakFast";
         tip = tip * 100;
         postRequest.Tip = tip;
@@ -1272,5 +1282,50 @@ void TOracleDataBuilder::AdjustRounding(std::map<int,double> &subtotals, std::ma
         value = RoundTo(value,-2);
         itserviceChargeAdjustment->second = value;
     }
+
+}
+//----------------------------------------------------------------------------
+AnsiString TOracleDataBuilder::GetRevenueCentre(TPayment *payment, TPaymentTransaction paymentTransaction)
+{
+    AnsiString retValue = "";
+    try
+    {
+        if(payment->GetPaymentAttribute(ePayTypeRoomInterface) && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter != 0 &&
+            TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu != "")
+        {
+            bool isItemFound = false;
+            for(int indexItemsRooms = 0; indexItemsRooms < paymentTransaction.Orders->Count; indexItemsRooms++)
+            {
+                TItemComplete *itemComplete = (TItemComplete*)paymentTransaction.Orders->Items[indexItemsRooms];
+                if(itemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
+                {
+                    retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                    isItemFound = true;
+                    break;
+                }
+                for(int indexSubItemsRooms = 0; indexSubItemsRooms < itemComplete->SubOrders->Count; indexSubItemsRooms++)
+                {
+                    TItemComplete *subItemComplete = (TItemComplete*)itemComplete->SubOrders->Items[indexSubItemsRooms];
+                    if(subItemComplete->MenuName == TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu)
+                    {
+                        retValue = TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter;
+                        isItemFound = true;
+                        break;
+                    }
+                }
+                if(isItemFound)
+                    break;
+            }
+        }
+        if(retValue == "" )
+            retValue = TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
+
+        return retValue;
+    }
+    catch(Exception &Exc)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
+    }
+    return TDeviceRealTerminal::Instance().BasePMS->RevenueCentre;
 }
 //----------------------------------------------------------------------------

@@ -45,5 +45,7 @@ class TSiHotDataProcessor
        void ErrorCorrectionForItemDetails(TItemComplete* itemComplete , UnicodeString invoiceNumber);
        void LogErrorDetectioninFile(int revenueCode, int itemSizeIdentifier, UnicodeString menuName, TItemComplete* itemComplete,UnicodeString invoiceNumber);
        AnsiString GetLogFileName();
+       AnsiString TSiHotDataProcessor::GetRevenueCentreSiHot(TPaymentTransaction &paymentTransaction);
+       AnsiString CurrentPOSID;
 };
 #endif
