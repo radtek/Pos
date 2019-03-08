@@ -5540,6 +5540,9 @@ void TfrmBillGroup::UpdateTabForOnlineOrdering()
 bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
 {
     bool retValue = true;
+    Database::TDBTransaction DBTransaction(DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
     try
     {
         bool currentTabHoldsOnlineOrders = TDBTab::HasOnlineOrders(tabKey);
@@ -5551,7 +5554,7 @@ bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
             {
                 if(currentTabHoldsOnlineOrders)
                 {
-                    if(!TDBTab::HasOnlineOrders(*itTabsSelected))
+                    if(!TDBTab::HasOnlineOrders(*itTabsSelected) && !TDBTab::GetIsEmpty(DBTransaction,*itTabsSelected))
                     {
                         retValue = false;
                         MessageBox("Tabs with online orders and Normal Tabs can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
@@ -5560,7 +5563,7 @@ bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
                 }
                 else
                 {
-                    if(TDBTab::HasOnlineOrders(*itTabsSelected))
+                    if(TDBTab::HasOnlineOrders(*itTabsSelected) && !TDBTab::GetIsEmpty(DBTransaction,*itTabsSelected))
                     {
                         retValue = false;
                         MessageBox("Normal Tabs and Tabs with online orders can not be selected simultaneously.","Info",MB_OK+MB_ICONINFORMATION);
@@ -5569,9 +5572,11 @@ bool TfrmBillGroup::CheckTabCompatablityForOnlineOrdering(int tabKey)
                 }
             }
         }
+         DBTransaction.Commit();
     }
     catch(Exception &Ex)
     {
+        DBTransaction.Rollback();
     }
     return retValue;
 }
