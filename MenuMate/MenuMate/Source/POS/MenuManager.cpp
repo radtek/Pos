@@ -484,6 +484,7 @@ void __fastcall TfrmMenuManager::btnRemoveMenuClick(TObject *Sender)
                }
                catch (Exception &E)
                {
+                  TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
                   MessageBox(E.Message.w_str(), _T("Error"), MB_OK + MB_ICONERROR);
                }
             }

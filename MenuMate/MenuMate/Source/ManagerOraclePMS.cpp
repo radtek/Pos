@@ -577,14 +577,12 @@ void TManagerOraclePMS::ConfigurePostForSale(TPostRequest &postRequest,TPaymentT
 {
     try
     {
-        MessageBox(_paymentTransaction.PMSClientDetails.RoomNumber,"_paymentTransaction.PMSClientDetails.RoomNumber before if in ConfigurePostForSale",MB_OK);
         std::auto_ptr<TOracleDataBuilder> oracleBuilder(new TOracleDataBuilder());
         std::map<int,TPMSPaymentType> paymentsMap;
         oracleBuilder->GetPMSPaymentType(paymentsMap);
         if(_paymentTransaction.PMSClientDetails.RoomNumber != NULL && _paymentTransaction.PMSClientDetails.RoomNumber.Trim() != "")
         {
            postRequest.RoomNumber        = _paymentTransaction.PMSClientDetails.RoomNumber;
-               MessageBox(postRequest.RoomNumber,"postRequest.RoomNumber after modification",MB_OK);
            postRequest.ReservationId     = _paymentTransaction.PMSClientDetails.ReservationID;
            postRequest.ProfileId         = _paymentTransaction.PMSClientDetails.ProfileID;
            postRequest.LastName          = _paymentTransaction.PMSClientDetails.LastName;
@@ -610,9 +608,10 @@ void TManagerOraclePMS::ConfigurePostForSale(TPostRequest &postRequest,TPaymentT
     }
     catch (Exception &ex)
     {
-        //MessageBox(ex.Message,"Exception in ConfigurePostForSale",MB_OK);
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG, ex.Message);
     }
 }
+//----------------------------------------------------------------------------
 void TManagerOraclePMS::ValidateMenuAvailabilityForRoomRevenue()
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
