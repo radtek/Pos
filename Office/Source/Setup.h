@@ -290,10 +290,13 @@ private:	// User declarations
     void IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath);
     AnsiString GetOldPath();
     AnsiString GetOldMenumatePath();
+    AnsiString Menumatepath ;
+   
 
 public:		// User declarations
 	__fastcall TfrmSetup(TComponent* Owner);
 	bool FirstRun;
+
 	bool InitialiseCompanies();
     int PrintStockTransfer;
     int PrintReceiveInvoice;

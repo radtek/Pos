@@ -133,7 +133,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		frmSplash->Repaint();
 		try
 		{
-			dmMMData		= new TdmMMData(Application);
+		 	dmMMData		= new TdmMMData(Application);
 			dmStockData	    = new TdmStockData(Application);
             dmChefMateData  = new TdmChefMateData(Application);
 		}
@@ -163,7 +163,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 			AnsiString RegisteredName = "";
 			bool Registered = false;
            dmMMData->Registered(&Registered, NULL, &RegisteredName);
-		    if (IsPosRegistered() && IsDisplayOfficePath())
+           
+		    if (IsDisplayOfficePath() && IsPosRegistered())
             {
                
                frmSplash->lbeRegistration->Caption = "Registered to " + DefaultCompany;
@@ -713,7 +714,9 @@ bool TfrmMain:: IsDisplayOfficePath()
 //-------------------------------------------------------------------------------------------------------------
 bool TfrmMain::IsPosRegistered()
 {
-      bool RetVal = false;
+    bool RetVal = false;
+    try
+    {
       qrComflag->Transaction->StartTransaction();
 	  qrComflag->Close();
       qrComflag->SQL->Text = "SELECT VARIABLES_KEY FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
@@ -723,7 +726,12 @@ bool TfrmMain::IsPosRegistered()
        {
             RetVal = true;
        }
-      qrComflag->Transaction->Commit();
+          qrComflag->Transaction->Commit();
+    }
+    catch(Exception &E)
+    {
+       throw;
+    }
       return  RetVal;
 
 }

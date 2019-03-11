@@ -1120,5 +1120,5 @@ void TDBRegistration::LoadOfficeSettingForTerminal(Database::TDBTransaction &dbT
      }
      return retVal;
 
-}
+}//---------------------------------------------------------------------------------------------------------
 

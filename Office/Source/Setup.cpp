@@ -35,6 +35,9 @@ __fastcall TfrmSetup::TfrmSetup(TComponent* Owner)
 	CompanyDetailsList	= new TList;
 	ServersList				= new TStringList;
 	RetrieveNamesThread	= new TRetrieveNamesThread(true);
+  
+    Menumatepath = "localhost:C:\\Program Files\\MenuMate\\MenuMate.fdb" ;
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::FormCreate(TObject *Sender)
@@ -412,6 +415,7 @@ void TfrmSetup::LoadSettings(TConnectionDetails *CompanyDetails)
 	if (Text == "" && FirstRun)
 	{
 		Text = "localhost:C:\\Program Files\\MenuMate\\MenuMate.fdb";
+
 	}
 	CompanyDetails->MenuMateDB.DBName = Text;
 	Text = "";
@@ -1148,8 +1152,8 @@ void __fastcall TfrmSetup::btnDeleteCompanyClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
 {
-        AnsiString  TextOldPath = GetOldPath();
-        AnsiString  MenumateOldPath = GetOldMenumatePath();
+         AnsiString  TextOldPath = GetOldPath();
+         AnsiString  MenumateOldPath = GetOldMenumatePath();
 
         if(!ShowNoOfPriceLevelMessage())
         {
@@ -1160,15 +1164,15 @@ void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
                 {
     
                     btnConnectCompanyClick(NULL);
-                    if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
+                   if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
                     {
-                       
-                        IsPathChange(true, TextOldPath, MenumateOldPath);
+
+                         IsPathChange(true, TextOldPath, MenumateOldPath);
                     }
                     else
                     {
                         IsPathChange(false, TextOldPath, MenumateOldPath);
-                    }
+                    }  
 
                     ModalResult = mrOk;
                     return;
@@ -1696,7 +1700,7 @@ bool TfrmSetup::InitialiseCompanies()
 
 		dmMMData->Connect(frmSplash->lbeStatus);
 
-		dmStockData->Connect(frmSplash->lbeStatus);
+	dmStockData->Connect(frmSplash->lbeStatus);
 
 		dmChefMateData->Connect(frmSplash->lbeStatus);
 		CreateIBConsoleSettings();
@@ -2428,12 +2432,17 @@ void TfrmSetup::IsSyncRequired()
 {
    try
     {
+      dmMMData->dbMenuMate->DatabaseName	= Menumatepath;
+	  dmMMData->dbMenuMate->Connected		= true;
+
       qrupdateregistry->Transaction->StartTransaction();
 	  qrupdateregistry->Close();
       qrupdateregistry->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
       qrupdateregistry->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
       qrupdateregistry->ExecQuery();
       qrupdateregistry->Transaction->Commit();
+      dmMMData->Disconnect();
+    
      }
     catch(Exception &E)
     {
@@ -2444,9 +2453,9 @@ void TfrmSetup::IsSyncRequired()
 //--------------------------------------------------------------
 void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath)
 {
- 
   try
    {
+
      AnsiString TextNewPath;
      AnsiString TextNewMenumatePath;
      AnsiString DefaultCompany;
@@ -2454,22 +2463,43 @@ void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath, AnsiString Man
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
      RegistryRead(Key, "StockDataFile", TextNewPath);
      RegistryRead(Key, "MMDataFile", TextNewMenumatePath);
-
-     if(status)
+     RegistryWrite(Key, "IsOfficeConnected", "0");
+     AnsiString Flag;
+     if((TextNewPath != TextOldPath) || (TextNewMenumatePath != Menumatepath))
      {
-        RegistryWrite(Key,"IsOfficeConnected","1");
+        if(status)
+        {
+            RegistryRead(Key, "IsOfficeConnected", Flag);
+            if(Flag == "0")
+            {
+                RegistryWrite(Key,"IsOfficeConnected","1");
+                IsSyncRequired();
+            }
+        }
+        else
+        {
+                RegistryWrite(Key,"IsOfficeConnected","0");
+                IsSyncRequired();
+
+        }
      }
      else
      {
-        RegistryWrite(Key,"IsOfficeConnected","0");
+            if(status)
+            {
+                    RegistryWrite(Key,"IsOfficeConnected","1");
+                    IsSyncRequired();
+            //    }
+
+           
+            }
      }
 
-     if((TextNewPath != TextOldPath) || (TextNewMenumatePath != ManumateOldPath))
-     {
-
-        IsSyncRequired();
      }
-    }
+
+ 
+ 
+
     catch(Exception &E)
     {
        throw;
