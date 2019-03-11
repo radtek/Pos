@@ -143,6 +143,7 @@ private:	// User declarations
     void WriteDBPathAndIPToFile();
     void UnsetOrderingDetails();
     void SetUpAustriaFiscal();
+    void VersionCompare();
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);
     void __fastcall IdleHandler(TObject *Sender, bool &Done);

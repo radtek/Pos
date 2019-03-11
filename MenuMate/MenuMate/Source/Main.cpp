@@ -104,6 +104,7 @@
 #pragma link "IdComponent"
 #pragma link "IdIPWatch"
 #include "RegistrationManager.h"
+#include "DBRegistration.h"
 
 #pragma link "C:\\Program Files (x86)\\Embarcadero\RAD Studio\\7.0\\lib\\psdk\\oleacc.lib"
 
@@ -473,6 +474,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		TGlobalSettings::Instance().FirstMallSet = false;
 		SaveBoolVariable(vmFirstMallSet, TGlobalSettings::Instance().FirstMallSet);
 		openCustomerDisplayServer();
+        //Checking current verion is equal to build version
+        VersionCompare();
 
         //Checking POS Resgistration Status and company validation
         std::auto_ptr<TRegistrationManager> mmRegistrationManager(new TRegistrationManager());
@@ -1922,3 +1925,27 @@ void TfrmMain::SetUpAustriaFiscal()
     // Call for Setting up Austria Fiscal
 }
 //------------------------------------------------------------------------------
+void TfrmMain::VersionCompare()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        UnicodeString BuildVersion = GetFileVersionString();
+        bool result = !(SameStr(TGlobalSettings::Instance().CurrentVersion, BuildVersion));
+        if (result)
+        {
+            TGlobalSettings::Instance().CurrentVersion = BuildVersion;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmCurrentVersion,TGlobalSettings::Instance().CurrentVersion);
+            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
+            MessageBox("Stop Check DB","Stop",MB_OK);
+        }
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &E)
+        {
+            TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+            DBTransaction.Rollback();
+        }
+}

@@ -455,7 +455,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().IsCloudSyncRequired = TManagerVariable::Instance().GetBool(DBTransaction, vmIsCloudSyncRequired, false);
         TGlobalSettings::Instance().CompanyName = TManagerVariable::Instance().GetStr(DBTransaction, vmCompanyName, "");
         TGlobalSettings::Instance().IsStockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsStockEnabled, false);
-        TGlobalSettings::Instance().PreviousVersion = TManagerVariable::Instance().GetStr(DBTransaction, vmPreviousVersion, "");
+        TGlobalSettings::Instance().CurrentVersion = TManagerVariable::Instance().GetStr(DBTransaction, vmCurrentVersion, "");
 
         }
 
