@@ -1938,7 +1938,6 @@ void TfrmMain::VersionCompare()
             TGlobalSettings::Instance().CurrentVersion = BuildVersion;
             TManagerVariable::Instance().SetDeviceStr(DBTransaction, vmCurrentVersion,TGlobalSettings::Instance().CurrentVersion);
             TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-            MessageBox("Stop Check DB","Stop",MB_OK);
         }
 
         DBTransaction.Commit();
