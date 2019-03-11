@@ -20,6 +20,7 @@ class TManagerOraclePMS : public TBasePMS
        AnsiString GetFileName();
        bool EnableOraclePMSSilently();
        bool FindAndTerminateProcess();
+       void ValidateMenuAvailabilityForRoomRevenue();
     private:
        bool GetLinkStatus();
        bool InitializeoracleTCP();
@@ -27,5 +28,6 @@ class TManagerOraclePMS : public TBasePMS
        bool TriggerApplication();
        void CloseExistingApplication();
        void MakeOracleSeedFile();
+       void ConfigurePostForSale(TPostRequest &postRequest,TPaymentTransaction &_paymentTransaction);
 };
 #endif

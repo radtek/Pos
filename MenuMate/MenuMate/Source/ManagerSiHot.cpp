@@ -91,6 +91,8 @@ void TManagerSiHot::Initialise()
     DefaultAccountNumber        = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
     RoundingAccountNumber       = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotRounding);
     ApiKey                      = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSAPIKey);
+    RoomServiceRevenueCenter    = TManagerVariable::Instance().GetInt(DBTransaction,vmRoomServiceRevenueCenter);
+    RoomServiceMenu             = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
     RevenueCodesMap.clear();
     UnsetPostingFlag();
 
@@ -101,13 +103,23 @@ void TManagerSiHot::Initialise()
         //pmsHelper->LoadPMSPaymentTypes(PMSPaymentTypeMap);
         if(pmsHelper->LoadRevenueCodes(RevenueCodesMap, DBTransaction))
         {
-            Enabled = GetRoundingandDefaultAccount();
+            if((TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() != "" && TDeviceRealTerminal::Instance().BasePMS->RoomServiceRevenueCenter > 0)
+                                                        || TDeviceRealTerminal::Instance().BasePMS->RoomServiceMenu.Trim() == "")
+            {
+                Enabled = GetRoundingandDefaultAccount();
+            }
+            else
+            {
+                MessageBox("Room Service Revenue Center is required for SiHot set up","Information",MB_OK);
+                Enabled = false;
+            }
         }
         else
         {
             MessageBox("Revenue codes are required for set up of SiHot.", "Warning", MB_OK + MB_ICONINFORMATION);
             Enabled = false;
         }
+
         if(Enabled)
         {
             DefaultAccountNumber = TManagerVariable::Instance().GetStr(DBTransaction,vmSiHotDefaultTransaction);
@@ -821,4 +833,37 @@ bool TManagerSiHot::CheckSihotPostingValidity(TPaymentTransaction paymentTransac
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     return  !isOnlyPointsTransaction && isNotCompleteCancel;
+}
+void TManagerSiHot::ValidateMenuAvailabilityForRoomRevenue()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+       TIBSQL *SelectQuery    = DBTransaction.Query(DBTransaction.AddQuery());
+       SelectQuery->SQL->Text =  "SELECT * FROM MENU WHERE MENU_NAME = :MENU_NAME AND DELETED = :DELETED ";
+       SelectQuery->ParamByName("MENU_NAME")->AsString = TManagerVariable::Instance().GetStr(DBTransaction,vmRoomServiceMenu);
+       SelectQuery->ParamByName("DELETED")->AsString   = "F";
+
+       SelectQuery->ExecQuery();
+
+       if(SelectQuery->RecordCount > 0)
+       {
+       }
+       else
+       {
+          if(RoomServiceMenu.Trim() != "")
+          {
+            RoomServiceMenu = "";
+            RoomServiceRevenueCenter = 0;
+            TManagerVariable::Instance().SetDeviceStr(DBTransaction,vmRoomServiceMenu,RoomServiceMenu);
+            TManagerVariable::Instance().SetDeviceInt(DBTransaction,vmRoomServiceRevenueCenter,RoomServiceRevenueCenter);
+          }
+       }
+       DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+    }
 }

@@ -39,6 +39,8 @@ class TBasePMS
         std::set<AnsiString> CodesTestedOk;
         std::vector<TTimeSlots> Slots;
         std::map<int,TRevenueCodeDetails> RevenueCodesMap;
+        int RoomServiceRevenueCenter;
+        AnsiString RoomServiceMenu;
         public :
         bool Registered;
         TPhoenixHM(Database::TDBControl &inDBControl);
@@ -58,6 +60,7 @@ class TBasePMS
         void virtual LogPMSEnabling(TriggerLocation triggerType);
         void virtual UnsetPostingFlag();
         void virtual StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *receiptStream);
+        void virtual ValidateMenuAvailabilityForRoomRevenue();
 };
 //extern TBasePMS *BasePMS;
 #endif

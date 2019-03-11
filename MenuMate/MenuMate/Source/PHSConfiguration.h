@@ -52,6 +52,8 @@ __published:	// IDE-managed Components
     TLabel *lblEnableItemDetailsPosting;
     TCheckBox *cbEnableStoreTicketPosting;
     TLabel *lblEnableStoreTicketPosting;
+    TTouchBtn *tbRoomServiceMenu;
+    TTouchBtn *tbRoomServiceRevenueCenter;
 	void __fastcall tbPhoenixIPAddressClick(TObject *Sender);
 	void __fastcall tbPhoenixPortNumberClick(TObject *Sender);
 	void __fastcall tbPhoenixIDClick(TObject *Sender);
@@ -79,6 +81,8 @@ __published:	// IDE-managed Components
     void __fastcall cbNoTaxToSihotClick(TObject *Sender);
     void __fastcall cbEnableItemDetailsPostingClick(TObject *Sender);
     void __fastcall cbEnableStoreTicketPostingClick(TObject *Sender);
+    void __fastcall tbRoomServiceRevenueCenterMouseClick(TObject *Sender);
+    void __fastcall tbRoomServiceMenuMouseClick(TObject *Sender);
 private:	// User declarations
 	__fastcall TfrmPHSConfiguration(TComponent* Owner);
    void UpdateGUI();
@@ -94,6 +98,8 @@ private:	// User declarations
    void SyncMewsDetailsFromCloud();
    AnsiString ShowVerticalSelection(eVertSel selectionType);
    AnsiString GetMewsName(AnsiString code,eVertSel selectionType);
+   void LoadActiveMenu(std::vector<UnicodeString> &menuName);
+   UnicodeString GetMenuName(std::vector<UnicodeString> menuNames);
 public:		// User declarations
    ePMS PMSType;
 };

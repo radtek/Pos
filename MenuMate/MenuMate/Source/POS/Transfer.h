@@ -255,10 +255,14 @@ private:	// User declarations
     void PrintTransferChefNotification(Database::TDBTransaction &DBTransaction ,bool IsPartialTransferForTable = false);
     bool IsDisplayTransferFromPressed;
     bool IsDisplayTransfertoPressed;
+    bool CheckIfMembershipUpdateRequired(int source_key, int DestTabKey);
+    void CheckAndTableStateForOO(bool IsNormalTransfer);
+    UnicodeString GetWarningMessage(int source_key, int DestTabKey, UnicodeString SourceEmail, UnicodeString DestinationEmail);
+
 
 public:		// User declarations
     __fastcall TfrmTransfer(TComponent* Owner,Database::TDBControl &inDBControl);
-	int CurrentSourceTable,CurrentDestTable, CurrentSourceRoom,CurrentDestRoom;
+	int CurrentSourceTable,CurrentDestTable, CurrentSourceRoom,CurrentDestRoom,SelectedDestTabKey;
 	TMMTabType CurrentSourceTabType,CurrentDestTabType;
 	TMMDisplayMode CurrentSourceDisplayMode,CurrentDestDisplayMode;
 	TMMContactInfo TempSourceUserInfo;
@@ -296,6 +300,9 @@ public:		// User declarations
     bool isClipLongPress;
     std::map<AnsiString,std::vector<AnsiString> > Partialtransfer;
     void SaveItemsGuestToPrint();
+    bool IsOrderKey;
+    bool IsTransferPerformed;
+    bool IsReverseTransfer;
 };
 //---------------------------------------------------------------------------
 #endif

@@ -150,6 +150,14 @@ public:
     static void SetMemberEmailLoyaltyKeyForTable(Database::TDBTransaction &DBTransaction,int tableNumber,int loyaltyKey, UnicodeString email);
     static void SetMemberEmailLoyaltyKeyForTab(Database::TDBTransaction &DBTransaction,int tabKey,int loyaltyKey, UnicodeString email);
     static bool IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int tableNumber);
+    static void LoadEmailAndLoyaltyKeyByTabKey(Database::TDBTransaction &DBTransaction,int tabKey,UnicodeString &email,int &loyaltyKey);
+    static void UpdateMemberLoyaltyForTabKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey, int destinationLoyaltyKey);
+    static void LoadEmailAndLoyaltyKeyByOrderKey(Database::TDBTransaction &DBTransaction,int orderKey,UnicodeString &email,int &loyaltyKey);
+    static void UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int orderKey, int destinationLoyaltyKey);
+    static void GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransaction,std::vector<UnicodeString> &MemberKeys, std::set<__int64> OrderKeys);
+    static bool CheckIfOrderExistOnSeatedTable(Database::TDBTransaction &DBTransaction, int tableNo);
+    static UnicodeString GetTabNameFromOrderKey(Database::TDBTransaction &DBTransaction,int orderKey);
+
 };
 //---------------------------------------------------------------------------
 #endif

@@ -1939,4 +1939,27 @@ UnicodeString TDBContacts::GetEmailIdOfMember(Database::TDBTransaction &DBTransa
    }
    return result;
 }
+//------------------------------------------------------------------------------
+UnicodeString TDBContacts::GetContactNameByEmail(Database::TDBTransaction &DBTransaction,UnicodeString email)
+{
+   UnicodeString result = "";
+   try
+   {
+      TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+      IBInternalQuery->Close();
+      IBInternalQuery->SQL->Text = "SELECT NAME FROM CONTACTS WHERE UPPER(EMAIL) = :EMAIL";
+      IBInternalQuery->ParamByName("EMAIL")->AsString = email.UpperCase();
+      IBInternalQuery->ExecQuery();
 
+      if(!IBInternalQuery->Eof)
+      {
+        result = IBInternalQuery->Fields[0]->AsString;
+      }
+   }
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, ERRORLOG, E.Message);
+	  throw;
+   }
+   return result;
+}

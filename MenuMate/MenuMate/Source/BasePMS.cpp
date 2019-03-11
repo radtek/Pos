@@ -87,3 +87,7 @@ void TBasePMS::StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *recei
 {
 }
 //---------------------------------------------------------------------------
+void TBasePMS::ValidateMenuAvailabilityForRoomRevenue()
+{
+}
+//---------------------------------------------------------------------------

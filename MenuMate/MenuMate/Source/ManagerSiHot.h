@@ -18,6 +18,7 @@ class TManagerSiHot : public TBasePMS
        void LogPMSEnabling(TriggerLocation triggerType);
        void UnsetPostingFlag();
        void StoreTicketPost(UnicodeString invoiceNumber, TMemoryStream *receiptData);
+       void ValidateMenuAvailabilityForRoomRevenue();
     private :
        bool RoomChargePost(TPaymentTransaction &_paymentTransaction);
        TRoomResponse SendRoomRequest(TRoomRequest _roomRequest);
