@@ -286,10 +286,10 @@ private:	// User declarations
     void UpdateItemSizePriceLevels(AnsiString isenabled, AnsiString alreadyEnabled, int currentPriceLevelsEnabled);
     bool ShowNoOfPriceLevelMessage();
     AnsiString getSuffixValue(AnsiString priceLevelName);
-    void IsSyncRequired();
-    void IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath);
-    AnsiString GetOldPath();
-    AnsiString GetOldMenumatePath();
+    void IsSyncRequired(AnsiString menumateDBOldPath , AnsiString menumateDBNewPath, bool isDBDisconnected = false);
+    void IsPathChange(AnsiString stockDBOldPath, AnsiString menumateDBOldPath);
+    AnsiString GetStockDBOldPath();
+    AnsiString GetMenumateDBOldPath();
     AnsiString Menumatepath ;
    
 

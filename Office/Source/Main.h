@@ -76,6 +76,7 @@ private:	// User declarations
    void       ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount );
    bool       IsDisplayOfficePath();
    bool       IsPosRegistered();
+   void       IsSyncRequired();
 
 public:		// User declarations
   __fastcall TfrmMain(TComponent* Owner);

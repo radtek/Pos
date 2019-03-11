@@ -162,9 +162,9 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			AnsiString RegisteredName = "";
 			bool Registered = false;
-           dmMMData->Registered(&Registered, NULL, &RegisteredName);
+            dmMMData->Registered(&Registered, NULL, &RegisteredName);
            
-		    if (IsDisplayOfficePath() && IsPosRegistered())
+		    if (IsDisplayOfficePath())
             {
                
                frmSplash->lbeRegistration->Caption = "Registered to " + DefaultCompany;
@@ -699,9 +699,28 @@ bool TfrmMain:: IsDisplayOfficePath()
 	 RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
      AnsiString Text;
      AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-     RegistryRead(Key,"IsOfficeConnected",value);
-     if(value == "1")
-        Isdatabasepathcorrect = true;
+     if(RegistryValueExists(Key, "IsOfficeConnected"))
+     {
+        RegistryRead(Key,"IsOfficeConnected",value);
+        if(value == "1" && IsPosRegistered())
+        {
+            Isdatabasepathcorrect = true;
+        }
+     }
+     else
+     {
+        if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
+        {
+            RegistryWrite(Key,"IsOfficeConnected","1");
+            IsSyncRequired();
+            Isdatabasepathcorrect = true;
+        }
+        else
+        {
+            RegistryWrite(Key,"IsOfficeConnected","0");
+        }
+     }
+     
      return Isdatabasepathcorrect;
     }
     catch(Exception &E)
@@ -726,13 +745,33 @@ bool TfrmMain::IsPosRegistered()
        {
             RetVal = true;
        }
-          qrComflag->Transaction->Commit();
+       qrComflag->Transaction->Commit();
     }
     catch(Exception &E)
     {
+       qrComflag->Transaction->Rollback();
        throw;
     }
       return  RetVal;
+
+}
+//------------------------------------------------------------------------------
+void TfrmMain::IsSyncRequired()
+{
+    try
+    {
+        qrComflag->Transaction->StartTransaction();
+	    qrComflag->Close();
+        qrComflag->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        qrComflag->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+        qrComflag->ExecQuery();
+        qrComflag->Transaction->Commit();
+     }
+    catch(Exception &E)
+    {
+        qrComflag->Transaction->Rollback();
+        throw;
+    }
 
 }
 

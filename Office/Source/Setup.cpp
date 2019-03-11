@@ -35,8 +35,8 @@ __fastcall TfrmSetup::TfrmSetup(TComponent* Owner)
 	CompanyDetailsList	= new TList;
 	ServersList				= new TStringList;
 	RetrieveNamesThread	= new TRetrieveNamesThread(true);
-  
-    Menumatepath = "localhost:C:\\Program Files\\MenuMate\\MenuMate.fdb" ;
+ 
+
 
 }
 //---------------------------------------------------------------------------
@@ -1152,9 +1152,6 @@ void __fastcall TfrmSetup::btnDeleteCompanyClick(TObject *Sender)
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
 {
-         AnsiString  TextOldPath = GetOldPath();
-         AnsiString  MenumateOldPath = GetOldMenumatePath();
-
         if(!ShowNoOfPriceLevelMessage())
         {
             TConnectionDetails *CurrentCompany = GetCurrentCompany();
@@ -1164,16 +1161,6 @@ void __fastcall TfrmSetup::btnCloseClick(TObject *Sender)
                 {
     
                     btnConnectCompanyClick(NULL);
-                   if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
-                    {
-
-                         IsPathChange(true, TextOldPath, MenumateOldPath);
-                    }
-                    else
-                    {
-                        IsPathChange(false, TextOldPath, MenumateOldPath);
-                    }  
-
                     ModalResult = mrOk;
                     return;
                 }
@@ -1373,6 +1360,8 @@ void TfrmSetup::SaveCurrentCompany()
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnConnectCompanyClick(TObject *Sender)
 {
+    AnsiString  stockDBOldPath = GetStockDBOldPath();
+    AnsiString  menumateDBOldPath = GetMenumateDBOldPath();
     if(!ShowNoOfPriceLevelMessage())
     {
         SaveCurrentCompany();
@@ -1406,7 +1395,8 @@ void __fastcall TfrmSetup::btnConnectCompanyClick(TObject *Sender)
             Application->MessageBox(("Connected to " + CurrentCompany->CompanyName + ".").c_str(), "Connected", MB_OK + MB_ICONINFORMATION);
             RegistryWrite(OfficeKey, "DefaultCompany", CurrentCompany->CompanyName);
         }
-    }    
+    }
+    IsPathChange(stockDBOldPath, menumateDBOldPath);
 }
 //---------------------------------------------------------------------------
 void __fastcall TfrmSetup::btnSelectSysDestPathClick(TObject *Sender)
@@ -2426,80 +2416,49 @@ bool TfrmSetup::ShowNoOfPriceLevelMessage()
     }
     return false;
 }
-
-//----------------------------------------------------------------------------------
-void TfrmSetup::IsSyncRequired()
-{
-   try
-    {
-      dmMMData->dbMenuMate->DatabaseName	= Menumatepath;
-	  dmMMData->dbMenuMate->Connected		= true;
-
-      qrupdateregistry->Transaction->StartTransaction();
-	  qrupdateregistry->Close();
-      qrupdateregistry->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
-      qrupdateregistry->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
-      qrupdateregistry->ExecQuery();
-      qrupdateregistry->Transaction->Commit();
-      dmMMData->Disconnect();
-    
-     }
-    catch(Exception &E)
-    {
-       throw;
-    }
-
-}
 //--------------------------------------------------------------
-void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath, AnsiString ManumateOldPath)
+void TfrmSetup::IsPathChange(AnsiString stockDBOldPath, AnsiString menumateDBOldPath)
 {
-  try
-   {
+    try
+    {   ;
+        AnsiString stockDBNewPath;
+        AnsiString menumateDBNewPath;
+        AnsiString DefaultCompany;
+        RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+        AnsiString Key = OfficeKey + "\\" + DefaultCompany;
 
-     AnsiString TextNewPath;
-     AnsiString TextNewMenumatePath;
-     AnsiString DefaultCompany;
-     RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
-     AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-     RegistryRead(Key, "StockDataFile", TextNewPath);
-     RegistryRead(Key, "MMDataFile", TextNewMenumatePath);
-     RegistryWrite(Key, "IsOfficeConnected", "0");
-     AnsiString Flag;
-     if((TextNewPath != TextOldPath) || (TextNewMenumatePath != Menumatepath))
-     {
-        if(status)
-        {
-            RegistryRead(Key, "IsOfficeConnected", Flag);
-            if(Flag == "0")
-            {
-                RegistryWrite(Key,"IsOfficeConnected","1");
-                IsSyncRequired();
-            }
-        }
-        else
-        {
-                RegistryWrite(Key,"IsOfficeConnected","0");
-                IsSyncRequired();
+        //Reading New Entered Paths For Stock And Menumate Both
+        RegistryRead(Key, "StockDataFile", stockDBNewPath);
+        RegistryRead(Key, "MMDataFile", menumateDBNewPath);
 
-        }
-     }
-     else
-     {
-            if(status)
-            {
+        //RegistryWrite(Key, "IsOfficeConnected", "0");
+        AnsiString Flag;
+        RegistryRead(Key, "IsOfficeConnected", Flag);
+
+        if((stockDBNewPath != stockDBOldPath) || (menumateDBNewPath != menumateDBOldPath))
+        {    
+            if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
+            {   
+                if(Flag == "0")
+                {  
                     RegistryWrite(Key,"IsOfficeConnected","1");
-                    IsSyncRequired();
-            //    }
-
-           
+                    IsSyncRequired(menumateDBOldPath, menumateDBNewPath);
+                }
             }
-     }
+            else
+            {
+                if(Flag == "1")
+                {   
+                    RegistryWrite(Key,"IsOfficeConnected","0");
+                    if(dmMMData->dbMenuMate->Connected)
+                        IsSyncRequired(menumateDBOldPath, menumateDBNewPath);
+                    else
+                        IsSyncRequired(menumateDBOldPath, menumateDBNewPath, true);
+                }
+            }
+        }
 
-     }
-
- 
- 
-
+    }
     catch(Exception &E)
     {
        throw;
@@ -2508,38 +2467,69 @@ void TfrmSetup::IsPathChange(bool status, AnsiString TextOldPath, AnsiString Man
 
 }
 //---------------------------------------------------------------------------------------------
-AnsiString TfrmSetup::GetOldPath()
+AnsiString TfrmSetup::GetStockDBOldPath()
 {
-    AnsiString TextOldPath = "";
+    AnsiString path = "";
     try
     {
         AnsiString DefaultCompany;
         RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
         AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-        RegistryRead(Key, "StockDataFile", TextOldPath);
+        RegistryRead(Key, "StockDataFile", path);
     }
     catch(Exception &E)
     {
         throw;
     }
-    return TextOldPath;
+    return path;
 }
 //-----------------------------------------------------------------------------------------------------
-AnsiString TfrmSetup::GetOldMenumatePath()
+AnsiString TfrmSetup::GetMenumateDBOldPath()
 {
-    AnsiString MenumateOldPath = "";
+    AnsiString path = "";
     try
     {
         AnsiString DefaultCompany;
         RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
         AnsiString Key = OfficeKey + "\\" + DefaultCompany;
-        RegistryRead(Key, "MMDataFile", MenumateOldPath);
+        RegistryRead(Key, "MMDataFile", path);
     }
     catch(Exception &E)
     {
         throw;
     }
-    return MenumateOldPath;
+    return path;
+}
+//----------------------------------------------------------------------------------
+void TfrmSetup::IsSyncRequired(AnsiString menumateDBOldPath, AnsiString menumateDBNewPath, bool isDBDisconnected)
+{
+    try
+    {
+        if(isDBDisconnected)
+        {   
+            dmMMData->dbMenuMate->DatabaseName	= menumateDBOldPath;
+	        dmMMData->dbMenuMate->Connected = true;
+            
+        }
+        qrupdateregistry->Transaction->StartTransaction();
+	    qrupdateregistry->Close();
+        qrupdateregistry->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        qrupdateregistry->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+        qrupdateregistry->ExecQuery();
+        qrupdateregistry->Transaction->Commit();
+        
+        if(isDBDisconnected)
+        {
+            dmMMData->dbMenuMate->DatabaseName =  menumateDBNewPath;
+            dmMMData->dbMenuMate->Connected = false;
+        }
+    
+     }
+    catch(Exception &E)
+    {
+       throw;
+    }
+
 }
 
 
