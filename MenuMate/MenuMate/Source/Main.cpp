@@ -1931,7 +1931,7 @@ void TfrmMain::VersionCompare()
     DBTransaction.StartTransaction();
     try
     {
-        UnicodeString BuildVersion = GetFileVersionString();
+        UnicodeString BuildVersion = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
         bool result = !(SameStr(TGlobalSettings::Instance().CurrentVersion, BuildVersion));
         if (result)
         {
