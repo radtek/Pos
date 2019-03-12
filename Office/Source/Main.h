@@ -77,6 +77,7 @@ private:	// User declarations
    bool       IsDisplayOfficePath();
    bool       IsPosRegistered();
    void       IsSyncRequired();
+   AnsiString GetCompanyName();
 
 public:		// User declarations
   __fastcall TfrmMain(TComponent* Owner);
