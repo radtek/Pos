@@ -60,6 +60,7 @@ private:	// User declarations
     void DrawMezzanineArea(bool isLoadTime = true, bool isTableSelected = true);
     std::set<int> LoadMizzanineTables();
     void SaveLocationId(int locationId);
+    bool CheckIfOOEnabledForAnyTerminal();
 public:		// User declarations
     std::auto_ptr<TablePlan::PlanController> _controller;
 	__fastcall TFrmSelectTable2(TComponent* Owner, Database::TDBControl &IBDatabase);

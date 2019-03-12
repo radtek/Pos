@@ -441,7 +441,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         SelectedTabContainerNumber = Table->Number;
 
          // checking bill button option whether online ordering is true or table has order in it.
-        if(TGlobalSettings::Instance().EnableOnlineOrdering || TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
+        if(CheckIfOOEnabledForAnyTerminal() || TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
         {
             if (Table != NULL)
             {
@@ -455,7 +455,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 Item.CloseSelection = true;
                 SelectionForm->Items.push_back(Item);
 
-                if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                if(CheckIfOOEnabledForAnyTerminal())
                 {
                     showSelectionForm = true;
                     TVerticalSelection Item1;
@@ -539,4 +539,35 @@ void __fastcall TFrmSelectTable2::imgTablesMouseUp(TObject *Sender, TMouseButton
     tiTimerEnableReq->Enabled = false;
 }
 //---------------------------------------------------------------------------
+bool TFrmSelectTable2::CheckIfOOEnabledForAnyTerminal()
+{
+    bool status = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
 
+        IBInternalQuery->SQL->Text =  "SELECT COUNT(VARSPROFILE_KEY) V_KEY FROM VARSPROFILE "
+                                      "WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
+
+        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->FieldByName("V_KEY")->AsInteger > 0)
+            status = true;
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+	return status;
+}

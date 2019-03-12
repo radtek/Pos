@@ -365,7 +365,7 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
 		tr.StartTransaction();
 
         int selection = 1;
-        if(TGlobalSettings::Instance().EnableOnlineOrdering)
+        if(CheckIfOOEnabledForAnyTerminal())
             selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
 
         if(selection == 1)
@@ -3747,4 +3747,37 @@ int TfrmMaintain::ChooseOperation(Database::TDBTransaction &DBTransaction, int s
         returnValue = action;
     }
     return returnValue;
+}
+//------------------------------------------------------------------------------
+bool TfrmMaintain::CheckIfOOEnabledForAnyTerminal()
+{
+    bool status = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+
+        IBInternalQuery->SQL->Text =  "SELECT COUNT(VARSPROFILE_KEY) V_KEY FROM VARSPROFILE "
+                                      "WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
+
+        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
+
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->FieldByName("V_KEY")->AsInteger > 0)
+            status = true;
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+	return status;
 }
