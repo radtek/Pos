@@ -2431,7 +2431,6 @@ void TfrmSetup::IsPathChange(AnsiString stockDBOldPath, AnsiString menumateDBOld
         RegistryRead(Key, "StockDataFile", stockDBNewPath);
         RegistryRead(Key, "MMDataFile", menumateDBNewPath);
 
-        //RegistryWrite(Key, "IsOfficeConnected", "0");
         AnsiString Flag;
         RegistryRead(Key, "IsOfficeConnected", Flag);
 
