@@ -364,12 +364,12 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
     {
 		tr.StartTransaction();
 
-        int selection = 1;
-        if(CheckIfOOEnabledForAnyTerminal())
-            selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
-
-        if(selection == 1)
-        {
+//        int selection = 1;
+//        if(CheckIfOOEnabledForAnyTerminal())
+//          int selection = ChooseOperation(tr ,frm_seltbl->SelectedTabContainerNumber);
+//
+//        if(selection == 1)
+//        {
             if(TGlobalSettings::Instance().IsTableLockEnabled)
             {
                 UnicodeString StaffName = TDBTables::GetStaffNameForSelectedTable(tr, frm_seltbl->SelectedTabContainerNumber);
@@ -384,29 +384,32 @@ void __fastcall TfrmMaintain::btnTableNameClick(TObject *Sender)
             frm_tchkb->KeyboardText = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
             if (frm_tchkb->ShowModal() == mrOk)
             {
-                bool isTableMarkedForOO = TDBTables::IsTableMarked(tr, frm_seltbl->SelectedTabContainerNumber);
-                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, frm_tchkb->KeyboardText, isTableMarkedForOO);
+//                bool isTableMarkedForOO = TDBTables::IsTableMarked(tr, frm_seltbl->SelectedTabContainerNumber);
+//                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, frm_tchkb->KeyboardText, isTableMarkedForOO);
+//                must_signal_changes |= 1;
+                TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber,
+                frm_tchkb->KeyboardText);
                 must_signal_changes |= 1;
             }
-        }
-        else if(selection == 2)
-        {
-            UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
-            bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
-           
-            if(isTableAlreadyMarked)
-            {
-                TDBTables::UpdateTableStateForOO(tr, frm_seltbl->SelectedTabContainerNumber, !isTableAlreadyMarked);
-                MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
-            }
-            else
-            {
-                 TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, tableName, !isTableAlreadyMarked);
-                 MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
-            }
-
-            must_signal_changes |= 1;
-        }
+//        }
+//        else if(selection == 2)
+//        {
+//            UnicodeString tableName = TDBTables::GetTableName(tr, frm_seltbl->SelectedTabContainerNumber);
+//            bool isTableAlreadyMarked = TDBTables::IsTableMarked(tr,frm_seltbl->SelectedTabContainerNumber);
+//
+//            if(isTableAlreadyMarked)
+//            {
+//                TDBTables::UpdateTableStateForOO(tr, frm_seltbl->SelectedTabContainerNumber, !isTableAlreadyMarked);
+//                MessageBox(tableName + " is now Not Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+//            }
+//            else
+//            {
+//                 TDBTables::SetTableName(tr, frm_seltbl->SelectedTabContainerNumber, tableName, !isTableAlreadyMarked);
+//                 MessageBox(tableName + " is now Seated.", "Info", MB_OK + MB_ICONINFORMATION);
+//            }
+//
+//            must_signal_changes |= 1;
+//        }
 		tr.Commit();
 
 		frm_seltbl->ShowAll = true;

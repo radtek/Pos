@@ -202,6 +202,7 @@ private:	// User declarations
     void ShowMemberSelectScreen(std::set <__int64> ReceiptItemKeys);
     void ApplyMembershipIfLoyaltyEnabled(Database::TDBTransaction &DBTransaction, UnicodeString email);
     UnicodeString GetWarningMessage(Database::TDBTransaction &DBTransaction, int source_key, UnicodeString SourceEmail, UnicodeString DestinationEmail);
+    bool CheckIfOOEnabledForAnyTerminal();
 public:		// User declarations
 	__fastcall TfrmBillGroup(TComponent* Owner,Database::TDBControl &inDBControl);
 	void SplitItemsInSet(Database::TDBTransaction &, int);
