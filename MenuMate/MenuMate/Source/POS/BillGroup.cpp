@@ -5719,7 +5719,7 @@ void TfrmBillGroup::UpdateTabeleStateForOO()
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-    bool isTableBilled = CheckIfOOEnabledForAnyTerminal() && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
+    bool isTableBilled = TDBTables::CheckIfOOEnabledForAnyTerminal() && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
                                 TDBTables::IsTableBilled(DBTransaction, CurrentTable);
      if(isTableBilled)
         TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
@@ -5992,35 +5992,4 @@ UnicodeString TfrmBillGroup::GetWarningMessage(Database::TDBTransaction &DBTrans
     return warningMessage;
 }
 //---------------------------------------------------------------------------
-bool TfrmBillGroup::CheckIfOOEnabledForAnyTerminal()
-{
-    bool status = false;
-    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
-    TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
-    DBTransaction.StartTransaction();
-    try
-    {
-        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-        IBInternalQuery->Close();
 
-        IBInternalQuery->SQL->Text =  "SELECT COUNT(VARSPROFILE_KEY) V_KEY FROM VARSPROFILE "
-                                      "WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
-
-        IBInternalQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
-
-        IBInternalQuery->ExecQuery();
-
-        if(IBInternalQuery->FieldByName("V_KEY")->AsInteger > 0)
-            status = true;
-
-        DBTransaction.Commit();
-    }
-    catch(Exception &ex)
-    {
-        DBTransaction.Rollback();
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        throw;
-    }
-
-	return status;
-}

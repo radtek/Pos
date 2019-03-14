@@ -225,7 +225,6 @@ private:
     void SetUpAustriaFiscal();
     void SetUpPosPlus();
     int ChooseOperation(Database::TDBTransaction &DBTransaction, int selectedNumber);
-    bool CheckIfOOEnabledForAnyTerminal();
 
     public: // User declarations
 };
