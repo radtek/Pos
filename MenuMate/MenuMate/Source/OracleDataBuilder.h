@@ -32,6 +32,10 @@ class TOracleDataBuilder
         bool DeserializeGetLinkStatus(AnsiString inData);
         bool DeserializeInquiryData(AnsiString inData, TRoomInquiryResult &_roomResult);
         bool DeserializeData(AnsiString inData, TPostRequestAnswer &_postResult);
+        void GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap);
+        AnsiString GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap);
+        AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
+        AnsiString GetRevenueCentre(TPayment *payment, TPaymentTransaction paymentTransaction);
 
     private:
         TiXmlElement *_rootElem;
@@ -58,12 +62,12 @@ class TOracleDataBuilder
         void GetPaymentAttributes(Database::TDBTransaction &DBTransaction,int PaymentKey,TPayment &Payment);
         std::vector<TPayment> PaymentLoad(Database::TDBTransaction &DBTransaction);
         double SUrcharge;
-        void GetPMSPaymentType(std::map<int,TPMSPaymentType> &paymentMap);
-        AnsiString GetPMSPaymentCode(TPayment *payment,std::map<int,TPMSPaymentType> paymentsMap);
-        AnsiString GetPMSDefaultCode(std::map<int,TPMSPaymentType> paymentsMap);
        void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
        AnsiString DoRequiredInsertion(TPayment *payment,std::map<int,TPMSPaymentType> &paymentsMap);
        void AdjustRounding(std::map<int,double> &subtotals, std::map<int, double> &discMap,
                              std::map<int,double> &taxMap, std::map<int, double> &serviceChargeMap);
+
+
 };
+
 #endif

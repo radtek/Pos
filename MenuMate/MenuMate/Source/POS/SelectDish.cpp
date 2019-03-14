@@ -3642,7 +3642,7 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
 
                 if(TGlobalSettings::Instance().LoyaltyMateEnabled && SeatOrders[iSeat]->Orders->AppliedMembership.ContactKey)
                 {
-                    Order->Email = Membership.Member.EMail;
+                    Order->Email = SeatOrders[iSeat]->Orders->AppliedMembership.EMail;
                     Order->Loyalty_Key = Membership.Member.ContactKey;
                 }
                 else
@@ -3961,11 +3961,11 @@ bool TfrmSelectDish::ProcessOrders(TPaymentTransaction &PaymentTransaction,TObje
                     ManagerDiscount->ClearLoyaltyMemberDiscounts(OrdersList.get());
                 }
 
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey && SelectedTable)
-                {
-                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(PaymentTransaction.DBTransaction, SelectedTable, PaymentTransaction.Membership.Member.ContactKey,
-                                                    PaymentTransaction.Membership.Member.EMail);
-                }
+//                if(TGlobalSettings::Instance().LoyaltyMateEnabled && PaymentTransaction.Membership.Member.ContactKey && SelectedTable)
+//                {
+//                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(PaymentTransaction.DBTransaction, SelectedTable, PaymentTransaction.Membership.Member.ContactKey,
+//                                                    PaymentTransaction.Membership.Member.EMail);
+//                }
 
 				TDBOrder::ProcessOrders(PaymentTransaction.DBTransaction, OrdersList.get()); // Put Orders in DB where required.
                 if(TableNo > 0)
@@ -10622,11 +10622,11 @@ TModalResult TfrmSelectDish::GetTableContainer(Database::TDBTransaction &DBTrans
 			{
 				int TabKey = SelectedItem.Properties["TabKey"];
 
-                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
-                {
-                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
-                                                    Membership.Member.EMail);
-                }
+//                if(TGlobalSettings::Instance().LoyaltyMateEnabled && Membership.Member.ContactKey)
+//                {
+//                    TDBOrder::SetMemberEmailLoyaltyKeyForTable(DBTransaction, selectedTable, Membership.Member.ContactKey,
+//                                                    Membership.Member.EMail);
+//                }
 
                 if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot &&
                             TGlobalSettings::Instance().EnableCustomerJourney )
@@ -14982,17 +14982,18 @@ void TfrmSelectDish::ApplyMembership(Database::TDBTransaction &DBTransaction, TM
 		Membership.Assign(Member, MemberSource);
 		// Sort out Free Drinks and stuff.
 		std::vector<int>SeatsToApply;
-		if (ApplyToAllSeats == true)
-		{
-			for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
-			{
-				SeatsToApply.push_back(iSeat);
-			}
-		}
-		else
-		{
+//        ApplyToAllSeats == true
+//		if (true)
+//		{
+//			for (UINT iSeat = 0; iSeat < SeatOrders.size(); iSeat++)
+//			{
+//				SeatsToApply.push_back(iSeat);
+//			}
+//		}
+//		else
+//		{
 			SeatsToApply.push_back(SelectedSeat);
-		}
+//		}
 
 		for (UINT iSeat = 0; iSeat < SeatsToApply.size(); iSeat++)
 		{

@@ -5155,3 +5155,207 @@ bool TDBOrder::IsOrderSavedToTable(Database::TDBTransaction &DBTransaction, int 
 
     return isOrderExist;
 }
+//------------------------------------------------------------------------------
+void TDBOrder::LoadEmailAndLoyaltyKeyByTabKey(Database::TDBTransaction &DBTransaction,int tabKey,UnicodeString &email,int &loyaltyKey)
+{
+   try
+   {
+       TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+       IBInternalQuery->Close();
+       IBInternalQuery->SQL->Text = "SELECT FIRST(1) EMAIL, LOYALTY_KEY FROM ORDERS "
+                                      " WHERE TAB_KEY =:TAB_KEY";
+       IBInternalQuery->ParamByName("TAB_KEY")->AsInteger = tabKey;
+
+       IBInternalQuery->ExecQuery();
+       if(!IBInternalQuery->Eof && IBInternalQuery->Fields[0]->AsString != "")
+       {
+         email = IBInternalQuery->Fields[0]->AsString;
+         loyaltyKey = IBInternalQuery->Fields[1]->AsInteger;
+       }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TDBOrder::UpdateMemberLoyaltyForTabKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int tabKey, int destinationLoyaltyKey)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "UPDATE ORDERS SET EMAIL =:DESTINATION_EMAIL,LOYALTY_KEY =:LOYALTY_KEY WHERE "
+                           "EMAIL =:SOURCE_EMAIL AND TAB_KEY =:TAB_KEY ";
+
+        query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
+        query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
+        query->ParamByName("TAB_KEY")->AsInteger = tabKey;
+        query->ParamByName("LOYALTY_KEY")->AsInteger = destinationLoyaltyKey;
+
+        query->ExecQuery();
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+}
+//------------------------------------------------------------------------------
+void TDBOrder::LoadEmailAndLoyaltyKeyByOrderKey(Database::TDBTransaction &DBTransaction,int orderKey,UnicodeString &email,int &loyaltyKey)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT EMAIL, LOYALTY_KEY FROM ORDERS "
+                                      " WHERE ORDER_KEY =:ORDER_KEY";
+        IBInternalQuery->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+
+        IBInternalQuery->ExecQuery();
+        if(!IBInternalQuery->Eof && IBInternalQuery->Fields[0]->AsString != "")
+        {
+            email = IBInternalQuery->Fields[0]->AsString;
+            loyaltyKey = IBInternalQuery->Fields[1]->AsInteger;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TDBOrder::UpdateMemberLoyaltyForOrderKey(Database::TDBTransaction &DBTransaction, UnicodeString sourceEmail, UnicodeString destinationEmail, int orderKey, int destinationLoyaltyKey)
+{
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "UPDATE ORDERS SET EMAIL =:DESTINATION_EMAIL,LOYALTY_KEY =:LOYALTY_KEY WHERE "
+                           "EMAIL =:SOURCE_EMAIL AND (ORDER_KEY =:ORDER_KEY OR SIDE_ORDER_KEY =:ORDER_KEY) ";
+
+        query->ParamByName("SOURCE_EMAIL")->AsString = sourceEmail;
+        query->ParamByName("DESTINATION_EMAIL")->AsString = destinationEmail;
+        query->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+        query->ParamByName("LOYALTY_KEY")->AsInteger = destinationLoyaltyKey;
+
+        query->ExecQuery();
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+}
+//------------------------------------------------------------------------------
+void TDBOrder::GetMemberEmailsFromOrderKeys(Database::TDBTransaction &DBTransaction,std::vector<UnicodeString> &MemberKeys, std::set<__int64> OrderKeys)
+{
+	if(OrderKeys.empty())
+	{
+		return;
+	}
+
+	try
+	{
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		std::auto_ptr<TStringList> KeysList(new TStringList);
+		KeysList->QuoteChar = ' ';
+		KeysList->Delimiter = ',';
+
+		int i = 1;
+		for (std::set<__int64>::const_iterator pOrderKey = OrderKeys.begin(); pOrderKey != OrderKeys.end(); advance(pOrderKey,1), i++)
+		{
+			UnicodeString OrderKey = IntToStr((int)*pOrderKey);
+			if(i%1000 == 0)
+			{
+				i = 1;
+				OrderKey = OrderKey + ") OR ORDER_KEY IN ( " + OrderKey;
+			}
+			KeysList->Add(OrderKey);
+		}
+
+		IBInternalQuery->SQL->Text =
+		"SELECT "
+		"DISTINCT EMAIL "
+		"FROM "
+		"ORDERS "
+		"WHERE "
+		"ORDER_KEY IN (" + KeysList->DelimitedText + ") "
+		"ORDER BY ORDER_KEY";
+		IBInternalQuery->ExecQuery();
+		if (IBInternalQuery->RecordCount > 0)
+		{
+			for(; !IBInternalQuery->Eof;	IBInternalQuery->Next())
+			{
+                if(IBInternalQuery->FieldByName("EMAIL")->AsString.Trim() != "")
+				    MemberKeys.push_back(IBInternalQuery->FieldByName("EMAIL")->AsString);
+			}
+		}
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+bool TDBOrder::CheckIfOrderExistOnSeatedTable(Database::TDBTransaction &DBTransaction, int tableNo)
+{
+    bool retValue = false;
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "SELECT COUNT(ORDER_KEY) ORDER_ID FROM ORDERS "
+                           "WHERE TABLE_NUMBER =:TABLE_NUMBER ";
+
+        query->ParamByName("TABLE_NUMBER")->AsInteger = tableNo;
+        query->ExecQuery();
+
+        if(query->FieldByName("ORDER_ID")->AsInteger > 0)
+            retValue = true;
+
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------
+UnicodeString TDBOrder::GetTabNameFromOrderKey(Database::TDBTransaction &DBTransaction,int orderKey)
+{
+    UnicodeString retValue = "";
+    try
+    {
+        TIBSQL* query = DBTransaction.Query(DBTransaction.AddQuery());
+        query->Close();
+
+        query->SQL->Text = "SELECT TAB_NAME FROM ORDERS "
+                           "WHERE ORDER_KEY =:ORDER_KEY ";
+
+        query->ParamByName("ORDER_KEY")->AsInteger = orderKey;
+        query->ExecQuery();
+
+        if(!query->Eof && query->FieldByName("TAB_NAME")->AsString != "")
+        {
+            retValue = query->FieldByName("TAB_NAME")->AsString;
+        }
+
+    }
+    catch(Exception &ex)
+    {
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+    return retValue;
+}
+

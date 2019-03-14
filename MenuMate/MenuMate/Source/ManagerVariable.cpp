@@ -3330,7 +3330,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
                   vmgPOS,
                   0.00);
 		SetVarStr(DBTransaction,vmRevenueCentre, "PMS Revenue Centre",
-		"PMS Revenue Centre./r"
+		"PMS Revenue Centre.\r"
 		"Default is 0",
 		vmg3rdPartyInterface, "0");
 
@@ -3431,6 +3431,12 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         SetVarBool(DBTransaction, vmIsCloudSyncRequired,"Is Cloud Sync Required", "Is Cloud Sync Required", vmgPOS, false);
         SetVarStr(DBTransaction, vmCompanyName, "Registered Company Name", "Registered Company Name", vmgPOS, "");
         SetVarBool(DBTransaction, vmIsStockEnabled,"Is Stock Enabled", "Is Stock Enabled", vmgPOS, false);
+        SetVarInt(DBTransaction,vmRoomServiceRevenueCenter, "Room Service Revenue Center","Room Service Revenue Center .\r"
+        "Default is 0",
+        vmg3rdPartyInterface, 0);
+        SetVarStr(DBTransaction,vmRoomServiceMenu, "Room Service Menu","Room Service Menu.\r"
+        "Default is blank",
+        vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmCurrentVersion, "Current Version", "Current Version", vmgPOS, "");
 	}
 	catch(Exception &E)
