@@ -133,7 +133,7 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		frmSplash->Repaint();
 		try
 		{
-			dmMMData		= new TdmMMData(Application);
+		 	dmMMData		= new TdmMMData(Application);
 			dmStockData	    = new TdmStockData(Application);
             dmChefMateData  = new TdmChefMateData(Application);
 		}
@@ -162,10 +162,15 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 
 			AnsiString RegisteredName = "";
 			bool Registered = false;
-			dmMMData->Registered(&Registered, NULL, &RegisteredName);
-			if (Registered)
-			{
-				frmSplash->lbeRegistration->Caption = "Registered to " + RegisteredName;
+            dmMMData->Registered(&Registered, NULL, &RegisteredName);
+           
+		    if (IsDisplayOfficePath())
+            {
+               AnsiString companyName = GetCompanyName();
+               if(companyName != "")
+                   frmSplash->lbeRegistration->Caption = "Registered to " + companyName;
+               else
+                   frmSplash->lbeRegistration->Caption = "Evaluation Version";
 			}
 			else
 			{
@@ -688,4 +693,117 @@ void TfrmMain::ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount )
 	}
 }
 //---------------------------------------------------------------------------
+bool TfrmMain:: IsDisplayOfficePath()
+{
+  try
+   {
+     bool Isdatabasepathcorrect = false;
+     AnsiString value;
+	 RegistryRead(OfficeKey, "DefaultCompany", DefaultCompany);
+     AnsiString Text;
+     AnsiString Key = OfficeKey + "\\" + DefaultCompany;
+     if(RegistryValueExists(Key, "IsOfficeConnected"))
+     {
+        RegistryRead(Key,"IsOfficeConnected",value);
+        if(value == "1" && IsPosRegistered())
+        {
+            Isdatabasepathcorrect = true;
+        }
+     }
+     else
+     {
+        if(dmStockData->dbStock->Connected  &&  dmMMData->dbMenuMate->Connected)
+        {
+            RegistryWrite(Key,"IsOfficeConnected","1");
+            IsSyncRequired();
+            Isdatabasepathcorrect = true;
+        }
+        else
+        {
+            RegistryWrite(Key,"IsOfficeConnected","0");
+        }
+     }
+     
+     return Isdatabasepathcorrect;
+    }
+    catch(Exception &E)
+    {
+       throw;
+    }
+
+
+}
+//-------------------------------------------------------------------------------------------------------------
+bool TfrmMain::IsPosRegistered()
+{
+    bool RetVal = false;
+    try
+    {
+      qrComflag->Transaction->StartTransaction();
+	  qrComflag->Close();
+      qrComflag->SQL->Text = "SELECT VARIABLES_KEY FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 ";
+      qrComflag->ParamByName("VARIABLES_KEY")->AsInteger = 2302;
+      qrComflag->ExecQuery();
+      if(qrComflag->RecordCount)
+       {
+            RetVal = true;
+       }
+       qrComflag->Transaction->Commit();
+    }
+    catch(Exception &E)
+    {
+       qrComflag->Transaction->Rollback();
+       throw;
+    }
+      return  RetVal;
+
+}
+//------------------------------------------------------------------------------
+void TfrmMain::IsSyncRequired()
+{
+    try
+    {
+        qrComflag->Transaction->StartTransaction();
+	    qrComflag->Close();
+        qrComflag->SQL->Text =  "UPDATE VARSPROFILE SET INTEGER_VAL = 1 WHERE VARIABLES_KEY = :VARIABLES_KEY ";
+        qrComflag->ParamByName("VARIABLES_KEY")->AsInteger = 2303;
+        qrComflag->ExecQuery();
+        qrComflag->Transaction->Commit();
+     }
+    catch(Exception &E)
+    {
+        qrComflag->Transaction->Rollback();
+        throw;
+    }
+
+}
+//------------------------------------------------------------------------------
+AnsiString TfrmMain::GetCompanyName()
+{
+    AnsiString RetVal = "";
+    try
+    {
+      qrComflag->Transaction->StartTransaction();
+	  qrComflag->Close();
+      qrComflag->SQL->Text = "SELECT FIRST 1 VARCHAR_VAL FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND VARCHAR_VAL <> :VALUE AND VARCHAR_VAL IS NOT NULL ";
+      qrComflag->ParamByName("VARIABLES_KEY")->AsInteger = 4150;
+      qrComflag->ParamByName("VALUE")->AsString = "";
+      qrComflag->ExecQuery();
+      if(qrComflag->FieldByName("VARCHAR_VAL")->AsString != "")
+       {
+            RetVal = qrComflag->FieldByName("VARCHAR_VAL")->AsString;
+       }
+       qrComflag->Transaction->Commit();
+    }
+    catch(Exception &E)
+    {
+       qrComflag->Transaction->Rollback();
+       throw;
+    }
+      return  RetVal;
+
+}
+
+
+
 

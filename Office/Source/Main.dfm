@@ -1172,4 +1172,10 @@ object frmMain: TfrmMain
     Left = 168
     Top = 240
   end
+  object qrComflag: TIBSQL
+    Database = dmMMData.dbMenuMate
+    Transaction = dmMMData.trMenuMate
+    Left = 48
+    Top = 312
+  end
 end

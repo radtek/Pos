@@ -14,6 +14,8 @@
 #include "pngimage.hpp"
 #include "touchbtn.h"
 #include "touchcontrols.h"
+#include <IBSQL.hpp>
+
 
 //---------------------------------------------------------------------------
 class TfrmMain : public TForm
@@ -32,6 +34,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *btnSetup;
 	TTouchBtn *btnExit;
 	TTouchBtn *btnCashup;
+    TIBSQL *qrComflag;
     TTimer *tiFailedXeroInvoices;
   void __fastcall FormShow(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
@@ -56,7 +59,7 @@ protected:
 private:	// User declarations
 	TPanel *Panels[9];
 	bool JustBooted;
-
+    AnsiString DefaultCompany;
 //	AnsiString PayrollKey;
 
 //	bool GetUserPeriods(TDateTime *Periods);
@@ -71,6 +74,10 @@ private:	// User declarations
    bool       FailedXeroInvoivesToSend();
    void       SendFailedXeroInvoices();
    void       ResetFailedXeroInvoiceTimerInterval( unsigned inInvoiceCount );
+   bool       IsDisplayOfficePath();
+   bool       IsPosRegistered();
+   void       IsSyncRequired();
+   AnsiString GetCompanyName();
 
 public:		// User declarations
   __fastcall TfrmMain(TComponent* Owner);
