@@ -441,7 +441,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
         SelectedTabContainerNumber = Table->Number;
 
          // checking bill button option whether online ordering is true or table has order in it.
-        if(TGlobalSettings::Instance().EnableOnlineOrdering || TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
+        if(TDBTables::CheckIfOOEnabledForAnyTerminal() || TDBOrder::IsOrderSavedToTable(dBTransaction, SelectedTabContainerNumber))
         {
             if (Table != NULL)
             {
@@ -455,7 +455,7 @@ void __fastcall TFrmSelectTable2::tiTimerEnableReqTimer(TObject *Sender)
                 Item.CloseSelection = true;
                 SelectionForm->Items.push_back(Item);
 
-                if(TGlobalSettings::Instance().EnableOnlineOrdering)
+                if(TDBTables::CheckIfOOEnabledForAnyTerminal())
                 {
                     showSelectionForm = true;
                     TVerticalSelection Item1;

@@ -5719,7 +5719,7 @@ void TfrmBillGroup::UpdateTabeleStateForOO()
     Database::TDBTransaction DBTransaction(DBControl);
     TDeviceRealTerminal::Instance().RegisterTransaction(DBTransaction);
     DBTransaction.StartTransaction();
-    bool isTableBilled = TGlobalSettings::Instance().EnableOnlineOrdering && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
+    bool isTableBilled = TDBTables::CheckIfOOEnabledForAnyTerminal() && TDBTables::IsTableMarked(DBTransaction, CurrentTable) &&
                                 TDBTables::IsTableBilled(DBTransaction, CurrentTable);
      if(isTableBilled)
         TDBTables::UpdateTableStateForOO(DBTransaction, CurrentTable, false);
@@ -5991,3 +5991,5 @@ UnicodeString TfrmBillGroup::GetWarningMessage(Database::TDBTransaction &DBTrans
     }
     return warningMessage;
 }
+//---------------------------------------------------------------------------
+
