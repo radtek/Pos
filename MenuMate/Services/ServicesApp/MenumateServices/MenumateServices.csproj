@@ -182,6 +182,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MenumateServiceOnlineOrdering.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MenumateServiceOnlineOrdering.Designer.cs">
+      <DependentUpon>MenumateServiceOnlineOrdering.cs</DependentUpon>
+    </Compile>
     <Compile Include="DTO\Enum\MenuType.cs" />
     <Compile Include="DTO\Enum\OrderContainerType.cs" />
     <Compile Include="DTO\Enum\OrderType.cs" />
