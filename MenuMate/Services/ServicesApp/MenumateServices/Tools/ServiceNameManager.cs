@@ -53,6 +53,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.MewsIntegration: return "MewsIntegrationWebService";
                 case MenumateServicesIdentifier.AustriaFiscalIntegration: return "AustriaFiscalIntegrationWebService";
                 case MenumateServicesIdentifier.RegistrationIntegration: return "RegistrationIntegrationWebService";
+                case MenumateServicesIdentifier.OnlineOrdering: return "MenumateServiceOnlineOrdering";
                 default: return @"";
             }
         }
@@ -78,6 +79,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
                 case MenumateServicesIdentifier.SmartConnect: return "Menumate Smart Connect";
                 case MenumateServicesIdentifier.PaymentSense: return "Menumate Payment Sense";
+                case MenumateServicesIdentifier.OnlineOrdering: return "Menumate Online Ordering";
                 default: return @"";
             }
         }
@@ -103,6 +105,7 @@ namespace MenumateServices
                 case MenumateServicesIdentifier.WalletPayments: return "Menumate Wallet Payments Sevice";
                 case MenumateServicesIdentifier.SmartConnect: return "Menumate SmartConnect Server";
                 case MenumateServicesIdentifier.PaymentSense: return "Menumate PaymentSense Server";
+                case MenumateServicesIdentifier.OnlineOrdering: return "Menumate Online Ordering Server";
                 default: return @"";
             }
         }

@@ -3,13 +3,13 @@ using System.Diagnostics;
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.LoyaltyMate;
 using MenumateServices.Internal_Classes.LoyaltyMate;
-using MenumateServices.DTO.OnlineOrdering;
+using MenumateServices.DTO.MenumateOnlineOrdering;
 using System.ServiceModel.Activation;
 using System.ServiceModel;
 using Loyaltymate.Utility;
-using MenumateServices.DTO.OnlineOrdering.DBOrders;
-using MenumateServices.DTO.OnlineOrdering.OrderModels;
-using MenumateServices.DTO.OnlineOrdering.MenuModels;
+using MenumateServices.DTO.MenumateOnlineOrdering.DBOrders;
+using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
 using System.Collections.Generic;
 using MenumateServices.Tools;
@@ -235,7 +235,7 @@ namespace MenumateServices.WCFServices
             return loyaltyResponse;
         }
 
-        public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
+        /*public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
         {
             try
             {
@@ -350,7 +350,7 @@ namespace MenumateServices.WCFServices
                 WriteAndClearStringList();
             }
             return null;
-        }
+        }*/
 
         public LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode)
         {

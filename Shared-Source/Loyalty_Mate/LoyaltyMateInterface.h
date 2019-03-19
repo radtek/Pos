@@ -19,30 +19,7 @@
 //---------------------------------------------------------------------------
 // enums and service reponse classes that maps the information from responses from wcf service
 //---------------------------------------------------------------------------
-enum MMLoyaltyResponseCode
-{
-  Successful,
-  AuthenticationFailed,
-  CreateMemberFailed,
-  UpdateMemberFailed,
-  DeleteMemberFailed,
-  GetMemberFailed,
-  PostTransactionFailed,
-  MemberNotExist,
-  CompanySyncFailed,
-  InvalidGiftVoucher,
-  InvalidPocketVoucher,
-  TransactionFailed,
-  GetGiftCardFailed,
-  GetPocketVoucherFailed,
-  MenuSyncingFailed,
-  TaxSettingSyncingFailed,
-  UpdateOnlineOrderStatusFailed,
-  PostOnlineOrderInvoiceInfoFailed,
-  MultipleGUIDExist,
-  GUIDNotFound,
-  FailedDueToException,
-};
+
 
 enum  MMDiscountType
 {
@@ -80,20 +57,7 @@ typedef std::pair <AnsiString, AnsiString> TNamePair;
 using Database::TDBControl;
 using Database::TDBTransaction;
 
-class MMLoyaltyServiceResponse
-{
-    public:
-        bool                  IsSuccesful;
-        AnsiString            Message;
-        AnsiString            Description;
-        MMLoyaltyResponseCode ResponseCode;
-        AnsiString            UUID;
-        AnsiString            MemberCode;
-        MMLoyaltyServiceResponse(bool  inSuccess,AnsiString inMessage,AnsiString  inDescription,MMLoyaltyResponseCode inResponseCode,AnsiString inUUID)
-            : IsSuccesful(inSuccess),Message(inMessage),Description(inDescription),ResponseCode(inResponseCode),UUID(inUUID)
-        {
-        }
-};
+
 
 //---------------------------------------------------------------------------
 // this class will act as an interface to the loyalty_mate wcf service

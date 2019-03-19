@@ -21,6 +21,7 @@ namespace MenumateServices
         PaymentSense,
         MewsIntegration,
         AustriaFiscalIntegration,
-        RegistrationIntegration
+        RegistrationIntegration,
+        OnlineOrdering
     };
 }

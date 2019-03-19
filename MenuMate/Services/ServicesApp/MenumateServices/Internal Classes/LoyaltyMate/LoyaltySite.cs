@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MenumateServices.LoyaltyMate;
-using Loyaltymate.Model.OnlineOrderingModel;
-using Loyaltymate.Sevices;
+using OnlineOrdering.Model.MenuModels;
+using OnlineOrdering.Services;
 using MenumateServices.DTO.LoyaltyMate;
 using System.Net;
-using MenumateServices.DTO.OnlineOrdering;
-using Loyaltymate.Model.OnlineOrderingModel.TaxSettingModel;
-using Loyaltymate.Utility;
-using MenumateServices.DTO.OnlineOrdering.OrderModels;
-using MenumateServices.DTO.OnlineOrdering.MenuModels;
-using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering;
+using OnlineOrdering.Model.TaxSettingsModels;
+using OnlineOrdering.Utility;
+using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
+using OnlineOrdering.Model.OrderModels;
 
 namespace MenumateServices.Internal_Classes.LoyaltyMate
 {
@@ -50,8 +50,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.SyncSiteMenu(inSyndicateCode, CreateSiteMenuViewModel(siteMenus));
+                IOnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.SyncSiteMenu(inSyndicateCode, CreateSiteMenuViewModel(siteMenus));
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -70,8 +70,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.SyncSiteTaxSettings(inSyndicateCode, CreateSiteTaxSettingsViewModel(siteTaxSettings));
+                IOnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.SyncSiteTaxSettings(inSyndicateCode, CreateSiteTaxSettingsViewModel(siteTaxSettings));
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -90,8 +90,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
+                IOnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
                 if (response)
                     return CreateResponseNoError();
                 else
@@ -110,8 +110,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         {
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.PostOnlineOrderInvoiceInfo(inSyndicateCode, CreateSiteOrderViewModelForInvoice(siteOrderModel));
+                IOnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.PostOnlineOrderInvoiceInfo(inSyndicateCode, CreateSiteOrderViewModelForInvoice(siteOrderModel));
 
                 if (response)
                     return CreateResponseNoError();
@@ -154,7 +154,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             menuConsumableViewModel.IsPalmable = menuConsumableInfo.IsPalmable;
             menuConsumableViewModel.MenuId = menuConsumableInfo.MenuId;
             menuConsumableViewModel.SiteMenuCourseId = menuConsumableInfo.SiteMenuCourseId;
-            menuConsumableViewModel.Type = (Loyaltymate.Enum.MenuType)menuConsumableInfo.Type;
+            menuConsumableViewModel.Type = (OnlineOrdering.Enum.MenuType)menuConsumableInfo.Type;
             menuConsumableViewModel.SiteCourses = new List<ApiCourseViewModel>();
             if (menuConsumableInfo.SiteCourses != null)
             {
@@ -291,7 +291,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             itemSizeTaxProfileViewModel.Priority = taxProfile.Priority;
             itemSizeTaxProfileViewModel.Rate = taxProfile.Rate;
             itemSizeTaxProfileViewModel.TaxProfileId = taxProfile.TaxProfileId;
-            itemSizeTaxProfileViewModel.Type = (Loyaltymate.Enum.TaxProfileType)taxProfile.Type;
+            itemSizeTaxProfileViewModel.Type = (OnlineOrdering.Enum.TaxProfileType)taxProfile.Type;
 
             return itemSizeTaxProfileViewModel;
         }
@@ -317,7 +317,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         private ApiTaxSettings CreateTaxSettingViewModel(TaxSettingsInfo taxSettingInfo)
         {
             var taxSetting = new ApiTaxSettings();
-            taxSetting.SettingType = (Loyaltymate.Enum.SiteSettingType)taxSettingInfo.SettingType;
+            taxSetting.SettingType = (OnlineOrdering.Enum.SiteSettingType)taxSettingInfo.SettingType;
             taxSetting.Value = taxSettingInfo.Value;
 
             return taxSetting;
@@ -345,19 +345,19 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             siteOrderViewModel.CompanyId = siteOrderModel.CompanyId;
             siteOrderViewModel.ContainerName = siteOrderModel.ContainerName;
             siteOrderViewModel.ContainerNumber = siteOrderModel.ContainerNumber;
-            siteOrderViewModel.ContainerType = (Loyaltymate.Enum.OrderContainerType)siteOrderModel.ContainerType;
+            siteOrderViewModel.ContainerType = (OnlineOrdering.Enum.OrderContainerType)siteOrderModel.ContainerType;
             siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
             siteOrderViewModel.Location = siteOrderModel.Location;
             siteOrderViewModel.OrderGuid = siteOrderModel.OrderGuid;
             siteOrderViewModel.OrderId = siteOrderModel.OrderId;
-            siteOrderViewModel.OrderType = (Loyaltymate.Enum.OrderType)siteOrderModel.OrderType;
+            siteOrderViewModel.OrderType = (OnlineOrdering.Enum.OrderType)siteOrderModel.OrderType;
             siteOrderViewModel.SiteId = siteOrderModel.SiteId;
             siteOrderViewModel.TerminalName = siteOrderModel.TerminalName;
             siteOrderViewModel.TotalAmount = siteOrderModel.TotalAmount;
             siteOrderViewModel.TransactionDate = siteOrderModel.TransactionDate;
-            siteOrderViewModel.TransactionType = (Loyaltymate.Enum.SiteSettingType)siteOrderModel.TransactionType;
+            siteOrderViewModel.TransactionType = (OnlineOrdering.Enum.SiteSettingType)siteOrderModel.TransactionType;
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
-            siteOrderViewModel.UserType = (Loyaltymate.Enum.UserType)siteOrderModel.UserType;
+            siteOrderViewModel.UserType = (OnlineOrdering.Enum.UserType)siteOrderModel.UserType;
             siteOrderViewModel.UserEmailId = siteOrderModel.UserEmailId;
             siteOrderViewModel.MemberGuid = siteOrderModel.MemberGuid;
             siteOrderViewModel.IsHappyHourApplied = siteOrderModel.IsHappyHourApplied;
@@ -462,7 +462,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             orderItemSizeTaxViewModel.Percentage = itemSizeTaxProfile.Percentage;
             orderItemSizeTaxViewModel.Priority = itemSizeTaxProfile.Priority;
             orderItemSizeTaxViewModel.Rate = itemSizeTaxProfile.Rate;
-            orderItemSizeTaxViewModel.TaxProfileType = (Loyaltymate.Enum.TaxProfileType)itemSizeTaxProfile.TaxProfileType;
+            orderItemSizeTaxViewModel.TaxProfileType = (OnlineOrdering.Enum.TaxProfileType)itemSizeTaxProfile.TaxProfileType;
             orderItemSizeTaxViewModel.Value = itemSizeTaxProfile.Value;
             return orderItemSizeTaxViewModel;
         }
@@ -494,7 +494,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             invoiceTransactionViewModel.TotalSaleAmount = invoiceTransactionModel.TotalSaleAmount;
             invoiceTransactionViewModel.TransactionDate = invoiceTransactionModel.TransactionDate;
             invoiceTransactionViewModel.UserReferenceId = invoiceTransactionModel.UserReferenceId;
-            invoiceTransactionViewModel.UserType = (Loyaltymate.Enum.UserType)invoiceTransactionModel.UserType;
+            invoiceTransactionViewModel.UserType = (OnlineOrdering.Enum.UserType)invoiceTransactionModel.UserType;
             return invoiceTransactionViewModel;
         }
         

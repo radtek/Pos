@@ -41,5 +41,10 @@ namespace MenumateServices
 
         }
 
+        private void serviceInstallerOnlineOrdering_AfterInstall(object sender, InstallEventArgs e)
+        {
+
+        }
+
     }
 }

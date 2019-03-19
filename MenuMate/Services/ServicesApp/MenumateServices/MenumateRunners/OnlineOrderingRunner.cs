@@ -172,5 +172,4 @@ namespace MenumateServices.MenumateRunners
         }
         #endregion
     }
-    }
 }

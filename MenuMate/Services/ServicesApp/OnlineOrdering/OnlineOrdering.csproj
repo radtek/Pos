@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5F66D5BF-FEFC-4426-9EAC-28AB7306929C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OnlineOrdering</RootNamespace>
+    <AssemblyName>OnlineOrdering</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.5.12.1\lib\net40-client\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enum\MenuType.cs" />
+    <Compile Include="Enum\OrderContainerType.cs" />
+    <Compile Include="Enum\OrderType.cs" />
+    <Compile Include="Enum\SiteSettingType.cs" />
+    <Compile Include="Enum\TaxProfileType.cs" />
+    <Compile Include="Enum\UserType.cs" />
+    <Compile Include="Exceptions\AuthenticationFailedException.cs" />
+    <Compile Include="Exceptions\CustomException.cs" />
+    <Compile Include="Exceptions\GUIDNotFoundException.cs" />
+    <Compile Include="Exceptions\LoyaltymateOperationException.cs" />
+    <Compile Include="Exceptions\MultipleGUIDException.cs" />
+    <Compile Include="Model\ApiOnlineOrderingResponse.cs" />
+    <Compile Include="Model\MenuModels\ApiCourseViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiItemSideViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiItemSizeTaxProfileViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiItemSizeViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiMenuConsumableViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiSideGroupViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiSiteItemViewModel.cs" />
+    <Compile Include="Model\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OrderModels\InvoiceTransactionViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderInvoiceTransactionViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderItemSizeDiscountViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderItemSizeViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderItemViewModel.cs" />
+    <Compile Include="Model\OrderModels\SiteOrderTypeInfoViewModel.cs" />
+    <Compile Include="Model\OrderModels\SiteOrderViewModel.cs" />
+    <Compile Include="Model\TaxSettingsModels\ApiSiteTaxSettings.cs" />
+    <Compile Include="Model\TaxSettingsModels\ApiTaxSettings.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IOnlineOrderingService.cs" />
+    <Compile Include="Services\OnlineOrderingService.cs" />
+    <Compile Include="Services\RequestAddress.cs" />
+    <Compile Include="Tools\ServiceLogger.cs" />
+    <Compile Include="Utility\JsonUtility.cs" />
+    <Compile Include="Utility\WebUtility.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

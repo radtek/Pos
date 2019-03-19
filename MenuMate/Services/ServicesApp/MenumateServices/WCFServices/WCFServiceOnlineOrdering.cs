@@ -3,14 +3,14 @@ using System.Diagnostics;
 using MenumateServices.DTO.LoyaltyMate;
 using MenumateServices.LoyaltyMate;
 using MenumateServices.Internal_Classes.LoyaltyMate;
-using MenumateServices.DTO.OnlineOrdering;
+using MenumateServices.DTO.MenumateOnlineOrdering;
 using System.ServiceModel.Activation;
 using System.ServiceModel;
-using Loyaltymate.Utility;
-using MenumateServices.DTO.OnlineOrdering.DBOrders;
-using MenumateServices.DTO.OnlineOrdering.OrderModels;
-using MenumateServices.DTO.OnlineOrdering.MenuModels;
-using Loyaltymate.Model.OnlineOrderingModel.OrderModels;
+using OnlineOrdering.Utility;
+using MenumateServices.DTO.MenumateOnlineOrdering.DBOrders;
+using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
+using OnlineOrdering.Model.OrderModels;
 using System.Collections.Generic;
 using MenumateServices.Tools;
 using MenumateServices.DTO.MenumateRegistration;
@@ -19,7 +19,7 @@ namespace MenumateServices.WCFServices
 {
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
     [ServiceBehavior(MaxItemsInObjectGraph = 65536000)]
-    public class WCFServiceOnlineOrdering
+    public class WCFServiceOnlineOrdering :IWCFServiceOnlineOrdering
     {
         private List<string> stringList = new List<string>();
         public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)

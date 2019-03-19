@@ -26,6 +26,44 @@ struct TLoyaltyMateTransaction
         AnsiString InvoiceNumber;
 };
 
+enum MMLoyaltyResponseCode
+{
+  Successful,
+  AuthenticationFailed,
+  CreateMemberFailed,
+  UpdateMemberFailed,
+  DeleteMemberFailed,
+  GetMemberFailed,
+  PostTransactionFailed,
+  MemberNotExist,
+  CompanySyncFailed,
+  InvalidGiftVoucher,
+  InvalidPocketVoucher,
+  TransactionFailed,
+  GetGiftCardFailed,
+  GetPocketVoucherFailed,
+  MenuSyncingFailed,
+  TaxSettingSyncingFailed,
+  UpdateOnlineOrderStatusFailed,
+  PostOnlineOrderInvoiceInfoFailed,
+  MultipleGUIDExist,
+  GUIDNotFound,
+  FailedDueToException,
+};
+class MMLoyaltyServiceResponse
+{
+    public:
+        bool                  IsSuccesful;
+        AnsiString            Message;
+        AnsiString            Description;
+        MMLoyaltyResponseCode ResponseCode;
+        AnsiString            UUID;
+        AnsiString            MemberCode;
+        MMLoyaltyServiceResponse(bool  inSuccess,AnsiString inMessage,AnsiString  inDescription,MMLoyaltyResponseCode inResponseCode,AnsiString inUUID)
+            : IsSuccesful(inSuccess),Message(inMessage),Description(inDescription),ResponseCode(inResponseCode),UUID(inUUID)
+        {
+        }
+};
 //---------------------------------------------------------------------------
 class TLoyaltyMateMemberOperation
 {

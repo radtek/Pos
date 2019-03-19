@@ -182,6 +182,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MenumateRunners\OnlineOrderingRunner.cs" />
     <Compile Include="MenumateServiceOnlineOrdering.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -216,29 +217,29 @@
     <Compile Include="DTO\MenumateRegistration\LicenseSettingModel.cs" />
     <Compile Include="DTO\MenumateRegistration\RegistrationResponse.cs" />
     <Compile Include="DTO\MenumateRegistration\TerminalModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrders\FileReader.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\CourseInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDB.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDBConnection.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrders\OnlineOrderDBQueries.cs" />
-    <Compile Include="DTO\OnlineOrdering\DBOrders\OrderAttributes.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\ItemSideInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\ItemSizeInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\ItemSizeTaxProfileInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\MenuConsumableInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\InvoiceTransactionModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderInvoiceTransactionModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeDiscountModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeTaxProfileModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemSizeModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\OrderItemModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\SiteOrderTypeInfoModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\OrderModels\SiteOrderModel.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\SideGroupInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\SiteItemInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\SiteMenuInfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\SiteTaxSettingsinfo.cs" />
-    <Compile Include="DTO\OnlineOrdering\MenuModels\TaxSettingsInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\FileReader.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\CourseInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\OnlineOrderDB.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\OnlineOrderDBConnection.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\OnlineOrderDBQueries.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\OrderAttributes.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\ItemSideInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\ItemSizeInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\ItemSizeTaxProfileInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\MenuConsumableInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\InvoiceTransactionModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\OrderInvoiceTransactionModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\OrderItemSizeDiscountModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\OrderItemSizeTaxProfileModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\OrderItemSizeModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\OrderItemModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\SiteOrderTypeInfoModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OrderModels\SiteOrderModel.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\SideGroupInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\SiteItemInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\SiteMenuInfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\SiteTaxSettingsinfo.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\MenuModels\TaxSettingsInfo.cs" />
     <Compile Include="DTO\SalesForce\SalesForceCredentialFactory.cs" />
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
@@ -414,6 +415,8 @@
     <Compile Include="Tools\ServiceNameManager.cs" />
     <Compile Include="WCFServices\AdyenIntegrationWebService.cs" />
     <Compile Include="WCFServices\AustriaFiscalIntegrationWebService.cs" />
+    <Compile Include="WCFServices\WCFServiceOnlineOrdering.cs" />
+    <Compile Include="WCFServices\IWCFServiceOnlineOrdering.cs" />
     <Compile Include="WCFServices\IAdyenIntegrationWebService.cs" />
     <Compile Include="WCFServices\IAustriaFiscalIntegrationWebService.cs" />
     <Compile Include="WCFServices\IMewsIntegrationWebService.cs" />
@@ -489,6 +492,10 @@
     <ProjectReference Include="..\MewsIntegration\MewsIntegration.csproj">
       <Project>{73b59aac-6830-49d9-86bd-6e9db74ae8e7}</Project>
       <Name>MewsIntegration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OnlineOrdering\OnlineOrdering.csproj">
+      <Project>{5F66D5BF-FEFC-4426-9EAC-28AB7306929C}</Project>
+      <Name>OnlineOrdering</Name>
     </ProjectReference>
     <ProjectReference Include="..\PaymentSenseIntegration\PaymentSenseIntegration.csproj">
       <Project>{A623C2CE-7E9A-4A72-81DA-7DB377333670}</Project>

@@ -45,6 +45,7 @@ namespace MenumateServices
             this.serviceInstallerMewsIntegration = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerAustria = new System.ServiceProcess.ServiceInstaller();
             this.serviceInstallerRegistration = new System.ServiceProcess.ServiceInstaller();
+            this.serviceInstallerOnlineOrdering = new System.ServiceProcess.ServiceInstaller();
             // 
             // serviceProcessInstaller
             // 
@@ -145,12 +146,19 @@ namespace MenumateServices
             this.serviceInstallerAustria.ServiceName = "MenumateServiceAustriaIntegration";
             this.serviceInstallerAustria.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
-            // serviceInstallerAustria
+            // serviceInstallerRegistration
             // 
             this.serviceInstallerRegistration.Description = "Menumate Registration Sevice";
             this.serviceInstallerRegistration.DisplayName = "Menumate Registration Sevice";
             this.serviceInstallerRegistration.ServiceName = "MenumateServiceRegistrationIntegration";
             this.serviceInstallerRegistration.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
+            // 
+            // serviceInstallerOnlineOrdering
+            // 
+            this.serviceInstallerOnlineOrdering.Description = "Menumate Online Ordering server";
+            this.serviceInstallerOnlineOrdering.DisplayName = "Menumate Online Ordering";
+            this.serviceInstallerOnlineOrdering.ServiceName = "MenumateServiceOnlineOrdering";
+            this.serviceInstallerOnlineOrdering.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
             // 
@@ -169,7 +177,8 @@ namespace MenumateServices
             this.serviceInstallerPaymentSense,
             this.serviceInstallerMewsIntegration,
             this.serviceInstallerAustria,
-            this.serviceInstallerRegistration});
+            this.serviceInstallerRegistration,
+            this.serviceInstallerOnlineOrdering});
 
         }
 
@@ -220,5 +229,6 @@ namespace MenumateServices
         private ServiceInstaller serviceInstallerMewsIntegration;
         private ServiceInstaller serviceInstallerAustria;
         private ServiceInstaller serviceInstallerRegistration;
+        private System.ServiceProcess.ServiceInstaller serviceInstallerOnlineOrdering;
     }
 }

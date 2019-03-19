@@ -5,9 +5,9 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using MenumateServices.DTO.LoyaltyMate;
-using MenumateServices.DTO.OnlineOrdering;
-using MenumateServices.DTO.OnlineOrdering.OrderModels;
-using MenumateServices.DTO.OnlineOrdering.MenuModels;
+using MenumateServices.DTO.MenumateOnlineOrdering;
+using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
@@ -50,7 +50,7 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         LoyaltyResponse ReleaseVouchers(string inSyndicateCode, ReleasedVoucherInfo releasedVoucherInfo);
 
-        [OperationContract]
+      /*  [OperationContract]
         LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel);
 
         [OperationContract]
@@ -66,7 +66,7 @@ namespace MenumateServices.WCFServices
         LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode);
         
         [OperationContract]
-        bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
+        bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);*/
 
         //[OperationContract]
         //void UpdateRegistrationDetails(Site siteInfo);
