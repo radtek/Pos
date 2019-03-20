@@ -16326,7 +16326,8 @@ void TfrmSelectDish::SyncSiteMenus()
             TDeviceRealTerminal::Instance().ProcessingController.Push(State);
             AnsiString ErrorMessage;
             TSiteMenuInfo menuInfo = TDBOnlineOrdering::GetMenuInfo(dBTransaction);
-            TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+//            TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+            std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
             MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->SendMenu(menuInfo);
             TDeviceRealTerminal::Instance().ProcessingController.Pop();
             if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
@@ -16345,8 +16346,8 @@ void TfrmSelectDish::SyncSiteMenus()
                   ErrorMessage = "Failed to update menu to server.";
                 throw Exception(ErrorMessage);
             }
-            delete onlineOrderingInterface;
-            onlineOrderingInterface = NULL;
+//            delete onlineOrderingInterface;
+//            onlineOrderingInterface = NULL;
         }
         dBTransaction.Commit();
     }
@@ -16368,8 +16369,9 @@ void TfrmSelectDish::SyncTaxSetting()
 	    dBTransaction.StartTransaction();
         TSiteTaxSettingsInfo siteTaxSettingsinfo = TDBOnlineOrdering::GetTaxSettings(dBTransaction);
 
-        TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
-        MMLoyaltyServiceResponse createResponse = onlineOrderingClient->SendTaxSettings(siteTaxSettingsinfo);
+//        TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
+        MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->SendTaxSettings(siteTaxSettingsinfo);
         TDeviceRealTerminal::Instance().ProcessingController.Pop();
         if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
         {
@@ -16387,8 +16389,8 @@ void TfrmSelectDish::SyncTaxSetting()
               ErrorMessage = "Failed to update tax settings to server.";
             throw Exception(ErrorMessage);
         }
-        delete onlineOrderingInterface;
-        onlineOrderingInterface = NULL;
+//        delete onlineOrderingInterface;
+//        onlineOrderingInterface = NULL;
         dBTransaction.Commit();
     }
     catch(Exception &E)

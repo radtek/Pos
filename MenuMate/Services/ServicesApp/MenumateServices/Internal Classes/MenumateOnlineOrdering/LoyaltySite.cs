@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MenumateServices.LoyaltyMate;
+using System.Net;
 using OnlineOrdering.Model.MenuModels;
 using OnlineOrdering.Services;
-using MenumateServices.DTO.LoyaltyMate;
-using System.Net;
-using MenumateServices.DTO.MenumateOnlineOrdering;
 using OnlineOrdering.Model.TaxSettingsModels;
 using OnlineOrdering.Utility;
+using OnlineOrdering.Model.OrderModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
-using OnlineOrdering.Model.OrderModels;
+using MenumateServices.DTO.MenumateOnlineOrdering;
 
-namespace MenumateServices.Internal_Classes.LoyaltyMate
+namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
 {
-    public class LoyaltySite : LoyaltyResponsive
+    public class LoyaltySite : OOLoyaltyResponsive
     {
         private static volatile LoyaltySite _instance;
         private static object _syncRoot = new Object();
@@ -46,7 +44,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
         #region Public
 
 
-        public LoyaltyResponse SyncSiteMenu(string inSyndicateCode, SiteMenuInfo siteMenus)
+        public OOLoyaltyResponse SyncSiteMenu(string inSyndicateCode, SiteMenuInfo siteMenus)
         {
             try
             {
@@ -58,7 +56,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseError(
                         "@Failed to update menu to server.",
                         "",
-                        LoyaltyResponseCode.MenuSyncingFailed);
+                        OOLoyaltyResponseCode.MenuSyncingFailed);
             }
             catch (Exception ex)
             {
@@ -66,7 +64,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse SyncSiteTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
+        public OOLoyaltyResponse SyncSiteTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
         {
             try
             {
@@ -78,7 +76,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseError(
                         "@Failed to update tax settings to server.",
                         "",
-                        LoyaltyResponseCode.TaxSettingSyncingFailed);
+                        OOLoyaltyResponseCode.TaxSettingSyncingFailed);
             }
             catch (Exception ex)
             {
@@ -86,7 +84,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
+        public OOLoyaltyResponse UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
         {
             try
             {
@@ -98,7 +96,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                     return CreateResponseError(
                         "@Failed to update order status.",
                         "",
-                        LoyaltyResponseCode.UpdateOnlineOrderStatusFailed);
+                        OOLoyaltyResponseCode.UpdateOnlineOrderStatusFailed);
             }
             catch (Exception ex)
             {
@@ -106,7 +104,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             }
         }
 
-        public LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
+        public OOLoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
         {
             try
             {
@@ -116,7 +114,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 if (response)
                     return CreateResponseNoError();
                 else
-                    return CreateResponseError("@Failed to post invoice info.", "", LoyaltyResponseCode.PostOnlineOrderInvoiceInfoFailed);
+                    return CreateResponseError("@Failed to post invoice info.", "", OOLoyaltyResponseCode.PostOnlineOrderInvoiceInfoFailed);
             }
             catch (Exception ex)
             {

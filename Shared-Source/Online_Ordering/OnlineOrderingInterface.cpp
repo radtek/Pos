@@ -33,7 +33,7 @@ void TOnlineOrderingInterface::InitOnlineOrderingClient()
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TOnlineOrderingInterface::SendMenu(TSiteMenuInfo menuInfo)
 {
-    LoyaltyResponse *wcfResponse;
+    OOLoyaltyResponse *wcfResponse;
     try
     {
         SiteMenuInfo *wcfInfo = new SiteMenuInfo();
@@ -214,7 +214,7 @@ MMLoyaltyServiceResponse TOnlineOrderingInterface::SendMenu(TSiteMenuInfo menuIn
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TOnlineOrderingInterface::SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo)
 {
-    LoyaltyResponse *wcfResponse;
+    OOLoyaltyResponse *wcfResponse;
     try
     {
         SiteTaxSettingsinfo *wcfInfo = new SiteTaxSettingsinfo();
@@ -250,7 +250,7 @@ MMLoyaltyServiceResponse TOnlineOrderingInterface::SendTaxSettings(TSiteTaxSetti
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TOnlineOrderingInterface::PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel)
 {
-    LoyaltyResponse *wcfResponse;
+    OOLoyaltyResponse *wcfResponse;
     try
     {
         SiteOrderModel *wcfInfo = new SiteOrderModel();
@@ -331,7 +331,7 @@ AnsiString TOnlineOrderingInterface::GetSyndCodeForOnlineOrdering()
     return syndicateCode;
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TOnlineOrderingInterface::CreateMMResponse(LoyaltyResponse* inWCFResponse )
+MMLoyaltyServiceResponse TOnlineOrderingInterface::CreateMMResponse(OOLoyaltyResponse* inWCFResponse )
 {
     return MMLoyaltyServiceResponse(
                 inWCFResponse->Successful,
@@ -341,7 +341,7 @@ MMLoyaltyServiceResponse TOnlineOrderingInterface::CreateMMResponse(LoyaltyRespo
                 "" );
 }
 //---------------------------------------------------------------------------
-MMLoyaltyServiceResponse TOnlineOrderingInterface::CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse)
+MMLoyaltyServiceResponse TOnlineOrderingInterface::CreateMMResponse(LoyaltyOOResponse*  inWCFResponse)
 {
      return MMLoyaltyServiceResponse(
                 inWCFResponse->IsSuccessful,
@@ -541,7 +541,7 @@ MMLoyaltyServiceResponse TOnlineOrderingInterface::SyncOnlineOrderingDetails(TSy
 
     try
     {
-        LoyaltyOnlineOrderingResponse* response;
+        LoyaltyOOResponse* response;
         CoInitialize(NULL);
         response = onlineOrderingClient->SyncOnlineOrderingDetails(syndicateCode.GetSyndCode(),siteCode);
         return CreateMMResponse( response );

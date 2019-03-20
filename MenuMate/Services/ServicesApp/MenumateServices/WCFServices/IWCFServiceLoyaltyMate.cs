@@ -5,10 +5,6 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using MenumateServices.DTO.LoyaltyMate;
-using MenumateServices.DTO.MenumateOnlineOrdering;
-using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
-using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
-using MenumateServices.DTO.MenumateRegistration;
 
 namespace MenumateServices.WCFServices
 {

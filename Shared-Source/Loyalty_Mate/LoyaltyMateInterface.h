@@ -128,11 +128,11 @@ class TLoyaltyMateInterface
         void ReadGiftCardInfo(GiftCardInfo* inVoucherInfo,TGiftCardDetail& GiftCardDetail);
         void ReadMemberVouchers(DynamicArray<VoucherInfo*> memberVouchers,TMMContactInfo& inContactInfo);
         //for online ordering menu syncing.
-        MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
-        MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
-        MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
-        MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
-        bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
+//        MMLoyaltyServiceResponse SendMenu(TSiteMenuInfo menuInfo);
+//        MMLoyaltyServiceResponse SendTaxSettings(TSiteTaxSettingsInfo taxSettingsInfo);
+//        MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
+//        MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
+//        bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
         void SendEmail(AnsiString emailBody);
         void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);
     private:
@@ -184,7 +184,7 @@ class TLoyaltyMateInterface
         MMLoyaltyServiceResponse CreateMMResponse(LoyaltyVoucherResponse* inWCFResponse );
 
         MMLoyaltyServiceResponse CreateMMResponse(VoucherTransactionResponse* inWCFResponse );
-        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse);
+//        MMLoyaltyServiceResponse CreateMMResponse(LoyaltyOnlineOrderingResponse*  inWCFResponse);
 
         // creates MMResponse from an exception message
         MMLoyaltyServiceResponse CreateExceptionFailedResponse(AnsiString inMessage );
@@ -206,12 +206,12 @@ class TLoyaltyMateInterface
         RequestInfo* CreateRequest(AnsiString requestKey);
         //Online ordering
         AnsiString GetSyndCodeForOnlineOrdering();
-        OrderItemModel* CreateOrderItemModel(TOrderItemModel itemModel);
-        OrderItemSizeModel* CreateOrderItemSizeModel(TOrderItemSizeModel orderItemSizeModel);
-        OrderItemSizeDiscountModel* CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel);
-        OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
-        OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
-        InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
+//        OrderItemModel* CreateOrderItemModel(TOrderItemModel itemModel);
+//        OrderItemSizeModel* CreateOrderItemSizeModel(TOrderItemSizeModel orderItemSizeModel);
+//        OrderItemSizeDiscountModel* CreateOrderItemSizeDiscountModel(TOrderItemSizeDiscountModel itemSizeDiscountModel);
+//        OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
+//        OrderInvoiceTransactionModel* CreateOrderInvoiceTransaction(TOrderInvoiceTransactionModel orderinvoiceTransaction);
+//        InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransactionModel);
         AnsiString GetEmailBody(AnsiString syndicateCode, AnsiString email, AnsiString uuid);
         AnsiString GetLogFileName();
         //void AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs);

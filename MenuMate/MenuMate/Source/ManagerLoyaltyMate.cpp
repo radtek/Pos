@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "ManagerLoyaltyMate.h"
+#include "OnlineOrderingInterface.h"
 
 
 //---------------------------------------------------------------------------
@@ -906,16 +907,16 @@ void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::UnsetSignalRStatusAtCloud()
 {
-    TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+    TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
     try
     {
         if(Terminated)
         {
             ThreadTerminated();
-            delete LoyaltyMateInterface;
+            delete onlineOrderingInterface;
             return;
         }
-        bool isSuccessful = LoyaltyMateInterface->UnsetOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
+        bool isSuccessful = onlineOrderingInterface->UnsetOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
         if(isSuccessful)
             OperationSuccessful = true;
         else
@@ -926,21 +927,21 @@ void TLoyaltyMateOnlineOrderingThread::UnsetSignalRStatusAtCloud()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         ErrorMessage = E.Message;
     }
-    delete LoyaltyMateInterface;
+    delete onlineOrderingInterface;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
 {
-   TLoyaltyMateInterface* LoyaltyMateInterface = new TLoyaltyMateInterface();
+   TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
    try
     {
         if(Terminated)
         {
             ThreadTerminated();
-            delete LoyaltyMateInterface;
+            delete onlineOrderingInterface;
             return;
         }
-        MMLoyaltyServiceResponse createResponse = LoyaltyMateInterface->SyncOnlineOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
+        MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->SyncOnlineOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
 
         if(!createResponse.IsSuccesful  && createResponse.ResponseCode == AuthenticationFailed)
         {
@@ -961,7 +962,7 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         ErrorMessage = E.Message;
     }
-    delete LoyaltyMateInterface;
+    delete onlineOrderingInterface;
 }
 //------------------------------------------------------------------------------------
 

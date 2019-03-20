@@ -78,6 +78,7 @@
 #include "AustriaFiscalDataObjects.h"
 #include "ManagerAustriaFiscal.h"
 #include "TransactionHelper.h"
+#include "OnlineOrderingInterface.h"
 
 HWND hEdit1 = NULL, hEdit2 = NULL, hEdit3 = NULL, hEdit4 = NULL;
 
@@ -6763,8 +6764,8 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
                 TDeviceRealTerminal::Instance().ProcessingController.Push(State);
                 AnsiString ErrorMessage;
 
-                TLoyaltyMateInterface* loyaltyMateInterface = new TLoyaltyMateInterface();
-                MMLoyaltyServiceResponse createResponse = loyaltyMateInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
+                TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+                MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
                 TDeviceRealTerminal::Instance().ProcessingController.Pop();
                 if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
                 {
@@ -6778,8 +6779,8 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
 
                     throw Exception(ErrorMessage);
                 }
-                delete loyaltyMateInterface;
-                loyaltyMateInterface = NULL;
+                delete onlineOrderingInterface;
+                onlineOrderingInterface = NULL;
             }
         }
     }

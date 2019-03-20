@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using MenumateServices.DTO.LoyaltyMate;
-using Loyaltymate.Sevices;
+using MenumateServices.DTO.MenumateOnlineOrdering;
+using OnlineOrdering.Services;
 
-namespace MenumateServices.Internal_Classes.LoyaltyMate
+namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
 {
     public class LoyaltyOnlineOrdering
     {
@@ -34,7 +34,7 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
                 return _instance;
             }
         }
-        public LoyaltyOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode)
+        public LoyaltyOOResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode)
         {
             return GetOrderingInformation(inSyndicateCode, siteCode);
         }
@@ -44,8 +44,8 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             bool retValue = false;
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                retValue = loyaltymateService.UnsetOrderingDetails(inSyndicateCode, siteCode);
+                OnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                retValue = onlineOrderingService.UnsetOrderingDetails(inSyndicateCode, siteCode);
             }
             catch (Exception exc)
             {
@@ -54,12 +54,12 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             return retValue;
         }
 
-        LoyaltyOnlineOrderingResponse GetOrderingInformation(string inSyndicateCode, int siteCode)
+        LoyaltyOOResponse GetOrderingInformation(string inSyndicateCode, int siteCode)
         {
             try
             {
-                ILoyaltymateService loyaltymateService = new LoyaltymateService();
-                var response = loyaltymateService.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
+                OnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
                 return CreateOrderingResponseNoError(response.IsSuccessful,response.Message);
 
             }
@@ -67,20 +67,20 @@ namespace MenumateServices.Internal_Classes.LoyaltyMate
             {
                 return CreateOrderingResponseError("Unsuccessful sync for online ordering.");
             }
-            return new LoyaltyOnlineOrderingResponse();
+            return new LoyaltyOOResponse();
         }
 
-        private LoyaltyOnlineOrderingResponse CreateOrderingResponseError(string inMessage)
+        private LoyaltyOOResponse CreateOrderingResponseError(string inMessage)
         {
-            return new LoyaltyOnlineOrderingResponse
+            return new LoyaltyOOResponse
             {
                 IsSuccessful = false,
                 ResponseText = inMessage
             };
         }
-        private LoyaltyOnlineOrderingResponse CreateOrderingResponseNoError(bool inSuccesful, string inMessage)
+        private LoyaltyOOResponse CreateOrderingResponseNoError(bool inSuccesful, string inMessage)
         {
-            return new LoyaltyOnlineOrderingResponse
+            return new LoyaltyOOResponse
             {
                 IsSuccessful = inSuccesful,
                 ResponseText = inMessage

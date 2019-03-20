@@ -182,6 +182,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\MenumateOnlineOrdering\LoyaltyOOResponse.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OOLoyaltyResponse.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OOLoyaltyResponsive.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\OOServiceResponse.cs" />
     <Compile Include="MenumateRunners\OnlineOrderingRunner.cs" />
     <Compile Include="MenumateServiceOnlineOrdering.cs">
       <SubType>Component</SubType>
@@ -244,8 +248,8 @@
     <Compile Include="DTO\Wallet Payments\WalletAccount.cs" />
     <Compile Include="DTO\Wallet Payments\WalletTransaction.cs" />
     <Compile Include="DTO\Wallet Payments\WalletActionResponse.cs" />
-    <Compile Include="Internal Classes\LoyaltyMate\LoyaltyOnlineOrdering.cs" />
-    <Compile Include="Internal Classes\LoyaltyMate\LoyaltySite.cs" />
+    <Compile Include="Internal Classes\MenumateOnlineOrdering\LoyaltyOnlineOrdering.cs" />
+    <Compile Include="Internal Classes\MenumateOnlineOrdering\LoyaltySite.cs" />
     <Compile Include="Internal Classes\LoyaltyMate\LoyaltyVoucher.cs" />
     <Compile Include="Internal Classes\Registration\TerminalRegistrationResponsive.cs" />
     <Compile Include="Internal Classes\Registration\TerminalRegistration.cs" />

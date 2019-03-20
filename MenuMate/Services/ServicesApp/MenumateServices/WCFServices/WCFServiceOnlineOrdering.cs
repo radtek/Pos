@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
-using MenumateServices.DTO.LoyaltyMate;
-using MenumateServices.LoyaltyMate;
-using MenumateServices.Internal_Classes.LoyaltyMate;
-using MenumateServices.DTO.MenumateOnlineOrdering;
 using System.ServiceModel.Activation;
 using System.ServiceModel;
-using OnlineOrdering.Utility;
+using System.Collections.Generic;
+using MenumateServices.Tools;
+using MenumateServices.Internal_Classes.MenumateOnlineOrdering;
+using MenumateServices.DTO.MenumateOnlineOrdering;
 using MenumateServices.DTO.MenumateOnlineOrdering.DBOrders;
 using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using OnlineOrdering.Model.OrderModels;
-using System.Collections.Generic;
-using MenumateServices.Tools;
-using MenumateServices.DTO.MenumateRegistration;
+using OnlineOrdering.Utility;
+
+
 
 namespace MenumateServices.WCFServices
 {
@@ -22,7 +21,7 @@ namespace MenumateServices.WCFServices
     public class WCFServiceOnlineOrdering :IWCFServiceOnlineOrdering
     {
         private List<string> stringList = new List<string>();
-        public LoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
+        public OOLoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
         {
             try
             {
@@ -39,7 +38,7 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
-        public LoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel)
+        public OOLoyaltyResponse SyncMenu(string inSyndicateCode, SiteMenuInfo siteViewModel)
         {
             try
             {
@@ -122,7 +121,7 @@ namespace MenumateServices.WCFServices
 
         }
 
-        public LoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
+        public OOLoyaltyResponse PostOnlineOrderInvoiceInfo(string inSyndicateCode, SiteOrderModel siteOrderModel)
         {
             try
             {
@@ -139,7 +138,7 @@ namespace MenumateServices.WCFServices
             return null;
         }
 
-        public LoyaltyOnlineOrderingResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode)
+        public LoyaltyOOResponse SyncOnlineOrderingDetails(string inSyndicateCode, int siteCode)
         {
             try
             {

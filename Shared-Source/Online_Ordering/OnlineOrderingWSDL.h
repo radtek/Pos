@@ -8,11 +8,10 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd3
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd4
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd5
-//  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd6
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (19/03/2019 10:53:09 p.m. - - $Rev: 25127 $)
+// (20/03/2019 8:16:50 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   OnlineOrderingWSDLH
@@ -78,12 +77,12 @@ class SOAP_REMOTABLE_CLASS SideGroupInfo2;
 class SOAP_REMOTABLE_CLASS ItemSideInfo2;
 class SOAP_REMOTABLE_CLASS SiteTaxSettingsinfo2;
 class SOAP_REMOTABLE_CLASS TaxSettingsInfo2;
-class SOAP_REMOTABLE_CLASS MMServiceResponse;
-class SOAP_REMOTABLE_CLASS MMServiceResponse2;
-class SOAP_REMOTABLE_CLASS LoyaltyResponse;
-class SOAP_REMOTABLE_CLASS LoyaltyOnlineOrderingResponse;
-class SOAP_REMOTABLE_CLASS LoyaltyResponse2;
-class SOAP_REMOTABLE_CLASS LoyaltyOnlineOrderingResponse2;
+class SOAP_REMOTABLE_CLASS OOServiceResponse;
+class SOAP_REMOTABLE_CLASS OOLoyaltyResponse;
+class SOAP_REMOTABLE_CLASS LoyaltyOOResponse;
+class SOAP_REMOTABLE_CLASS OOLoyaltyResponse2;
+class SOAP_REMOTABLE_CLASS OOServiceResponse2;
+class SOAP_REMOTABLE_CLASS LoyaltyOOResponse2;
 class SOAP_REMOTABLE_CLASS OrderInvoiceTransactionModel;
 class SOAP_REMOTABLE_CLASS SiteOrderModel;
 class SOAP_REMOTABLE_CLASS InvoiceTransactionModel;
@@ -192,7 +191,7 @@ __published:
   __property OrderType __propType = { read=__instanceType };
 };
 
-enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate"[GblSmpl] */
+enum class OOLoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering"[GblSmpl] */
 {
   Successful, 
   AuthenticationFailed, 
@@ -216,11 +215,11 @@ enum class LoyaltyResponseCode   /* "http://schemas.datacontract.org/2004/07/Men
   GUIDNotFound
 };
 
-class LoyaltyResponseCode_TypeInfoHolder : public TObject {
-  LoyaltyResponseCode __instanceType;
+class OOLoyaltyResponseCode_TypeInfoHolder : public TObject {
+  OOLoyaltyResponseCode __instanceType;
 public:
 __published:
-  __property LoyaltyResponseCode __propType = { read=__instanceType };
+  __property OOLoyaltyResponseCode __propType = { read=__instanceType };
 };
 
 typedef DynamicArray<MenuConsumableInfo*> ArrayOfMenuConsumableInfo; /* "http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels"[GblCplx] */
@@ -953,10 +952,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : MMServiceResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO
+// XML       : OOServiceResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
-class MMServiceResponse : public TRemotable {
+class OOServiceResponse : public TRemotable {
 private:
   UnicodeString   FDescription;
   bool            FDescription_Specified;
@@ -986,41 +985,29 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : MMServiceResponse, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO
+// XML       : OOLoyaltyResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
-class MMServiceResponse2 : public MMServiceResponse {
+class OOLoyaltyResponse : public OOServiceResponse {
 private:
-__published:
-};
-
-
-
-
-// ************************************************************************ //
-// XML       : LoyaltyResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
-// ************************************************************************ //
-class LoyaltyResponse : public MMServiceResponse {
-private:
-  LoyaltyResponseCode FResponseCode;
+  OOLoyaltyResponseCode FResponseCode;
   bool            FResponseCode_Specified;
-  void __fastcall SetResponseCode(int Index, LoyaltyResponseCode _prop_val)
+  void __fastcall SetResponseCode(int Index, OOLoyaltyResponseCode _prop_val)
   {  FResponseCode = _prop_val; FResponseCode_Specified = true;  }
   bool __fastcall ResponseCode_Specified(int Index)
   {  return FResponseCode_Specified;  } 
 __published:
-  __property LoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
+  __property OOLoyaltyResponseCode ResponseCode = { index=(IS_OPTN), read=FResponseCode, write=SetResponseCode, stored = ResponseCode_Specified };
 };
 
 
 
 
 // ************************************************************************ //
-// XML       : LoyaltyOnlineOrderingResponse, global, <complexType>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// XML       : LoyaltyOOResponse, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
-class LoyaltyOnlineOrderingResponse : public TRemotable {
+class LoyaltyOOResponse : public TRemotable {
 private:
   bool            FIsSuccessful;
   bool            FIsSuccessful_Specified;
@@ -1043,10 +1030,10 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyResponse, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// XML       : OOLoyaltyResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
-class LoyaltyResponse2 : public LoyaltyResponse {
+class OOLoyaltyResponse2 : public OOLoyaltyResponse {
 private:
 __published:
 };
@@ -1055,10 +1042,22 @@ __published:
 
 
 // ************************************************************************ //
-// XML       : LoyaltyOnlineOrderingResponse, global, <element>
-// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate
+// XML       : OOServiceResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
-class LoyaltyOnlineOrderingResponse2 : public LoyaltyOnlineOrderingResponse {
+class OOServiceResponse2 : public OOServiceResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : LoyaltyOOResponse, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
+// ************************************************************************ //
+class LoyaltyOOResponse2 : public LoyaltyOOResponse {
 private:
 __published:
 };
@@ -1777,11 +1776,11 @@ __published:
 __interface INTERFACE_UUID("{4D85DFF9-1B47-5459-2BB1-1B1CB084C1DB}") IWCFServiceOnlineOrdering : public IInvokable
 {
 public:
-  virtual LoyaltyResponse* SyncMenu(const UnicodeString inSyndicateCode, const SiteMenuInfo* siteViewModel) = 0; 
-  virtual LoyaltyResponse* SyncTaxSettings(const UnicodeString inSyndicateCode, const SiteTaxSettingsinfo* siteTaxSettings) = 0; 
+  virtual OOLoyaltyResponse* SyncMenu(const UnicodeString inSyndicateCode, const SiteMenuInfo* siteViewModel) = 0; 
+  virtual OOLoyaltyResponse* SyncTaxSettings(const UnicodeString inSyndicateCode, const SiteTaxSettingsinfo* siteTaxSettings) = 0; 
   virtual void            GetOrdersFromWeb(const UnicodeString inSyndicateCode, const UnicodeString orders) = 0; 
-  virtual LoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
-  virtual LoyaltyOnlineOrderingResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
+  virtual OOLoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
+  virtual LoyaltyOOResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
   virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
 };
 typedef DelphiInterface<IWCFServiceOnlineOrdering> _di_IWCFServiceOnlineOrdering;

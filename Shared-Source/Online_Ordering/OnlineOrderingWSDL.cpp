@@ -8,11 +8,10 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd3
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd4
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd5
-//  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd6
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (19/03/2019 10:53:09 p.m. - - $Rev: 25127 $)
+// (20/03/2019 8:16:50 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -230,20 +229,20 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(SiteTaxSettingsinfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"SiteTaxSettingsinfo2", L"SiteTaxSettingsinfo");
   /* TaxSettingsInfo */
   RemClassRegistry()->RegisterXSClass(__classid(TaxSettingsInfo2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"TaxSettingsInfo2", L"TaxSettingsInfo");
-  /* MMServiceResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(MMServiceResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO", L"MMServiceResponse");
-  /* MMServiceResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(MMServiceResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO", L"MMServiceResponse2", L"MMServiceResponse");
-  /* LoyaltyResponseCode */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(LoyaltyResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyResponseCode");
-  /* LoyaltyResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyResponse");
-  /* LoyaltyOnlineOrderingResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOnlineOrderingResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyOnlineOrderingResponse");
-  /* LoyaltyResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyResponse2", L"LoyaltyResponse");
-  /* LoyaltyOnlineOrderingResponse */
-  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOnlineOrderingResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyOnlineOrderingResponse2", L"LoyaltyOnlineOrderingResponse");
+  /* OOServiceResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(OOServiceResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOServiceResponse");
+  /* OOLoyaltyResponseCode */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(OOLoyaltyResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponseCode");
+  /* OOLoyaltyResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(OOLoyaltyResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponse");
+  /* LoyaltyOOResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOOResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"LoyaltyOOResponse");
+  /* OOLoyaltyResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(OOLoyaltyResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponse2", L"OOLoyaltyResponse");
+  /* OOServiceResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(OOServiceResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOServiceResponse2", L"OOServiceResponse");
+  /* LoyaltyOOResponse */
+  RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOOResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"LoyaltyOOResponse2", L"LoyaltyOOResponse");
   /* OrderInvoiceTransactionModel */
   RemClassRegistry()->RegisterXSClass(__classid(OrderInvoiceTransactionModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"OrderInvoiceTransactionModel");
   /* ArrayOfOrderItemModel */
@@ -290,8 +289,8 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeTaxProfileInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfItemSizeTaxProfileInfo");
   /* ArrayOfItemSideInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSideInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfItemSideInfo");
-  /* LoyaltyResponseCode */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(LoyaltyResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.LoyaltyMate", L"LoyaltyResponseCode");
+  /* OOLoyaltyResponseCode */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(OOLoyaltyResponseCode_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponseCode");
   /* ArrayOfOrderItemModel */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemModel");
   /* ArrayOfOrderItemSizeDiscountModel */
