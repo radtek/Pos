@@ -170,14 +170,14 @@ namespace SystemTrayApp.SignalR
         {
             try
             {
-                WCFServiceLoyaltyMateClient loyaltyMateClient = new WCFServiceLoyaltyMateClient();
+                WCFServiceOnlineOrderingClient onlineOrderingClient = new WCFServiceOnlineOrderingClient();
                 string siteCode = "";
                 string syndicateCode = "";
                 logsList.Add("Received Order from LM at                             " + DateTime.Now.ToString("hh:mm:ss tt"));
                 logsList.Add("Order Received is                                     " + order);
                 GetSiteDetails(ref siteCode, ref syndicateCode);
                 logsList.Add("siteCode is      " + siteCode + "     and syndicateCode is       " + syndicateCode);
-                loyaltyMateClient.GetOrdersFromWeb(syndicateCode, order);
+                onlineOrderingClient.GetOrdersFromWeb(syndicateCode, order);
             }
             catch (Exception exception)
             {

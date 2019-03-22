@@ -1161,6 +1161,41 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, long profileKey, string terminalName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+            try
+            {
+                command.CommandText = 
+                                    @"
+                                     INSERT INTO PROFILE (
+		                                PROFILE_KEY,
+		                                PROFILE_TYPE,
+		                                NAME) 
+		                                VALUES (
+		                                @PROFILE_KEY,
+		                                @PROFILE_TYPE,
+		                                @NAME);
+                                    ";
+
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+                command.Parameters.AddWithValue("@PROFILE_TYPE", 1);
+                command.Parameters.AddWithValue("@NAME", terminalName);
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateTerminalForWaiterApp " + e.Message, e);
+                throw;
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
 
         #endregion
     }

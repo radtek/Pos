@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.ServiceModel.Activation;
 using System.ServiceModel;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
                 WriteAndClearStringList();
+                CreateWaiterTerminal();
                 return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
             }
             catch (Exception exc)
@@ -170,6 +172,39 @@ namespace MenumateServices.WCFServices
                 WriteAndClearStringList();
             }
             return false;
+        }
+        public void CreateWaiterTerminal()
+        {
+            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+            try
+            {
+                stringList.Add("----------------------------Inside CreateWaiterTerminal--------------------------------------------");
+                stringList.Add("Making connection...");
+                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+                {
+                    stringList.Add("Making transaction...");
+                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+                    {
+                        stringList.Add("inside transaction using ...");
+                        WriteAndClearStringList();
+                        onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
+                        stringList.Add("After calling AddWaiterTerminal inside CreateWaiterTerminal function..");
+                        WriteAndClearStringList();
+                        onlineOrderDB.transaction.Commit();
+                        ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
+                    }
+                }
+                ServiceLogger.Log(@"outside using in CreateWaiterTerminal");
+            }
+            catch (Exception e)
+            {
+                onlineOrderDB.RollbackTransaction();
+                ServiceLogger.Log(@"In CreateWaiterTerminal " + e.Message);
+                EventLog.WriteEntry("IN Waiter terminal creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
+                stringList.Add("Exception in CreateWaiterTerminal     " + e.Message);
+                WriteAndClearStringList();
+            }
+            //::::::::::::::::::::::::::::::::::::::::::::::
         }
 
         private void WriteAndClearStringList()

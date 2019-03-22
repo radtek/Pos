@@ -1200,6 +1200,21 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return isTableOOMarked;
         }
+        public void AddWaiterTerminal(string terminalName)
+        {
+            try
+            {
+                long profileKey = GenerateKey("PROFILE");
+                FbCommand command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, profileKey, terminalName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in AddWaiterTerminal adding Waiter Terminal " + e.Message, e);
+                throw;
+            }
+ 
+        }
 
         #endregion
     }

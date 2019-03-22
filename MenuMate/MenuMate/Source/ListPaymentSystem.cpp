@@ -6764,7 +6764,8 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
                 TDeviceRealTerminal::Instance().ProcessingController.Push(State);
                 AnsiString ErrorMessage;
 
-                TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+                //TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+                std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
                 MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
                 TDeviceRealTerminal::Instance().ProcessingController.Pop();
                 if(!createResponse.IsSuccesful && createResponse.ResponseCode == AuthenticationFailed)
@@ -6779,8 +6780,8 @@ void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction p
 
                     throw Exception(ErrorMessage);
                 }
-                delete onlineOrderingInterface;
-                onlineOrderingInterface = NULL;
+//                delete onlineOrderingInterface;
+//                onlineOrderingInterface = NULL;
             }
         }
     }

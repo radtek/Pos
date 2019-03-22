@@ -932,7 +932,8 @@ void TLoyaltyMateOnlineOrderingThread::UnsetSignalRStatusAtCloud()
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
 {
-   TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+//   TOnlineOrderingInterface* onlineOrderingInterface = new TOnlineOrderingInterface();
+    std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
    try
     {
         if(Terminated)
@@ -962,7 +963,7 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         ErrorMessage = E.Message;
     }
-    delete onlineOrderingInterface;
+//    delete onlineOrderingInterface;
 }
 //------------------------------------------------------------------------------------
 

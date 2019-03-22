@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.ServiceModel;
+using System.IO;
 
 using MenumateServices.WCFServices;
 
@@ -29,7 +30,7 @@ namespace MenumateServices.MenumateRunners
             try
             {
                 WorkerThread.Start();
-
+                CreateOrderStatusDir();
                 Paused = false;
             }
             catch (Exception exc)
@@ -79,6 +80,35 @@ namespace MenumateServices.MenumateRunners
             catch (Exception exc)
             {
                 EventLog.WriteEntry("In Resume OnlineOrderingRunner", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
+            }
+        }
+        public void CreateOrderStatusDir()
+        {
+            try
+            {
+                string path = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                string pendingOrderDir = Path.Combine(location, "Pending Orders");
+                string successfulOrderDir = Path.Combine(location, "Successful Orders");
+                string failedOrderDir = Path.Combine(location, "Failed Orders");
+
+                if (!Directory.Exists(pendingOrderDir))
+                    Directory.CreateDirectory(pendingOrderDir);
+
+                if (!Directory.Exists(successfulOrderDir))
+                    Directory.CreateDirectory(successfulOrderDir);
+
+                if (!Directory.Exists(failedOrderDir))
+                    Directory.CreateDirectory(failedOrderDir);
+            }
+            catch (Exception exc)
+            {
+                EventLog.WriteEntry("In CreateOrderStatusDir", exc.Message + "Trace" + exc.StackTrace, EventLogEntryType.Error, 145, short.MaxValue);
             }
         }
         #endregion
