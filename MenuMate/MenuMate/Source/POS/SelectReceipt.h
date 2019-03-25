@@ -37,6 +37,7 @@ __published:	// IDE-managed Components
 	TTouchBtn *btnNext;
 	TTouchBtn *btnPrev;
     TTouchBtn *btnAddTip;
+    TSpeedButton *sbAppTerminals;
    void __fastcall btnPrintClick(TObject *Sender);
    void __fastcall btnCloseClick(TObject *Sender);
    void __fastcall calReceiptClick(TObject *Sender);
@@ -53,6 +54,8 @@ __published:	// IDE-managed Components
 	void __fastcall btnBillDownMouseClick(TObject *Sender);
 	void __fastcall btnBillUpMouseClick(TObject *Sender);
     void __fastcall btnAddTipMouseClick(TObject *Sender);
+    void __fastcall sbAppTerminalsClick(TObject *Sender);
+
 private:
 	void PrintReceipt(TStringList *Receipt);
 	void ShowReceipt();
@@ -69,6 +72,7 @@ public:
    void SearchUsingTransactionNumber(UnicodeString inTransactionNumber);
    __property TDateTime CurrentDate = { read = FSelectedDate ,write = SetCurrentDate};
    virtual __fastcall ~TfrmSelectReceipt();
+   bool CheckIfOOAppEnabledForAnyTerminal();
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TfrmSelectReceipt *frmSelectReceipt;
