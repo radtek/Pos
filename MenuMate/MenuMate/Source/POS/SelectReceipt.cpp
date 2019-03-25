@@ -547,6 +547,7 @@ void TfrmSelectReceipt::SearchUsingTransactionNumber(UnicodeString inTransaction
 //----------------------------------------------------------------------------------------------
 void __fastcall TfrmSelectReceipt::sbAppTerminalsClick(TObject *Sender)
 {
+    ManagerReceipt->AllTerminals = false;
     ManagerReceipt->AppTerminalType();
     ShowReceipt();
 
