@@ -36,6 +36,7 @@ __fastcall TfrmSelectReceipt::TfrmSelectReceipt(TComponent* Owner)
 	ManagerReceipt->AllTerminals = true;
 	ManagerReceipt->Date = Date();
    calReceipt->Date = ManagerReceipt->Date;
+    sbAppTerminals->Enabled = CheckIfOOAppEnabledForAnyTerminal();
 }
 
 __fastcall TfrmSelectReceipt::~TfrmSelectReceipt()
@@ -544,4 +545,55 @@ void TfrmSelectReceipt::SearchUsingTransactionNumber(UnicodeString inTransaction
     }
 }
 //----------------------------------------------------------------------------------------------
+void __fastcall TfrmSelectReceipt::sbAppTerminalsClick(TObject *Sender)
+{
+    ManagerReceipt->AppTerminalType();
+    ShowReceipt();
+
+    btnNext->Enabled = false;
+    btnNext->Color = clMaroon;
+
+    if(!ManagerReceipt->IsEmpty())
+    {
+        btnPrev->Enabled = true;
+        btnPrev->Color = clNavy;
+        ShowReceipt();
+    }
+    else
+    {
+        btnPrev->Enabled = false;
+        btnPrev->Color = clMaroon;
+    }
+
+}
+//----------------------------------------------------------------------------------------------
+bool TfrmSelectReceipt::CheckIfOOAppEnabledForAnyTerminal()
+{
+    bool retvalue = false;
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1";
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 9637;
+        SelectQuery->ExecQuery();
+
+        if(SelectQuery->RecordCount > 0)
+        retvalue = true;
+
+
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+
+	    return retvalue;
+}
+
 

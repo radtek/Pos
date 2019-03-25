@@ -4,7 +4,7 @@ object frmSelectReceipt: TfrmSelectReceipt
   Top = 60
   BorderStyle = bsDialog
   Caption = 'Select Receipt'
-  ClientHeight = 641
+  ClientHeight = 708
   ClientWidth = 776
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -24,7 +24,7 @@ object frmSelectReceipt: TfrmSelectReceipt
     Left = 0
     Top = 0
     Width = 776
-    Height = 641
+    Height = 708
     Align = alClient
     BevelOuter = bvNone
     Color = 14342874
@@ -32,7 +32,7 @@ object frmSelectReceipt: TfrmSelectReceipt
     TabOrder = 0
     object Label1: TLabel
       Left = 473
-      Top = 269
+      Top = 332
       Width = 93
       Height = 23
       Caption = 'Select Day.'
@@ -74,9 +74,25 @@ object frmSelectReceipt: TfrmSelectReceipt
       ParentFont = False
       OnClick = sbThisTerminalClick
     end
+    object sbAppTerminals: TSpeedButton
+      Left = 473
+      Top = 269
+      Width = 137
+      Height = 57
+      GroupIndex = 2
+      Caption = 'App Terminals'
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -17
+      Font.Name = 'Arial'
+      Font.Style = [fsBold]
+      ParentFont = False
+      OnClick = sbAppTerminalsClick
+    end
     object calReceipt: TMonthCalendar
       Left = 473
-      Top = 298
+      Top = 363
       Width = 288
       Height = 263
       AutoSize = True
@@ -185,7 +201,7 @@ object frmSelectReceipt: TfrmSelectReceipt
     end
     object btnSearch: TTouchBtn
       Left = 473
-      Top = 567
+      Top = 632
       Width = 289
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
