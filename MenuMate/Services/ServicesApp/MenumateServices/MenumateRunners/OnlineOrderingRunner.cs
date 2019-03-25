@@ -93,6 +93,8 @@ namespace MenumateServices.MenumateRunners
                 {
                     location = location.Replace(@"file:\", "");
                 }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
                 string pendingOrderDir = Path.Combine(location, "Pending Orders");
                 string successfulOrderDir = Path.Combine(location, "Successful Orders");
                 string failedOrderDir = Path.Combine(location, "Failed Orders");

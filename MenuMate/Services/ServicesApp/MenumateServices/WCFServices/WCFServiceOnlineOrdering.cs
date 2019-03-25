@@ -28,7 +28,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
                 WriteAndClearStringList();
-                CreateWaiterTerminal();
+                CreateWaiterTerminal(siteTaxSettings.SiteId);
                 return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
             }
             catch (Exception exc)
@@ -77,6 +77,7 @@ namespace MenumateServices.WCFServices
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
                 stringList.Add("After Updating order status to web..json is ..." + requestData);
                 WriteAndClearStringList();
+                SaveOrderJSON(orders);
             }
             catch (Exception exc)
             {
@@ -173,7 +174,7 @@ namespace MenumateServices.WCFServices
             }
             return false;
         }
-        public void CreateWaiterTerminal()
+        public void CreateWaiterTerminal(long siteID)
         {
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
@@ -187,7 +188,8 @@ namespace MenumateServices.WCFServices
                     {
                         stringList.Add("inside transaction using ...");
                         WriteAndClearStringList();
-                        onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
+                        //onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
+                        onlineOrderDB.AddWaiterStaff(siteID);
                         stringList.Add("After calling AddWaiterTerminal inside CreateWaiterTerminal function..");
                         WriteAndClearStringList();
                         onlineOrderDB.transaction.Commit();
@@ -205,6 +207,54 @@ namespace MenumateServices.WCFServices
                 WriteAndClearStringList();
             }
             //::::::::::::::::::::::::::::::::::::::::::::::
+        }
+        private void SaveOrderJSON(string orders)
+        {
+            try 
+            {
+                List<ApiSiteOrderViewModel> siteOrderViewModelList = new List<ApiSiteOrderViewModel>();
+                siteOrderViewModelList = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
+                string orderGUID = "";
+                foreach (var siteOrderViewModel in siteOrderViewModelList)
+                {
+                    orderGUID = siteOrderViewModel.OrderGuid;
+                    var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);
+
+                    string path = System.IO.Path.GetDirectoryName(
+                    System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                    string location = Path.Combine(path, "logs");
+                    if (location.Contains(@"file:\"))
+                    {
+                        location = location.Replace(@"file:\", "");
+                    }
+                    if (!Directory.Exists(location))
+                        Directory.CreateDirectory(location);
+
+                    string folderName = "Pending Orders";
+                    location = Path.Combine(location, folderName);
+
+                    if (!Directory.Exists(location))
+                        Directory.CreateDirectory(location);
+
+                    string name = orderGUID + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".json";
+                    string fileName = Path.Combine(location, name);
+
+                    if (!File.Exists(fileName))
+                    {
+                        using (StreamWriter sw = File.CreateText(fileName))
+                        {
+                            sw.WriteLine(requestData.ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                stringList.Add("Exception in SaveOrderJSON     " + exc.Message);
+                WriteAndClearStringList();
+            }
+
         }
 
         private void WriteAndClearStringList()

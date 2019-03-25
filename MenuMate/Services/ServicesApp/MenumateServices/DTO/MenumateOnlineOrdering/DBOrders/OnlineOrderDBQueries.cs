@@ -1161,7 +1161,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, long profileKey, string terminalName)
+        public FbCommand InsertProfileForWaiterApp(FbConnection connection, FbTransaction transaction, long profileKey, string terminalName)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1196,7 +1196,121 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction,long deviceKey, long profileKey, string terminalName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
 
+            //...........................................
+            try
+            {
+                command.CommandText =
+                			        @"
+                                    INSERT INTO DEVICES (
+                                        DEVICE_KEY,
+                                        DEVICE_NAME,
+                                        PRODUCT,
+                                        DEVICE_ID,
+                                        DEVICE_TYPE,
+                                        LOCATION_KEY,
+                                        PROFILE_KEY,
+                                        IP) 
+                                    VALUES (
+                                       @DEVICE_KEY,
+                                       @DEVICE_NAME,
+		                               @PRODUCT,
+                                       @DEVICE_ID,
+		                               @DEVICE_TYPE,
+                                       @LOCATION_KEY,
+                                       @PROFILE_KEY,
+                                       @IP);
+                                    ";
+
+                command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
+                command.Parameters.AddWithValue("@DEVICE_NAME", terminalName);
+                command.Parameters.AddWithValue("@PRODUCT", terminalName);
+                command.Parameters.AddWithValue("@DEVICE_ID", 0);
+                command.Parameters.AddWithValue("@DEVICE_TYPE", 1);
+                command.Parameters.AddWithValue("@LOCATION_KEY", 1);
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+                command.Parameters.AddWithValue("@IP", "");
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertTerminalForWaiterApp " + e.Message, e);
+                throw;
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+        public FbCommand InsertStaffForWaiterApp(FbConnection connection, FbTransaction transaction, long contactKey, long siteID)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+            try
+            {
+                command.CommandText =
+                                    @"
+			                        INSERT INTO CONTACTS ( 
+                                        CONTACTS_KEY, 
+                                        CONTACT_TYPE, 
+                                        NAME, 
+                                        PIN, 
+                                        SITE_ID,
+                                        MEMBER_NUMBER)
+                                    VALUES ( 
+                                        @CONTACTS_KEY, 
+                                        @CONTACT_TYPE, 
+                                        @NAME, 
+                                        @PIN, 
+                                        @SITE_ID, 
+                                        @MEMBER_NUMBER);
+                                    ";
+
+                command.Parameters.AddWithValue("@CONTACTS_KEY", contactKey);
+                command.Parameters.AddWithValue("@CONTACT_TYPE", 0);
+                command.Parameters.AddWithValue("@NAME", "WAITER");
+                command.Parameters.AddWithValue("@PIN", "11");
+                command.Parameters.AddWithValue("@SITE_ID", siteID);
+                command.Parameters.AddWithValue("@MEMBER_NUMBER", "");
+
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertStaffForWaiterApp " + e.Message, e);
+                throw;
+                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
+            }
+
+            //............................................
+
+            return command;
+        }
+        public FbCommand IsItemAvailable(FbConnection connection, FbTransaction transaction, long itemSizeId)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT a.ITEMSIZE_KEY 
+                                        FROM ITEMSIZE a
+                                        WHERE A.ITEMSIZE_KEY = @ITEMSIZE_KEY ";
+
+                command.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeId);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsItemAvailable " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
         #endregion
     }
 

@@ -127,6 +127,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 foreach (var siteOrderViewModel in siteOrderViewModelList)
                 {
+                    bool test = ValidateItemsInOrders(siteOrderViewModel);
+                    
                     try
                     {
                         OrderAttributes orderRow = new OrderAttributes();
@@ -144,7 +146,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 orderRow.ContainerNumber = containerNumber;
                             else
                                 orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
-
+                            test = ValidateTable(containerNumber);
                             bool isTabOrder = false;
                             //if (IsFloorPlanEnabled())
                             //{
@@ -1205,7 +1207,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long profileKey = GenerateKey("PROFILE");
-                FbCommand command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, profileKey, terminalName);
+                FbCommand command = dbQueries.InsertProfileForWaiterApp(connection, transaction, profileKey, terminalName);
+                command.ExecuteNonQuery();
+                long deviceKey = GenerateKey("DEVICES");
+                command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, deviceKey, profileKey, terminalName);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -1214,6 +1219,91 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
  
+        }
+        public void AddWaiterStaff(long siteCode)
+        {
+            try
+            {
+                long contactKey = GenerateKey("CONTACTS");
+                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey ,siteCode);
+                command.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in AddWaiterStaff adding Staff " + e.Message, e);
+                throw;
+            }
+
+        }
+        public bool ValidateTable(int tableNo)
+        {
+            bool retValue = false;
+            try
+            {
+                if (tableNo >= 1 || tableNo <= 99)
+                    retValue = true;
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);
+                throw;
+            }
+            return retValue;
+    
+        }
+        public bool ValidateItemsInOrders(ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            bool retValue = false;
+
+            try
+            {
+                foreach (var item in siteOrderViewModel.OrderItems)
+                {
+                    foreach (var itemSize in item.OrderItemSizes)
+                    {
+                        if (!CheckIfItemExist(itemSize.OrderItemSizeId))
+                        {
+                            retValue = false;
+                            break;
+                        }
+                        else
+                        {
+                            retValue = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ValidateItemsInOrders " + e.Message, e);
+                throw;
+            }
+            return retValue;
+
+        }
+        public bool CheckIfItemExist(long itemSizeId)
+        {
+            bool retValue = false;
+
+            try
+            {
+                FbCommand command = dbQueries.IsItemAvailable(connection, transaction, itemSizeId);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        retValue = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfItemExist " + e.Message, e);
+                throw;
+            }
+            return retValue;
+
         }
 
         #endregion
