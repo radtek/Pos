@@ -7,6 +7,7 @@ using OnlineOrdering.Model.OrderModels;
 using OnlineOrdering.Enum;
 using MenumateServices.Tools;
 using System.IO;
+using OnlineOrdering.Utility;
 
 namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 {
@@ -128,7 +129,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 foreach (var siteOrderViewModel in siteOrderViewModelList)
                 {
                     bool test = ValidateItemsInOrders(siteOrderViewModel);
-                    
+                    string name = SearchOrderJSONFile(siteOrderViewModel.OrderGuid);
+                    ApiSiteOrderViewModel orderJSON = GetOrderJSONFile(name);
+                    MoveOrderJSONFile(name);
                     try
                     {
                         OrderAttributes orderRow = new OrderAttributes();
@@ -146,7 +149,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 orderRow.ContainerNumber = containerNumber;
                             else
                                 orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
-                            test = ValidateTable(containerNumber);
+                            test = ValidateTable(siteOrderViewModel.ContainerNumber);
                             bool isTabOrder = false;
                             //if (IsFloorPlanEnabled())
                             //{
@@ -1236,13 +1239,28 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public bool ValidateTable(int tableNo)
+        public bool ValidateTable(string tableNo)
         {
             bool retValue = false;
+            int tableNoContainer = 0;
+            string tableNameContainer = "";
+            int tableNoFromDB = 0;
+            string tableNameFromDB = "";
             try
             {
-                if (tableNo >= 1 || tableNo <= 99)
-                    retValue = true;
+                bool isTableNumberInteger = int.TryParse(tableNo, out tableNoContainer);
+                if(!isTableNumberInteger)
+                    tableNameContainer = tableNo;
+                FbCommand selectTableCommand = dbQueries.IsTableAvailable(connection, transaction, tableNoContainer, tableNameContainer);
+                using (FbDataReader reader = selectTableCommand.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        tableNoFromDB = reader.GetInt32(reader.GetOrdinal("TABLE_NUMBER"));
+                        tableNameFromDB = reader.GetString(reader.GetOrdinal("TABLE_NAME"));
+                        retValue = true;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -1304,6 +1322,136 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retValue;
 
+        }
+        public string SearchOrderJSONFile(string orderGUID)
+        {
+            string fileName = "";
+            try
+            {
+                string path = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                if (path.Contains(@"file:\"))
+                {
+                    path = path.Replace(@"file:\", "");
+                }
+                path = Path.Combine(path, "logs");
+                path = Path.Combine(path, "Pending Orders");
+
+                string[] dirs = Directory.GetFiles(@path, orderGUID +"*");
+                foreach (string dir in dirs)
+                {
+                    fileName = dir;
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SearchOrderJSONFile " + e.Message, e);
+                throw;
+            }
+            return fileName;
+
+        }
+        public ApiSiteOrderViewModel GetOrderJSONFile(string filePath)
+        {
+            ApiSiteOrderViewModel siteOrderViewModelList = new ApiSiteOrderViewModel();
+            try
+            {
+                using (StreamReader readJSON = new StreamReader(filePath))
+                {
+                    string orderJSON = readJSON.ReadToEnd();
+                    siteOrderViewModelList = JsonUtility.Deserialize<ApiSiteOrderViewModel>(orderJSON);
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetOrderJSONFile " + e.Message, e);
+                throw;
+            }
+            return siteOrderViewModelList;
+        }
+        public void MoveOrderJSONFile(string sourceFilePath)
+        {
+            string destinationFilePath = "";
+            try
+            {
+                //Add code to check dir before moving
+                destinationFilePath = sourceFilePath;
+                destinationFilePath = destinationFilePath.Replace(@"Pending Orders", "Successful Orders");
+
+                File.Move(@sourceFilePath, @destinationFilePath);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in MoveOrderJSONFile " + e.Message, e);
+                throw;
+            }
+
+        }
+        public void ProcessOrders()
+        {
+            bool temp = true;
+            try
+            {
+                if (/*Ordered from WaiterAPP*/temp)
+                {
+                    if (/*PaymentType is PayNow && Payment is Available*/temp)
+                    {
+                        //Retrive order from Pendind Orders Dir
+                        //If not found request order from WEB using orderGUID
+                        //Order Processing - Insert orders details in tables
+                        if (/*Insertion Of Order && Insertion of Payments && Receipt Generation == successful*/temp)
+                        {
+                            //OrderStatus = isConfirmed
+                            //Send Response	
+                        }
+                        else
+                        {
+                            //OrderStatus = POSError
+                        }
+                    }
+                    if (/*Validation for table*/temp)
+                    {
+                        if (/*Item Available validation*/temp)
+                        {
+                            if (/*PayNow && !PaymentNotAvailble*/temp)
+                            {
+                                //OrderStatus = IsValidated
+                                //Save JSON file in Pending Orders 
+                                //Send response (Terminal Name Waiter APP)
+                            }
+                            else if (/*PayLater*/temp)
+                            {
+                                if (/*Insertion of order (Seating condintion should be ignored)*/temp)
+                                {
+                                    //OrderStatus = IsConfirmed
+                                }
+                                else
+                                {
+                                    //OrderStatus = POSerror
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //OrderStatus = Item Not Available
+                        }
+                    }
+                    else
+                    {
+                        //OrderStatus = Invalid Table
+                    }
+                }
+                else
+                {
+                    //call insertorderinDB method
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ProcessOrders " + e.Message, e);
+                throw;
+            }
         }
 
         #endregion

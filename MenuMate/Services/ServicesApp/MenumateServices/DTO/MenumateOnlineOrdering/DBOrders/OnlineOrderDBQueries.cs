@@ -1311,6 +1311,35 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand IsTableAvailable(FbConnection connection, FbTransaction transaction, int tableNumber, string tableName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"SELECT a.TABLE_NUMBER, A.TABLE_NAME 
+                                        FROM TABLES a
+                                        WHERE ";
+                if (tableNumber > 0)
+                {
+                    command.CommandText += " a.TABLE_NUMBER = @TABLE_NUMBER ";
+                    command.Parameters.AddWithValue("@TABLE_NUMBER", tableNumber);
+                }
+                else
+                {
+                    command.CommandText += " a.TABLE_NAME = @TABLE_NAME ";
+                    command.Parameters.AddWithValue("@TABLE_NAME", tableName);
+                }
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in IsTableMarkedForOnlineordering " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
         #endregion
     }
 

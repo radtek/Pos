@@ -61,6 +61,7 @@ namespace MenumateServices.WCFServices
         {
             try
             {
+                SaveOrderJSON(orders);
                 stringList.Add("-----------------------------------------Inside GetOrdersFromWeb------------------------------------------------------");
                 stringList.Add("received order string is: " + orders);
                 List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
@@ -77,7 +78,6 @@ namespace MenumateServices.WCFServices
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
                 stringList.Add("After Updating order status to web..json is ..." + requestData);
                 WriteAndClearStringList();
-                SaveOrderJSON(orders);
             }
             catch (Exception exc)
             {
