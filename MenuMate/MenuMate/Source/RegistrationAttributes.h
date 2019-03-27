@@ -6,7 +6,7 @@
 #include <list>
 //---------------------------------------------------------------------------
 enum eLicenceType {eEftpos, eLoyalty, eAccounts, eTimeTracking, eChefmate, ePropertyManagement, eRoom, eFloorPlan, ePosCashier, ePosOrder,
-                    ePosHandHeld, eFiscal, eWebMat, ePocketVoucher, eBarExchange, eRunRateBoard, eOnlineOrdering, eStock, eOffice};
+                    ePosHandHeld, eFiscal, eWebMat, ePocketVoucher, eBarExchange, eRunRateBoard, eOnlineOrdering, eStock, eOffice, eTerminalType};
 
 //License Sub Types
 enum eEFTPOS { eEftpostNZ, eProvenco, eIngenicoAndPCEFTPOSAustralia, eCadmusKeylinkOneWay, eCadmusCronos, eICELinkICE5000Hyperlcom,
@@ -22,6 +22,8 @@ enum ePropertyManagement { eMotelMate, eSihot, eOracle, eMews };
 enum eRooms { eStrait, eNewBook };
 
 enum eFiscal {  ePOSPlus, eFiscalPrinter, eAustriaPrinter };
+
+enum eTerminalType { ePOS, eWaiterApp, eKiosk };
 
 struct TLicenceSetting
 {

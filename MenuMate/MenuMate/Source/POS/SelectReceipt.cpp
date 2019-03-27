@@ -62,7 +62,7 @@ void TfrmSelectReceipt::Execute(AnsiString ReceiptNumber)
    if(ManagerReceipt->Find(ReceiptNumber))
    {
       ShowReceipt();
-	   ShowModal();
+	  ShowModal();
    }
 }
 //---------------------------------------------------------------------------
@@ -582,8 +582,7 @@ bool TfrmSelectReceipt::CheckIfOOAppEnabledForAnyTerminal()
         SelectQuery->ExecQuery();
 
         if(SelectQuery->RecordCount > 0)
-        retvalue = true;
-
+            retvalue = true;
 
         DBTransaction.Commit();
     }
@@ -591,10 +590,8 @@ bool TfrmSelectReceipt::CheckIfOOAppEnabledForAnyTerminal()
     {
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        throw;
     }
-
-	    return retvalue;
+	return retvalue;
 }
 
 
