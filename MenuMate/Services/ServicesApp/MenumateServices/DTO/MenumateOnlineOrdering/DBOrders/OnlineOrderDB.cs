@@ -1227,6 +1227,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         {
             try
             {
+                // Check there should not be any conflict with same name present in DB either created by OO code or POS code
                 long contactKey = GenerateKey("CONTACTS");
                 FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey ,siteCode);
                 command.ExecuteNonQuery();
@@ -1334,13 +1335,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 {
                     path = path.Replace(@"file:\", "");
                 }
-                path = Path.Combine(path, "logs");
-                path = Path.Combine(path, "Pending Orders");
+                path = Path.Combine(path, "logs", "Pending Orders");
 
                 string[] dirs = Directory.GetFiles(@path, orderGUID +"*");
                 foreach (string dir in dirs)
                 {
                     fileName = dir;
+                    break;
                 }
 
             }
@@ -1452,6 +1453,45 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in ProcessOrders " + e.Message, e);
                 throw;
             }
+        }
+        public bool ArchiveTransaction()
+        {
+            bool retVaule = false;
+            try
+            {
+                string transactionDateAndTime = DateTime.Now.ToString();    
+	            //long ArcBillKey = ArchiveBill(PaymentTransaction,transactionDateAndTime);
+	            //ArchivePatronCount(PaymentTransaction, ArcBillKey);
+	            //ArchiveReferences(PaymentTransaction, ArcBillKey);
+		        //ArchiveOrder(PaymentTransaction, ArcBillKey,transactionDateAndTime);
+
+                //::::::::::::::::::::::::::::::::::::::::::::::
+	            //SaveRoomGuestDetails(PaymentTransaction); (Need to DO or Not)
+                //InsertDataInMallTables(PaymentTransaction, ArcBillKey);
+                //GetAndUploadOnlineOrderingInvoice(PaymentTransaction);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchiveTransaction " + e.Message, e);
+                throw;
+            }
+            return retVaule;
+        }
+        public long ArchiveBill()
+        {
+            long dayArcBillKey = 0;
+            try
+            {
+                dayArcBillKey = GenerateKey("DAYARCBILL");
+                FbCommand command = dbQueries.InsertDataIntoDayArcBill(connection, transaction, dayArcBillKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchiveBill " + e.Message, e);
+                throw;
+            }
+            return dayArcBillKey;
         }
 
         #endregion

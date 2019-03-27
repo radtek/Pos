@@ -31,5 +31,7 @@ namespace MenumateServices.WCFServices
 
         [OperationContract]
         bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
+
+        //Add CreateTerminals
     }
 }

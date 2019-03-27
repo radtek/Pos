@@ -1189,10 +1189,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 ServiceLogger.LogException(@"in CreateTerminalForWaiterApp " + e.Message, e);
                 throw;
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
-
-            //............................................
 
             return command;
         }
@@ -1239,10 +1236,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 ServiceLogger.LogException(@"in InsertTerminalForWaiterApp " + e.Message, e);
                 throw;
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
-
-            //............................................
 
             return command;
         }
@@ -1284,10 +1278,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 ServiceLogger.LogException(@"in InsertStaffForWaiterApp " + e.Message, e);
                 throw;
-                //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 181, short.MaxValue);
             }
-
-            //............................................
 
             return command;
         }
@@ -1297,6 +1288,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             try
             {
+                // Also check if actually the item can be used, because it may happen that item is there in table 
+                // but not usable
                 command.CommandText = @"SELECT a.ITEMSIZE_KEY 
                                         FROM ITEMSIZE a
                                         WHERE A.ITEMSIZE_KEY = @ITEMSIZE_KEY ";
@@ -1338,6 +1331,484 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
 
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArcBill(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+            try
+            {
+                command.CommandText =
+                                    @"
+                    INSERT INTO DAYARCBILL ( 
+                            ARCBILL_KEY,  
+                            TERMINAL_NAME,  
+                            STAFF_NAME,  
+                            TIME_STAMP,  
+                            TOTAL,  
+                            DISCOUNT, 		
+                            PATRON_COUNT,  
+                            RECEIPT,  
+                            SECURITY_REF, 
+                            BILLED_LOCATION,  
+                            INVOICE_NUMBER,  
+                            SALES_TYPE,  
+                            INVOICE_KEY,      
+                            ROUNDING_ADJUSTMENT, 
+                            ORDER_IDENTIFICATION_NUMBER,  
+                            REFUND_REFRECEIPT, 
+                            EFTPOS_SERVICE_ID ) 
+                      VALUES (
+		                    @ARCBILL_KEY,  
+                            @TERMINAL_NAME,  
+                            @STAFF_NAME,  
+                            @TIME_STAMP,  
+                            @TOTAL,  
+                            @DISCOUNT,  
+                            @PATRON_COUNT,  
+                            @RECEIPT, 
+		                    @SECURITY_REF,  
+                            @BILLED_LOCATION, 
+                            @INVOICE_NUMBER,  
+                            @SALES_TYPE,  
+                            @INVOICE_KEY, 
+                            @ROUNDING_ADJUSTMENT, 
+                            @ORDER_IDENTIFICATION_NUMBER,  
+                            @REFUND_REFRECEIPT, 
+                            @EFTPOS_SERVICE_ID )
+                    ;";
+
+                command.Parameters.AddWithValue("@ARCBILL_KEY",1 );
+                command.Parameters.AddWithValue("@TERMINAL_NAME",1 );
+                command.Parameters.AddWithValue("@STAFF_NAME", 1);
+                command.Parameters.AddWithValue("@TIME_STAMP",1 );
+                command.Parameters.AddWithValue("@TOTAL", 1);
+                command.Parameters.AddWithValue("@DISCOUNT", "");
+                command.Parameters.AddWithValue("@PATRON_COUNT", 1);
+                command.Parameters.AddWithValue("@RECEIPT", 1);
+                command.Parameters.AddWithValue("@SECURITY_REF",1 );
+                command.Parameters.AddWithValue("@BILLED_LOCATION", 1);
+                command.Parameters.AddWithValue("@INVOICE_NUMBER", 1);
+                command.Parameters.AddWithValue("@SALES_TYPE", "");
+                command.Parameters.AddWithValue("@INVOICE_KEY",1 );
+                command.Parameters.AddWithValue("@ROUNDING_ADJUSTMENT", 1);
+                command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER",1 );
+                command.Parameters.AddWithValue("@REFUND_REFRECEIPT", 1);
+                command.Parameters.AddWithValue("@SITE_ID", 1);
+                command.Parameters.AddWithValue("@EFTPOS_SERVICE_ID", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcBill " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArcBillPay(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+            try
+            {
+                command.CommandText =
+                @"
+		            INSERT INTO DAYARCBILLPAY ( 
+                            DAYARCBILLPAY_KEY,  
+                            ARCBILL_KEY,  
+                            PAY_TYPE,  
+                            VOUCHER_NUMBER, 
+		                    SUBTOTAL,  
+                            ROUNDING,  
+                            CASH_OUT,  
+                            TAX_FREE,  
+                            NOTE, 
+                            PAY_TYPE_DETAILS, 
+                            PROPERTIES, 
+                            GROUP_NUMBER, 
+                            PAYMENT_CARD_TYPE, 
+                            PAY_GROUP,
+                            CHARGED_TO_XERO,
+                            TIP_AMOUNT)  
+                    VALUES (
+		                    @DAYARCBILLPAY_KEY,  
+                            @ARCBILL_KEY,  
+                            @PAY_TYPE,  
+                            @VOUCHER_NUMBER,  
+                            @SUBTOTAL,  
+                            @ROUNDING,  
+                            @CASH_OUT,  
+                            @TAX_FREE, 
+		                    @NOTE, 
+                            @PAY_TYPE_DETAILS, 
+                            @PROPERTIES,  
+                            @GROUP_NUMBER , 
+                            @PAYMENT_CARD_TYPE, 
+                            @PAY_GROUP,
+                            @CHARGED_TO_XERO,
+                            @TIP_AMOUNT)
+                            ;";
+
+                command.Parameters.AddWithValue("@DAYARCBILLPAY_KEY", 1);
+                command.Parameters.AddWithValue("@ARCBILL_KEY",1 );
+                command.Parameters.AddWithValue("@PAY_TYPE", 1);
+                command.Parameters.AddWithValue("@VOUCHER_NUMBER", 1);
+                command.Parameters.AddWithValue("@SUBTOTAL",1 );
+                command.Parameters.AddWithValue("@ROUNDING", "");
+                command.Parameters.AddWithValue("@CASH_OUT", 1);
+                command.Parameters.AddWithValue("@TAX_FREE", 1);
+                command.Parameters.AddWithValue("@NOTE", 1);
+                command.Parameters.AddWithValue("@PAY_TYPE_DETAILS",1 );
+                command.Parameters.AddWithValue("@PROPERTIES", 1);
+                command.Parameters.AddWithValue("@GROUP_NUMBER", "");
+                command.Parameters.AddWithValue("@PAYMENT_CARD_TYPE", 1);
+                command.Parameters.AddWithValue("@PAY_GROUP", 1);
+                command.Parameters.AddWithValue("@CHARGED_TO_XERO", 1);
+                command.Parameters.AddWithValue("@TIP_AMOUNT",1 );
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcBillPay " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayPatronCount(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+				    INSERT INTO DAYPATRONCOUNT ( 
+                            PATRONCOUNT_KEY,  
+                            ARCBILL_KEY,  
+                            PATRON_TYPE,  
+                            PATRON_COUNT) 
+				    VALUES ( 
+                            @PATRONCOUNT_KEY,  
+                            @ARCBILL_KEY,  
+                            @PATRON_TYPE,  
+                            @PATRON_COUNT) 
+                    ;";
+                command.Parameters.AddWithValue("@PATRONCOUNT_KEY", 1);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
+                command.Parameters.AddWithValue("@PATRON_TYPE",1 );
+                command.Parameters.AddWithValue("@PATRON_COUNT", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayPatronCount " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArcRef(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+			        INSERT INTO DAYARCREF ( 
+                            DAYARCREF_KEY,  
+                            ARCBILL_KEY,  
+                            REFERENCE,  
+                            REFS_KEY )  
+                    VALUES (
+			                @DAYARCREF_KEY,  
+                            @ARCBILL_KEY,  
+                            @REFERENCE,  
+                            @REFS_KEY )
+                    ;";
+                command.Parameters.AddWithValue("@DAYARCREF_KEY", 1);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
+                command.Parameters.AddWithValue("@REFERENCE",1 );
+                command.Parameters.AddWithValue("@REFS_KEY", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcRef " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArchive(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    INSERT INTO DAYARCHIVE (
+				            ARCHIVE_KEY,
+				            ARCBILL_KEY,
+				            TERMINAL_NAME,
+				            MENU_NAME,
+				            COURSE_NAME,
+				            ITEM_NAME,
+				            ITEM_CATEGORY,
+				            ITEM_SHORT_NAME,
+				            ITEM_ID,
+				            SIZE_NAME,
+				            TABLE_NUMBER,
+				            TABLE_NAME,
+				            SEAT_NUMBER,
+				            SERVER_NAME,
+				            TAB_NAME,
+				            LOYALTY_NAME,
+				            ORDER_TYPE,
+				            TIME_STAMP,
+				            TIME_STAMP_BILLED,
+				            ORDER_LOCATION,
+				            PRICE,
+				            COST,
+				            HAPPY_HOUR,
+				            NOTE,
+				            SECURITY_REF,
+				            TIME_KEY,
+				            GST_PERCENT,
+				            COST_GST_PERCENT,
+				            QTY,
+				            DISCOUNT,
+				            REDEEMED,
+				            POINTS_PERCENT,
+				            POINTS_EARNED,
+				            LOYALTY_KEY,
+				            THIRDPARTYCODES_KEY,
+				            CATEGORY_KEY,
+				            DISCOUNT_REASON,
+				            PRICE_LEVEL0,
+				            PRICE_LEVEL1,
+				            SERVINGCOURSES_KEY,
+				            CHIT_NAME,
+				            CHIT_OPTION,
+				            BASE_PRICE,
+				            DISCOUNT_WITHOUT_TAX,
+				            TAX_ON_DISCOUNT,
+                            PRICE_INCL, 
+                            PRICE_ADJUST, 
+                            ONLINE_CHIT_TYPE, 
+                            ORDER_GUID 
+				            )
+				      VALUES 
+				            (
+				            @ARCHIVE_KEY,
+				            @ARCBILL_KEY,
+				            @TERMINAL_NAME,
+				            @MENU_NAME,
+				            @COURSE_NAME,
+				            @ITEM_NAME,
+				            @ITEM_CATEGORY,
+				            @ITEM_SHORT_NAME,
+				            @ITEM_ID,
+				            @SIZE_NAME,
+				            @TABLE_NUMBER,
+				            @TABLE_NAME,
+				            @SEAT_NUMBER,
+				            @SERVER_NAME,
+				            @TAB_NAME,
+				            @LOYALTY_NAME,
+				            @ORDER_TYPE,
+				            @TIME_STAMP,
+				            @TIME_STAMP_BILLED,
+				            @ORDER_LOCATION,
+				            @PRICE,
+				            @COST,
+				            @HAPPY_HOUR,
+				            @NOTE,
+				            @SECURITY_REF,
+				            @TIME_KEY,
+				            @GST_PERCENT,
+				            @COST_GST_PERCENT,
+				            @QTY,
+				            @DISCOUNT,
+				            @REDEEMED,
+				            @POINTS_PERCENT,
+				            @POINTS_EARNED,
+				            @LOYALTY_KEY,
+				            @THIRDPARTYCODES_KEY,
+				            @CATEGORY_KEY,
+				            @DISCOUNT_REASON,
+				            @PRICE_LEVEL0,
+				            @PRICE_LEVEL1,
+				            @SERVINGCOURSES_KEY,
+				            @CHIT_NAME,
+				            @CHIT_OPTION,
+				            @BASE_PRICE,
+				            @DISCOUNT_WITHOUT_TAX,
+				            @TAX_ON_DISCOUNT,
+                            @PRICE_INCL, 
+                            @PRICE_ADJUST, 
+                            @ONLINE_CHIT_TYPE, 
+                            @ORDER_GUID 
+				        );
+                    ";
+                command.Parameters.AddWithValue("@ARCHIVE_KEY",1 );
+                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
+                command.Parameters.AddWithValue("@TERMINAL_NAME",1 );
+                command.Parameters.AddWithValue("@MENU_NAME",1 );
+                command.Parameters.AddWithValue("@COURSE_NAME", 1);
+                command.Parameters.AddWithValue("@ITEM_NAME", 1);
+                command.Parameters.AddWithValue("@ITEM_CATEGORY", 1);
+                command.Parameters.AddWithValue("@ITEM_SHORT_NAME", 1);
+                command.Parameters.AddWithValue("@ITEM_ID", 1);
+                command.Parameters.AddWithValue("@SIZE_NAME",1 );
+                command.Parameters.AddWithValue("@TABLE_NUMBER", 1);
+                command.Parameters.AddWithValue("@TABLE_NAME",1 );
+                command.Parameters.AddWithValue("@SEAT_NUMBER",1 );
+                command.Parameters.AddWithValue("@SERVER_NAME", 1);
+                command.Parameters.AddWithValue("@TAB_NAME",1 );
+                command.Parameters.AddWithValue("@LOYALTY_NAME", 1);
+                command.Parameters.AddWithValue("@ORDER_TYPE",1 );
+                command.Parameters.AddWithValue("@TIME_STAMP", 1);
+                command.Parameters.AddWithValue("@TIME_STAMP_BILLED",1 );
+                command.Parameters.AddWithValue("@ORDER_LOCATION",1 );
+                command.Parameters.AddWithValue("@PRICE", 1);
+                command.Parameters.AddWithValue("@COST",1 );
+                command.Parameters.AddWithValue("@HAPPY_HOUR",1 );
+                command.Parameters.AddWithValue("@NOTE",1 );
+                command.Parameters.AddWithValue("@SECURITY_REF",1 );
+                command.Parameters.AddWithValue("@TIME_KEY", 1);
+                command.Parameters.AddWithValue("@GST_PERCENT",1 );
+                command.Parameters.AddWithValue("@COST_GST_PERCENT",1 );
+                command.Parameters.AddWithValue("@QTY",1 );
+                command.Parameters.AddWithValue("@DISCOUNT",1 );
+                command.Parameters.AddWithValue("@REDEEMED",1 );
+                command.Parameters.AddWithValue("@POINTS_PERCENT", 1);
+                command.Parameters.AddWithValue("@POINTS_EARNED",1 );
+                command.Parameters.AddWithValue("@LOYALTY_KEY", 1);
+                command.Parameters.AddWithValue("@THIRDPARTYCODES_KEY",1 );
+                command.Parameters.AddWithValue("@CATEGORY_KEY", 1);
+                command.Parameters.AddWithValue("@DISCOUNT_REASON",1 );
+                command.Parameters.AddWithValue("@PRICE_LEVEL0",1 );
+                command.Parameters.AddWithValue("@PRICE_LEVEL1", 1);
+                command.Parameters.AddWithValue("@SERVINGCOURSES_KEY",1 );
+                command.Parameters.AddWithValue("@CHIT_NAME", 1);
+                command.Parameters.AddWithValue("@CHIT_OPTION",1 );
+                command.Parameters.AddWithValue("@BASE_PRICE", 1);
+                command.Parameters.AddWithValue("@DISCOUNT_WITHOUT_TAX",1 );
+                command.Parameters.AddWithValue("@TAX_ON_DISCOUNT", 1);
+                command.Parameters.AddWithValue("@PRICE_INCL", 1);
+                command.Parameters.AddWithValue("@PRICE_ADJUST",1 );
+                command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE",1 );
+                command.Parameters.AddWithValue("@ORDER_GUID",1 );
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArchive " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArcOrderTaxes(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    INSERT INTO DAYARCORDERTAXES (
+	                       ARCORDERTAXES_KEY,
+	                       ARCHIVE_KEY,
+	                       TAX_NAME,
+	                       TAX_VALUE, 
+	                       TAX_TYPE ) 
+	                VALUES 
+	                (
+	                       @ARCORDERTAXES_KEY,
+	                       @ARCHIVE_KEY,
+	                       @TAX_NAME,
+	                       @TAX_VALUE, 
+	                       @TAX_TYPE 
+	                );";
+                command.Parameters.AddWithValue("@ARCORDERTAXES_KEY",1 );
+                command.Parameters.AddWithValue("@ARCHIVE_KEY", 1);
+                command.Parameters.AddWithValue("@TAX_NAME", 1);
+                command.Parameters.AddWithValue("@TAX_VALUE",1 );
+                command.Parameters.AddWithValue("@TAX_TYPE", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcOrderTaxes " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoDayArcCategory(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    INSERT INTO DAYARCCATEGORY ( 
+                           ARCHIVE_KEY, 
+                           CATEGORY_KEY)  
+                    VALUES ( 
+                           @ARCHIVE_KEY,
+					       @CATEGORY_KEY);";
+                command.Parameters.AddWithValue("@ARCHIVE_KEY", 1);
+                command.Parameters.AddWithValue("@CATEGORY_KEY", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcCategory " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertDataIntoSecurity(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    INSERT INTO SECURITY ( 
+                           SECURITY_KEY,  
+                           SECURITY_REF,  
+                           SECURITY_EVENT,  
+                           FROM_VAL,  
+                           TO_VAL,  
+                           NOTE, 
+		                   TERMINAL_NAME,  
+                           USER_KEY,  
+                           TIME_STAMP)  
+                    VALUES ( 
+                           @SECURITY_KEY,  
+                           @SECURITY_REF,  
+                           @SECURITY_EVENT,  
+                           @FROM_VAL, 
+		                   @TO_VAL,  
+                           @NOTE,  
+                           @TERMINAL_NAME,  
+                           @USER_KEY,  
+                           @TIME_STAMP);";
+                command.Parameters.AddWithValue("@SECURITY_KEY", 1);
+                command.Parameters.AddWithValue("@SECURITY_REF", 1);
+                command.Parameters.AddWithValue("@SECURITY_EVENT",1 );
+                command.Parameters.AddWithValue("@FROM_VAL", 1);
+                command.Parameters.AddWithValue("@TO_VAL",1 );
+                command.Parameters.AddWithValue("@NOTE", 1);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", 1);
+                command.Parameters.AddWithValue("@USER_KEY",1 );
+                command.Parameters.AddWithValue("@TIME_STAMP", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoSecurity " + e.Message, e);
+                throw;
+            }
             return command;
         }
         #endregion

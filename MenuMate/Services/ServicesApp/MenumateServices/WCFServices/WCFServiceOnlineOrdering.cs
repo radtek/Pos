@@ -29,6 +29,7 @@ namespace MenumateServices.WCFServices
                 stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
                 WriteAndClearStringList();
                 CreateWaiterTerminal(siteTaxSettings.SiteId);
+                // Pass String List for logging
                 return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
             }
             catch (Exception exc)
@@ -46,6 +47,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-----------------------------------------Inside SyncMenu------------------------------------------------------");
                 WriteAndClearStringList();
+                // Pass String List for logging
                 return LoyaltySite.Instance.SyncSiteMenu(inSyndicateCode, siteViewModel);
             }
             catch (Exception exc)
@@ -130,6 +132,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-------------------------------------------------------Inside PostOnlineOrderInvoiceInfo-------------------------------------------------------...");
                 WriteAndClearStringList();
+                // Pass String List for logging
                 return LoyaltySite.Instance.PostOnlineOrderInvoiceInfo(inSyndicateCode, siteOrderModel);
             }
             catch (Exception exc)
@@ -147,6 +150,7 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-------------------------------------------------------Inside SyncOnlineOrderingDetails-------------------------------------------------------...");
                 WriteAndClearStringList();
+                // Pass String List for logging
                 return LoyaltyOnlineOrdering.Instance.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
             }
             catch (Exception exc)
@@ -174,6 +178,7 @@ namespace MenumateServices.WCFServices
             }
             return false;
         }
+        
         public void CreateWaiterTerminal(long siteID)
         {
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
@@ -236,7 +241,7 @@ namespace MenumateServices.WCFServices
                     if (!Directory.Exists(location))
                         Directory.CreateDirectory(location);
 
-                    string name = orderGUID + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".json";
+                    string name = orderGUID + "_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".json";
                     string fileName = Path.Combine(location, name);
 
                     if (!File.Exists(fileName))
@@ -246,6 +251,7 @@ namespace MenumateServices.WCFServices
                             sw.WriteLine(requestData.ToString());
                         }
                     }
+                    stringList.Add("File saved with new Details for orderGUID " + orderGUID);
                 }
             }
             catch (Exception exc)
@@ -259,6 +265,7 @@ namespace MenumateServices.WCFServices
 
         private void WriteAndClearStringList()
         {
+            // Check folder and file name should remain same as in previous releases
             FileWriter.WriteToFile(stringList, "Online Ordering Logs", "OnlineOrderingLogs ");
             stringList.Clear();
         }
