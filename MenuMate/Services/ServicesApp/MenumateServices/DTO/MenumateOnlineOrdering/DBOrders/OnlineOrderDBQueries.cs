@@ -1333,7 +1333,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand InsertDataIntoDayArcBill(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcBill(FbConnection connection, FbTransaction transaction, DayArcBillAttributes dayArcBillRow)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1380,24 +1380,23 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @EFTPOS_SERVICE_ID )
                     ;";
 
-                command.Parameters.AddWithValue("@ARCBILL_KEY",1 );
-                command.Parameters.AddWithValue("@TERMINAL_NAME",1 );
-                command.Parameters.AddWithValue("@STAFF_NAME", 1);
-                command.Parameters.AddWithValue("@TIME_STAMP",1 );
-                command.Parameters.AddWithValue("@TOTAL", 1);
-                command.Parameters.AddWithValue("@DISCOUNT", "");
-                command.Parameters.AddWithValue("@PATRON_COUNT", 1);
-                command.Parameters.AddWithValue("@RECEIPT", 1);
-                command.Parameters.AddWithValue("@SECURITY_REF",1 );
-                command.Parameters.AddWithValue("@BILLED_LOCATION", 1);
-                command.Parameters.AddWithValue("@INVOICE_NUMBER", 1);
-                command.Parameters.AddWithValue("@SALES_TYPE", "");
-                command.Parameters.AddWithValue("@INVOICE_KEY",1 );
-                command.Parameters.AddWithValue("@ROUNDING_ADJUSTMENT", 1);
-                command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER",1 );
-                command.Parameters.AddWithValue("@REFUND_REFRECEIPT", 1);
-                command.Parameters.AddWithValue("@SITE_ID", 1);
-                command.Parameters.AddWithValue("@EFTPOS_SERVICE_ID", 1);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillRow.ArcBillId);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", dayArcBillRow.TerminalName);
+                command.Parameters.AddWithValue("@STAFF_NAME", dayArcBillRow.StaffName);
+                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now );
+                command.Parameters.AddWithValue("@TOTAL", dayArcBillRow.Total);
+                command.Parameters.AddWithValue("@DISCOUNT", dayArcBillRow.Discount);
+                command.Parameters.AddWithValue("@PATRON_COUNT", dayArcBillRow.PatronCount);
+                command.Parameters.AddWithValue("@RECEIPT", null);
+                command.Parameters.AddWithValue("@SECURITY_REF", dayArcBillRow.SecurityRef);
+                command.Parameters.AddWithValue("@BILLED_LOCATION", dayArcBillRow.BilledLocation);
+                command.Parameters.AddWithValue("@INVOICE_NUMBER", dayArcBillRow.InvoiceNumber);
+                command.Parameters.AddWithValue("@SALES_TYPE", dayArcBillRow.SaleType);
+                command.Parameters.AddWithValue("@INVOICE_KEY", 0 );
+                command.Parameters.AddWithValue("@ROUNDING_ADJUSTMENT", dayArcBillRow.RoundingAdjustment);
+                command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER", 0 );
+                command.Parameters.AddWithValue("@REFUND_REFRECEIPT", "");
+                command.Parameters.AddWithValue("@EFTPOS_SERVICE_ID", "");
             }
             catch (Exception e)
             {
@@ -1406,7 +1405,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArcBillPay(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcBillPay(FbConnection connection, FbTransaction transaction, DayArcBillPayAttributes dayArcBillPayRow)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1451,22 +1450,22 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @TIP_AMOUNT)
                             ;";
 
-                command.Parameters.AddWithValue("@DAYARCBILLPAY_KEY", 1);
-                command.Parameters.AddWithValue("@ARCBILL_KEY",1 );
-                command.Parameters.AddWithValue("@PAY_TYPE", 1);
-                command.Parameters.AddWithValue("@VOUCHER_NUMBER", 1);
-                command.Parameters.AddWithValue("@SUBTOTAL",1 );
-                command.Parameters.AddWithValue("@ROUNDING", "");
-                command.Parameters.AddWithValue("@CASH_OUT", 1);
-                command.Parameters.AddWithValue("@TAX_FREE", 1);
-                command.Parameters.AddWithValue("@NOTE", 1);
-                command.Parameters.AddWithValue("@PAY_TYPE_DETAILS",1 );
-                command.Parameters.AddWithValue("@PROPERTIES", 1);
-                command.Parameters.AddWithValue("@GROUP_NUMBER", "");
-                command.Parameters.AddWithValue("@PAYMENT_CARD_TYPE", 1);
-                command.Parameters.AddWithValue("@PAY_GROUP", 1);
-                command.Parameters.AddWithValue("@CHARGED_TO_XERO", 1);
-                command.Parameters.AddWithValue("@TIP_AMOUNT",1 );
+                command.Parameters.AddWithValue("@DAYARCBILLPAY_KEY", dayArcBillPayRow.DayArcBillPayId);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillPayRow.DayArcBillId);
+                command.Parameters.AddWithValue("@PAY_TYPE", dayArcBillPayRow.PayType);
+                command.Parameters.AddWithValue("@VOUCHER_NUMBER", "");
+                command.Parameters.AddWithValue("@SUBTOTAL", dayArcBillPayRow.SubTotal);
+                command.Parameters.AddWithValue("@ROUNDING", dayArcBillPayRow.Rounding);
+                command.Parameters.AddWithValue("@CASH_OUT", 'F');
+                command.Parameters.AddWithValue("@TAX_FREE", 'F');
+                command.Parameters.AddWithValue("@NOTE", dayArcBillPayRow.Note);
+                command.Parameters.AddWithValue("@PAY_TYPE_DETAILS", dayArcBillPayRow.PayTypeDetails);
+                command.Parameters.AddWithValue("@PROPERTIES", dayArcBillPayRow.Properties);
+                command.Parameters.AddWithValue("@GROUP_NUMBER", 0);
+                command.Parameters.AddWithValue("@PAYMENT_CARD_TYPE", dayArcBillPayRow.PaymentCardType);
+                command.Parameters.AddWithValue("@PAY_GROUP", dayArcBillPayRow.PayGroup);
+                command.Parameters.AddWithValue("@CHARGED_TO_XERO", 'F');
+                command.Parameters.AddWithValue("@TIP_AMOUNT", 0 );
 
             }
             catch (Exception e)
@@ -1476,7 +1475,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayPatronCount(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayPatronCount(FbConnection connection, FbTransaction transaction,long patronCountKey, long dayArcBillKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1495,9 +1494,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @PATRON_TYPE,  
                             @PATRON_COUNT) 
                     ;";
-                command.Parameters.AddWithValue("@PATRONCOUNT_KEY", 1);
-                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
-                command.Parameters.AddWithValue("@PATRON_TYPE",1 );
+                command.Parameters.AddWithValue("@PATRONCOUNT_KEY", patronCountKey);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillKey);
+                command.Parameters.AddWithValue("@PATRON_TYPE", ""); // Need to Confirm 
                 command.Parameters.AddWithValue("@PATRON_COUNT", 1);
             }
             catch (Exception e)
@@ -1507,7 +1506,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArcRef(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcRef(FbConnection connection, FbTransaction transaction, long dayArcRefKey , long dayArcBillKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1526,10 +1525,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @REFERENCE,  
                             @REFS_KEY )
                     ;";
-                command.Parameters.AddWithValue("@DAYARCREF_KEY", 1);
-                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
-                command.Parameters.AddWithValue("@REFERENCE",1 );
-                command.Parameters.AddWithValue("@REFS_KEY", 1);
+                command.Parameters.AddWithValue("@DAYARCREF_KEY", dayArcRefKey);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillKey);
+                command.Parameters.AddWithValue("@REFERENCE", "" );//Need to Confirm
+                command.Parameters.AddWithValue("@REFS_KEY", 1);//Need to Confirm
             }
             catch (Exception e)
             {

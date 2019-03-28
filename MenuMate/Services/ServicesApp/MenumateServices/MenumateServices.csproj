@@ -182,6 +182,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\DayArcBillAttributes.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\DayArcBillPayAttributes.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\DayArchiveAttributes.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\DayArcOrderTaxesAttributes.cs" />
+    <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\SecurityAttributes.cs" />
     <Compile Include="DTO\MenumateOnlineOrdering\LoyaltyOOResponse.cs" />
     <Compile Include="DTO\MenumateOnlineOrdering\OOLoyaltyResponse.cs" />
     <Compile Include="DTO\MenumateOnlineOrdering\OOLoyaltyResponsive.cs" />

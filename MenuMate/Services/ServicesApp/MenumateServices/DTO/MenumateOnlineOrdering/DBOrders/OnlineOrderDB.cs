@@ -1477,23 +1477,186 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retVaule;
         }
-        public long ArchiveBill()
+        public DayArcBillAttributes CreateDayArcBillRow(long dayArcBillKey, long securityKey, long invoiceNumber, ApiSiteOrderViewModel siteOrderViewModel)
         {
-            long dayArcBillKey = 0;
+            DayArcBillAttributes dayArcBillRow = new DayArcBillAttributes();
             try
             {
-                dayArcBillKey = GenerateKey("DAYARCBILL");
-                FbCommand command = dbQueries.InsertDataIntoDayArcBill(connection, transaction, dayArcBillKey);
+                dayArcBillRow.ArcBillId = dayArcBillKey;
+                dayArcBillRow.TerminalName = siteOrderViewModel.TerminalName;
+                dayArcBillRow.StaffName = "";//Need to Confirm
+                dayArcBillRow.Total = siteOrderViewModel.TotalAmount;
+                dayArcBillRow.Discount = 0;
+                dayArcBillRow.PatronCount = 1;
+                dayArcBillRow.SecurityRef = securityKey;
+                dayArcBillRow.RoundingAdjustment = 0;
+                dayArcBillRow.BilledLocation = siteOrderViewModel.Location;//Need to confirm
+                dayArcBillRow.InvoiceNumber = invoiceNumber;
+                dayArcBillRow.SaleType = 2; // Need to Confirm
+                dayArcBillRow.RoundingAdjustment = 0;
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateDayArcBillRow " + e.Message, e);
+                throw;
+            }
+            return dayArcBillRow;
+        }
+        public void ExecuteDayArcBillQuery(DayArcBillAttributes dayArcBillRow)
+        {
+            try
+            {
+                FbCommand command = dbQueries.InsertDataIntoDayArcBill(connection, transaction, dayArcBillRow);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in ArchiveBill " + e.Message, e);
+                ServiceLogger.LogException(@"in ExecuteDayArcBillQuery " + e.Message, e);
                 throw;
             }
-            return dayArcBillKey;
         }
+        public DayArcBillPayAttributes CreateDayArcBillPayRow(long dayArcBillKey, long dayArcBillPayKey, double totalAmount)
+        {
+            DayArcBillPayAttributes dayArcBillPayRow = new DayArcBillPayAttributes();
+            try
+            {
+                dayArcBillPayRow.DayArcBillPayId = dayArcBillPayKey;
+                dayArcBillPayRow.DayArcBillId = dayArcBillKey;
+                dayArcBillPayRow.PayType = "";//Need to Confirm
+                dayArcBillPayRow.SubTotal = totalAmount;
+                dayArcBillPayRow.Rounding = 0;
+                dayArcBillPayRow.Note = "";
+                dayArcBillPayRow.PayTypeDetails = "";
+                dayArcBillPayRow.Properties = "";//Need to confirm
+                dayArcBillPayRow.PaymentCardType = "";//Need to confirm
+                dayArcBillPayRow.PayGroup = ""; // Need to Confirm
 
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateDayArcBillPayRow " + e.Message, e);
+                throw;
+            }
+            return dayArcBillPayRow;
+        }
+        public void ExecuteDayArcBillPayQuery(DayArcBillPayAttributes dayArcBillPayRow)
+        {
+            try
+            {
+                FbCommand command = dbQueries.InsertDataIntoDayArcBillPay(connection, transaction, dayArcBillPayRow);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ExecuteDayArcBillPayQuery " + e.Message, e);
+                throw;
+            }
+        }
+        public void ArchivePatronCount(long dayArcBillKey)
+        {
+            try
+            {
+                long patronCountKey = GenerateKey("DAYPATRONCOUNT");
+                FbCommand command = dbQueries.InsertDataIntoDayPatronCount(connection, transaction, patronCountKey, dayArcBillKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchivePatronCount " + e.Message, e);
+                throw;
+            }
+        }
+        public void ArchiveReferences(long dayArcBillKey)
+        {
+            try
+            {
+                long dayArcRefKey = GenerateKey("DAYARCREF");
+                FbCommand command = dbQueries.InsertDataIntoDayArcRef(connection, transaction, dayArcRefKey, dayArcBillKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchiveReferences " + e.Message, e);
+                throw;
+            }
+        }
+        public void ArchiveOrder(ApiSiteOrderViewModel siteOrderViewModel, long arcBillKey, string tableName, int tableNumber, long securityKey)
+        {
+            DayArchiveAttributes dayArchiveRow = new DayArchiveAttributes();
+
+            try
+            {
+                dayArchiveRow.ArcBillId = arcBillKey;
+                dayArchiveRow.TerminalName = siteOrderViewModel.TerminalName;
+                dayArchiveRow.TableNumber = tableNumber;
+                if (IsFloorPlanEnabled())
+                    dayArchiveRow.TableName = tableName;
+                else
+                    dayArchiveRow.TableName = "Table #" + tableNumber.ToString();
+                dayArchiveRow.TabName = "Guest 1";//Need to confirm
+                dayArchiveRow.OrderLocation = siteOrderViewModel.Location;// Need to confirm
+                dayArchiveRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                dayArchiveRow.SecurityRef = securityKey;
+                dayArchiveRow.OrderType = 1;//Need to Confirm
+                dayArchiveRow.LoyaltyName = "";
+                dayArchiveRow.LoyaltyId = 0;
+                foreach(var item in siteOrderViewModel.OrderItems)
+                {
+                    dayArchiveRow.ItemName = item.Name;
+                    dayArchiveRow.ItemId = item.OrderItemId;
+                    foreach(var itemSize in item.OrderItemSizes)
+                    {
+                        dayArchiveRow.ItemShortName = "";//Need to Confirm
+                        dayArchiveRow.SizeName = itemSize.Name;
+                        dayArchiveRow.ServerName = "";
+                        dayArchiveRow.TimeKey = setTimeKey();//Need to Confirm
+                        //Loading Item Info
+                        LoadItemInfoForArchiveOrder(ref dayArchiveRow,  itemSize.ItemSizeUniqueId);
+                        dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
+                        dayArchiveRow.Price = itemSize.Price;
+                        dayArchiveRow.Qty = itemSize.Quantity;
+                        dayArchiveRow.Redeemed = 0;
+                        dayArchiveRow.PriceLevel0 = itemSize.Pr
+                    }
+
+                }
+
+                        
+
+
+
+ 
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchiveOrder " + e.Message, e);
+                throw;
+            }
+        }
+        public void LoadItemInfoForArchiveOrder(ref DayArchiveAttributes dayArchiveRow, string itemSizeUniqueId)
+        {
+            OrderAttributes orderinfo = new OrderAttributes();
+            try
+            {
+                orderinfo.ItemSizeUniqueId = itemSizeUniqueId;
+                orderinfo.ItemUniqueId = GetItemUniqueID(orderinfo.ItemSizeUniqueId);
+                //Load Item info like course, sc, kitchen name etc.
+                LoadItemInfo(ref orderinfo);
+                dayArchiveRow.MenuName = orderinfo.MenuName;
+                dayArchiveRow.CategoryId = orderinfo.CategoryKey;
+                dayArchiveRow.CourseName = orderinfo.CourseName;
+                dayArchiveRow.ItemName = orderinfo.Name;
+                dayArchiveRow.ItemCategory = orderinfo.ItemCategory;
+                dayArchiveRow.ItemId = orderinfo.ItemId;
+                dayArchiveRow.ServingCousesId = orderinfo.SetvingCourseKey
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in LoadItemInfoForArchiveOrder " + e.Message, e);
+                throw;
+            }
+        }
         #endregion
     }
 
