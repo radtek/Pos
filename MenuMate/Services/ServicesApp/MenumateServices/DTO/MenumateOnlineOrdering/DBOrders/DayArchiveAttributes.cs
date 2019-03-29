@@ -10,11 +10,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         public long ArchiveId {get; set;}  
 		public long ArcBillId {get; set;} 
 		public string TerminalName {get; set;}  	
-		public string MenuNme {get; set;}
+		public string MenuName {get; set;}
 		public string CourseName {get; set;}
 		public string ItemName {get; set;}
 		public string ItemCategory {get; set;}  
-		public string ItemShortnName {get; set;} 	
+		public string ItemShortName {get; set;} 	
 		public long ItemId {get; set;}  	
 		public string SizeName {get; set;}
 		public long TableNumber {get; set;}  		  

@@ -1600,31 +1600,37 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArchiveRow.OrderType = 1;//Need to Confirm
                 dayArchiveRow.LoyaltyName = "";
                 dayArchiveRow.LoyaltyId = 0;
+                dayArchiveRow.Discount = 0;
                 foreach(var item in siteOrderViewModel.OrderItems)
                 {
                     dayArchiveRow.ItemName = item.Name;
-                    dayArchiveRow.ItemId = item.OrderItemId;
+                    dayArchiveRow.ItemShortName = "";//Neew to Confirm
                     foreach(var itemSize in item.OrderItemSizes)
                     {
-                        dayArchiveRow.ItemShortName = "";//Need to Confirm
+                        //dayArchiveRow.ItemShortName = "";//Need to Confirm
                         dayArchiveRow.SizeName = itemSize.Name;
                         dayArchiveRow.ServerName = "";
-                        dayArchiveRow.TimeKey = setTimeKey();//Need to Confirm
-                        //Loading Item Info
-                        LoadItemInfoForArchiveOrder(ref dayArchiveRow,  itemSize.ItemSizeUniqueId);
-                        dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
+                        dayArchiveRow.Note = "";
+                        dayArchiveRow.BasePrice = itemSize.BasePrice;
+                        dayArchiveRow.PriceAdjust = 0;
                         dayArchiveRow.Price = itemSize.Price;
+                        dayArchiveRow.PriceLevel0 = itemSize.Price;
+                        dayArchiveRow.PriceLevel1 = itemSize.Price;
                         dayArchiveRow.Qty = itemSize.Quantity;
+                        dayArchiveRow.PriceIncl = itemSize.PriceInclusive;
+                        dayArchiveRow.TimeKey = setTimeKey();//Need to Confirm
                         dayArchiveRow.Redeemed = 0;
-                        dayArchiveRow.PriceLevel0 = itemSize.Pr
+                        dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
+                        //Loading Item Info
+                        LoadItemInfoForDayArchiveRow(ref dayArchiveRow, itemSize.ItemSizeUniqueId);
+                        //Insert row into DayArchive
+                        ExecuteDayArchiveQuery(dayArchiveRow);
+                        //Insert row in DayArcCategory
+                        ExecuteDayArcCategoryQuery(dayArchiveRow.ArchiveId, dayArchiveRow.CategoryId);
+
                     }
 
                 }
-
-                        
-
-
-
  
             }
             catch (Exception e)
@@ -1633,27 +1639,61 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public void LoadItemInfoForArchiveOrder(ref DayArchiveAttributes dayArchiveRow, string itemSizeUniqueId)
+        public void LoadItemInfoForDayArchiveRow(ref DayArchiveAttributes dayArchiveRow, string itemSizeUniqueId)
         {
-            OrderAttributes orderinfo = new OrderAttributes();
             try
             {
-                orderinfo.ItemSizeUniqueId = itemSizeUniqueId;
-                orderinfo.ItemUniqueId = GetItemUniqueID(orderinfo.ItemSizeUniqueId);
-                //Load Item info like course, sc, kitchen name etc.
-                LoadItemInfo(ref orderinfo);
-                dayArchiveRow.MenuName = orderinfo.MenuName;
-                dayArchiveRow.CategoryId = orderinfo.CategoryKey;
-                dayArchiveRow.CourseName = orderinfo.CourseName;
-                dayArchiveRow.ItemName = orderinfo.Name;
-                dayArchiveRow.ItemCategory = orderinfo.ItemCategory;
-                dayArchiveRow.ItemId = orderinfo.ItemId;
-                dayArchiveRow.ServingCousesId = orderinfo.SetvingCourseKey
+                int itemSizeIdentifier = 0;
+                int.TryParse(itemSizeUniqueId, out itemSizeIdentifier);
+                FbCommand command = dbQueries.GetItemInfoForDayArchiveRow(connection, transaction, itemSizeIdentifier);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        dayArchiveRow.MenuName = reader.GetString(reader.GetOrdinal("Menu_Name"));
+                        dayArchiveRow.CourseName = reader.GetString(reader.GetOrdinal("Course_Name"));
+                        dayArchiveRow.ItemId = reader.GetInt32(reader.GetOrdinal("Item_ID"));
+                        dayArchiveRow.GstPercent = reader.GetDouble(reader.GetOrdinal("GST_Percent"));
+                        dayArchiveRow.Cost = reader.GetDouble(reader.GetOrdinal("Cost"));
+                        dayArchiveRow.CostGstPercent = reader.GetDouble(reader.GetOrdinal("Cost_GST_Percent"));
+                        dayArchiveRow.PointsPercent = reader.GetDouble(reader.GetOrdinal("Points_Percent"));
+                        dayArchiveRow.ItemCategory = reader.GetString(reader.GetOrdinal("Category"));
+                        dayArchiveRow.CategoryId = reader.GetInt32(reader.GetOrdinal("Category_Key"));
+                        dayArchiveRow.ThirdPartyCodesId = reader.GetInt32(reader.GetOrdinal("ThirdPartyCodes_Key"));
+                        dayArchiveRow.ServingCousesId = reader.GetInt32(reader.GetOrdinal("ServingCourses_Key"));
+                    }
+                }
 
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in LoadItemInfoForArchiveOrder " + e.Message, e);
+                ServiceLogger.LogException(@"in LoadItemInfoForDayArchiveRow " + e.Message, e);
+                throw;
+            }
+        }
+        public void ExecuteDayArchiveQuery(DayArchiveAttributes dayArchiveRow)
+        {
+            try
+            {
+                FbCommand command = dbQueries.InsertDataIntoDayArchive(connection, transaction, dayArchiveRow);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ExecuteDayArcBillPayQuery " + e.Message, e);
+                throw;
+            }
+        }
+        public void ExecuteDayArcCategoryQuery(long archiveKey, long categoryKey )
+        {
+            try
+            {
+                FbCommand command = dbQueries.InsertDataIntoDayArcCategory(connection, transaction, archiveKey, categoryKey);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ExecuteDayArcBillPayQuery " + e.Message, e);
                 throw;
             }
         }

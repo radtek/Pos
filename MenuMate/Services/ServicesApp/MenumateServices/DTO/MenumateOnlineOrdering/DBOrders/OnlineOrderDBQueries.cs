@@ -1537,7 +1537,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArchive(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArchive(FbConnection connection, FbTransaction transaction, DayArchiveAttributes dayArchiveRow)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1649,55 +1649,55 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @ORDER_GUID 
 				        );
                     ";
-                command.Parameters.AddWithValue("@ARCHIVE_KEY",1 );
-                command.Parameters.AddWithValue("@ARCBILL_KEY", 1);
-                command.Parameters.AddWithValue("@TERMINAL_NAME",1 );
-                command.Parameters.AddWithValue("@MENU_NAME",1 );
-                command.Parameters.AddWithValue("@COURSE_NAME", 1);
-                command.Parameters.AddWithValue("@ITEM_NAME", 1);
-                command.Parameters.AddWithValue("@ITEM_CATEGORY", 1);
-                command.Parameters.AddWithValue("@ITEM_SHORT_NAME", 1);
-                command.Parameters.AddWithValue("@ITEM_ID", 1);
-                command.Parameters.AddWithValue("@SIZE_NAME",1 );
-                command.Parameters.AddWithValue("@TABLE_NUMBER", 1);
-                command.Parameters.AddWithValue("@TABLE_NAME",1 );
-                command.Parameters.AddWithValue("@SEAT_NUMBER",1 );
-                command.Parameters.AddWithValue("@SERVER_NAME", 1);
-                command.Parameters.AddWithValue("@TAB_NAME",1 );
-                command.Parameters.AddWithValue("@LOYALTY_NAME", 1);
-                command.Parameters.AddWithValue("@ORDER_TYPE",1 );
-                command.Parameters.AddWithValue("@TIME_STAMP", 1);
-                command.Parameters.AddWithValue("@TIME_STAMP_BILLED",1 );
-                command.Parameters.AddWithValue("@ORDER_LOCATION",1 );
-                command.Parameters.AddWithValue("@PRICE", 1);
-                command.Parameters.AddWithValue("@COST",1 );
-                command.Parameters.AddWithValue("@HAPPY_HOUR",1 );
-                command.Parameters.AddWithValue("@NOTE",1 );
-                command.Parameters.AddWithValue("@SECURITY_REF",1 );
-                command.Parameters.AddWithValue("@TIME_KEY", 1);
-                command.Parameters.AddWithValue("@GST_PERCENT",1 );
-                command.Parameters.AddWithValue("@COST_GST_PERCENT",1 );
-                command.Parameters.AddWithValue("@QTY",1 );
-                command.Parameters.AddWithValue("@DISCOUNT",1 );
-                command.Parameters.AddWithValue("@REDEEMED",1 );
-                command.Parameters.AddWithValue("@POINTS_PERCENT", 1);
-                command.Parameters.AddWithValue("@POINTS_EARNED",1 );
-                command.Parameters.AddWithValue("@LOYALTY_KEY", 1);
-                command.Parameters.AddWithValue("@THIRDPARTYCODES_KEY",1 );
-                command.Parameters.AddWithValue("@CATEGORY_KEY", 1);
-                command.Parameters.AddWithValue("@DISCOUNT_REASON",1 );
-                command.Parameters.AddWithValue("@PRICE_LEVEL0",1 );
-                command.Parameters.AddWithValue("@PRICE_LEVEL1", 1);
-                command.Parameters.AddWithValue("@SERVINGCOURSES_KEY",1 );
-                command.Parameters.AddWithValue("@CHIT_NAME", 1);
-                command.Parameters.AddWithValue("@CHIT_OPTION",1 );
-                command.Parameters.AddWithValue("@BASE_PRICE", 1);
-                command.Parameters.AddWithValue("@DISCOUNT_WITHOUT_TAX",1 );
-                command.Parameters.AddWithValue("@TAX_ON_DISCOUNT", 1);
-                command.Parameters.AddWithValue("@PRICE_INCL", 1);
-                command.Parameters.AddWithValue("@PRICE_ADJUST",1 );
-                command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE",1 );
-                command.Parameters.AddWithValue("@ORDER_GUID",1 );
+                command.Parameters.AddWithValue("@ARCHIVE_KEY", dayArchiveRow.ArchiveId);
+                command.Parameters.AddWithValue("@ARCBILL_KEY", dayArchiveRow.ArcBillId);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", dayArchiveRow.TerminalName);
+                command.Parameters.AddWithValue("@MENU_NAME", dayArchiveRow.MenuName);
+                command.Parameters.AddWithValue("@COURSE_NAME", dayArchiveRow.CourseName);
+                command.Parameters.AddWithValue("@ITEM_NAME", dayArchiveRow.ItemName);
+                command.Parameters.AddWithValue("@ITEM_CATEGORY", dayArchiveRow.ItemCategory);
+                command.Parameters.AddWithValue("@ITEM_SHORT_NAME", dayArchiveRow.ItemShortName);
+                command.Parameters.AddWithValue("@ITEM_ID", dayArchiveRow.ItemId);
+                command.Parameters.AddWithValue("@SIZE_NAME", dayArchiveRow.SizeName);
+                command.Parameters.AddWithValue("@TABLE_NUMBER", dayArchiveRow.TableNumber);
+                command.Parameters.AddWithValue("@TABLE_NAME", dayArchiveRow.TableNumber);
+                command.Parameters.AddWithValue("@SEAT_NUMBER", dayArchiveRow.SeatNumber );
+                command.Parameters.AddWithValue("@SERVER_NAME", dayArchiveRow.ServerName);
+                command.Parameters.AddWithValue("@TAB_NAME", dayArchiveRow.TabName);
+                command.Parameters.AddWithValue("@LOYALTY_NAME", dayArchiveRow.LoyaltyName);
+                command.Parameters.AddWithValue("@ORDER_TYPE", dayArchiveRow.OrderType );
+                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
+                command.Parameters.AddWithValue("@TIME_STAMP_BILLED", DateTime.Now);
+                command.Parameters.AddWithValue("@ORDER_LOCATION", dayArchiveRow.LoyaltyName);
+                command.Parameters.AddWithValue("@PRICE", dayArchiveRow.Price);
+                command.Parameters.AddWithValue("@COST", dayArchiveRow.Cost);
+                command.Parameters.AddWithValue("@HAPPY_HOUR",'F'); //Need to Confirm
+                command.Parameters.AddWithValue("@NOTE", dayArchiveRow.Note );
+                command.Parameters.AddWithValue("@SECURITY_REF", dayArchiveRow.SecurityRef);
+                command.Parameters.AddWithValue("@TIME_KEY", dayArchiveRow.TimeKey);
+                command.Parameters.AddWithValue("@GST_PERCENT", dayArchiveRow.GstPercent);
+                command.Parameters.AddWithValue("@COST_GST_PERCENT", dayArchiveRow.CostGstPercent);
+                command.Parameters.AddWithValue("@QTY", dayArchiveRow.Qty);
+                command.Parameters.AddWithValue("@DISCOUNT", dayArchiveRow.Discount);
+                command.Parameters.AddWithValue("@REDEEMED", dayArchiveRow.Redeemed);
+                command.Parameters.AddWithValue("@POINTS_PERCENT", dayArchiveRow.PointsPercent);
+                command.Parameters.AddWithValue("@POINTS_EARNED", dayArchiveRow.PointsEarned);
+                command.Parameters.AddWithValue("@LOYALTY_KEY", dayArchiveRow.LoyaltyId);
+                command.Parameters.AddWithValue("@THIRDPARTYCODES_KEY", dayArchiveRow.ThirdPartyCodesId);
+                command.Parameters.AddWithValue("@CATEGORY_KEY", dayArchiveRow.CategoryId);
+                command.Parameters.AddWithValue("@DISCOUNT_REASON", "");
+                command.Parameters.AddWithValue("@PRICE_LEVEL0", dayArchiveRow.PriceLevel0);
+                command.Parameters.AddWithValue("@PRICE_LEVEL1", dayArchiveRow.PriceLevel1);
+                command.Parameters.AddWithValue("@SERVINGCOURSES_KEY", dayArchiveRow.ServingCousesId);
+                command.Parameters.AddWithValue("@CHIT_NAME", "");
+                command.Parameters.AddWithValue("@CHIT_OPTION", "");
+                command.Parameters.AddWithValue("@BASE_PRICE", dayArchiveRow.BasePrice);
+                command.Parameters.AddWithValue("@DISCOUNT_WITHOUT_TAX", 0);
+                command.Parameters.AddWithValue("@TAX_ON_DISCOUNT", 0);
+                command.Parameters.AddWithValue("@PRICE_INCL", dayArchiveRow.PriceIncl);
+                command.Parameters.AddWithValue("@PRICE_ADJUST", dayArchiveRow.PriceAdjust);
+                command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", 0);//Need to confirm
+                command.Parameters.AddWithValue("@ORDER_GUID", dayArchiveRow.OrderGuid);
             }
             catch (Exception e)
             {
@@ -1741,7 +1741,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArcCategory(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcCategory(FbConnection connection, FbTransaction transaction, long archiveKey, long categoryKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1755,8 +1755,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     VALUES ( 
                            @ARCHIVE_KEY,
 					       @CATEGORY_KEY);";
-                command.Parameters.AddWithValue("@ARCHIVE_KEY", 1);
-                command.Parameters.AddWithValue("@CATEGORY_KEY", 1);
+                command.Parameters.AddWithValue("@ARCHIVE_KEY", archiveKey);
+                command.Parameters.AddWithValue("@CATEGORY_KEY", categoryKey);
             }
             catch (Exception e)
             {
@@ -1809,6 +1809,55 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
             return command;
+        }
+        public FbCommand GetItemInfoForDayArchiveRow( FbConnection connection, FbTransaction transaction, int itemSizeIdentifier)
+        {
+            FbCommand result = new FbCommand(@"", connection, transaction);
+
+            //....................................................
+
+            try
+            {
+                result.CommandText = @"
+                                    SELECT
+                                       
+                                        Menu.Menu_Name, 
+                                        Course.Course_Key, 
+                                        Course.Course_Name,
+                                        Course.ServingCourses_Key,
+                                        Item.Item_Key, 
+                                        Item.Item_Kitchen_Name, 
+                                        ItemSize.GST_Percent, 
+                                        ItemSize.Cost, 
+                                        ItemSize.Cost_GST_Percent, 
+                                        ItemSize.Points_Percent, 
+                                        ArcCategories.Category_Key,
+                                        ArcCategories.Category
+                                        ItemSize.ThirdPartyCodes_Key,
+                                
+                                    FROM 
+                                        ItemSize
+                                        Left Join ThirdPartyCodes On ItemSize.ThirdPartyCodes_Key = ThirdPartyCodes.ThirdPartyCodes_Key
+                                        Left Join Item on Item.Item_Key = ItemSize.Item_Key
+                                        Left Join Course on  Course.Course_Key = Item.Course_Key
+                                        Left Join ServingCourses On Course.ServingCourses_Key = ServingCourses.ServingCourses_Key
+                                        Left Join Menu on Menu.Menu_Key =  Course.Menu_Key
+                                        Left Join ArcCategories on  ItemSize.Category_Key = ArcCategories.Category_Key
+                                        Left Join CategoryGroups on CategoryGroups.CategoryGroups_Key = ArcCategories.CategoryGroups_Key
+                                    WHERE
+                                        ItemSize.ITEMSIZE_IDENTIFIER = @ITEMSIZE_IDENTIFIER
+                                    ORDER BY
+                                        Menu.Menu_Name
+                                    ";
+
+                result.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", itemSizeIdentifier);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetItemInfoForDayArchiveRow " + e.Message, e);
+            }
+
+            return result;
         }
         #endregion
     }
