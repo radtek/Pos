@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OnlineOrdering.Enum;
 
 namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 {
@@ -11,6 +12,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 	    public long ArchiveId {get; set;}                   
 	    public string TaxName {get; set;}                   
 	    public double TaxValue {get; set;}                   
-	    public int TaxType {get; set;}                    
+	    public TaxProfileType TaxType {get; set;}                    
     }
 }
