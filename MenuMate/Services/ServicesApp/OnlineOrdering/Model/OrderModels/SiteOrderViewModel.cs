@@ -13,6 +13,7 @@ namespace OnlineOrdering.Model.OrderModels
         public long OrderId { get; set; } //save in db
         public string Location { get; set; }
         public double TotalAmount { get; set; }
+        public double TotalTax { get; set; }
         public string ContainerNumber { get; set; }
         public OrderContainerType ContainerType { get; set; }
         public string ContainerName { get; set; }
@@ -25,9 +26,13 @@ namespace OnlineOrdering.Model.OrderModels
         public List<ApiOrderItemViewModel> OrderItems { get; set; }
         public SiteSettingType TransactionType { get; set; }
         public bool IsConfirmed { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         public string UserEmailId { get; set; }
         public Guid? MemberGuid { get; set; }
         public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
         public bool IsHappyHourApplied { get; set; }
+        public List<OrderPayment> OrderPayments { get; set; }
+        public PaymentType PaymentType { get; set; }
+        public long StaffReferenceId { get; set; }
     }
 }

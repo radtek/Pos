@@ -121,7 +121,138 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 return null;
             }
         }
+        public SiteOrderModel CreateSiteOrderModel(ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            SiteOrderModel siteOrderModel = new SiteOrderModel();
+            try
+            {
+                siteOrderModel.CompanyId = siteOrderViewModel.CompanyId;
+                siteOrderModel.SiteId = siteOrderViewModel.SiteId;
+                siteOrderModel.OrderId = siteOrderViewModel.OrderId;
+                siteOrderModel.Location = siteOrderViewModel.Location;
+                siteOrderModel.TotalAmount = siteOrderViewModel.TotalAmount;
+                siteOrderModel.ContainerNumber = siteOrderViewModel.ContainerNumber;
+                siteOrderModel.ContainerType = LoadContainerType(siteOrderViewModel.ContainerType);
+                siteOrderModel.ContainerName = siteOrderViewModel.ContainerName;
+                siteOrderModel.OrderGuid = siteOrderViewModel.OrderGuid;
+                siteOrderModel.UserReferenceId = siteOrderViewModel.UserReferenceId;
+                siteOrderModel.UserType = siteOrderViewModel.UserType;
+                siteOrderModel.TerminalName = siteOrderViewModel.TerminalName;
+                siteOrderModel.TransactionDate = siteOrderViewModel.TransactionDate;
+                siteOrderModel.OrderType = siteOrderViewModel.OrderType;
+                siteOrderModel.OrderItems = LoadOrderItems(siteOrderViewModel.OrderItems);
+                siteOrderModel.TransactionType = LoadTransactionType(siteOrderViewModel.TransactionType);
+                siteOrderModel.IsConfirmed = siteOrderViewModel.IsConfirmed;
+                siteOrderModel.UserEmailId = siteOrderViewModel.UserEmailId;
+                siteOrderModel.MemberGuid = siteOrderViewModel.MemberGuid;
+                siteOrderModel.OrderInvoiceTransaction = LoadInvoiceTransaction(siteOrderViewModel.OrderInvoiceTransaction);
+                siteOrderModel.IsHappyHourApplied = siteOrderViewModel.IsHappyHourApplied;
+ 
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
 
+            return siteOrderModel;
+        }
+        public OrderInvoiceTransactionModel LoadInvoiceTransaction(ApiOrderInvoiceTransactionViewModel apiOrderInvoiceTransactionViewModel)
+        {
+            OrderInvoiceTransactionModel orderInvoiceTransactionModel = new OrderInvoiceTransactionModel();
+            try
+            {
+                orderInvoiceTransactionModel.OrderInvoiceTransactionId = apiOrderInvoiceTransactionViewModel.OrderInvoiceTransactionId;
+                orderInvoiceTransactionModel.OrderId = apiOrderInvoiceTransactionViewModel.OrderId;
+                orderInvoiceTransactionModel.InvoiceTransactionId = apiOrderInvoiceTransactionViewModel.InvoiceTransactionId;
+                orderInvoiceTransactionModel.InvoiceTransaction = LoadInvoiceTransactionItem(apiOrderInvoiceTransactionViewModel.InvoiceTransaction);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            return orderInvoiceTransactionModel;
+        }
+        public InvoiceTransactionModel LoadInvoiceTransactionItem(ApiInvoiceTransactionViewModel apiInvoiceTransactionViewModel)
+        {
+            InvoiceTransactionModel invoiceTransactionModel = new InvoiceTransactionModel();
+            try
+            {
+                invoiceTransactionModel.InvoiceTransactionId = apiInvoiceTransactionViewModel.InvoiceTransactionId;
+                invoiceTransactionModel.InvoiceNumber = apiInvoiceTransactionViewModel.InvoiceNumber;
+                invoiceTransactionModel.TotalSaleAmount = apiInvoiceTransactionViewModel.TotalSaleAmount;
+                invoiceTransactionModel.TransactionDate = apiInvoiceTransactionViewModel.TransactionDate;
+                invoiceTransactionModel.SiteId = apiInvoiceTransactionViewModel.SiteId;
+                invoiceTransactionModel.TerminalName = apiInvoiceTransactionViewModel.TerminalName;
+                invoiceTransactionModel.Receipt = apiInvoiceTransactionViewModel.Receipt;
+                invoiceTransactionModel.ReceiptPath = apiInvoiceTransactionViewModel.ReceiptPath;
+                invoiceTransactionModel.Rounding = apiInvoiceTransactionViewModel.Rounding;
+                invoiceTransactionModel.UserReferenceId = apiInvoiceTransactionViewModel.UserReferenceId;
+                invoiceTransactionModel.UserType = apiInvoiceTransactionViewModel.UserType == OnlineOrdering.Enum.UserType.Member ? DTO.Enum.UserType.Member : DTO.Enum.UserType.Staff;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+            return invoiceTransactionModel;
+        }
+        public DTO.Enum.SiteSettingType LoadTransactionType(OnlineOrdering.Enum.SiteSettingType apiSiteSettingType)
+        {
+            DTO.Enum.SiteSettingType siteSettingType = 0;
+            try
+            {
+                if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ApplyServiceChargeTax)
+                    siteSettingType = DTO.Enum.SiteSettingType.ApplyServiceChargeTax;
+                else if(apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateScPreDiscountedPrice)
+                    siteSettingType = DTO.Enum.SiteSettingType.CalculateScPreDiscountedPrice;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateTaxAfterDiscount)
+                    siteSettingType = DTO.Enum.SiteSettingType.CalculateTaxAfterDiscount;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateTaxBeforeDiscount)
+                    siteSettingType = DTO.Enum.SiteSettingType.CalculateTaxBeforeDiscount;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.DineIn)
+                    siteSettingType = DTO.Enum.SiteSettingType.DineIn;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ItemPriceIncludeServiceCharge)
+                    siteSettingType = DTO.Enum.SiteSettingType.ItemPriceIncludeServiceCharge;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ItemPriceIncludeTax)
+                    siteSettingType = DTO.Enum.SiteSettingType.ItemPriceIncludeTax;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.PickUp)
+                    siteSettingType = DTO.Enum.SiteSettingType.PickUp;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ReCalculateScAfterDiscount)
+                    siteSettingType = DTO.Enum.SiteSettingType.ReCalculateScAfterDiscount;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ServiceChargeTaxRate)
+                    siteSettingType = DTO.Enum.SiteSettingType.ServiceChargeTaxRate;
+                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.TakeAway)
+                    siteSettingType = DTO.Enum.SiteSettingType.TakeAway;
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return siteSettingType;
+        }
+        public List<OrderItemModel> LoadOrderItems(List<ApiOrderItemViewModel> orderItemViewModelList)
+        {
+            List<OrderItemModel> orderItemModelList = new List<OrderItemModel>;
+            try
+            {
+                foreach(var orderItem in orderItemModelList)
+                {
+                    OrderItemModel orderItemModel = new OrderItemModel();
+                    orderItemModel.Description = orderItem.Description;
+                    orderItemModel.ItemUniqueId = orderItem.ItemUniqueId;
+                    orderItemModel.Name = orderItem.Name;
+                    orderItemModel.OrderId = orderItem.OrderId;
+                    orderItemModel.OrderItemSizes = LoadOrderItemSizes(orderItem.OrderItemSizes);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return orderItemModelList;
+        }
+        LoadOrderItemSizes()
+        {}
         #endregion
 
         #region private
@@ -495,7 +626,6 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             invoiceTransactionViewModel.UserType = (OnlineOrdering.Enum.UserType)invoiceTransactionModel.UserType;
             return invoiceTransactionViewModel;
         }
-        
         #endregion
 
 

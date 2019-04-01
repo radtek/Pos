@@ -1282,7 +1282,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand IsItemAvailable(FbConnection connection, FbTransaction transaction, long itemSizeId)
+        public FbCommand IsItemAvailable(FbConnection connection, FbTransaction transaction, long itemSizeUniqueKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1292,9 +1292,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 // but not usable
                 command.CommandText = @"SELECT a.ITEMSIZE_KEY 
                                         FROM ITEMSIZE a
-                                        WHERE A.ITEMSIZE_KEY = @ITEMSIZE_KEY ";
+                                        WHERE A.ITEMSIZE_IDENTIFIER = @ITEMSIZE_IDENTIFIER ";
 
-                command.Parameters.AddWithValue("@ITEMSIZE_KEY", itemSizeId);
+                command.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", itemSizeUniqueKey);
             }
             catch (Exception e)
             {
@@ -1706,7 +1706,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArcOrderTaxes(FbConnection connection, FbTransaction transaction, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcOrderTaxes(FbConnection connection, FbTransaction transaction, DayArcOrderTaxesAttributes dayArcOrderTaxesRow)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1728,11 +1728,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 	                       @TAX_VALUE, 
 	                       @TAX_TYPE 
 	                );";
-                command.Parameters.AddWithValue("@ARCORDERTAXES_KEY",1 );
-                command.Parameters.AddWithValue("@ARCHIVE_KEY", 1);
-                command.Parameters.AddWithValue("@TAX_NAME", 1);
-                command.Parameters.AddWithValue("@TAX_VALUE",1 );
-                command.Parameters.AddWithValue("@TAX_TYPE", 1);
+                command.Parameters.AddWithValue("@ARCORDERTAXES_KEY", dayArcOrderTaxesRow.ArcOrderTaxesID);
+                command.Parameters.AddWithValue("@ARCHIVE_KEY", dayArcOrderTaxesRow.ArchiveId);
+                command.Parameters.AddWithValue("@TAX_NAME", dayArcOrderTaxesRow.TaxName);
+                command.Parameters.AddWithValue("@TAX_VALUE", dayArcOrderTaxesRow.TaxValue);
+                command.Parameters.AddWithValue("@TAX_TYPE", dayArcOrderTaxesRow.TaxType);
             }
             catch (Exception e)
             {
@@ -1858,6 +1858,25 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
             return result;
+        }
+        public FbCommand GetSyndicateCodeQuery(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT NAME FROM SYNDCODES WHERE ENABLED = @ENABLED;
+                    ";
+                command.Parameters.AddWithValue("@ENABLED", 'T');
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetSyndicateCodeQuery " + e.Message, e);
+                throw;
+            }
+            return command;
         }
         #endregion
     }

@@ -50,7 +50,9 @@
   <ItemGroup>
     <Compile Include="Enum\MenuType.cs" />
     <Compile Include="Enum\OrderContainerType.cs" />
+    <Compile Include="Enum\OrderStatus.cs" />
     <Compile Include="Enum\OrderType.cs" />
+    <Compile Include="Enum\PaymentType.cs" />
     <Compile Include="Enum\SiteSettingType.cs" />
     <Compile Include="Enum\TaxProfileType.cs" />
     <Compile Include="Enum\UserType.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Model\OrderModels\OrderItemSizeTaxProfileViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderItemSizeViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderItemViewModel.cs" />
+    <Compile Include="Model\OrderModels\OrderPayment.cs" />
     <Compile Include="Model\OrderModels\SiteOrderTypeInfoViewModel.cs" />
     <Compile Include="Model\OrderModels\SiteOrderViewModel.cs" />
     <Compile Include="Model\TaxSettingsModels\ApiSiteTaxSettings.cs" />

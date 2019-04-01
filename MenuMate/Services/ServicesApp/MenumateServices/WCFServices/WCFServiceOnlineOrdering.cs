@@ -63,7 +63,6 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                SaveOrderJSON(orders);
                 stringList.Add("-----------------------------------------Inside GetOrdersFromWeb------------------------------------------------------");
                 stringList.Add("received order string is: " + orders);
                 List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
@@ -79,6 +78,7 @@ namespace MenumateServices.WCFServices
                 LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
                 stringList.Add("After Updating order status to web..json is ..." + requestData);
+                UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel);
                 WriteAndClearStringList();
             }
             catch (Exception exc)
@@ -104,7 +104,7 @@ namespace MenumateServices.WCFServices
                     {
                         stringList.Add("inside transaction using ...");
                         WriteAndClearStringList();
-                        onlineOrderDB.AddRecords(ref siteOrderViewModel);
+                        onlineOrderDB.ProcessOrders(ref siteOrderViewModel);
                         stringList.Add("After calling AddRecords inside InsertOrdersToDB function..");
                         WriteAndClearStringList();
                         onlineOrderDB.transaction.Commit();
@@ -213,56 +213,40 @@ namespace MenumateServices.WCFServices
             }
             //::::::::::::::::::::::::::::::::::::::::::::::
         }
-        private void SaveOrderJSON(string orders)
+        private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList)
         {
-            try 
+            try
             {
-                List<ApiSiteOrderViewModel> siteOrderViewModelList = new List<ApiSiteOrderViewModel>();
-                siteOrderViewModelList = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
-                string orderGUID = "";
-                foreach (var siteOrderViewModel in siteOrderViewModelList)
+                SiteOrderModel siteOrderModel = new SiteOrderModel();
+                OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+                string syndicateCode = onlineOrderDB.GetSyndicateCode();
+                stringList.Add("-------------------------------------------------------Inside UpdateInvoiceInforWaiterAppOrders-------------------------------------------------------...");
+                WriteAndClearStringList();
+                if (!String.IsNullOrEmpty(syndicateCode))
                 {
-                    orderGUID = siteOrderViewModel.OrderGuid;
-                    var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);
-
-                    string path = System.IO.Path.GetDirectoryName(
-                    System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-                    string location = Path.Combine(path, "logs");
-                    if (location.Contains(@"file:\"))
+                    foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
-                        location = location.Replace(@"file:\", "");
-                    }
-                    if (!Directory.Exists(location))
-                        Directory.CreateDirectory(location);
-
-                    string folderName = "Pending Orders";
-                    location = Path.Combine(location, folderName);
-
-                    if (!Directory.Exists(location))
-                        Directory.CreateDirectory(location);
-
-                    string name = orderGUID + "_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".json";
-                    string fileName = Path.Combine(location, name);
-
-                    if (!File.Exists(fileName))
-                    {
-                        using (StreamWriter sw = File.CreateText(fileName))
+                        if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
                         {
-                            sw.WriteLine(requestData.ToString());
+                            if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
+                            {
+                                siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel);
+
+                                PostOnlineOrderInvoiceInfo(syndicateCode, siteOrderModel);
+                            }
+
                         }
                     }
-                    stringList.Add("File saved with new Details for orderGUID " + orderGUID);
                 }
+
             }
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in SaveOrderJSON     " + exc.Message);
+                stringList.Add("Exception in UpdateInvoiceInforWaiterAppOrders     " + exc.Message);
                 WriteAndClearStringList();
-            }
-
+            } 
         }
-
         private void WriteAndClearStringList()
         {
             // Check folder and file name should remain same as in previous releases

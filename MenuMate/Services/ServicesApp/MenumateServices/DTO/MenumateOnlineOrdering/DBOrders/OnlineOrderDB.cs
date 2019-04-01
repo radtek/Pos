@@ -121,17 +121,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return connectionString;
         }
 
-        public void AddRecords(ref List<ApiSiteOrderViewModel> siteOrderViewModelList)
+        public bool AddRecords(ApiSiteOrderViewModel siteOrderViewModel, bool IsOrderFromWaiterApp)
         {
-            try
-            {
-
-                foreach (var siteOrderViewModel in siteOrderViewModelList)
-                {
-                    bool test = ValidateItemsInOrders(siteOrderViewModel);
-                    string name = SearchOrderJSONFile(siteOrderViewModel.OrderGuid);
-                    ApiSiteOrderViewModel orderJSON = GetOrderJSONFile(name);
-                    MoveOrderJSONFile(name);
+           // try
+           // {
+                //foreach (var siteOrderViewModel in siteOrderViewModelList)
+                //{
+            bool retValue = false;
                     try
                     {
                         OrderAttributes orderRow = new OrderAttributes();
@@ -149,28 +145,29 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 orderRow.ContainerNumber = containerNumber;
                             else
                                 orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
-                            test = ValidateTable(siteOrderViewModel.ContainerNumber);
                             bool isTabOrder = false;
                             //if (IsFloorPlanEnabled())
                             //{
-                            if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName)) //CheckTableExistAndGetTableInfo removed for china changes
+                            if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName) || IsOrderFromWaiterApp) //CheckTableExistAndGetTableInfo removed for china changes
                             {
                                 orderRow.ContainerNumber = containerNumber;
                                 orderRow.TableName = tableName;
 
                                 bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
-
-                                if (IsFloorPlanEnabled())
+                                if (!IsOrderFromWaiterApp)
                                 {
-                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
-                                }
-                                else
-                                {
-                                    siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
-                                    orderRow.TableName = "Table #" + orderRow.ContainerNumber;
+                                    if (IsFloorPlanEnabled())
+                                    {
+                                        siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
+                                    }
+                                    else
+                                    {
+                                        siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
+                                        orderRow.TableName = "Table #" + orderRow.ContainerNumber;
+                                    }
                                 }
 
-                                if (retVal)
+                                if (retVal && !IsOrderFromWaiterApp)
                                     throw new Exception("Order can't be saved to this table because it already contains orders.");
                             }
                             else
@@ -273,27 +270,30 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 //Insert Order tax profile info..
                                 ExecuteTaxProfileOrders(orderRow);
                             }
-                        }
                         siteOrderViewModel.IsConfirmed = true;
                         siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
+                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                        retValue = true;
+                        }
                     }
                     catch (Exception ex)
                     {
+                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
                         siteOrderViewModel.IsConfirmed = false;
                         siteOrderViewModel.IsHappyHourApplied = false;
                         //addDetailsTransaction.Rollback();
                         ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
                         throw;
                     }
-
-                }
-            }
-            catch (Exception ex)
+                    return retValue;
+             //   }
+           // }
+            /*catch (Exception ex)
             {
                 //addDetailsTransaction.Rollback();
                 ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
                 throw;
-            }
+            }*/
         }
 
         public int GenerateKey(string inTableName)
@@ -1240,13 +1240,12 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public bool ValidateTable(string tableNo)
+        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
         {
             bool retValue = false;
             int tableNoContainer = 0;
             string tableNameContainer = "";
-            int tableNoFromDB = 0;
-            string tableNameFromDB = "";
+
             try
             {
                 bool isTableNumberInteger = int.TryParse(tableNo, out tableNoContainer);
@@ -1271,17 +1270,19 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
     
         }
-        public bool ValidateItemsInOrders(ApiSiteOrderViewModel siteOrderViewModel)
+        public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList)
         {
             bool retValue = false;
+            long itemSizeUniqueKey = 0;
 
             try
             {
-                foreach (var item in siteOrderViewModel.OrderItems)
+                foreach (var item in OrderViewModelList)
                 {
                     foreach (var itemSize in item.OrderItemSizes)
                     {
-                        if (!CheckIfItemExist(itemSize.OrderItemSizeId))
+                        long.TryParse(itemSize.ItemSizeUniqueId, out itemSizeUniqueKey);
+                        if (!CheckIfItemExist(itemSizeUniqueKey))
                         {
                             retValue = false;
                             break;
@@ -1301,13 +1302,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
 
         }
-        public bool CheckIfItemExist(long itemSizeId)
+        public bool CheckIfItemExist(long itemSizeUniqueKey)
         {
             bool retValue = false;
 
             try
             {
-                FbCommand command = dbQueries.IsItemAvailable(connection, transaction, itemSizeId);
+                FbCommand command = dbQueries.IsItemAvailable(connection, transaction, itemSizeUniqueKey);
                 using (FbDataReader reader = command.ExecuteReader())
                 {
                     if (reader.Read())
@@ -1389,63 +1390,108 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public void ProcessOrders()
+        public void ProcessOrders(ref List<ApiSiteOrderViewModel> siteOrderViewModelList)
         {
-            bool temp = true;
+            int tableNoFromDB = 0;
+            string tableNameFromDB = "";
             try
             {
-                if (/*Ordered from WaiterAPP*/temp)
+                foreach (var siteOrderViewModel in siteOrderViewModelList)
                 {
-                    if (/*PaymentType is PayNow && Payment is Available*/temp)
+                    if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
                     {
-                        //Retrive order from Pendind Orders Dir
-                        //If not found request order from WEB using orderGUID
-                        //Order Processing - Insert orders details in tables
-                        if (/*Insertion Of Order && Insertion of Payments && Receipt Generation == successful*/temp)
+                        if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow 
+                            && siteOrderViewModel.OrderPayments.Count > 0)
                         {
-                            //OrderStatus = isConfirmed
-                            //Send Response	
-                        }
-                        else
-                        {
-                            //OrderStatus = POSError
-                        }
-                    }
-                    if (/*Validation for table*/temp)
-                    {
-                        if (/*Item Available validation*/temp)
-                        {
-                            if (/*PayNow && !PaymentNotAvailble*/temp)
+                            //Retrive order from Pendind Orders Directory
+                            string filePath = SearchOrderJSONFile(siteOrderViewModel.OrderGuid);
+                            ApiSiteOrderViewModel requestedData = new ApiSiteOrderViewModel();
+                            if(!String.IsNullOrEmpty(filePath))
                             {
-                                //OrderStatus = IsValidated
-                                //Save JSON file in Pending Orders 
-                                //Send response (Terminal Name Waiter APP)
+                                requestedData = GetOrderJSONFile(filePath);
+                                requestedData.OrderPayments = siteOrderViewModel.OrderPayments;
+ 
                             }
-                            else if (/*PayLater*/temp)
+                            else
                             {
-                                if (/*Insertion of order (Seating condintion should be ignored)*/temp)
+                                //If not found request order from WEB using orderGUID
+                                //Call Api with Order GUID for getting the required Order
+                                //Load the order coming from Api into requested data object
+                            }
+                            if(requestedData.OrderItems.Count > 0)// Need To confirm
+                            {
+                                //Order Processing - Insert orders details in tables
+                                if (ArchiveTransaction(requestedData))
                                 {
-                                    //OrderStatus = IsConfirmed
+                                    if (!String.IsNullOrEmpty(filePath))
+                                        MoveOrderJSONFile(filePath);
+                                    siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;	
                                 }
                                 else
                                 {
-                                    //OrderStatus = POSerror
+                                    siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosPaymentError;
+                                    throw new Exception("Error while Saving Order and Payment into DB.");
                                 }
+                            }
+                            else
+                            {
+                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
+                                throw new Exception("Error while Loading Order From JSON file.");
+                            }
+
+                        }
+                        if (ValidateTable(siteOrderViewModel.ContainerName, ref tableNameFromDB , ref tableNoFromDB))
+                        {
+                            //Assigning Correct Tabele Number And Table Name
+                            siteOrderViewModel.ContainerName = tableNameFromDB;
+                            siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
+
+                            if (ValidateItemsInOrders(siteOrderViewModel.OrderItems))
+                            {
+                                if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow
+                                     && siteOrderViewModel.OrderPayments.Count == 0)
+                                {
+                                    //Saving JSON file Containing Order in Pending Orders Directory
+                                    SaveOrderJSON(siteOrderViewModel);
+                                    siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsValidated;
+                                    //Send response (Terminal Name Waiter APP)
+                                }
+                                else if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayLater
+                                     && siteOrderViewModel.OrderPayments.Count == 0)
+                                {
+                                    if (AddRecords(siteOrderViewModel, true))
+                                    {
+                                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                                    }
+                                    else
+                                    {
+                                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                                throw new Exception("Items ordered are not available.");
                             }
                         }
                         else
                         {
-                            //OrderStatus = Item Not Available
+                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                            throw new Exception("Invalid Table.");
                         }
                     }
                     else
                     {
-                        //OrderStatus = Invalid Table
+                        if (AddRecords(siteOrderViewModel, false))
+                        {
+                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                        }
+                        else
+                        {
+                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
+                        }
                     }
-                }
-                else
-                {
-                    //call insertorderinDB method
                 }
             }
             catch (Exception e)
@@ -1454,21 +1500,19 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public bool ArchiveTransaction()
+        public bool ArchiveTransaction(ApiSiteOrderViewModel siteOrderViewModel)
         {
             bool retVaule = false;
             try
             {
-                string transactionDateAndTime = DateTime.Now.ToString();    
-	            //long ArcBillKey = ArchiveBill(PaymentTransaction,transactionDateAndTime);
-	            //ArchivePatronCount(PaymentTransaction, ArcBillKey);
-	            //ArchiveReferences(PaymentTransaction, ArcBillKey);
-		        //ArchiveOrder(PaymentTransaction, ArcBillKey,transactionDateAndTime);
-
-                //::::::::::::::::::::::::::::::::::::::::::::::
-	            //SaveRoomGuestDetails(PaymentTransaction); (Need to DO or Not)
-                //InsertDataInMallTables(PaymentTransaction, ArcBillKey);
-                //GetAndUploadOnlineOrderingInvoice(PaymentTransaction);
+                long dayArcBillKey = ArchiveBill(siteOrderViewModel);
+                //Archive Data For Patron Count
+                ArchivePatronCount(dayArcBillKey);
+                //Archive Data For References 
+                ArchiveReferences(dayArcBillKey);
+                //Archive Data For DayArchiveOrder and DayArcOrderTaxes
+                ArchiveOrder(dayArcBillKey, siteOrderViewModel);
+                retVaule = true;
             }
             catch (Exception e)
             {
@@ -1477,7 +1521,41 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retVaule;
         }
-        public DayArcBillAttributes CreateDayArcBillRow(long dayArcBillKey, long securityKey, long invoiceNumber, ApiSiteOrderViewModel siteOrderViewModel)
+        public long ArchiveBill(ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            long dayArcBillKey = 0;
+            long invoiceNumber = 0;
+            DayArcBillAttributes dayArcBillRow = new DayArcBillAttributes();
+            DayArcBillPayAttributes dayArcBillPayRow = new DayArcBillPayAttributes();
+            try 
+            {
+                dayArcBillKey = GenerateKey("DAYARCBILL");
+                invoiceNumber = GenerateKey("INVOICENUMBER");
+                //Creating Row For DayArcBill
+                dayArcBillRow = CreateDayArcBillRow(dayArcBillKey, invoiceNumber, siteOrderViewModel);
+                //Inserting Data Into DayAcBill
+                ExecuteDayArcBillQuery(dayArcBillRow);
+                foreach (var orderPayment in siteOrderViewModel.OrderPayments)
+                {
+                    //Creating Row for DayArcBillPay
+                    dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, orderPayment, false);
+                    //Inserting Data Into DayArcBillPay
+                    ExecuteDayArcBillPayQuery(dayArcBillPayRow);
+                }
+                OrderPayment adjustmentRow = new OrderPayment();
+                //Creating Cash Adjustment Row For Change
+                dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, adjustmentRow, true);
+                //Insert Cash Adjustment Row For Change
+                ExecuteDayArcBillPayQuery(dayArcBillPayRow);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ArchiveBill " + e.Message, e);
+                throw;
+            }
+            return dayArcBillKey;
+        }
+        public DayArcBillAttributes CreateDayArcBillRow(long dayArcBillKey, long invoiceNumber, ApiSiteOrderViewModel siteOrderViewModel)
         {
             DayArcBillAttributes dayArcBillRow = new DayArcBillAttributes();
             try
@@ -1488,7 +1566,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.Total = siteOrderViewModel.TotalAmount;
                 dayArcBillRow.Discount = 0;
                 dayArcBillRow.PatronCount = 1;
-                dayArcBillRow.SecurityRef = securityKey;
+                dayArcBillRow.SecurityRef = GetNextSecurityRef();
                 dayArcBillRow.RoundingAdjustment = 0;
                 dayArcBillRow.BilledLocation = siteOrderViewModel.Location;//Need to confirm
                 dayArcBillRow.InvoiceNumber = invoiceNumber;
@@ -1515,20 +1593,30 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public DayArcBillPayAttributes CreateDayArcBillPayRow(long dayArcBillKey, long dayArcBillPayKey, double totalAmount)
+        public DayArcBillPayAttributes CreateDayArcBillPayRow(long dayArcBillKey, OrderPayment orderPayment, bool isChangeAdjRow)
         {
             DayArcBillPayAttributes dayArcBillPayRow = new DayArcBillPayAttributes();
             try
             {
-                dayArcBillPayRow.DayArcBillPayId = dayArcBillPayKey;
+                dayArcBillPayRow.DayArcBillPayId = GenerateKey("DAYARCBILLPAY");
                 dayArcBillPayRow.DayArcBillId = dayArcBillKey;
                 dayArcBillPayRow.PayType = "";//Need to Confirm
-                dayArcBillPayRow.SubTotal = totalAmount;
                 dayArcBillPayRow.Rounding = 0;
-                dayArcBillPayRow.Note = "";
+                if (isChangeAdjRow)
+                {
+                    dayArcBillPayRow.SubTotal = 0;
+                    dayArcBillPayRow.Note = "Total Change.";
+                    dayArcBillPayRow.Tip = 0;
+                }
+                else
+                {
+                    dayArcBillPayRow.SubTotal = orderPayment.Amount;
+                    dayArcBillPayRow.Note = orderPayment.Note;
+                    dayArcBillPayRow.Tip = orderPayment.Tip;
+                }
                 dayArcBillPayRow.PayTypeDetails = "";
                 dayArcBillPayRow.Properties = "";//Need to confirm
-                dayArcBillPayRow.PaymentCardType = "";//Need to confirm
+                dayArcBillPayRow.PaymentCardType = orderPayment.CardType;
                 dayArcBillPayRow.PayGroup = ""; // Need to Confirm
 
             }
@@ -1580,23 +1668,25 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public void ArchiveOrder(ApiSiteOrderViewModel siteOrderViewModel, long arcBillKey, string tableName, int tableNumber, long securityKey)
+        public void ArchiveOrder(long arcBillKey, ApiSiteOrderViewModel siteOrderViewModel)
         {
             DayArchiveAttributes dayArchiveRow = new DayArchiveAttributes();
 
             try
             {
+                int tableNumber = 0;
+                int.TryParse(siteOrderViewModel.ContainerNumber, out tableNumber);
                 dayArchiveRow.ArcBillId = arcBillKey;
                 dayArchiveRow.TerminalName = siteOrderViewModel.TerminalName;
                 dayArchiveRow.TableNumber = tableNumber;
                 if (IsFloorPlanEnabled())
-                    dayArchiveRow.TableName = tableName;
+                    dayArchiveRow.TableName = siteOrderViewModel.ContainerName;
                 else
-                    dayArchiveRow.TableName = "Table #" + tableNumber.ToString();
+                    dayArchiveRow.TableName = "Table #" + siteOrderViewModel.ContainerNumber;
                 dayArchiveRow.TabName = "Guest 1";//Need to confirm
                 dayArchiveRow.OrderLocation = siteOrderViewModel.Location;// Need to confirm
                 dayArchiveRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                dayArchiveRow.SecurityRef = securityKey;
+                dayArchiveRow.SecurityRef = GetNextSecurityRef();
                 dayArchiveRow.OrderType = 1;//Need to Confirm
                 dayArchiveRow.LoyaltyName = "";
                 dayArchiveRow.LoyaltyId = 0;
@@ -1618,16 +1708,17 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         dayArchiveRow.PriceLevel1 = itemSize.Price;
                         dayArchiveRow.Qty = itemSize.Quantity;
                         dayArchiveRow.PriceIncl = itemSize.PriceInclusive;
-                        dayArchiveRow.TimeKey = setTimeKey();//Need to Confirm
+                        dayArchiveRow.TimeKey = 0;//Need to Confirm
                         dayArchiveRow.Redeemed = 0;
                         dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
                         //Loading Item Info
                         LoadItemInfoForDayArchiveRow(ref dayArchiveRow, itemSize.ItemSizeUniqueId);
                         //Insert row into DayArchive
                         ExecuteDayArchiveQuery(dayArchiveRow);
-                        //Insert row in DayArcCategory
+                        //Insert row into DayArcCategory
                         ExecuteDayArcCategoryQuery(dayArchiveRow.ArchiveId, dayArchiveRow.CategoryId);
-
+                        //Insert row into DayArcOrderTaxes
+                        ExcecuteDayArcOrderTaxesQuery(dayArchiveRow.ArchiveId, itemSize.OrderItemSizeTaxProfiles);
                     }
 
                 }
@@ -1680,7 +1771,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in ExecuteDayArcBillPayQuery " + e.Message, e);
+                ServiceLogger.LogException(@"in ExecuteDayArchiveQuery " + e.Message, e);
                 throw;
             }
         }
@@ -1693,10 +1784,100 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in ExecuteDayArcBillPayQuery " + e.Message, e);
+                ServiceLogger.LogException(@"in ExecuteDayArcCategoryQuery " + e.Message, e);
                 throw;
             }
         }
+        public void ExcecuteDayArcOrderTaxesQuery(long dayArchiveKey, List<ApiOrderItemSizeTaxProfileViewModel> itemSizeTaxInfo)
+        {
+            try
+            {
+                FbCommand command;
+                DayArcOrderTaxesAttributes dayArcOrderTaxesRow = new DayArcOrderTaxesAttributes();
+                foreach(var items in itemSizeTaxInfo)
+                {
+                    dayArcOrderTaxesRow.ArcOrderTaxesID = GenerateKey("DAYARCORDERTAXES");
+                    dayArcOrderTaxesRow.ArchiveId = dayArchiveKey;
+                    dayArcOrderTaxesRow.TaxName = items.Name;
+                    dayArcOrderTaxesRow.TaxType = items.TaxProfileType;
+                    dayArcOrderTaxesRow.TaxValue = items.Value;
+                    //Inserting Row into DayArcOrderTaxes
+                    command = dbQueries.InsertDataIntoDayArcOrderTaxes(connection, transaction, dayArcOrderTaxesRow);
+                    command.ExecuteNonQuery();
+                }
+                
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ExcecuteDayArcOrderTaxesQuery " + e.Message, e);
+                throw;
+            }
+ 
+        }
+        private void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
+        {
+            try 
+            {
+                string orderGUID = siteOrderViewModel.OrderGuid;
+                var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);
+
+                string path = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                string location = Path.Combine(path, "logs");
+                if (location.Contains(@"file:\"))
+                {
+                    location = location.Replace(@"file:\", "");
+                }
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string folderName = "Pending Orders";
+                location = Path.Combine(location, folderName);
+
+                if (!Directory.Exists(location))
+                    Directory.CreateDirectory(location);
+
+                string name = orderGUID + "_" + DateTime.Now.ToString("ddMMyyyyHHmmss") + ".json";
+                string fileName = Path.Combine(location, name);
+
+                if (!File.Exists(fileName))
+                {
+                    using (StreamWriter sw = File.CreateText(fileName))
+                    {
+                        sw.WriteLine(requestData.ToString());
+                    }
+                }
+                //stringList.Add("File saved with new Details for orderGUID " + orderGUID);
+                
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                //stringList.Add("Exception in SaveOrderJSON     " + exc.Message);
+                //WriteAndClearStringList();
+            }
+        }
+        public string GetSyndicateCode()
+        {
+            string syndicateCode = "";
+            try
+            {
+                FbCommand command = dbQueries.GetSyndicateCodeQuery(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        syndicateCode = reader.GetString(reader.GetOrdinal("NAME"));
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return syndicateCode;
+        }
+
         #endregion
     }
 

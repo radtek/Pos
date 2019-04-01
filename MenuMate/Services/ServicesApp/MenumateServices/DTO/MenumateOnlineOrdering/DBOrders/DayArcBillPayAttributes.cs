@@ -16,6 +16,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         public string PayTypeDetails {get; set;}                
         public string Properties {get; set;}            
         public string PaymentCardType {get; set;}       
-        public string PayGroup {get; set;}             
+        public string PayGroup {get; set;}
+        public double Tip { get; set; }   
     }
 }
