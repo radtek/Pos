@@ -456,6 +456,7 @@ void TMMSettings::Initialise(Database::TDBTransaction &DBTransaction)
         TGlobalSettings::Instance().CompanyName = TManagerVariable::Instance().GetStr(DBTransaction, vmCompanyName, "");
         TGlobalSettings::Instance().IsStockEnabled = TManagerVariable::Instance().GetBool(DBTransaction, vmIsStockEnabled, false);
         TGlobalSettings::Instance().CurrentVersion = TManagerVariable::Instance().GetStr(DBTransaction, vmCurrentVersion, "");
+        TGlobalSettings::Instance().ZedForAppTerminals = TManagerVariable::Instance().GetBool(DBTransaction, vmZedForAppTerminals, false);
 
         }
 

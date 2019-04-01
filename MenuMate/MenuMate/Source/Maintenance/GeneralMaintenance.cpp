@@ -4906,4 +4906,8 @@ void __fastcall TfrmGeneralMaintenance::cbHideFreeSidesClick(TObject *Sender)
 	ref_mv.SetProfileBool(tr, hideFreeSides, vmHideFreeSides, ref_gs.HideFreeSides);
 	tr.Commit();
 }
+//------------------------------------------------------------------------------------------------------
+void __fastcall TfrmGeneralMaintenance::cbPerformZedforAppTerminalsClick(TObject *Sender)
+{
+}
 

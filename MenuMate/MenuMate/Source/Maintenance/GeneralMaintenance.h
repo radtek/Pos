@@ -586,6 +586,8 @@ __published:	// IDE-managed Components
          void __fastcall cbIntegratedAuthorisationOnCardsClick(TObject *Sender);
         void __fastcall cbEnableTableLockClick(TObject *Sender);
         void __fastcall cbHideFreeSidesClick(TObject *Sender);
+        void __fastcall cbPerformZedforAppTerminalsClick(TObject *Sender);
+
 protected:
         void __fastcall WMDisplayChange(TWMDisplayChange& Message);
          BEGIN_MESSAGE_MAP

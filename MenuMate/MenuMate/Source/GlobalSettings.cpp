@@ -467,5 +467,6 @@ TGlobalSettings::TGlobalSettings()
     CompanyName = " ";
     IsStockEnabled = false;
     CurrentVersion = "";
+    ZedForAppTerminals = false;
 }
 

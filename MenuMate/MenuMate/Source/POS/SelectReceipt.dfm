@@ -81,13 +81,13 @@ object frmSelectReceipt: TfrmSelectReceipt
       Height = 57
       GroupIndex = 2
       Caption = 'App Terminals'
-      Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -17
       Font.Name = 'Arial'
       Font.Style = [fsBold]
       ParentFont = False
+      Visible = False
       OnClick = sbAppTerminalsClick
     end
     object calReceipt: TMonthCalendar

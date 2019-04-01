@@ -36,7 +36,7 @@ __fastcall TfrmSelectReceipt::TfrmSelectReceipt(TComponent* Owner)
 	ManagerReceipt->AllTerminals = true;
 	ManagerReceipt->Date = Date();
    calReceipt->Date = ManagerReceipt->Date;
-    sbAppTerminals->Enabled = CheckIfOOAppEnabledForAnyTerminal();
+    sbAppTerminals->Visible = CheckIfOOAppEnabledForAnyTerminal();
 }
 
 __fastcall TfrmSelectReceipt::~TfrmSelectReceipt()

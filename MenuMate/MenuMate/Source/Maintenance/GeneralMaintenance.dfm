@@ -2972,14 +2972,14 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
         object GroupBox25: TGroupBox
           Left = 400
           Top = 49
-          Width = 580
+          Width = 590
           Height = 750
           Anchors = [akLeft]
           Caption = 'Zed Print'
           ParentBackground = False
           TabOrder = 15
           DesignSize = (
-            580
+            590
             750)
           object cbShowSessionDate: TCheckBox
             Left = 8
@@ -3291,6 +3291,16 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
             TabOrder = 26
             OnClick = cbUseBIRFormatInXZReportClick
             OnMouseUp = cbUseBIRFormatInXZReportMouseUp
+          end
+          object cbPerformZedforAppTerminals: TCheckBox
+            Left = 306
+            Top = 69
+            Width = 270
+            Height = 25
+            Anchors = [akLeft]
+            Caption = 'Perform End of Day for App Terminals'
+            TabOrder = 31
+            OnClick = cbPerformZedforAppTerminalsClick
           end
         end
         object cbEnablePrinterCounts: TCheckBox

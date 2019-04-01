@@ -3438,6 +3438,7 @@ void TManagerVariable::InitialisePOSVars(Database::TDBTransaction &DBTransaction
         "Default is blank",
         vmg3rdPartyInterface, "");
         SetVarStr(DBTransaction, vmCurrentVersion, "Current Version", "Current Version", vmgPOS, "");
+        SetVarBool(DBTransaction, vmZedForAppTerminals,"Zed For App Terminals", "Zed For App Terminals", vmgPOS, false);
 	}
 	catch(Exception &E)
 	{
