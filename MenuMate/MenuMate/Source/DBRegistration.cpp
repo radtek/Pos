@@ -30,6 +30,7 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
         terminalInfo.OperatingSystemName  = GetOperatingSystemName();
         terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
         terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
+        terminalInfo.TerminalType         = ePOS;
         terminalInfo.RegistrationTime = Now();
     }
     catch(Exception &E)

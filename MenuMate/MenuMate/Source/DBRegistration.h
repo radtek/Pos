@@ -52,7 +52,7 @@ private:
     static void LoadOfficeSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
     static bool GetFlagCode();
     static void LoadDeviceTypeSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType);
-    static bool GetDeviceTypeSetting(int deviceSubType);
+
 
 };
 #endif

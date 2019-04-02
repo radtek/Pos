@@ -44,6 +44,7 @@ MMRegistrationServiceResponse TRegistrationInterface::UploadRegistrationInfo(TTe
         wcfInfo->SyndicateCode = terminalInfo.SyndicateCode;
         wcfInfo->TerminalDescription = terminalInfo.TerminalDescription;
         wcfInfo->TerminalName = terminalInfo.TerminalName;
+        wcfInfo->TerminalType = terminalInfo.TerminalType;
 
         TXSDateTime* transactionDate = new TXSDateTime;
         transactionDate->AsUTCDateTime = terminalInfo.RegistrationTime;

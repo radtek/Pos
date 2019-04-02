@@ -9,7 +9,7 @@
 //  >Import : http://localhost:8749/MenumateServices/RegistrationService/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (7/02/2019 9:04:52 p.m. - - $Rev: 25127 $)
+// (2/04/2019 8:34:14 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   RegistrationWSDLH
@@ -159,6 +159,8 @@ private:
   bool            FTerminalDescription_Specified;
   UnicodeString   FTerminalName;
   bool            FTerminalName_Specified;
+  __int64         FTerminalType;
+  bool            FTerminalType_Specified;
   void __fastcall SetComputerName(int Index, UnicodeString _prop_val)
   {  FComputerName = _prop_val; FComputerName_Specified = true;  }
   bool __fastcall ComputerName_Specified(int Index)
@@ -203,6 +205,10 @@ private:
   {  FTerminalName = _prop_val; FTerminalName_Specified = true;  }
   bool __fastcall TerminalName_Specified(int Index)
   {  return FTerminalName_Specified;  } 
+  void __fastcall SetTerminalType(int Index, __int64 _prop_val)
+  {  FTerminalType = _prop_val; FTerminalType_Specified = true;  }
+  bool __fastcall TerminalType_Specified(int Index)
+  {  return FTerminalType_Specified;  } 
 
 public:
   __fastcall ~TerminalModel();
@@ -218,6 +224,7 @@ __published:
   __property UnicodeString SyndicateCode = { index=(IS_OPTN|IS_NLBL), read=FSyndicateCode, write=SetSyndicateCode, stored = SyndicateCode_Specified };
   __property UnicodeString TerminalDescription = { index=(IS_OPTN|IS_NLBL), read=FTerminalDescription, write=SetTerminalDescription, stored = TerminalDescription_Specified };
   __property UnicodeString TerminalName = { index=(IS_OPTN|IS_NLBL), read=FTerminalName, write=SetTerminalName, stored = TerminalName_Specified };
+  __property __int64    TerminalType = { index=(IS_OPTN), read=FTerminalType, write=SetTerminalType, stored = TerminalType_Specified };
 };
 
 

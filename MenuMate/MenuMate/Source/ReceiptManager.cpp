@@ -1278,7 +1278,7 @@ void TManagerReceipt::PrintDocketForTips(int arcbillkey , Currency tipAmount)
    try
    {
         AnsiString Format = "SELECT 1 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From ARCBILL a "
-                           "Where a.APP_TYPE = 2 AND a.ARCBILL_KEY not in "
+                           "Where a.APP_TYPE = 1 AND a.ARCBILL_KEY not in "
                            " ( Select b.ARCBILL_KEY from ARCHIVE b "
                             " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
                             " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
@@ -1286,7 +1286,7 @@ void TManagerReceipt::PrintDocketForTips(int arcbillkey , Currency tipAmount)
                            "GROUP BY TABLETYPE,ARCBILL_KEY,TIME_STAMP "
              "Union All "
              "Select 2 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From DAYARCBILL a "
-             "Where a.APP_TYPE = 2 AND a.ARCBILL_KEY not in "
+             "Where a.APP_TYPE = 1 AND a.ARCBILL_KEY not in "
              "(Select b.ARCBILL_KEY from DAYARCHIVE b "
              "left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
              "where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "

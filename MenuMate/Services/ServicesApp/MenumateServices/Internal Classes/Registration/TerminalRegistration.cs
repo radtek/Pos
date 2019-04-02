@@ -172,6 +172,7 @@ namespace MenumateServices.Internal_Classes.Registration
                 terminalViewModel.TerminalDescription = terminalRegistrationInfo.TerminalDescription;
                 terminalViewModel.TerminalName = terminalRegistrationInfo.TerminalName;
                 terminalViewModel.RegistrationTime = terminalRegistrationInfo.RegistrationTime;
+                terminalViewModel.TerminalType = terminalRegistrationInfo.TerminalType;
 
                 if (terminalRegistrationInfo.LicenceSettingsModel != null)
                 {

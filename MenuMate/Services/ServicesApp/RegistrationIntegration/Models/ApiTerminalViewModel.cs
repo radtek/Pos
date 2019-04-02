@@ -17,6 +17,7 @@ namespace RegistrationIntegration.Models
         public string OperatingSystemName { get; set; }
         public string MenumateVersion { get; set; }
         public DateTime RegistrationTime { get; set; }
+        public long TerminalType { get; set; }
         public List<ApiLicenceSetting> ApiLicenceSettings { get; set; }
     }
 }
