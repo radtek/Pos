@@ -132,14 +132,14 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 siteOrderModel.Location = siteOrderViewModel.Location;
                 siteOrderModel.TotalAmount = siteOrderViewModel.TotalAmount;
                 siteOrderModel.ContainerNumber = siteOrderViewModel.ContainerNumber;
-                siteOrderModel.ContainerType = LoadContainerType(siteOrderViewModel.ContainerType);
+                siteOrderModel.ContainerType = siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Tab ? DTO.Enum.OrderContainerType.Tab: DTO.Enum.OrderContainerType.Table;
                 siteOrderModel.ContainerName = siteOrderViewModel.ContainerName;
                 siteOrderModel.OrderGuid = siteOrderViewModel.OrderGuid;
                 siteOrderModel.UserReferenceId = siteOrderViewModel.UserReferenceId;
-                siteOrderModel.UserType = siteOrderViewModel.UserType;
+                siteOrderModel.UserType = siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Member? DTO.Enum.UserType.Member : DTO.Enum.UserType.Staff;
                 siteOrderModel.TerminalName = siteOrderViewModel.TerminalName;
                 siteOrderModel.TransactionDate = siteOrderViewModel.TransactionDate;
-                siteOrderModel.OrderType = siteOrderViewModel.OrderType;
+                siteOrderModel.OrderType = LoadOrderType(siteOrderViewModel.OrderType);
                 siteOrderModel.OrderItems = LoadOrderItems(siteOrderViewModel.OrderItems);
                 siteOrderModel.TransactionType = LoadTransactionType(siteOrderViewModel.TransactionType);
                 siteOrderModel.IsConfirmed = siteOrderViewModel.IsConfirmed;
@@ -231,10 +231,10 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
         }
         public List<OrderItemModel> LoadOrderItems(List<ApiOrderItemViewModel> orderItemViewModelList)
         {
-            List<OrderItemModel> orderItemModelList = new List<OrderItemModel>;
+            List<OrderItemModel> orderItemModelList = new List<OrderItemModel>();
             try
             {
-                foreach(var orderItem in orderItemModelList)
+                foreach(var orderItem in orderItemViewModelList)
                 {
                     OrderItemModel orderItemModel = new OrderItemModel();
                     orderItemModel.Description = orderItem.Description;
@@ -242,6 +242,10 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                     orderItemModel.Name = orderItem.Name;
                     orderItemModel.OrderId = orderItem.OrderId;
                     orderItemModel.OrderItemSizes = LoadOrderItemSizes(orderItem.OrderItemSizes);
+                    orderItemModel.Price = orderItem.Price;
+                    orderItemModel.SiteItemId = orderItem.SiteItemId;
+
+                    orderItemModelList.Add(orderItemModel);
 
                 }
             }
@@ -251,8 +255,136 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             }
             return orderItemModelList;
         }
-        LoadOrderItemSizes()
-        {}
+        public List<OrderItemSizeModel> LoadOrderItemSizes(List<ApiOrderItemSizeViewModel> apiOrderItemSizeViewModelList)
+        {
+            List<OrderItemSizeModel> orderItemSizeModelList = new List<OrderItemSizeModel>();
+            try
+            {
+                foreach(var apiOrderItemSizeViewModel in apiOrderItemSizeViewModelList)
+                {
+                    OrderItemSizeModel orderItemSizeModel = new OrderItemSizeModel();
+                    orderItemSizeModel.BasePrice = apiOrderItemSizeViewModel.BasePrice;
+                    orderItemSizeModel.ItemSizeId = apiOrderItemSizeViewModel.ItemSizeId; 
+                    orderItemSizeModel.ItemSizeUniqueId = apiOrderItemSizeViewModel.ItemSizeUniqueId; 
+                    orderItemSizeModel.MenuPrice = apiOrderItemSizeViewModel.MenuPrice; 
+                    orderItemSizeModel.Name = apiOrderItemSizeViewModel.Name; 
+                    orderItemSizeModel.OrderItemId = apiOrderItemSizeViewModel.OrderItemId;
+                    orderItemSizeModel.OrderItemSizeDiscounts = LoadItemSizeDiscounts(apiOrderItemSizeViewModel.OrderItemSizeDiscounts);
+                    orderItemSizeModel.OrderItemSizeId = apiOrderItemSizeViewModel.OrderItemSizeId;
+                    orderItemSizeModel.OrderItemSizeTaxProfiles = LoadItemSizeTaxProfiles(apiOrderItemSizeViewModel.OrderItemSizeTaxProfiles);
+                    orderItemSizeModel.Price = apiOrderItemSizeViewModel.Price;
+                    orderItemSizeModel.PriceInclusive = apiOrderItemSizeViewModel.PriceInclusive;
+                    orderItemSizeModel.Quantity = apiOrderItemSizeViewModel.Quantity;
+                    orderItemSizeModel.ReferenceOrderItemSizeId = apiOrderItemSizeViewModel.ReferenceOrderItemSizeId;
+
+                    orderItemSizeModelList.Add(orderItemSizeModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return orderItemSizeModelList;
+        }
+        public List<OrderItemSizeDiscountModel>  LoadItemSizeDiscounts(List<ApiOrderItemSizeDiscountViewModel> apiOrderItemSizeDiscountViewModelList)
+        {
+            List<OrderItemSizeDiscountModel> orderItemSizeDiscountModelList = new List<OrderItemSizeDiscountModel>();
+            try
+            {
+                foreach(var apiOrderItemSizeDiscountViewModel in apiOrderItemSizeDiscountViewModelList)
+                {
+                    OrderItemSizeDiscountModel orderItemSizeDiscountModel = new OrderItemSizeDiscountModel();
+                    orderItemSizeDiscountModel.Code = apiOrderItemSizeDiscountViewModel.Code;
+                    orderItemSizeDiscountModel.Name = apiOrderItemSizeDiscountViewModel.Name;
+                    orderItemSizeDiscountModel.OrderItemSizeDiscountId = apiOrderItemSizeDiscountViewModel.OrderItemSizeDiscountId;
+                    orderItemSizeDiscountModel.OrderItemSizeId = apiOrderItemSizeDiscountViewModel.OrderItemSizeId;
+                    orderItemSizeDiscountModel.Value = apiOrderItemSizeDiscountViewModel.Value;
+                    
+                    orderItemSizeDiscountModelList.Add(orderItemSizeDiscountModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return orderItemSizeDiscountModelList;
+        }
+        public List<OrderItemSizeTaxProfileModel> LoadItemSizeTaxProfiles(List<ApiOrderItemSizeTaxProfileViewModel> apiOrderItemSizeTaxProfileViewModelList)
+        {
+            List<OrderItemSizeTaxProfileModel> orderItemSizeTaxProfileModelList = new List<OrderItemSizeTaxProfileModel>();
+            try
+            {
+                foreach (var apiOrderItemSizeTaxProfileViewModel in apiOrderItemSizeTaxProfileViewModelList)
+                {
+                    OrderItemSizeTaxProfileModel orderItemSizeTaxProfileModel = new OrderItemSizeTaxProfileModel();
+                    orderItemSizeTaxProfileModel.CompanyId = apiOrderItemSizeTaxProfileViewModel.CompanyId;
+                    orderItemSizeTaxProfileModel.Description = apiOrderItemSizeTaxProfileViewModel.Description;
+                    orderItemSizeTaxProfileModel.ItemSizeTaxProfileId = apiOrderItemSizeTaxProfileViewModel.ItemSizeTaxProfileId;
+                    orderItemSizeTaxProfileModel.Name = apiOrderItemSizeTaxProfileViewModel.Name;
+                    orderItemSizeTaxProfileModel.OrderItemSizeId = apiOrderItemSizeTaxProfileViewModel.OrderItemSizeId;
+                    orderItemSizeTaxProfileModel.OrderItemSizeTaxProfileId = apiOrderItemSizeTaxProfileViewModel.OrderItemSizeTaxProfileId;
+                    orderItemSizeTaxProfileModel.Percentage = apiOrderItemSizeTaxProfileViewModel.Percentage;
+                    orderItemSizeTaxProfileModel.Priority = apiOrderItemSizeTaxProfileViewModel.Priority;
+                    orderItemSizeTaxProfileModel.Rate = apiOrderItemSizeTaxProfileViewModel.Rate;
+                    orderItemSizeTaxProfileModel.TaxProfileType = LoadTaxProfileType(apiOrderItemSizeTaxProfileViewModel.TaxProfileType);
+                    orderItemSizeTaxProfileModel.Value = apiOrderItemSizeTaxProfileViewModel.Value;
+
+                    orderItemSizeTaxProfileModelList.Add(orderItemSizeTaxProfileModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return orderItemSizeTaxProfileModelList;
+        }
+        public DTO.Enum.TaxProfileType LoadTaxProfileType(OnlineOrdering.Enum.TaxProfileType apiTaxProfileType)
+        {
+            DTO.Enum.TaxProfileType taxProfileType = 0;
+            try
+            {
+                if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.LocalTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.LocalTax;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.ProfitTax;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.Purchasetax;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.Purchasetax;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.SalesTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.SalesTax;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ServiceCharge)
+                    taxProfileType = DTO.Enum.TaxProfileType.ServiceCharge;
+                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ServiceChargeTax)
+                    taxProfileType = DTO.Enum.TaxProfileType.ServiceChargeTax;
+
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return taxProfileType;
+        }
+        public DTO.Enum.OrderType LoadOrderType(OnlineOrdering.Enum.OrderType apiOrderType)
+        {
+            DTO.Enum.OrderType orderType = 0;
+            try
+            {
+                if (apiOrderType == OnlineOrdering.Enum.OrderType.CanceledOrder)
+                    orderType = DTO.Enum.OrderType.CanceledOrder;
+                else if (apiOrderType == OnlineOrdering.Enum.OrderType.CreditNonExistingOrder)
+                    orderType = DTO.Enum.OrderType.CreditNonExistingOrder;
+                else if (apiOrderType == OnlineOrdering.Enum.OrderType.NormalOrder)
+                    orderType = DTO.Enum.OrderType.NormalOrder;
+                else if (apiOrderType == OnlineOrdering.Enum.OrderType.Unused)
+                    orderType = DTO.Enum.OrderType.Unused;
+            }
+            catch (Exception ex)
+            {
+                //return null;
+            }
+            return orderType;
+        }
         #endregion
 
         #region private

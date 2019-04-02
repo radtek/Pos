@@ -1832,8 +1832,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                         ItemSize.Cost_GST_Percent, 
                                         ItemSize.Points_Percent, 
                                         ArcCategories.Category_Key,
-                                        ArcCategories.Category
-                                        ItemSize.ThirdPartyCodes_Key,
+                                        ArcCategories.Category,
+                                        ItemSize.ThirdPartyCodes_Key
                                 
                                     FROM 
                                         ItemSize

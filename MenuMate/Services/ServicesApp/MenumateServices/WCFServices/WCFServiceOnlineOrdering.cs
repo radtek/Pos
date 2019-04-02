@@ -24,16 +24,29 @@ namespace MenumateServices.WCFServices
         private List<string> stringList = new List<string>();
         public OOLoyaltyResponse SyncTaxSettings(string inSyndicateCode, SiteTaxSettingsinfo siteTaxSettings)
         {
+            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
                 stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
                 WriteAndClearStringList();
-                CreateWaiterTerminal(siteTaxSettings.SiteId);
+                //CreateWaiterTerminal(siteTaxSettings.SiteId);
+          
+                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+                {
+                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+                    {
+                        onlineOrderDB.OrderProcessingTesting();
+                        onlineOrderDB.transaction.Commit();
+                    }
+                }
+
+                        
                 // Pass String List for logging
                 return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
             }
             catch (Exception exc)
             {
+                onlineOrderDB.RollbackTransaction();
                 stringList.Add("Exception in SyncTaxSettings     " + exc.Message);
                 WriteAndClearStringList();
                 ServiceLogger.LogException(exc.Message, exc);
@@ -78,7 +91,7 @@ namespace MenumateServices.WCFServices
                 LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
                 stringList.Add("After Updating order status to web..json is ..." + requestData);
-                UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel);
+                //UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel);
                 WriteAndClearStringList();
             }
             catch (Exception exc)

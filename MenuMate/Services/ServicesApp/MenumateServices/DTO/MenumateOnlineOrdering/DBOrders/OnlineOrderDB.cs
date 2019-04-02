@@ -1270,7 +1270,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
     
         }
-        public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList)
+        public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemeName, ref string notFoundItemSizeName)
         {
             bool retValue = false;
             long itemSizeUniqueKey = 0;
@@ -1290,6 +1290,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         else
                         {
                             retValue = true;
+                            notFoundItemSizeName = itemSize.Name;
+                            notFoundItemName = item.Name;
                         }
                     }
                 }
@@ -1398,6 +1400,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 foreach (var siteOrderViewModel in siteOrderViewModelList)
                 {
+                    /*
                     if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
                     {
                         if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow 
@@ -1439,15 +1442,32 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 throw new Exception("Error while Loading Order From JSON file.");
                             }
 
-                        }
-                        if (ValidateTable(siteOrderViewModel.ContainerName, ref tableNameFromDB , ref tableNoFromDB))
+                        }*/
+                        if (ValidateTable(siteOrderViewModel.ContainerNumber, ref tableNameFromDB , ref tableNoFromDB))
                         {
                             //Assigning Correct Tabele Number And Table Name
                             siteOrderViewModel.ContainerName = tableNameFromDB;
                             siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
-
-                            if (ValidateItemsInOrders(siteOrderViewModel.OrderItems))
+                            string notFoundItemName = "";
+                            string notFoundItemSizeName = "";
+                            if (ValidateItemsInOrders(siteOrderViewModel.OrderItems, ref notFoundItemName, ref notFoundItemSizeName))
                             {
+                                List<ApiSiteOrderPaymentViewModel> orderPaymentList = new List<ApiSiteOrderPaymentViewModel>();
+                                ApiSiteOrderPaymentViewModel orderPayment = new ApiSiteOrderPaymentViewModel();
+                                orderPayment.Amount = 100;
+                                orderPayment.CardType = "MC";
+                                orderPayment.Id = 1;
+                                orderPayment.Note = "";
+                                orderPayment.OrderId = siteOrderViewModel.OrderId;
+                                orderPayment.PaymentName = "WAITERAPP";
+                                orderPayment.PaymentReceipt = null;
+                                orderPayment.ReceiptPath = "";
+                                orderPayment.Tip = 0;
+                                orderPaymentList.Add(orderPayment);
+                                siteOrderViewModel.OrderPayments = orderPaymentList;
+
+                                SaveOrderJSON(siteOrderViewModel);
+                                /*
                                 if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow
                                      && siteOrderViewModel.OrderPayments.Count == 0)
                                 {
@@ -1467,7 +1487,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     {
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
                                     }
-                                }
+                                }*/
                             }
                             else
                             {
@@ -1480,7 +1500,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
                             throw new Exception("Invalid Table.");
                         }
-                    }
+                 /* }
                     else
                     {
                         if (AddRecords(siteOrderViewModel, false))
@@ -1491,7 +1511,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         {
                             siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
                         }
-                    }
+                    }*/
                 }
             }
             catch (Exception e)
@@ -1542,7 +1562,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     //Inserting Data Into DayArcBillPay
                     ExecuteDayArcBillPayQuery(dayArcBillPayRow);
                 }
-                OrderPayment adjustmentRow = new OrderPayment();
+                ApiSiteOrderPaymentViewModel adjustmentRow = new ApiSiteOrderPaymentViewModel();
                 //Creating Cash Adjustment Row For Change
                 dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, adjustmentRow, true);
                 //Insert Cash Adjustment Row For Change
@@ -1593,7 +1613,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public DayArcBillPayAttributes CreateDayArcBillPayRow(long dayArcBillKey, OrderPayment orderPayment, bool isChangeAdjRow)
+        public DayArcBillPayAttributes CreateDayArcBillPayRow(long dayArcBillKey, ApiSiteOrderPaymentViewModel orderPayment, bool isChangeAdjRow)
         {
             DayArcBillPayAttributes dayArcBillPayRow = new DayArcBillPayAttributes();
             try
@@ -1718,7 +1738,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         //Insert row into DayArcCategory
                         ExecuteDayArcCategoryQuery(dayArchiveRow.ArchiveId, dayArchiveRow.CategoryId);
                         //Insert row into DayArcOrderTaxes
-                        ExcecuteDayArcOrderTaxesQuery(dayArchiveRow.ArchiveId, itemSize.OrderItemSizeTaxProfiles);
+                        //ExcecuteDayArcOrderTaxesQuery(dayArchiveRow.ArchiveId, itemSize.OrderItemSizeTaxProfiles);
                     }
 
                 }
@@ -1743,7 +1763,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     {
                         dayArchiveRow.MenuName = reader.GetString(reader.GetOrdinal("Menu_Name"));
                         dayArchiveRow.CourseName = reader.GetString(reader.GetOrdinal("Course_Name"));
-                        dayArchiveRow.ItemId = reader.GetInt32(reader.GetOrdinal("Item_ID"));
+                        dayArchiveRow.ItemId = reader.GetInt32(reader.GetOrdinal("Item_Key"));
                         dayArchiveRow.GstPercent = reader.GetDouble(reader.GetOrdinal("GST_Percent"));
                         dayArchiveRow.Cost = reader.GetDouble(reader.GetOrdinal("Cost"));
                         dayArchiveRow.CostGstPercent = reader.GetDouble(reader.GetOrdinal("Cost_GST_Percent"));
@@ -1853,8 +1873,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
-                //stringList.Add("Exception in SaveOrderJSON     " + exc.Message);
-                //WriteAndClearStringList();
+                throw;
             }
         }
         public string GetSyndicateCode()
@@ -1874,10 +1893,37 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
+                throw;
             }
             return syndicateCode;
         }
+        public void OrderProcessingTesting()
+        {
+            try
+            {
+                ApiSiteOrderViewModel apiSiteViewModel = new ApiSiteOrderViewModel();
+                string filename = "";
+                string path = System.IO.Path.GetDirectoryName(
+                                System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                if (path.Contains(@"file:\"))
+                {
+                    path = path.Replace(@"file:\", "");
+                }
+                path = Path.Combine(path, "logs", "Pending Orders");
 
+                string[] dirs = Directory.GetFiles(@path, "*");
+                filename = dirs[0].ToString();
+                if (!String.IsNullOrEmpty(filename))
+                    apiSiteViewModel = GetOrderJSONFile(filename);
+
+                    ArchiveTransaction(apiSiteViewModel);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                throw;
+            }
+        }
         #endregion
     }
 

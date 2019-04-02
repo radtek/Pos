@@ -31,7 +31,7 @@ namespace OnlineOrdering.Model.OrderModels
         public Guid? MemberGuid { get; set; }
         public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
         public bool IsHappyHourApplied { get; set; }
-        public List<OrderPayment> OrderPayments { get; set; }
+        public List<ApiSiteOrderPaymentViewModel> OrderPayments { get; set; }
         public PaymentType PaymentType { get; set; }
         public long StaffReferenceId { get; set; }
     }
