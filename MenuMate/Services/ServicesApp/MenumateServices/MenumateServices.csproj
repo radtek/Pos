@@ -182,6 +182,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\Enum\AppType.cs" />
     <Compile Include="DTO\Enum\OrderStatus.cs" />
     <Compile Include="DTO\Enum\PaymentType.cs" />
     <Compile Include="DTO\MenumateOnlineOrdering\DBOrders\DayArcBillAttributes.cs" />

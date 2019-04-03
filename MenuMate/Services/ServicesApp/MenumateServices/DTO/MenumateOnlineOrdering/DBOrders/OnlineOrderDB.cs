@@ -1270,7 +1270,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
     
         }
-        public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemeName, ref string notFoundItemSizeName)
+        public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
             bool retValue = false;
             long itemSizeUniqueKey = 0;
@@ -1285,13 +1285,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         if (!CheckIfItemExist(itemSizeUniqueKey))
                         {
                             retValue = false;
+                            notFoundItemSizeName = itemSize.Name;
+                            notFoundItemName = item.Name;
                             break;
                         }
                         else
                         {
                             retValue = true;
-                            notFoundItemSizeName = itemSize.Name;
-                            notFoundItemName = item.Name;
                         }
                     }
                 }
@@ -1592,6 +1592,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.InvoiceNumber = invoiceNumber;
                 dayArcBillRow.SaleType = 2; // Need to Confirm
                 dayArcBillRow.RoundingAdjustment = 0;
+                dayArcBillRow.IsPrintRequired = true;
+                dayArcBillRow.OnlinOrderId = siteOrderViewModel.OrderId;
+                dayArcBillRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                dayArcBillRow.ApplicationType = Enum.AppType.WaiterApp;
             }
             catch (Exception e)
             {

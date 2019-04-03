@@ -1359,7 +1359,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             ROUNDING_ADJUSTMENT, 
                             ORDER_IDENTIFICATION_NUMBER,  
                             REFUND_REFRECEIPT, 
-                            EFTPOS_SERVICE_ID ) 
+                            EFTPOS_SERVICE_ID,
+                            ISPRINTREQUIRED,
+                            APPTYPE,
+                            ONLINEORDERID,
+                            ORDERGUID) 
                       VALUES (
 		                    @ARCBILL_KEY,  
                             @TERMINAL_NAME,  
@@ -1377,7 +1381,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @ROUNDING_ADJUSTMENT, 
                             @ORDER_IDENTIFICATION_NUMBER,  
                             @REFUND_REFRECEIPT, 
-                            @EFTPOS_SERVICE_ID )
+                            @EFTPOS_SERVICE_ID,
+                            @ISPRINTREQUIRED,
+                            @APPTYPE,
+                            @ONLINEORDERID,
+                            @ORDERGUID)
                     ;";
 
                 command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillRow.ArcBillId);
@@ -1397,6 +1405,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER", 0 );
                 command.Parameters.AddWithValue("@REFUND_REFRECEIPT", "");
                 command.Parameters.AddWithValue("@EFTPOS_SERVICE_ID", "");
+                command.Parameters.AddWithValue("@ISPRINTREQUIRED", dayArcBillRow.IsPrintRequired?'T':'F');
+                command.Parameters.AddWithValue("@APPTYPE", dayArcBillRow.ApplicationType);
+                command.Parameters.AddWithValue("@ONLINEORDERID", dayArcBillRow.OnlinOrderId);
+                command.Parameters.AddWithValue("@ORDERGUID", dayArcBillRow.OrderGuid);
             }
             catch (Exception e)
             {
