@@ -82,9 +82,21 @@ std::vector<int> TLoyaltyMateUtilities::GetAllContactsWithPendingTransactions()
                         "   DISTINCT(LPT.CONTACT_KEY) "
                         "FROM "
                         "   LOYALTYPENDINGTRANSACTIONS LPT"
+                        "   LEFT JOIN DAYARCBILL d ON LPT.INVOICE_NUMBER = d.INVOICE_NUMBER "
                         "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY "
-                        "   WHERE LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING ";
+                        "   WHERE LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING"
+                        "   AND d.TERMINAL_NAME = :TERMINAL_NAME "
+                        "   UNION ALL "
+                        "SELECT "
+                        "   DISTINCT(LPT.CONTACT_KEY) "
+                        "FROM "
+                        "   LOYALTYPENDINGTRANSACTIONS LPT"
+                        "   LEFT JOIN ARCBILL d ON LPT.INVOICE_NUMBER = d.INVOICE_NUMBER "
+                        "   JOIN LOYALTYATTRIBUTES ATTR ON LPT.CONTACT_KEY = ATTR.CONTACTS_KEY "
+                        "   WHERE LPT.IS_AVAILABLE_FOR_POSTING = :IS_AVAILABLE_FOR_POSTING"
+                        "   AND d.TERMINAL_NAME = :TERMINAL_NAME ";
     query->ParamByName("IS_AVAILABLE_FOR_POSTING")->AsString = "T";
+    query->ParamByName("TERMINAL_NAME")->AsString = TDeviceRealTerminal::Instance().ID.Name;
     query->ExecQuery();
     while(!query->Eof)
     {
