@@ -60,6 +60,7 @@ class TManagerReceipt : public TManager
 		int &outArcbillKey);  // specifies whether a tip can be applied to this receipt's owner transaction and gets some information back
         int Sec_Ref;
         AnsiString InvoiceNumber;
+        void AppTerminalType();
         };
 
 extern TManagerReceipt *ManagerReceipt;

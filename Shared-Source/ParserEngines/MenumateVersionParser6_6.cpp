@@ -23,6 +23,11 @@ void TApplyParser::upgrade6_61Tables()
 {
     update6_61Tables();
 }
+//6.62
+void TApplyParser::upgrade6_62Tables()
+{
+    update6_62Tables();
+}
 
 //::::::::::::::::::::::::Version 6.60:::::::::::::::::::::::::::::::::::::::::
 void TApplyParser::update6_60Tables()
@@ -34,6 +39,14 @@ void TApplyParser::update6_60Tables()
 void TApplyParser::update6_61Tables()
 {
     Alter6_61Tables(_dbControl);
+
+}
+//------------------------version 6.62---------------------------------------
+void TApplyParser::update6_62Tables()
+{
+    Alter6_62Tables(_dbControl);
+    Create6_62Table(_dbControl);
+    Create6_62Generator(_dbControl);
 
 }
 
@@ -347,6 +360,136 @@ void TApplyParser::ALTERDSR_PIVOT_BY_ITEMProcedure6_61( TDBControl* const inDBCo
 	}
 }
 
+//---------------------------------------------------------------------------
+void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
+{
+    // Changes DayArcBill
+    if (!fieldExists( "DAYARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
+	{
+        executeQuery ( "ALTER TABLE DAYARCBILL ADD IS_PRINT_REQUIRED  CHAR(1) DEFAULT 'F';", inDBControl);
+	}
+
+    if (fieldExists( "DAYARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
+	{
+        executeQuery ( "UPDATE DAYARCBILL SET IS_PRINT_REQUIRED = 'F';", inDBControl);
+	}
+
+    if ( !fieldExists( "DAYARCBILL", "ONLINE_ORDER_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE DAYARCBILL ADD ONLINE_ORDER_ID INTEGER ;", inDBControl);
+    }
+    if (fieldExists( "DAYARCBILL", "ONLINE_ORDER_ID", _dbControl ) )
+    {
+        executeQuery ("UPDATE DAYARCBILL SET ONLINE_ORDER_ID = 0 ;", inDBControl);
+    }
+
+    if ( !fieldExists( "DAYARCBILL", "ORDER_GUID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE DAYARCBILL ADD ORDER_GUID VARCHAR(50) ;", inDBControl);
+    }
+    if (fieldExists( "DAYARCBILL", "ORDER_GUID", _dbControl ) )
+    {
+        executeQuery ("UPDATE DAYARCBILL SET ORDER_GUID = '';", inDBControl);
+    }
+
+    if ( !fieldExists( "DAYARCBILL", "APP_TYPE", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE DAYARCBILL ADD APP_TYPE INTEGER DEFAULT 0 ;", inDBControl);
+    }
+    if (fieldExists( "DAYARCBILL", "APP_TYPE", _dbControl ) )
+    {
+        executeQuery ("UPDATE DAYARCBILL SET APP_TYPE = 0 ;", inDBControl);
+    }
+
+
+        // Changes ArcBill
+    if (!fieldExists( "ARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
+	{
+        executeQuery ( "ALTER TABLE ARCBILL ADD IS_PRINT_REQUIRED  CHAR(1) DEFAULT 'F';", inDBControl);
+	}
+    if (fieldExists( "ARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
+    {
+        executeQuery ( "UPDATE ARCBILL SET IS_PRINT_REQUIRED = 'F';", inDBControl);
+    }
+
+    if ( !fieldExists( "ARCBILL", "ONLINE_ORDER_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE ARCBILL ADD ONLINE_ORDER_ID INTEGER ;", inDBControl);
+    }
+    if (fieldExists( "ARCBILL", "ONLINE_ORDER_ID", _dbControl ) )
+    {
+        executeQuery ("UPDATE ARCBILL SET ONLINE_ORDER_ID = 0 ;", inDBControl);
+    }
+
+    if ( !fieldExists( "ARCBILL", "ORDER_GUID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE ARCBILL ADD ORDER_GUID VARCHAR(50) ;", inDBControl);
+    }
+    if (fieldExists( "ARCBILL", "ORDER_GUID", _dbControl ) )
+    {
+        executeQuery ("UPDATE ARCBILL SET ORDER_GUID = '';", inDBControl);
+    }
+
+    if ( !fieldExists( "ARCBILL", "APP_TYPE", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE ARCBILL ADD APP_TYPE INTEGER DEFAULT 0 ;", inDBControl);
+    }
+    if (fieldExists( "ARCBILL", "APP_TYPE", _dbControl ) )
+    {
+        executeQuery ("UPDATE ARCBILL SET APP_TYPE = 0 ;", inDBControl);
+    }
 
 }
 
+//---------------------------------------------------------------------------
+void TApplyParser::Create6_62Table(TDBControl* const inDBControl)
+{
+    if ( !tableExists( "ONLINEORDERS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE ONLINEORDERS "
+        "( "
+        "  ONLINE_ORDER_KEY INTEGER NOT NULL PRIMARY KEY,  "
+        "  PROFILE_KEY INTEGER,                            "
+        "  EFTPOS_RECEIPT BLOB SUB_TYPE 1,                 "
+        "  INVOICE_NUMBER VARCHAR(50),                     "
+        "  APP_TYPE INTEGER DEFAULT 0 ,                   "
+        "  ISPOSTED CHAR(1) DEFAULT 'F',                   "
+        "  TERMINAL_NAME VARCHAR(22)                       "
+        ");",
+		inDBControl );
+    }
+
+    if ( !tableExists( "APPZEDSTATUS", _dbControl ) )
+	{
+		executeQuery(
+		"CREATE TABLE APPZEDSTATUS "
+        "( "
+        "  APP_ZED_STATUSKEY INTEGER NOT NULL PRIMARY KEY, "
+        "  PROFILE_KEY INTEGER,                            "
+        "  APP_TYPE INTEGER,                               "
+        "  TERMINAL_NAME VARCHAR(22),                      "
+        "  IS_ZED_REQUIRED CHAR(1) DEFAULT 'F',            "
+        "  TIME_STAMP_REQUESTED TIMESTAMP                  "
+        ");",
+		inDBControl );
+    }
+}
+//------------------------------------------------------------------------------
+void TApplyParser::Create6_62Generator(TDBControl* const inDBControl)
+{
+    if(!generatorExists("GEN_ONLINEORDERS_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_ONLINEORDERS_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_ONLINEORDERS_ID TO 0;", inDBControl);
+	}
+
+    if(!generatorExists("GEN_APPZEDSTATUS_ID", _dbControl))
+	{
+		executeQuery("CREATE GENERATOR GEN_APPZEDSTATUS_ID;", inDBControl);
+		executeQuery("SET GENERATOR GEN_APPZEDSTATUS_ID TO 0;", inDBControl);
+	}
+}
+//------------------------------------------------------------------------------
+}
+//------------------------------------------------------------------------------

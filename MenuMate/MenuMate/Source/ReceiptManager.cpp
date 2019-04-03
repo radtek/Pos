@@ -1269,5 +1269,56 @@ void TManagerReceipt::PrintDocketForTips(int arcbillkey , Currency tipAmount)
 	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
 	  throw;
    }
+}//-------------------------------------------------------------------------void TManagerReceipt::AppTerminalType(){
+   Database::TDBTransaction DBTransaction(DBControl);
+   DBTransaction.StartTransaction();
+
+   TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+   try
+   {
+        AnsiString Format = "SELECT 1 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From ARCBILL a "
+                           "Where a.APP_TYPE = 1 AND a.ARCBILL_KEY not in "
+                           " ( Select b.ARCBILL_KEY from ARCHIVE b "
+                            " left join ARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+                            " where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or "
+                            " c.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
+                           "GROUP BY TABLETYPE,ARCBILL_KEY,TIME_STAMP "
+             "Union All "
+             "Select 2 TABLETYPE, a.ARCBILL_KEY, a.TIME_STAMP From DAYARCBILL a "
+             "Where a.APP_TYPE = 1 AND a.ARCBILL_KEY not in "
+             "(Select b.ARCBILL_KEY from DAYARCHIVE b "
+             "left join DAYARCORDERDISCOUNTS c on b.ARCHIVE_KEY = c.ARCHIVE_KEY "
+             "where c.DISCOUNT_GROUPNAME = 'Non-Chargeable' or c.DISCOUNT_GROUPNAME = 'Complimentary') %0:s "
+             "group by TABLETYPE,ARCBILL_KEY,TIME_STAMP "
+             "Order By 3 Desc; " ;
+
+        AnsiString SQLWhereText;
+        TVarRec args[1];
+        SQLWhereText += " AND  RECEIPT is not null AND a.TIME_STAMP > :TimeStampAfter AND a.TIME_STAMP < :TimeStampBefore ";
+        args[0] = SQLWhereText;
+        AnsiString Result = Format.Format(Format, args, 0);
+
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = Result;
+        IBInternalQuery->ParamByName("TimeStampAfter")->AsDateTime = Date;
+        IBInternalQuery->ParamByName("TimeStampBefore")->AsDateTime = Date + 1; // Midnight Tomorrow.;
+        IBInternalQuery->ExecQuery();
+
+        Array.clear();
+        for (; !IBInternalQuery->Eof; IBInternalQuery->Next())
+        {
+            Array.push_back(TableKeyPair(IBInternalQuery->FieldByName("TABLETYPE")->AsInteger,
+            IBInternalQuery->FieldByName("ARCBILL_KEY")->AsInteger));
+        }
+        DBTransaction.Commit();
+
+        First();
+}
+   catch(Exception & E)
+   {
+	  TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+   }
+
 }
 

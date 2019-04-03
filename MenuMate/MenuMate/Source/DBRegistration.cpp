@@ -30,6 +30,7 @@ TTerminalModel TDBRegistration::GetTerminalInfo(Database::TDBTransaction &dbTran
         terminalInfo.OperatingSystemName  = GetOperatingSystemName();
         terminalInfo.MenumateVersion      = TDeviceRealTerminal::Instance().OS.SoftwareVersion;
         terminalInfo.LicenceSettingsModel = GetLicenseSettingsModelList(dbTransaction);
+        terminalInfo.TerminalType         = ePOS;
         terminalInfo.RegistrationTime = Now();
     }
     catch(Exception &E)
@@ -45,7 +46,7 @@ std::list<TLicenceSettingModel> TDBRegistration::GetLicenseSettingsModelList(Dat
     std::list<TLicenceSettingModel> licenceSettingModelList;
     try
     {
-        for(int settingType = eEftpos; settingType <= eOffice; settingType++)
+        for(int settingType = eEftpos; settingType <= eTerminalType; settingType++)
         {
             LoadLicenseSettingsModelList(dbTransaction, settingType, licenceSettingModelList);
         }
@@ -139,6 +140,10 @@ void TDBRegistration::LoadLicenseSettingsModelList(Database::TDBTransaction &dbT
             case eOffice:
                 {
                    LoadOfficeSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
+                }break;
+            case eTerminalType:
+                {
+                   LoadDeviceTypeSettingForTerminal(dbTransaction, licenceSettingModelList, licenceType);
                 }break;
             default:
             {
@@ -1120,5 +1125,24 @@ void TDBRegistration::LoadOfficeSettingForTerminal(Database::TDBTransaction &dbT
      }
      return retVal;
 
-}//---------------------------------------------------------------------------------------------------------
+}//---------------------------------------------------------------------------------------------------------void TDBRegistration::LoadDeviceTypeSettingForTerminal(Database::TDBTransaction &dbTransaction, std::list<TLicenceSettingModel> &licenceSettingModelList, int licenceType){
+    try
+    {
+
+            TLicenceSettingModel licenceSettingModel;
+
+            licenceSettingModel.SettingType       = licenceType;
+            licenceSettingModel.SettingSubType    = ePOS;
+            licenceSettingModel.IsActive          = true;
+
+            licenceSettingModelList.push_back(licenceSettingModel);
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+
+}
 

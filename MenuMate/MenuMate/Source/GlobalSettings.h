@@ -562,6 +562,7 @@ public:
     UnicodeString CompanyName;
     bool IsStockEnabled;
     UnicodeString CurrentVersion;
+    bool ZedForAppTerminals;
 };
 
 #endif
