@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enum\DeviceType.cs" />
     <Compile Include="Enum\MenuType.cs" />
     <Compile Include="Enum\OrderContainerType.cs" />
     <Compile Include="Enum\OrderStatus.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Model\MenuModels\ApiSideGroupViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OrderModels\ApiOrderDevicesViewModel.cs" />
     <Compile Include="Model\OrderModels\InvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderInvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderItemSizeDiscountViewModel.cs" />

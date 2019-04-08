@@ -226,7 +226,7 @@ namespace MenumateServices.WCFServices
                 {
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
-                        if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff && siteOrderViewModel.OrderPayments != null)
+                        if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff && siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                         {
                             siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel);
 

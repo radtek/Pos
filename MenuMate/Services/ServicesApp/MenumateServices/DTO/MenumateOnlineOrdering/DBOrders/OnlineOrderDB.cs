@@ -270,7 +270,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 //Insert Order tax profile info..
                                 ExecuteTaxProfileOrders(orderRow);
                             }
-                        siteOrderViewModel.IsConfirmed = true;
+                        //siteOrderViewModel.IsConfirmed = true;
                         siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
                         retValue = true;
@@ -279,7 +279,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     catch (Exception ex)
                     {
                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
-                        siteOrderViewModel.IsConfirmed = false;
+                        //siteOrderViewModel.IsConfirmed = false;
                         siteOrderViewModel.IsHappyHourApplied = false;
                         //addDetailsTransaction.Rollback();
                         ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
@@ -1514,7 +1514,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow = CreateDayArcBillRow(dayArcBillKey, invoiceNumber, siteOrderViewModel, securityRef);
                 //Inserting Data Into DayAcBill
                 ExecuteDayArcBillQuery(dayArcBillRow);
-                foreach (var orderPayment in siteOrderViewModel.OrderPayments)
+                foreach (var orderPayment in siteOrderViewModel.ApiSiteOrderPaymentViewModels)
                 {
                     //Creating Row for DayArcBillPay
                     dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, orderPayment, false);
