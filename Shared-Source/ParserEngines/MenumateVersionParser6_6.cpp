@@ -439,6 +439,7 @@ void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
         executeQuery ("UPDATE ARCBILL SET APP_TYPE = 0 ;", inDBControl);
     }
 
+        // Changes Device table
     if (!fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )
 	{
         executeQuery ( "ALTER TABLE DEVICES ADD UNIQUE_DEVICE_ID VARCHAR(50) ;", inDBControl);
@@ -447,6 +448,28 @@ void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
     if (fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )
 	{
         executeQuery ( "UPDATE DEVICES SET UNIQUE_DEVICE_ID = '';", inDBControl);
+	}
+
+        // Changes Archieve and DayArchieve
+
+    if (!fieldExists( "DAYARCHIVE", "ITEMSIZE_IDENTIFIER", _dbControl ) )
+	{
+        executeQuery ( "ALTER TABLE DAYARCHIVE ADD ITEMSIZE_IDENTIFIER VARCHAR(50) ;", inDBControl);
+	}
+
+    if (fieldExists( "DAYARCHIVE", "ITEMSIZE_IDENTIFIER", _dbControl ) )
+	{
+        executeQuery ( "UPDATE DAYARCHIVE SET ITEMSIZE_IDENTIFIER = '';", inDBControl);
+	}
+
+    if (!fieldExists( "ARCHIVE", "ITEMSIZE_IDENTIFIER", _dbControl ) )
+	{
+        executeQuery ( "ALTER TABLE ARCHIVE ADD ITEMSIZE_IDENTIFIER VARCHAR(50) ;", inDBControl);
+	}
+
+    if (fieldExists( "ARCHIVE", "ITEMSIZE_IDENTIFIER", _dbControl ) )
+	{
+        executeQuery ( "UPDATE ARCHIVE SET ITEMSIZE_IDENTIFIER = '';", inDBControl);
 	}
 
 }

@@ -1694,6 +1694,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         dayArchiveRow.PriceIncl = itemSize.PriceInclusive;
                         dayArchiveRow.TimeKey = 0;//Need to Confirm
                         dayArchiveRow.Redeemed = 0;
+                        dayArchiveRow.ItemSizeIdentifier = itemSize.ItemSizeUniqueId;
                         dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
                         //Loading Item Info
                         LoadItemInfoForDayArchiveRow(ref dayArchiveRow, itemSize.ItemSizeUniqueId);

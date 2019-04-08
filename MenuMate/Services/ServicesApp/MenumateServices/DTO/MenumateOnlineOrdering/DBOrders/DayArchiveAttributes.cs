@@ -47,7 +47,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         public double PriceIncl {get; set;}           
         public double PriceAdjust {get; set;}          
         public string OrderGuid {get; set;}
-        public long OnlineOrderId { get; set; } 
+        public long OnlineOrderId { get; set; }
+        public string ItemSizeIdentifier { get; set; }
 
     }
 }

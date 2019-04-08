@@ -46,3 +46,8 @@ C:\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegrati
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
 C:\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb
+C:\MM_CloudGit\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.dll
+C:\MM_CloudGit\V6-Master\MenuMate\Services\ServicesApp\Ready for Distribution\SiHotIntegration.pdb
+C:\MM_CloudGit\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\ResolveAssemblyReference.cache
+C:\MM_CloudGit\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.dll
+C:\MM_CloudGit\V6-Master\MenuMate\Services\ServicesApp\SiHotIntegration\obj\Debug\SiHotIntegration.pdb

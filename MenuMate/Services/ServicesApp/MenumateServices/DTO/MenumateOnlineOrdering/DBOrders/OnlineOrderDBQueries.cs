@@ -1610,7 +1610,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             PRICE_ADJUST, 
                             ONLINE_CHIT_TYPE,
                             ONLINE_ORDER_ID,
-                            ORDER_GUID 
+                            ORDER_GUID,
+                            ITEMSIZE_IDENTIFIER 
 				            )
 				      VALUES 
 				            (
@@ -1663,7 +1664,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @PRICE_ADJUST, 
                             @ONLINE_CHIT_TYPE,  
                             @ONLINE_ORDER_ID,
-                            @ORDER_GUID 
+                            @ORDER_GUID,
+                            @ITEMSIZE_IDENTIFIER 
 				        );
                     ";
                 command.Parameters.AddWithValue("@ARCHIVE_KEY", dayArchiveRow.ArchiveId);
@@ -1716,6 +1718,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", 0);//Need to confirm
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", dayArchiveRow.OnlineOrderId);
                 command.Parameters.AddWithValue("@ORDER_GUID", dayArchiveRow.OrderGuid);
+                command.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", dayArchiveRow.ItemSizeIdentifier);
             }
             catch (Exception e)
             {
