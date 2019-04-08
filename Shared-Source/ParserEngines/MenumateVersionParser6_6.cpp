@@ -439,6 +439,16 @@ void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
         executeQuery ("UPDATE ARCBILL SET APP_TYPE = 0 ;", inDBControl);
     }
 
+    if (!fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )
+	{
+        executeQuery ( "ALTER TABLE DEVICES ADD UNIQUE_DEVICE_ID VARCHAR(50) ;", inDBControl);
+	}
+
+    if (fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )
+	{
+        executeQuery ( "UPDATE DEVICES SET UNIQUE_DEVICE_ID = '';", inDBControl);
+	}
+
 }
 
 //---------------------------------------------------------------------------

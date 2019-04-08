@@ -939,7 +939,7 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
         if(Terminated)
         {
             ThreadTerminated();
-            delete onlineOrderingInterface;
+//            delete onlineOrderingInterface;
             return;
         }
         MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->SyncOnlineOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);

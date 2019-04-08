@@ -32,16 +32,16 @@
         
         public const string ReleaseVouchers = "api/v3Pos/VoucherApi/ReleaseVouchers";
 
-        public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
+        //public const string SyncSiteMenu = "api/v5/MenuConsumableApi/SyncSiteMenu";
 
-        public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; 
+        //public const string SyncSiteTaxSettings = "api/v5/SiteApi/GetSiteTaxSetting"; 
 
-        public const string UpdateOrderStatus = "api/v5/OrderApi/SaveOrderConfirmation";
+        //public const string UpdateOrderStatus = "api/v5/OrderApi/SaveOrderConfirmation";
 
-        public const string PostOnlineOrderInvoiceInfo = "api/v5/OrderApi/SaveOrderBillingInformation";
+        //public const string PostOnlineOrderInvoiceInfo = "api/v5/OrderApi/SaveOrderBillingInformation";
 
-        public const string IsOnlineOrderingEnableBySiteId = "api/v5/SiteApi/IsOnlineOrderingEnableBySiteId/";
+        //public const string IsOnlineOrderingEnableBySiteId = "api/v5/SiteApi/IsOnlineOrderingEnableBySiteId/";
 
-        public const string UnsetOrderingDetails = "api/v5/SiteApi/SignalRDisconnectBySite/";
+        //public const string UnsetOrderingDetails = "api/v5/SiteApi/SignalRDisconnectBySite/";
     }
 }

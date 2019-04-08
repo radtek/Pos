@@ -529,7 +529,7 @@ namespace Loyaltymate.Sevices
             }
         }
 
-        public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel)
+       /* public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel)
         {
             bool response = false;
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, inSyndicateCode, null, WebRequestMethods.Http.Post, siteMenuViewModel);
@@ -660,7 +660,7 @@ namespace Loyaltymate.Sevices
                 }
             }
             return response;
-        }
+        }*/
 
         private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpWebResponse webResponse, string message)
         {
@@ -699,7 +699,7 @@ namespace Loyaltymate.Sevices
             return apiOnlineOrderingResponse;
         }
 
-        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        /*public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
         {
             bool isSuccessful = false;
             string requestAddress = RequestAddress.UnsetOrderingDetails + @"/" + siteCode.ToString();
@@ -730,6 +730,6 @@ namespace Loyaltymate.Sevices
                 }
             }
             return isSuccessful;
-        }
+        }*/
     }
 }
