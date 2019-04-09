@@ -128,6 +128,7 @@ public:
     bool IsCanBePaidForUsingPoints;
     int RevenueCode;
     int ItemSizeIdentifierKey;
+    UnicodeString ItemIdentifierKey;
 
 private:
         double qty_;    //MM-6306 : double data type in place of currency

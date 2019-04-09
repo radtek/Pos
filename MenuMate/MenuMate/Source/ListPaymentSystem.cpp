@@ -1008,9 +1008,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == SiHot ||
+                                                                TGlobalSettings::Instance().PMSType == Mews))
+        {
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
-
+        }
         if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
         {
             std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());

@@ -67,6 +67,7 @@ TItemMinor::TItemMinor()
    //CostForPoints = 0;
    IsCanBePaidForUsingPoints = false;  // check can be paid by points..
    ItemSizeIdentifierKey = 0;
+   ItemIdentifierKey = 0;
 }
 
 TItemMinor::TItemMinor(
@@ -115,6 +116,7 @@ TItemMinor::TItemMinor(
    CostForPoints = initializer.CostForPoints;
    IsCanBePaidForUsingPoints = initializer.IsCanBePaidForUsingPoints;  // check can be paid by points..
    ItemSizeIdentifierKey = initializer.ItemSizeIdentifierKey;
+   ItemIdentifierKey = initializer.ItemIdentifierKey;
 }
 
 TItemMinor &
@@ -168,7 +170,7 @@ TItemMinor::operator=(
    //CostForPoints = rhs.CostForPoints;
    IsCanBePaidForUsingPoints = rhs.IsCanBePaidForUsingPoints;  // check can be paid by points..
    ItemSizeIdentifierKey = rhs.ItemSizeIdentifierKey;
-
+   ItemIdentifierKey = rhs.ItemIdentifierKey;
 }
 
 bool
@@ -238,7 +240,7 @@ void TItemMinor::Assign(TItemMinor * Minor)
    //Minor->CostForPoints = CostForPoints;
    Minor->IsCanBePaidForUsingPoints = IsCanBePaidForUsingPoints;  // check can be paid by points..
    Minor->ItemSizeIdentifierKey = ItemSizeIdentifierKey;
-
+   Minor->ItemIdentifierKey = ItemIdentifierKey;
 }
 
 void TItemMinor::ClearPrice()

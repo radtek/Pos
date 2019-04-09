@@ -272,7 +272,7 @@ bool TManagerMews::GetCategories(UnicodeString url, UnicodeString clientToken, U
 bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int StaffID)
 {
     WaitOrProceedWithPost();
-    std::auto_ptr<TStringList> postLogs;
+    std::auto_ptr<TStringList> postLogs(new TStringList);
     postLogs->Clear();
     if((_paymentTransaction.Money.PaymentAmount == 0) || _paymentTransaction.Orders->Count == 0)
     {
@@ -538,13 +538,14 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
     }
     catch(Exception &E)
     {
+        UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 //        DBTransaction.Rollback();
     }
     UnsetPostingFlag();
 //    if(!isSuccessful)
 //       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-    LogWaitStatus(postLogs)
+    LogWaitStatus(postLogs)  ;
     return isSuccessful;
 }
 void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCustomerMews> &customerMews,bool isSpace)
@@ -1004,12 +1005,21 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
     {
         if(name.Trim().Length() == 0)
         {
-            IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEM_KEY = :ITEM_KEY "
-                                        "AND SIZE_NAME = :SIZE_NAME";
-            IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
-            IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
-            IBInternalQuery->ExecQuery();
-            int categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+            int categoryKey = 0;
+            MessageBox(itemComplete->ItemSizeIdentifierKey,"ItemSizeIdentifierKey",MB_OK);
+            if(itemComplete->ItemSizeIdentifierKey != 0)
+            {
+                MessageBox("Inside if","",MB_OK);
+                IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
+                IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
+                IBInternalQuery->ExecQuery();
+                categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+            }
+            else
+            {
+                MessageBox("Inside else","",MB_OK);
+                categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
+            }
             std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
             for(;it != mewsAccountingCategoriesList.end();advance(it,1))
             {
@@ -1200,5 +1210,33 @@ void TManagerMews::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defa
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
+}
+int TManagerMews::GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Database::TDBTransaction &DBTransaction)
+{
+    int categoryKey = 0;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  " SELECT isz.CATEGORY_KEY FROM ITEMSIZE isz"
+                                      " INNER JOIN ITEM i ON i.ITEM_ID = isz.ITEM_KEY"
+                                      " INNER JOIN COURSE cr on cr.COURSE_KEY = i.COURSE_KEY"
+                                      " INNER JOIN MENU m on m.MENU_KEY = cr.MENU_KEY"
+                                      " WHERE isz.SIZE_NAME = :SIZE_NAME AND cr.COURSE_NAME = :COURSE_NAME AND m.MENU_NAME = :MENU_NAME AND i.ITEM_NAME = :ITEM_NAME "
+                                      " ORDER BY m.MENU_NAME";
+        IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
+        IBInternalQuery->ParamByName("COURSE_NAME")->AsString = itemComplete->Course;
+        IBInternalQuery->ParamByName("MENU_NAME")->AsString = itemComplete->MenuName;
+        IBInternalQuery->ParamByName("ITEM_NAME")->AsString = itemComplete->Item;
+        IBInternalQuery->ExecQuery();
+        categoryKey = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        MessageBox(ex.Message,"Exception in GetCategoryKeyFromItemValues",MB_OK);
+        throw;
+    }
+    return categoryKey;
 }
 //----------------------------------------------//
