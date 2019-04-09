@@ -1006,10 +1006,8 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
         if(name.Trim().Length() == 0)
         {
             int categoryKey = 0;
-            MessageBox(itemComplete->ItemSizeIdentifierKey,"ItemSizeIdentifierKey",MB_OK);
             if(itemComplete->ItemSizeIdentifierKey != 0)
             {
-                MessageBox("Inside if","",MB_OK);
                 IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
                 IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
                 IBInternalQuery->ExecQuery();
@@ -1017,7 +1015,6 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
             }
             else
             {
-                MessageBox("Inside else","",MB_OK);
                 categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
             }
             std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
@@ -1234,7 +1231,6 @@ int TManagerMews::GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Datab
     catch(Exception &ex)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        MessageBox(ex.Message,"Exception in GetCategoryKeyFromItemValues",MB_OK);
         throw;
     }
     return categoryKey;
