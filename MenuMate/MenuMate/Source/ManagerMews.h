@@ -35,5 +35,6 @@ class TManagerMews : public TBasePMS
        void UpdateMewsLogs(bool status);
        UnicodeString CheckMewsCategoryExists(UnicodeString category);
        void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
+       int GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Database::TDBTransaction &DBTransaction);
 };
 #endif

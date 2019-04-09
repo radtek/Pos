@@ -49,7 +49,7 @@ void TManagerMews::LogPMSEnabling(TriggerLocation triggerType)
         else if(triggerType == eSelf)
         {
             List->Add("Note- "+ (AnsiString)"Found Mews disabled with necessary details present" +"\n" +
-                  "      "+ "Menumate is trying to enable SiHot and then sale would be processed" +"\n");
+                  "      "+ "Menumate is trying to enable Mews and then sale would be processed" +"\n");
         }
         List->SaveToFile(fileName );
     }
@@ -271,7 +271,9 @@ bool TManagerMews::GetCategories(UnicodeString url, UnicodeString clientToken, U
 }
 bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int StaffID)
 {
-     WaitOrProceedWithPost();
+    WaitOrProceedWithPost();
+    std::auto_ptr<TStringList> postLogs(new TStringList);
+    postLogs->Clear();
     if((_paymentTransaction.Money.PaymentAmount == 0) || _paymentTransaction.Orders->Count == 0)
     {
         UnsetPostingFlag();
@@ -351,53 +353,48 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     mewsOrder.Items.clear();
                     GetDetailsForMewsOrderBill(_paymentTransaction, portion, i,tipPortion,mewsOrder,false);
                     UnicodeString value = "";
+                    UnicodeString successfulStr = "Successful";
                     UnicodeString auxMessage = "";
                     value = mewsInterface->PostMewsOrder(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,mewsOrder);
-                    if(value.Trim() == "Successful")
-                        isSuccessful = true;
-                    else if(value.Trim() != "Successful" && value.Trim() != "")
+                    if(value.Trim() == successfulStr)
                     {
-                        auxMessage = "Posting to Mews failed.\r";
-                        auxMessage += value;
-                        if(value.Pos("403") == 0)
-                        {
-                            TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-                            auxMessage += "\rMews interface is disabled now.";
-
-//                            //Tracking Setting Changes In IsCloudSyncRequiredFlag
-//                            if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-//                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-
-                        }
-                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
-                        isPostedRoomPost = isSuccessful;
-                        break;
+                        isSuccessful = true;
+                        postLogs->Add("Post Order was found successful in POS");
+                        postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                        postLogs->Add("=================================================================================");
                     }
                     else
                     {
-                        auxMessage = "Posting to Mews failed.\r";
-                        if(value.Trim() != "")
+                        if(value.Trim() != successfulStr && value.Trim() != "")
                         {
+                            postLogs->Add("Post Order was found unsuccessful in POS and message is " + (AnsiString)value);
+                            postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                            auxMessage = "Posting to Mews failed.\r";
                             auxMessage += value;
                             if(value.Pos("403") == 0)
                             {
                                 TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                                postLogs->Add("Mews interface is disabled now");
                                 auxMessage += "\rMews interface is disabled now.";
                             }
+                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                            isPostedRoomPost = isSuccessful;
+                            postLogs->Add("=================================================================================");
+                            break;
                         }
                         else
                         {
+                            postLogs->Add("Post Order was found unsuccessful in POS and message is " + (AnsiString)value);
+                            postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                            auxMessage = "Posting to Mews failed.\r";
                             auxMessage += "Menumate could not communicate with Mews.";
                             auxMessage += "\rMews interface is disabled now.";
                             TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                            postLogs->Add("Mews interface is disabled now");
+                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                            postLogs->Add("=================================================================================");
+                            isSuccessful = false;
                         }
-                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
-                        isSuccessful = false;
-
-//                        //Tracking Setting Changes In IsCloudSyncRequiredFlag
-//                        if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-//                            TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-
                     }
                     isPostedRoomPost = isSuccessful;
                 }
@@ -438,17 +435,11 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     itemMews.Category.Name = "";
                     if(payment->GetPaymentAttribute(ePayTypePoints))
                     {
-//                        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
                         itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->PointsCategory;
-//                        mewsProcessor->GetMewsName(_paymentTransaction.DBTransaction,
-//                                                                            TDeviceRealTerminal::Instance().BasePMS->PointsCategory,3);
                     }
                     else if(payment->GetPaymentAttribute(ePayTypeCredit))
                     {
-//                        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
                         itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->CreditCategory;
-//                        mewsProcessor->GetMewsName(_paymentTransaction.DBTransaction,
-//                                                                            TDeviceRealTerminal::Instance().BasePMS->CreditCategory,3);
                     }
                     else
                     {
@@ -489,11 +480,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
 
                         itemMews.UnitCost.Currency = CurrencyString;
                         itemMews.UnitCost.Tax = 0;
-                        //itemMews.Category.Code = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
-//                        std::auto_ptr<TMewsDataProcessor> mewsProcessor(new TMewsDataProcessor());
                         itemMews.Category.Name = TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount;
-//                        mewsProcessor->GetMewsName(_paymentTransaction.DBTransaction,
-//                                                                            TDeviceRealTerminal::Instance().BasePMS->DefaultSurchargeAccount,3);
                         mewsOrderBill.Bills[0].Items.push_back(itemMews);
                     }
                 }
@@ -503,65 +490,62 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
          {
             UnicodeString value = "";
             UnicodeString auxMessage = "";
+            UnicodeString successfulStr = "Successful";
             if((hasRoomPost && isPostedRoomPost) || (!hasRoomPost))
             {
                 value = mewsInterface->PostMewsBill(TDeviceRealTerminal::Instance().BasePMS->TCPIPAddress,mewsOrderBill);
-                if(value.Trim() == "Successful")
-                    isSuccessful = true;
-                else if(value.Trim() != "Successful" && value.Trim() != "")
+                if(value.Trim() == successfulStr)
                 {
-                    auxMessage = "Posting to Mews failed.\r";
-                    auxMessage += value;
-                    if(value.Pos("403") == 0)
-                    {
-                        TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
-                        auxMessage += "\rMews interface is disabled now.";
-                    }
-                    MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
-                    isSuccessful = false;
-
-//                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
-//                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-//                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-
+                    isSuccessful = true;
+                    postLogs->Add("Post Bill was found successful in POS");
+                    postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                    postLogs->Add("=================================================================================");
                 }
                 else
                 {
-                    auxMessage = "Posting to Mews failed.\r";
-                    if(value.Trim() != "")
+                    if(value.Trim() != successfulStr && value.Trim() != "")
                     {
+                        postLogs->Add("Post Bill was found unsuccessful in POS and message is " + (AnsiString)value);
+                        postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                        auxMessage = "Posting to Mews failed.\r";
                         auxMessage += value;
                         if(value.Pos("403") == 0)
                         {
                             TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                            postLogs->Add("Mews interface is disabled now");
                             auxMessage += "\rMews interface is disabled now.";
                         }
+                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                        postLogs->Add("=================================================================================");
+                        isSuccessful = false;
                     }
                     else
                     {
+                        postLogs->Add("Post Bill was found unsuccessful in POS and message is " + (AnsiString)value);
+                        postLogs->Add("Time is " + (AnsiString)Now().FormatString("hh:nn:ss am/pm"));
+                        auxMessage = "Posting to Mews failed.\r";
                         auxMessage += "Menumate could not communicate with Mews.";
                         auxMessage += "\rMews interface is disabled now.";
                         TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+                        postLogs->Add("Mews interface is disabled now");
+                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                        postLogs->Add("=================================================================================");
+                        isSuccessful = false;
                     }
-                    MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
-                    isSuccessful = false;
-
-//                    //Tracking Setting Changes In IsCloudSyncRequiredFlag
-//                    if(!TGlobalSettings::Instance().IsCloudSyncRequired)
-//                        TDBRegistration::UpdateIsCloudSyncRequiredFlag(true);
-
                 }
             }
          }
     }
     catch(Exception &E)
     {
+        UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 //        DBTransaction.Rollback();
     }
     UnsetPostingFlag();
 //    if(!isSuccessful)
 //       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
+    LogWaitStatus(postLogs)  ;
     return isSuccessful;
 }
 void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCustomerMews> &customerMews,bool isSpace)
@@ -1021,12 +1005,21 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
     {
         if(name.Trim().Length() == 0)
         {
-            IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEM_KEY = :ITEM_KEY "
-                                        "AND SIZE_NAME = :SIZE_NAME";
-            IBInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemComplete->ItemKey;
-            IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
-            IBInternalQuery->ExecQuery();
-            int categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+            int categoryKey = 0;
+            MessageBox(itemComplete->ItemSizeIdentifierKey,"ItemSizeIdentifierKey",MB_OK);
+            if(itemComplete->ItemSizeIdentifierKey != 0)
+            {
+                MessageBox("Inside if","",MB_OK);
+                IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
+                IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
+                IBInternalQuery->ExecQuery();
+                categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+            }
+            else
+            {
+                MessageBox("Inside else","",MB_OK);
+                categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
+            }
             std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
             for(;it != mewsAccountingCategoriesList.end();advance(it,1))
             {
@@ -1217,5 +1210,33 @@ void TManagerMews::AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defa
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,Exc.Message);
     }
+}
+int TManagerMews::GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Database::TDBTransaction &DBTransaction)
+{
+    int categoryKey = 0;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text =  " SELECT isz.CATEGORY_KEY FROM ITEMSIZE isz"
+                                      " INNER JOIN ITEM i ON i.ITEM_ID = isz.ITEM_KEY"
+                                      " INNER JOIN COURSE cr on cr.COURSE_KEY = i.COURSE_KEY"
+                                      " INNER JOIN MENU m on m.MENU_KEY = cr.MENU_KEY"
+                                      " WHERE isz.SIZE_NAME = :SIZE_NAME AND cr.COURSE_NAME = :COURSE_NAME AND m.MENU_NAME = :MENU_NAME AND i.ITEM_NAME = :ITEM_NAME "
+                                      " ORDER BY m.MENU_NAME";
+        IBInternalQuery->ParamByName("SIZE_NAME")->AsString = itemComplete->Size;
+        IBInternalQuery->ParamByName("COURSE_NAME")->AsString = itemComplete->Course;
+        IBInternalQuery->ParamByName("MENU_NAME")->AsString = itemComplete->MenuName;
+        IBInternalQuery->ParamByName("ITEM_NAME")->AsString = itemComplete->Item;
+        IBInternalQuery->ExecQuery();
+        categoryKey = IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        MessageBox(ex.Message,"Exception in GetCategoryKeyFromItemValues",MB_OK);
+        throw;
+    }
+    return categoryKey;
 }
 //----------------------------------------------//

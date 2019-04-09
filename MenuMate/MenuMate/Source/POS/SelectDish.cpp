@@ -13624,6 +13624,7 @@ TItemComplete * TfrmSelectDish::createItemComplete(
     itemComplete->PrintCancel = false;
     itemComplete->LastAddedItem = true; // check item is last added or not..
     itemComplete->IsPayByPoints = false; // initialize pay by points to be false..
+    itemComplete->ItemIdentifierKey = Item->ItemIdentifierKey;
 	if (inItemSize != NULL)
 	{
 		itemSize = inItemSize;
@@ -13900,7 +13901,7 @@ TItemCompleteSub * TfrmSelectDish::AddSubItemToItem(Database::TDBTransaction &DB
 
 	NewSubOrder->FontInfo = Item->FontInfo;
 	NewSubOrder->ServingCourse = MasterOrder->ServingCourse;
-
+    NewSubOrder->ItemIdentifierKey = Item->ItemIdentifierKey;
 	if (Item->Sizes->Count == 0)
 	{
 		MessageBox("This item has no Size.", "Error", MB_OK + MB_ICONERROR);

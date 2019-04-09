@@ -116,7 +116,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                int i = 0;
+                logsList.Add("Exception in PostOrder MewsIntegrationWebService and exception message is   :" + exception.Message);
             }
             WriteToFile(logsList);
             return retValue;
@@ -141,7 +141,7 @@ namespace MenumateServices.WCFServices
             }
             catch (Exception exception)
             {
-                int i = 0;
+                logsList.Add("Exception in PostBill MewsIntegrationWebService and exception message is   :" + exception.Message);
             }
             WriteToFile(logsList);
             return retValue;
