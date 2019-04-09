@@ -371,7 +371,7 @@ void TApplyParser::AlterOrderTable6_62(TDBControl* const inDBControl)
         executeQuery ( "ALTER TABLE ORDERS ADD ITEMSIZE_IDENTIFIER VARCHAR(50) DEFAULT '';", inDBControl);
 	}
 
-    if ( fieldExists( "ORDERS", "ITEM_IDENTIFIER", inDBControl) )
+    if ( fieldExists( "ORDERS", "ITEM_IDENTIFIER", inDBControl) && fieldExists( "ORDERS", "ITEMSIZE_IDENTIFIER", inDBControl))
     {
         UpdateItemIdentifierInOrders(inDBControl);
     }
