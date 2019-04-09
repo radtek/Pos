@@ -29,18 +29,6 @@ namespace MenumateServices.WCFServices
             {
                 stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
                 WriteAndClearStringList();
-                //CreateWaiterTerminal(siteTaxSettings.SiteId);
-          
-                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
-                {
-                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
-                    {
-                        onlineOrderDB.OrderProcessingTesting();
-                        onlineOrderDB.transaction.Commit();
-                    }
-                }
-
-                        
                 // Pass String List for logging
                 return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
             }
@@ -91,7 +79,7 @@ namespace MenumateServices.WCFServices
                 LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
                 stringList.Add("After Updating order status to web..json is ..." + requestData);
-                //UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel);
+                UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel, inSyndicateCode);
                 WriteAndClearStringList();
             }
             catch (Exception exc)
@@ -226,28 +214,23 @@ namespace MenumateServices.WCFServices
             }
             //::::::::::::::::::::::::::::::::::::::::::::::
         }
-        private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList)
+        private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList, string syndicateCode)
         {
             try
             {
                 SiteOrderModel siteOrderModel = new SiteOrderModel();
-                OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
-                string syndicateCode = onlineOrderDB.GetSyndicateCode();
+               
                 stringList.Add("-------------------------------------------------------Inside UpdateInvoiceInforWaiterAppOrders-------------------------------------------------------...");
                 WriteAndClearStringList();
                 if (!String.IsNullOrEmpty(syndicateCode))
                 {
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
-                        if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
+                        if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff && siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                         {
-                            if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
-                            {
-                                siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel);
+                            siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel);
 
-                                PostOnlineOrderInvoiceInfo(syndicateCode, siteOrderModel);
-                            }
-
+                            PostOnlineOrderInvoiceInfo(syndicateCode, siteOrderModel);
                         }
                     }
                 }

@@ -142,7 +142,8 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 siteOrderModel.OrderType = LoadOrderType(siteOrderViewModel.OrderType);
                 siteOrderModel.OrderItems = LoadOrderItems(siteOrderViewModel.OrderItems);
                 siteOrderModel.TransactionType = LoadTransactionType(siteOrderViewModel.TransactionType);
-                siteOrderModel.IsConfirmed = siteOrderViewModel.IsConfirmed;
+                //siteOrderModel.IsConfirmed = siteOrderViewModel.IsConfirmed;
+                siteOrderModel.IsConfirmed = siteOrderViewModel.OrderStatus == OnlineOrdering.Enum.OrderStatus.IsConfirmed ? true : false;
                 siteOrderModel.UserEmailId = siteOrderViewModel.UserEmailId;
                 siteOrderModel.MemberGuid = siteOrderViewModel.MemberGuid;
                 siteOrderModel.OrderInvoiceTransaction = LoadInvoiceTransaction(siteOrderViewModel.OrderInvoiceTransaction);
@@ -607,7 +608,8 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             siteOrderViewModel.ContainerName = siteOrderModel.ContainerName;
             siteOrderViewModel.ContainerNumber = siteOrderModel.ContainerNumber;
             siteOrderViewModel.ContainerType = (OnlineOrdering.Enum.OrderContainerType)siteOrderModel.ContainerType;
-            siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
+            //siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
+            siteOrderViewModel.OrderStatus = siteOrderModel.IsConfirmed ? OnlineOrdering.Enum.OrderStatus.IsConfirmed : OnlineOrdering.Enum.OrderStatus.PosOrderError;
             siteOrderViewModel.Location = siteOrderModel.Location;
             siteOrderViewModel.OrderGuid = siteOrderModel.OrderGuid;
             siteOrderViewModel.OrderId = siteOrderModel.OrderId;

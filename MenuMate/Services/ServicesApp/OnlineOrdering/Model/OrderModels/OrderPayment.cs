@@ -9,6 +9,7 @@ namespace OnlineOrdering.Model.OrderModels
     {
         public long Id { get; set; }
         public long OrderId { get; set; }
+        public string OrderGuid { get; set; }
         public string PaymentName { get; set; }
         public double Amount { get; set; }
         public string Note { get; set; }

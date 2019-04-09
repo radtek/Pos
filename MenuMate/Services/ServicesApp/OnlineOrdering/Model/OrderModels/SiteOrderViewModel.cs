@@ -25,14 +25,15 @@ namespace OnlineOrdering.Model.OrderModels
         public OrderType OrderType { get; set; }
         public List<ApiOrderItemViewModel> OrderItems { get; set; }
         public SiteSettingType TransactionType { get; set; }
-        public bool IsConfirmed { get; set; }
+        //public bool IsConfirmed { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public string UserEmailId { get; set; }
         public Guid? MemberGuid { get; set; }
         public ApiOrderInvoiceTransactionViewModel OrderInvoiceTransaction { get; set; }
         public bool IsHappyHourApplied { get; set; }
-        public List<ApiSiteOrderPaymentViewModel> OrderPayments { get; set; }
+        public List<ApiSiteOrderPaymentViewModel> ApiSiteOrderPaymentViewModels { get; set; }
         public PaymentType PaymentType { get; set; }
         public long StaffReferenceId { get; set; }
+        public ApiOrderDevicesViewModel ApiOrderDevicesViewModel { get; set; }
     }
 }

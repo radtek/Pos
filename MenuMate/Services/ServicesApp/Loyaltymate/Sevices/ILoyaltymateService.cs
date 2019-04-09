@@ -20,11 +20,11 @@ namespace Loyaltymate.Sevices
         ApiPocketVoucherViewModel GetPocketVoucherDetail(string inSyndicateCode, ApiRequestViewModel requestViewModel, List<string> loyaltyLogs);
         List<ApiProcessingResult> PostVoucherTransactions(string inSyndicateCode, ApiVouchersUsageViewModel voucherTransaction, List<string> loyaltyLogs);
         bool ReleaseVouchers(string inSyndicateCode, ApiReleasedVoucherViewModel voucherTransaction, List<string> loyaltyLogs);
-        bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenus);
+        /*bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenus);
         bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings);
         bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel);
         bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel);
         ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int inSiteCode);
-        bool UnsetOrderingDetails(string inSyndicateCode, int inSiteCode);
+        bool UnsetOrderingDetails(string inSyndicateCode, int inSiteCode);*/
     }
 }
