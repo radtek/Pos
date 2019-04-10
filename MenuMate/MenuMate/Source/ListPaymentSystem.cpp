@@ -1008,9 +1008,11 @@ bool TListPaymentSystem::ProcessTransaction(TPaymentTransaction &PaymentTransact
 		TDeviceRealTerminal::Instance().ProcessingController.PopAll();
 		Busy = false;
 		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
-        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && TGlobalSettings::Instance().PMSType == SiHot)
+        if(TDeviceRealTerminal::Instance().BasePMS->Enabled && (TGlobalSettings::Instance().PMSType == SiHot ||
+                                                                TGlobalSettings::Instance().PMSType == Mews))
+        {
           TDeviceRealTerminal::Instance().BasePMS->UnsetPostingFlag();
-
+        }
         if(TGlobalSettings::Instance().IsAustriaFiscalStorageEnabled)
         {
             std::auto_ptr<TManagerAustriaFiscal> managerAustria(new TManagerAustriaFiscal());
@@ -3755,81 +3757,80 @@ bool TListPaymentSystem::ProcessThirdPartyModules(TPaymentTransaction &PaymentTr
         if(!PhoenixHSOk)
             ResetPayments(PaymentTransaction);
 	}
-    else if(TTransactionHelper::IsSiHotConfigured())
+    else
     {
-            /*
-               SiHot could be enabled but is not. Hence we need to try making it
-               enabled if possible.
-            */
-        bool siHotEnabled = TryToEnableSiHot();
-        if(siHotEnabled)
-            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-        else
+        if(TTransactionHelper::IsSiHotConfigured())
         {
-          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
-              PhoenixHSOk = true;
+              /*SiHot could be enabled but is not. Hence we need to try making it
+                 enabled if possible.*/
+          bool siHotEnabled = TryToEnableSiHot();
+          if(siHotEnabled)
+              PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
           else
           {
-              PhoenixHSOk = false;
-              ResetPayments(PaymentTransaction);
-          }
-        }
-    }
-    else if(TTransactionHelper::IsOracleConfigured())
-    {
-        if(TGlobalSettings::Instance().IsOraclePOSServer)
-        {
-            bool isOracleEnabled = TryToEnableOracle();
-            if(isOracleEnabled)
-                PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+            if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                PhoenixHSOk = true;
             else
             {
-              if(MessageBox("PMS interface is not enabled.\nPlease ensure Oracle is up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
-                  PhoenixHSOk = true;
-              else
-              {
-                  PhoenixHSOk = false;
-                  ResetPayments(PaymentTransaction);
-              }
+                PhoenixHSOk = false;
+                ResetPayments(PaymentTransaction);
             }
+          }
         }
-        else
+        else if(TTransactionHelper::IsOracleConfigured())
         {
-            bool isOracleEnabled = TryToEnableOracle();
-            if(isOracleEnabled)
-                PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-            if(!PhoenixHSOk || !isOracleEnabled)
+            if(TGlobalSettings::Instance().IsOraclePOSServer)
             {
-                if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
-                {
-                      PhoenixHSOk = true;
-                }
+                bool isOracleEnabled = TryToEnableOracle();
+                if(isOracleEnabled)
+                  PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
                 else
                 {
-                  PhoenixHSOk = false;
-                  ResetPayments(PaymentTransaction);
+                    if(MessageBox("PMS interface is not enabled.\nPlease ensure Oracle is up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                        PhoenixHSOk = true;
+                    else
+                    {
+                        PhoenixHSOk = false;
+                        ResetPayments(PaymentTransaction);
+                    }
+                }
+            }
+            else
+            {
+                bool isOracleEnabled = TryToEnableOracle();
+                if(isOracleEnabled)
+                  PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+                if(!PhoenixHSOk || !isOracleEnabled)
+                {
+                  if(MessageBox("PMS interface is not enabled.\nPlease ensure POS Server and Oracle are up and working.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                  {
+                        PhoenixHSOk = true;
+                  }
+                  else
+                  {
+                    PhoenixHSOk = false;
+                    ResetPayments(PaymentTransaction);
+                  }
                 }
             }
         }
-    }
-    else if(TTransactionHelper::IsMewsConfigured())
-    {
-            /*
-               mews could be enabled but is not. Hence we need to try making it
-               enabled if possible.
-            */
-        bool mewsEnabled = TryToEnableMews();
-        if(mewsEnabled)
-            PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
-        else
+        else if(TTransactionHelper::IsMewsConfigured())
         {
-          if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
-              PhoenixHSOk = true;
-          else
-          {
-              PhoenixHSOk = false;
-              ResetPayments(PaymentTransaction);
-          }
+              /*mews could be enabled but is not. Hence we need to try making it
+                 enabled if possible.*/
+            bool mewsEnabled = TryToEnableMews();
+            if(mewsEnabled)
+              PhoenixHSOk = TransRetrivePhoenixResult(PaymentTransaction);
+            else
+            {
+                if(MessageBox("PMS interface is not enabled.\nPlease check PMS configuration.\nDo you wish to process the sale without posting to PMS?","Error",MB_YESNO + MB_ICONERROR) == ID_YES)
+                    PhoenixHSOk = true;
+                else
+                {
+                    PhoenixHSOk = false;
+                    ResetPayments(PaymentTransaction);
+                }
+            }
         }
     }
 	if(!PhoenixHSOk)

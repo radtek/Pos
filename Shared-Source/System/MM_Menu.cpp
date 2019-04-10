@@ -503,6 +503,11 @@ bool TMenuLoadDB::GetNextItem(Menu::TItemInfo *ItemInfo)
 			ItemInfo->Print_Double_Width = (sqlMenu->FieldByName("Print_Double_Width")->AsString == "T");
 			ItemInfo->Print_Double_Height = (sqlMenu->FieldByName("Print_Double_Height")->AsString == "T");
 
+            if(sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsString != NULL)
+                ItemInfo->ItemIdentifierKey = sqlMenu->FieldByName("ITEM_IDENTIFIER")->AsString;
+            else
+                ItemInfo->ItemIdentifierKey = "0";
+
 			if (sqlMenu->FieldByName("View_Location")->AsInteger & lcPalm)
 			{
 			   ItemInfo->PalmID = fPalmID++;
