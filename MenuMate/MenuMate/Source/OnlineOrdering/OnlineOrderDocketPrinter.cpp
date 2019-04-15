@@ -15,6 +15,7 @@
 #include "ChefmateClientManager.h"
 #include "ManagerHappyHour.h"
 #include "Comms.h"
+#include "ItemSize.h"
 //---------------------------------------------------------------------------
 
 #pragma package(smart_init)
@@ -149,6 +150,14 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 {
 	try
 	{
+    //MessageBox("PrepareDataAndPrintDocket","PrepareDataAndPrintDocket",MB_OK);
+    //PrintKitchenDocketsForWaiterApp();
+
+        UnicodeString orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction);
+        MessageBox(orderUniqueIdForWAiterApp,"orderUniqueIdForWAiterApp",MB_OK);
+        if(orderUniqueIdForWAiterApp.Trim() != "")
+            ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp);
+
         UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderGUID(dBTransaction);
         if(orderUniqueId.Trim() == "")
             return;
@@ -422,7 +431,7 @@ void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTr
         bool happyHour = isHappyHour->IsCurrentTimeHappyHour(TDeviceRealTerminal::Instance().ID.DeviceKey,priceLevel);
 
         if(TGlobalSettings::Instance().ForceHappyHour)
-        {         
+        {
             happyHour = true;
             priceLevel = TGlobalSettings::Instance().HHPriceLevelKey;
         }
@@ -473,4 +482,302 @@ void TOnlineDocketPrinterThread::ProcessHappyHour(TPaymentTransaction &paymentTr
 		throw;
 	}
 }
-//-------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::PrintKitchenDocketsForWaiterApp()
+{
+Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
+    TDeviceRealTerminal::Instance().RegisterTransaction(dbTransaction);
+    dbTransaction.StartTransaction();
+    try
+    {
+        // Print the Orders In the Kitchen if any.
+        std::auto_ptr<TDeviceWeb>WebDevice(new TDeviceWeb());
+
+//        if(DeviceName == "")
+//        {
+//            DeviceName = "WAITER APP";
+//        }
+//        if(WebDevice->NameToKey(PaymentTransaction.DBTransaction, DeviceName) != 0)
+//        {
+//            WebDevice->Load(PaymentTransaction.DBTransaction);
+            MessageBox("Before","PrepareDataAndPrintDocket",MB_OK);
+            std::auto_ptr<TReqPrintJob>Request(new TReqPrintJob(WebDevice.get()));
+            std::auto_ptr<TPaymentTransaction>PrintTransaction(new TPaymentTransaction(dbTransaction));
+                  MessageBox("After","PrepareDataAndPrintDocket",MB_OK);
+            // Copy over the Patron Counts for Printing.
+//            PrintTransaction->Patrons =   1;
+//            PaymentTransaction.Patrons;
+
+//            if (!PaymentTransaction.CreditTransaction)
+//            {
+//                Request->BarCodeData = PaymentTransaction.TimeKey;
+                Request->Transaction = PrintTransaction.get();
+                Request->JobType = pjKitchen;
+//                std::auto_ptr<TStringList>WebDetials(new TStringList);
+//                if(PaymentTransaction.Orders->Count)
+//                {
+MessageBox("TItemComplete","PrepareDataAndPrintDocket",MB_OK);
+                    TItemComplete *Order;
+                    MessageBox("TItemComplete after","PrepareDataAndPrintDocket",MB_OK);
+//                     = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+//                    Request->Waiter = Order->Security->SecurityGetField(secOrderedBy, secfFrom);
+
+//                    if (Order->TabType == TabTableSeat)
+//                    {
+//                       if(TDBTables::Valid(Order->TableNo,Order->SeatNo))
+//                       {
+ MessageBox("TabContainerName before","PrepareDataAndPrintDocket",MB_OK);
+                            Order->TabContainerName =  "APP";
+                            MessageBox("TabContainerName after","PrepareDataAndPrintDocket",MB_OK);
+//                             TDBTables::GetTableName(PaymentTransaction.DBTransaction,Order->TableNo);
+                            Order->PartyName =   "WAITER APP";
+                            MessageBox("PartyName after","PrepareDataAndPrintDocket",MB_OK);
+//                            TDBTables::GetPartyName(PaymentTransaction.DBTransaction,Order->TableNo);
+//                       }
+//                    }
+//                    else if (Order->TabType == TabRoom)
+//                    {
+//                            Order->PartyName 	= TDBRooms::GetPartyName(PaymentTransaction.DBTransaction,Order->RoomNo);
+//                            Order->TabContainerName = TDBRooms::GetRoomName(PaymentTransaction.DBTransaction,Order->RoomNo);
+//                            Order->TabName = Order->PartyName;
+//                    }
+//                    else if (Order->TabType == TabWeb)
+//                    {
+//                            Order->TabContainerName = TDBWebUtil::GetOrderGUID(PaymentTransaction.DBTransaction,Order->WebKey);
+//                    }
+
+//                    Request->Transaction->Membership.Assign(PaymentTransaction.Membership);
+//                    PrintTransaction->ChitNumber = 0;
+                    MessageBox("party before","PrepareDataAndPrintDocket",MB_OK);
+                    Request->MiscData["PartyName"] = "Testing";
+                    MessageBox("party after","PrepareDataAndPrintDocket",MB_OK);
+//                    for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
+//                    {
+//                        TSecurityReference *OldSecRef = Order->Security->SecurityGetType(secCredit);
+//                        if (OldSecRef == NULL)
+//                        {
+MessageBox("PrintTransaction before","PrepareDataAndPrintDocket",MB_OK);
+                            PrintTransaction->Orders->Add(Order);
+                            MessageBox("PrintTransaction after","PrepareDataAndPrintDocket",MB_OK);
+//                        }
+//                    }
+                    UnicodeString OrderType = "Order Type : ";
+//                    OrderType = OrderType + (Order->OnlineChitType > 0 ? (Order->OnlineChitType == 1 ? "DineIn" : "TakeAway")  : "PickUp");
+//                    WebDetials->Add(OrderType);
+//                    OrderType = "Order Id : ";
+//                    OrderType =  OrderType + (Order->OnlineOrderId);
+//                    WebDetials->Add(OrderType);
+//                }
+
+//                if (WebKey != 0)
+//                {
+//                    TDBWebUtil::getWebOrderDetials(PaymentTransaction.DBTransaction, WebKey, *WebDetials.get());
+//                    Request->ExtraInfo->AddStrings(WebDetials.get());
+//
+//                    std::auto_ptr<TStringList>WebDeliveryDetials(new TStringList);
+//                    std::auto_ptr<TStringList>WebComments(new TStringList);
+//                    std::auto_ptr<TStringList>WebPaymentDetials(new TStringList);
+//                    TDBWebUtil::getWebOrderData(PaymentTransaction.DBTransaction, WebDeliveryDetials.get(), WebPaymentDetials.get(), WebComments.get(), WebKey);
+//
+//                    Request->PaymentInfo->AddStrings(WebPaymentDetials.get());
+//                    Request->OrderComments->AddStrings(WebComments.get());
+////                    UnicodeString _orderType = checkWebOrderType(PaymentTransaction.DBTransaction, WebKey);
+//                    if(_orderType == "Pickup")
+//                    {
+//                        WebDeliveryDetials->Clear(); //remove delivery info for pickup order in kitchen docket..
+//                    }
+//                    Request->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
+//                }
+//                PrintTransaction->WebOrderKey =  WebKey;
+//
+//                Request->Transaction->Money.Recalc(*Request->Transaction);
+//                if (PrintTransaction->Orders->Count > 0)
+//                {
+                    std::auto_ptr<TKitchen> Kitchen(new TKitchen());
+                    Kitchen->Initialise(dbTransaction);
+                    Kitchen->GetPrintouts(dbTransaction, Request.get());
+                    Request->Printouts->Print(devPalm);
+//                    if (!Request->Printouts->Print(devPalm,JobName))
+//                    {
+//                        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Printing Some Online Orders Failed, Please Check Printer.");
+//                        //throw Exception("Printing Some Orders Failed, Please Check Printer.");
+//                    }
+//                            ManagerDockets->Archive(Request.get());
+
+
+
+
+                            std::auto_ptr<TMemoryStream> receiptStream(new TMemoryStream);
+                            receiptStream->LoadFromStream(ManagerDockets->DocketToArchive);
+                            receiptStream->Position = 0;
+                            AnsiString ReceiptData((char *)receiptStream->Memory,receiptStream->Size);
+                            MessageBox(ReceiptData,"ReceiptData",MB_OK);
+
+//                    SendOnlineOrderToChefmate(PrintTransaction.get());
+                        dbTransaction.Commit();
+//                }
+//            }
+//        }
+//        else
+//        {
+//            TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, "Docket not Printed Device" +DeviceName+" Not Found!");
+//            throw Exception("Docket not Printed Device" +DeviceName+" Not Found!");
+//        }
+    }
+    catch(Exception & E)
+	{
+        dbTransaction.Rollback();
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::ManagePrintOperationsForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+{
+    try
+    {
+        std::auto_ptr<TList> Orders(new TList);
+        //Getting The OrderList Required For Printing
+        Orders = GetOrderItemList(dbTransaction, orderGUID);
+        //Printing And Saving The Kitchen Docket
+        //Creating And Saving The Receipt
+        //Set The IsPrintRequired Flag After Performing Print Operations
+        TDBOnlineOrdering::SetOnlineOrderStatusForWaiterApp(dbTransaction, orderGUID);
+    }
+    catch(Exception & E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+std::auto_ptr<TList> TOnlineDocketPrinterThread::GetOrderItemList(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+{
+    std::auto_ptr<TList> Orders(new TList);
+    try
+    {
+        std::vector<UnicodeString> sizeNameList;
+        std::vector<int> itemKeysList;
+        long itemSizeID = 0;
+        TItem *item;
+
+        TItemSize *inItemSize;
+        MessageBox("Before getting item","ITem Name",MB_OK);
+        TDBOnlineOrdering::GetItemKeysFromOrderGUID(dbTransaction, orderGUID,&sizeNameList, &itemKeysList);
+        for(int i = 0; i < itemKeysList.size(); i++)
+        {
+            MessageBox("Before getting item","ITem Name",MB_OK);
+            //Getting Order Item Using Item Key
+            item = TDeviceRealTerminal::Instance().Menus->VisibleMenu->FetchItemByKey(itemKeysList[i]);
+              MessageBox("After getting item","ITem Name",MB_OK);
+            //Getting Item Size ID and ItemSize
+              MessageBox("Before getting itemsize key","ITem Name",MB_OK);
+            itemSizeID = TDBOnlineOrdering::GetItemSizeKeyFromItemKeyAndSizeName(dbTransaction, sizeNameList[i],itemKeysList[i]);
+              MessageBox("After getting itemsizekey","ITem Name",MB_OK);
+            inItemSize = item->Sizes->SizeGetByItemSizeKey(itemSizeID);
+              MessageBox("After getting itemsize","ITem Name",MB_OK);
+            //Getting ItemComplete Using Item and ItemSize
+            TItemComplete *itemComplete = new TItemComplete;
+            LoadItemCompleteForWaiterAppOrder(dbTransaction,item,inItemSize,itemComplete);
+              MessageBox("After getting itemcomplete","ITem Name",MB_OK);
+            //Adding ItemComplete to Order List
+            Orders->Add(itemComplete);
+              MessageBox("After adding item in order getting item","ITem Name",MB_OK);
+        }
+        for(int k = 0; k< Orders->Count; k++)
+        {
+            TItemComplete *OrderItem = (TItemComplete*)Orders->Items[k];
+            MessageBox(OrderItem->Item,"ITem Name",MB_OK);
+        }
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+    return Orders;
+}
+//------------------------------------------------------------------------------
+TItemComplete* TOnlineDocketPrinterThread::LoadItemCompleteForWaiterAppOrder(Database::TDBTransaction &DBTransaction,
+                                                                TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete)
+{
+    //TItemSize *inItemSize;
+    try
+    {
+	    //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	    itemComplete->ItemOrderedFrom = Item;
+	    itemComplete->TableNo = 0;// Get Table no
+	    itemComplete->SeatNo = 0;//Get Seat no
+	    itemComplete->ItemKey = Item->ItemKey;// Get Time Key
+	    itemComplete->Item = Item->Item;
+	    itemComplete->ItemKitchenName = Item->ItemKitchenName;
+	    itemComplete->Item_ID = Item->Item_ID;
+	    itemComplete->MenuName = Item->MenuName;
+	    // TODO 4 -o  Michael -c Printing : Remove When Printing Engine Finished
+	    itemComplete->MenuKey = Item->MenuKey;
+	    itemComplete->ItemType = Item->ItemType;
+	    itemComplete->PrintChitNumber = Item->PrintChitNumber;
+	    itemComplete->OrderType = NormalOrder;
+	    //itemComplete->HappyHour = stHappyHour->Visible;
+	    itemComplete->TimeStamp = Now();       // Get Timestamp
+	    itemComplete->TransNo = TDBOrder::GetNextTransNumber(DBTransaction); // Need to check
+
+	    itemComplete->Note = "";//Need to check
+	    itemComplete->Course = Item->Course;
+	    itemComplete->CourseKitchenName = Item->CourseKitchenName;
+         //Need to check
+        //itemComplete->ServingCourse =  TDeviceRealTerminal::Instance().Menus->GetServingCourse(GetDefaultServingCourse(itemComplete->ItemKey));
+
+	    itemComplete->ItemAppearanceOrder = Item->ItemAppearanceOrder;
+	    itemComplete->FontInfo = Item->FontInfo;
+	    //itemComplete->Loyalty_Key = SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey;
+	    itemComplete->SetQty(Item->GetQty());// Need to check
+   	    itemComplete->IsPriceBarcodedItem = Item->IsPriceBarcodedItem;
+        itemComplete->PrintCancel = false;
+        //itemComplete->LastAddedItem = true; // check item is last added or not..
+        itemComplete->IsPayByPoints = false; // initialize pay by points to be false..
+
+		//inItemSize = itemSize;
+        //Item->Sizes->SizeGet(0);  // Pass key of Item Size
+	    itemComplete->Size = inItemSize->Name;
+
+	    itemComplete->SizeKitchenName = inItemSize->SizeKitchenName;
+        itemComplete->GSTPercent = inItemSize->GSTPercent;
+	    itemComplete->TaxProfiles = inItemSize->TaxProfiles;
+	    itemComplete->PointsPercent = inItemSize->PointsPercent;
+	    itemComplete->SetMenuMask = inItemSize->SetMenuMask;
+	    itemComplete->SetMenu = inItemSize->SetMenuItem;
+        // && SetMenuItem;
+	    itemComplete->SetMenuMaster = inItemSize->SetMenuMaster;
+	    itemComplete->ThirdPartyKey = inItemSize->ThirdPartyKey;
+	    itemComplete->ThirdPartyCode = inItemSize->ThirdPartyCode;
+        itemComplete->RevenueCode = inItemSize->RevenueCode;
+	    itemComplete->PLU = inItemSize->PLU;
+
+	    itemComplete->MemberFreeSaleCount = inItemSize->MemberFreeSaleCount;
+	    itemComplete->MemberFreeSaleDiscount = inItemSize->MemberFreeSaleDiscount;
+	    itemComplete->LocationFreeSaleCount = inItemSize->LocationFreeSaleCount;
+	    itemComplete->LocationFreeSaleDiscount = inItemSize->LocationFreeSaleDiscount;
+        itemComplete->ItemSizeIdentifierKey = inItemSize->ItemSizeIdentifierKey;
+
+	    // Sort Categories
+    	itemComplete->Categories->CategoryCopyList(inItemSize->Categories);
+	    // Sort Recipes
+	    itemComplete->SalesRecipesToApply->RecipeCopyList(inItemSize->Recipes);
+
+	    itemComplete->PriceLevel0 = inItemSize->Price; // Get Price Level0
+   	    //itemComplete->PriceLevel1 =;
+
+	    itemComplete->Cost = inItemSize->Cost; // Get default cost if assigned.
+        itemComplete->MaxRetailPrice = inItemSize->MaxRetailPrice;
+	    itemComplete->CostGSTPercent = inItemSize->CostGSTPercent;
+        itemComplete->PatronCount(itemComplete->DefaultPatronCount());
+
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+    return itemComplete;
+}

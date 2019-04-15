@@ -22,6 +22,12 @@ public:
     static Currency GetHappyHourPrice(Database::TDBTransaction &dbTransaction, int itemsizeKey, int priceLevelKey);
     static void UpdateHappyHourPriceForItem(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
                     UnicodeString onlineOrderId, Currency hhPrice, Currency basePrice);
+    static UnicodeString GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &DBTransaction);
+    static void SetOnlineOrderStatusForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp);
+    static void GetItemKeysFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, std::vector<UnicodeString>* sizeNameList, std::vector<int>* itemKeysList);
+    static long GetItemSizeKeyFromItemKeyAndSizeName(Database::TDBTransaction &dbTransaction, UnicodeString sizeName, int itemKey);
+
+
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);

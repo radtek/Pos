@@ -561,6 +561,98 @@ void TDBOnlineOrdering::UpdateHappyHourPriceForItem(Database::TDBTransaction &db
 		throw;
 	}
 }
+//------------------------------------------------------------------------------
+UnicodeString TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &dbTransaction)
+{
+    UnicodeString onlineOrderGUIDForWaiterApp = "";
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT  FIRST 1 A.ORDER_GUID "
+                                        "FROM DAYARCBILL a "
+                                        "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
+                                        "ORDER BY a.ARCBILL_KEY ASC ";
+        ibInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "T";
+        ibInternalQuery->ExecQuery();
 
+        if(ibInternalQuery->RecordCount)
+            onlineOrderGUIDForWaiterApp = ibInternalQuery->FieldByName("ORDER_GUID")->AsString;
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return onlineOrderGUIDForWaiterApp;
+}
+//------------------------------------------------------------------------------
+void TDBOnlineOrdering::SetOnlineOrderStatusForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp)
+{
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "UPDATE DAYARCBILL a SET a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
+                                        "WHERE a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderUniqueIdForWaiterApp;
+        ibInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "F";
+        ibInternalQuery->ExecQuery();
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+void TDBOnlineOrdering::GetItemKeysFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, std::vector<UnicodeString>* sizeNameList, std::vector<int>* itemKeysList)
+{
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT a.ITEM_ID, a.SIZE_NAME FROM DAYARCHIVE a "
+                                        "WHERE a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ExecQuery();
+
+        for(;!ibInternalQuery->Eof;ibInternalQuery->Next())
+        {
+            itemKeysList->push_back(ibInternalQuery->FieldByName("ITEM_ID")->AsInteger);
+            sizeNameList->push_back(ibInternalQuery->FieldByName("SIZE_NAME")->AsString);
+        }
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+}
+//------------------------------------------------------------------------------
+long TDBOnlineOrdering::GetItemSizeKeyFromItemKeyAndSizeName(Database::TDBTransaction &dbTransaction, UnicodeString sizeName, int itemKey)
+{
+    int retValue = 0;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT a.ITEMSIZE_KEY FROM ITEMSIZE a "
+                                        "WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME =:SIZE_NAME ";
+        ibInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemKey;
+        ibInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+            retValue = ibInternalQuery->FieldByName("ITEMSIZE_KEY")->AsLong;
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return retValue;
+}
 
 
