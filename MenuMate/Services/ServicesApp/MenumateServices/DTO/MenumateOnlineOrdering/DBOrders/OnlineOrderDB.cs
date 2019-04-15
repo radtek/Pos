@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -123,171 +123,171 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
         public bool AddRecords(ApiSiteOrderViewModel siteOrderViewModel, bool IsOrderFromWaiterApp)
         {
-           // try
-           // {
-                //foreach (var siteOrderViewModel in siteOrderViewModelList)
-                //{
+            // try
+            // {
+            //foreach (var siteOrderViewModel in siteOrderViewModelList)
+            //{
             bool retValue = false;
-                    try
+            try
+            {
+                OrderAttributes orderRow = new OrderAttributes();
+                orderRow.ContainerNumber = 0;
+                orderRow.ContainerType = siteOrderViewModel.ContainerType;
+                orderRow.ContainerName = siteOrderViewModel.ContainerName;
+
+                if (siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table)
+                {
+                    int containerNumber = 0;
+                    string tableName = "";
+                    bool isTableNumberInteger = int.TryParse(siteOrderViewModel.ContainerNumber, out containerNumber);
+
+                    if (isTableNumberInteger)
+                        orderRow.ContainerNumber = containerNumber;
+                    else
+                        orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
+                    bool isTabOrder = false;
+                    //if (IsFloorPlanEnabled())
+                    //{
+                    if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName) || IsOrderFromWaiterApp) //CheckTableExistAndGetTableInfo removed for china changes
                     {
-                        OrderAttributes orderRow = new OrderAttributes();
-                        orderRow.ContainerNumber = 0;
-                        orderRow.ContainerType = siteOrderViewModel.ContainerType;
-                        orderRow.ContainerName = siteOrderViewModel.ContainerName;
+                        orderRow.ContainerNumber = containerNumber;
+                        orderRow.TableName = tableName;
 
-                        if (siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table)
+                        bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                        if (!IsOrderFromWaiterApp)
                         {
-                            int containerNumber = 0;
-                            string tableName = "";
-                            bool isTableNumberInteger = int.TryParse(siteOrderViewModel.ContainerNumber, out containerNumber);
-
-                            if (isTableNumberInteger)
-                                orderRow.ContainerNumber = containerNumber;
-                            else
-                                orderRow.TableName = tableName = siteOrderViewModel.ContainerNumber;
-                            bool isTabOrder = false;
-                            //if (IsFloorPlanEnabled())
-                            //{
-                            if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName) || IsOrderFromWaiterApp) //CheckTableExistAndGetTableInfo removed for china changes
+                            if (IsFloorPlanEnabled())
                             {
-                                orderRow.ContainerNumber = containerNumber;
-                                orderRow.TableName = tableName;
-
-                                bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
-                                if (!IsOrderFromWaiterApp)
-                                {
-                                    if (IsFloorPlanEnabled())
-                                    {
-                                        siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
-                                    }
-                                    else
-                                    {
-                                        siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
-                                        orderRow.TableName = "Table #" + orderRow.ContainerNumber;
-                                    }
-                                }
-
-                                if (retVal && !IsOrderFromWaiterApp)
-                                    throw new Exception("Order can't be saved to this table because it already contains orders.");
+                                siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
                             }
                             else
                             {
-                                throw new Exception("Order can't be saved to this table because it is not marked for online ordering.");
-                            }
-                            //}
-                            //else
-                            //{
-                            //if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
-                            //{
-                            //    isTabOrder = true;
-                            //}
-                            //else
-                            //{
-                            //    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
-                            //    if (retVal)
-                            //        throw new Exception("Order can't be saved to this table because it already contains orders.");
-                            //    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
-                            //    orderRow.TableName = "Table #" + orderRow.ContainerNumber;
-                            //}
-                            //}
-
-                            if (isTabOrder)
-                            {
-                                orderRow.ContainerType = siteOrderViewModel.ContainerType = 0;
-                                orderRow.TransactionType = siteOrderViewModel.TransactionType = OnlineOrdering.Enum.SiteSettingType.PickUp;
-                                siteOrderViewModel.ContainerNumber = "0";
+                                siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
+                                orderRow.TableName = "Table #" + orderRow.ContainerNumber;
                             }
                         }
-                        //orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
-                        orderRow.Location = siteOrderViewModel.Location;
-                        orderRow.OrderType = siteOrderViewModel.OrderType;
-                        orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                        orderRow.TerminalName = siteOrderViewModel.TerminalName;
-                        orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
-                        orderRow.TransactionType = siteOrderViewModel.TransactionType;
-                        orderRow.UserType = siteOrderViewModel.UserType;
-                        orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
-                        orderRow.Email = siteOrderViewModel.UserEmailId;
-                        orderRow.SiteId = siteOrderViewModel.SiteId;
-                        orderRow.OnlinerderId = siteOrderViewModel.OrderId;
-                        //to do happy hour implementation
 
-                        //generate tab key if tab not exist..
-                        orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
-                                            : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
-
-                        //Generate Security ref..
-                        orderRow.SecurityRef = GetNextSecurityRef();
-
-                        foreach (var item in siteOrderViewModel.OrderItems)
-                        {
-                            orderRow.Name = item.Name;
-                            orderRow.OrderItemId = item.OrderItemId;
-                            orderRow.SiteItemId = item.SiteItemId;
-                            orderRow.ItemUniqueId = item.ItemUniqueId;
-                            foreach (var itemSize in item.OrderItemSizes)
-                            {
-                                orderRow.BasePrice = itemSize.BasePrice;
-                                orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.MenuPrice = itemSize.MenuPrice;
-                                orderRow.SizeName = itemSize.Name;
-                                orderRow.Price = itemSize.Price;
-                                orderRow.PriceInclusive = itemSize.PriceInclusive;
-                                orderRow.Quantity = itemSize.Quantity;
-                                orderRow.ItemSizeId = itemSize.ItemSizeId;
-                                orderRow.TimeKey = setTimeKey();
-                                orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
-                                orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
-                                orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
-                                orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
-                                orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
-
-                                //Generate order id..
-                                orderRow.OrderId = GenerateKey("ORDERS");
-
-                                //Load Item info like course, sc, kitchen name etc.
-                                LoadItemInfo(ref orderRow);
-
-                                //Generate tansaction number..
-                                if (orderRow.ReferenceOrderItemSizeId == 0)
-                                {
-                                    orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
-                                    orderRow.MasterContainer = orderRow.SizeName;
-                                }
-
-                                //load ItemSize info..
-                                GetAndLoadItemSizeInfo(ref orderRow);
-
-                                //LoadTaxProfileKeys
-                                LoadItemSizeTaxProfileOrders(ref orderRow);
-
-                                //Insert records to orders..
-                                ExecuteOrderQuery(orderRow);
-
-                                //load And insert breakdown category into orderscategory..
-                                LoadAndInsertItemSizeBreakDownCategories(orderRow.OrderId, orderRow.ItemSizeKey);
-
-                                //Insert Order tax profile info..
-                                ExecuteTaxProfileOrders(orderRow);
-                            }
-                        //siteOrderViewModel.IsConfirmed = true;
-                        siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
-                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
-                        retValue = true;
-                        }
+                        if (retVal && !IsOrderFromWaiterApp)
+                            throw new Exception("Order can't be saved to this table because it already contains orders.");
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
-                        //siteOrderViewModel.IsConfirmed = false;
-                        siteOrderViewModel.IsHappyHourApplied = false;
-                        //addDetailsTransaction.Rollback();
-                        ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
-                        throw;
+                        throw new Exception("Order can't be saved to this table because it is not marked for online ordering.");
                     }
-                    return retValue;
-             //   }
-           // }
+                    //}
+                    //else
+                    //{
+                    //if (orderRow.ContainerNumber < 1 || orderRow.ContainerNumber >= 100)
+                    //{
+                    //    isTabOrder = true;
+                    //}
+                    //else
+                    //{
+                    //    bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
+                    //    if (retVal)
+                    //        throw new Exception("Order can't be saved to this table because it already contains orders.");
+                    //    siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
+                    //    orderRow.TableName = "Table #" + orderRow.ContainerNumber;
+                    //}
+                    //}
+
+                    if (isTabOrder)
+                    {
+                        orderRow.ContainerType = siteOrderViewModel.ContainerType = 0;
+                        orderRow.TransactionType = siteOrderViewModel.TransactionType = OnlineOrdering.Enum.SiteSettingType.PickUp;
+                        siteOrderViewModel.ContainerNumber = "0";
+                    }
+                }
+                //orderRow.ContainerNumber = siteOrderViewModel.ContainerNumber;
+                orderRow.Location = siteOrderViewModel.Location;
+                orderRow.OrderType = siteOrderViewModel.OrderType;
+                orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
+                orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
+                orderRow.TransactionType = siteOrderViewModel.TransactionType;
+                orderRow.UserType = siteOrderViewModel.UserType;
+                orderRow.MembershipProfileId = siteOrderViewModel.UserReferenceId; //memberid
+                orderRow.Email = siteOrderViewModel.UserEmailId;
+                orderRow.SiteId = siteOrderViewModel.SiteId;
+                orderRow.OnlinerderId = siteOrderViewModel.OrderId;
+                //to do happy hour implementation
+
+                //generate tab key if tab not exist..
+                orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
+                                    : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
+
+                //Generate Security ref..
+                orderRow.SecurityRef = GetNextSecurityRef();
+
+                foreach (var item in siteOrderViewModel.OrderItems)
+                {
+                    orderRow.Name = item.Name;
+                    orderRow.OrderItemId = item.OrderItemId;
+                    orderRow.SiteItemId = item.SiteItemId;
+                    orderRow.ItemUniqueId = item.ItemUniqueId;
+                    foreach (var itemSize in item.OrderItemSizes)
+                    {
+                        orderRow.BasePrice = itemSize.BasePrice;
+                        orderRow.ItemSizeId = itemSize.ItemSizeId;
+                        orderRow.MenuPrice = itemSize.MenuPrice;
+                        orderRow.SizeName = itemSize.Name;
+                        orderRow.Price = itemSize.Price;
+                        orderRow.PriceInclusive = itemSize.PriceInclusive;
+                        orderRow.Quantity = itemSize.Quantity;
+                        orderRow.ItemSizeId = itemSize.ItemSizeId;
+                        orderRow.TimeKey = setTimeKey();
+                        orderRow.ItemSizeUniqueId = itemSize.ItemSizeUniqueId;
+                        orderRow.OrderItemSizeId = itemSize.OrderItemSizeId;
+                        orderRow.ReferenceOrderItemSizeId = itemSize.ReferenceOrderItemSizeId;
+                        orderRow.SideOrderKey = orderRow.ReferenceOrderItemSizeId > 0 ? GetSideParentOrderKey(itemSize.ReferenceOrderItemSizeId) : 0;
+                        orderRow.ItemUniqueId = GetItemUniqueID(orderRow.ItemSizeUniqueId);
+
+                        //Generate order id..
+                        orderRow.OrderId = GenerateKey("ORDERS");
+
+                        //Load Item info like course, sc, kitchen name etc.
+                        LoadItemInfo(ref orderRow);
+
+                        //Generate tansaction number..
+                        if (orderRow.ReferenceOrderItemSizeId == 0)
+                        {
+                            orderRow.TramsNo = GenerateKey("PCINTERNALTRANSNUMBER");
+                            orderRow.MasterContainer = orderRow.SizeName;
+                        }
+
+                        //load ItemSize info..
+                        GetAndLoadItemSizeInfo(ref orderRow);
+
+                        //LoadTaxProfileKeys
+                        LoadItemSizeTaxProfileOrders(ref orderRow);
+
+                        //Insert records to orders..
+                        ExecuteOrderQuery(orderRow);
+
+                        //load And insert breakdown category into orderscategory..
+                        LoadAndInsertItemSizeBreakDownCategories(orderRow.OrderId, orderRow.ItemSizeKey);
+
+                        //Insert Order tax profile info..
+                        ExecuteTaxProfileOrders(orderRow);
+                    }
+                    //siteOrderViewModel.IsConfirmed = true;
+                    siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
+                    siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                    retValue = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
+                //siteOrderViewModel.IsConfirmed = false;
+                siteOrderViewModel.IsHappyHourApplied = false;
+                //addDetailsTransaction.Rollback();
+                ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
+                throw;
+            }
+            return retValue;
+            //   }
+            // }
             /*catch (Exception ex)
             {
                 //addDetailsTransaction.Rollback();
@@ -1221,7 +1221,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in AddWaiterTerminal adding Waiter Terminal " + e.Message, e);
                 throw;
             }
- 
+
         }
         public void AddWaiterStaff(long siteCode)
         {
@@ -1229,7 +1229,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 // Check there should not be any conflict with same name present in DB either created by OO code or POS code
                 long contactKey = GenerateKey("CONTACTS");
-                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey ,siteCode);
+                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey, siteCode);
                 command.ExecuteNonQuery();
 
             }
@@ -1249,7 +1249,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 bool isTableNumberInteger = int.TryParse(tableNo, out tableNoContainer);
-                if(!isTableNumberInteger)
+                if (!isTableNumberInteger)
                     tableNameContainer = tableNo;
                 FbCommand selectTableCommand = dbQueries.IsTableAvailable(connection, transaction, tableNoContainer, tableNameContainer);
                 using (FbDataReader reader = selectTableCommand.ExecuteReader())
@@ -1268,7 +1268,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
             return retValue;
-    
+
         }
         public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
@@ -1340,7 +1340,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 }
                 path = Path.Combine(path, "logs", "Pending Orders");
 
-                string[] dirs = Directory.GetFiles(@path, orderGUID +"*");
+                string[] dirs = Directory.GetFiles(@path, orderGUID + "*");
                 foreach (string dir in dirs)
                 {
                     fileName = dir;
@@ -1392,7 +1392,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public void ProcessOrders(ref List<ApiSiteOrderViewModel> siteOrderViewModelList)
+        public void ProcessOrders(ref List<ApiSiteOrderViewModel> siteOrderViewModelList, List<string> stringList)
         {
             int tableNoFromDB = 0;
             string tableNameFromDB = "";
@@ -1403,38 +1403,47 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                     if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff)
                     {
+                        stringList.Add("Before Validating Table                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                         if (ValidateTable(siteOrderViewModel.ContainerNumber, ref tableNameFromDB, ref tableNoFromDB))
                         {
                             string notFoundItemName = "";
                             string notFoundItemSizeName = "";
+                            stringList.Add("After Validating Table                             ");
                             if (ValidateItemsInOrders(siteOrderViewModel.OrderItems, ref notFoundItemName, ref notFoundItemSizeName))
                             {
+                                stringList.Add("Validating Items In Orders                         ");
                                 if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow)
                                 {
                                     //Assigning Correct Tabele Number And Table Name
                                     siteOrderViewModel.ContainerName = tableNameFromDB;
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
                                     //Order Processing - Insert orders details in tables
-                                    if (ArchiveTransaction(siteOrderViewModel))
+                                    stringList.Add("Before ArchiveTransaction call                     ");
+                                    if (ArchiveTransaction(siteOrderViewModel, stringList))
                                     {
+                                        stringList.Add("After ArchiveTransaction call                      ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
                                     }
                                     else
                                     {
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosPaymentError;
+                                        stringList.Add("Exception in ArchiveTransaction                    " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         throw new Exception("Error while Saving Order and Payment into DB.");
                                     }
 
                                 }
                                 else
                                 {
+                                    stringList.Add("Before AddRecords                                  ");
                                     if (AddRecords(siteOrderViewModel, true))
                                     {
+                                        stringList.Add("After AddRecords                                   ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
                                     }
                                     else
                                     {
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PosOrderError;
+                                        stringList.Add("Exception in Adding Records                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                                         throw new Exception("Error while Saving Order into DB.");
                                     }
 
@@ -1444,12 +1453,14 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             else
                             {
                                 siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;//To do , Assign item not found
+                                stringList.Add("Exception while Validating Items in orders         " + DateTime.Now.ToString("hh:mm:ss tt"));
                                 throw new Exception("Items ordered are not available.");
                             }
                         }
                         else
                         {
                             siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                            stringList.Add("Exception while Validating Table                   " + DateTime.Now.ToString("hh:mm:ss tt"));
                             throw new Exception("Invalid Table.");
                         }
 
@@ -1471,64 +1482,81 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in ProcessOrders " + e.Message, e);
+                stringList.Add("Exception in Process order                         " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 throw;
             }
+
         }
-        public bool ArchiveTransaction(ApiSiteOrderViewModel siteOrderViewModel)
+        public bool ArchiveTransaction(ApiSiteOrderViewModel siteOrderViewModel, List<string> stringList)
         {
             bool retVaule = false;
             try
             {
                 long orderSecurityRef = GetNextSecurityRef();
                 long BillSecurityRef = GetNextSecurityRef();
-                long dayArcBillKey = ArchiveBill(siteOrderViewModel, BillSecurityRef);
+                long dayArcBillKey = ArchiveBill(siteOrderViewModel, BillSecurityRef, stringList);
                 //Archive Data For Patron Count
-                ArchivePatronCount(dayArcBillKey);
+                stringList.Add("Before ArchivePatronCount call                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                ArchivePatronCount(dayArcBillKey, stringList);
+                stringList.Add("Before ArchiveReferences call                      " + DateTime.Now.ToString("hh:mm:ss tt"));
                 //Archive Data For References 
-                ArchiveReferences(dayArcBillKey);
+                ArchiveReferences(dayArcBillKey, stringList);
+                stringList.Add("Before ArchiveOrder call                           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 //Archive Data For DayArchiveOrder and DayArcOrderTaxes
-                ArchiveOrder(dayArcBillKey, siteOrderViewModel, BillSecurityRef);
+                ArchiveOrder(dayArcBillKey, siteOrderViewModel, BillSecurityRef, stringList);
                 //Processing Data for Security Table
-                ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef);
+                stringList.Add("Before ProcessSecurity call                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef, stringList);
 
                 retVaule = true;
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in ArchiveTransaction " + e.Message, e);
+                stringList.Add("Exception in Archive Transaction                   " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 throw;
             }
             return retVaule;
         }
-        public long ArchiveBill(ApiSiteOrderViewModel siteOrderViewModel, long securityRef)
+        public long ArchiveBill(ApiSiteOrderViewModel siteOrderViewModel, long securityRef, List<string> stringList)
         {
             long dayArcBillKey = 0;
             long invoiceNumber = 0;
             DayArcBillAttributes dayArcBillRow = new DayArcBillAttributes();
             DayArcBillPayAttributes dayArcBillPayRow = new DayArcBillPayAttributes();
-            try 
+            try
             {
                 dayArcBillKey = GenerateKey("DAYARCBILL");
                 invoiceNumber = GenerateKey("INVOICENUMBER");
                 //Creating Row For DayArcBill
+                stringList.Add("Creating Row For DayArcBill                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 dayArcBillRow = CreateDayArcBillRow(dayArcBillKey, invoiceNumber, siteOrderViewModel, securityRef);
                 //Inserting Data Into DayAcBill
+                stringList.Add("Inserting Data Into DayAcBill                      " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ExecuteDayArcBillQuery(dayArcBillRow);
                 foreach (var orderPayment in siteOrderViewModel.ApiSiteOrderPaymentViewModels)
                 {
                     //Creating Row for DayArcBillPay
+                    stringList.Add("Creating Row for DayArcBillPay                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                     dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, orderPayment, false);
                     //Inserting Data Into DayArcBillPay
+                    stringList.Add("Before ExecuteDayArcBillPayQuery                   " + DateTime.Now.ToString("hh:mm:ss tt"));
                     ExecuteDayArcBillPayQuery(dayArcBillPayRow);
                 }
                 ApiSiteOrderPaymentViewModel adjustmentRow = new ApiSiteOrderPaymentViewModel();
                 //Creating Cash Adjustment Row For Change
+                stringList.Add("Creating Cash Adjustment Row For Change            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 dayArcBillPayRow = CreateDayArcBillPayRow(dayArcBillKey, adjustmentRow, true);
                 //Insert Cash Adjustment Row For Change
+                stringList.Add("Inserting Cash Adjustment Row For Change           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ExecuteDayArcBillPayQuery(dayArcBillPayRow);
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in Archive Bill                          " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in ArchiveBill " + e.Message, e);
                 throw;
             }
@@ -1623,40 +1651,47 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public void ArchivePatronCount(long dayArcBillKey)
+        public void ArchivePatronCount(long dayArcBillKey, List<string> stringList)
         {
             try
             {
+                stringList.Add("Inside ArchivePatronCount                          ");
                 long patronCountKey = GenerateKey("DAYPATRONCOUNT");
-                FbCommand command = dbQueries.InsertDataIntoDayPatronCount(connection, transaction, patronCountKey, dayArcBillKey);
+                FbCommand command = dbQueries.InsertDataIntoDayPatronCount(connection, transaction, patronCountKey, dayArcBillKey, stringList);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in ArchivePatronCount " + e.Message, e);
+                stringList.Add("Exception in ArchivePatronCount is                 " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 throw;
             }
         }
-        public void ArchiveReferences(long dayArcBillKey)
+        public void ArchiveReferences(long dayArcBillKey, List<string> stringList)
         {
             try
             {
+                stringList.Add("Inside ArchiveReferences                           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 long dayArcRefKey = GenerateKey("DAYARCREF");
-                FbCommand command = dbQueries.InsertDataIntoDayArcRef(connection, transaction, dayArcRefKey, dayArcBillKey);
+                FbCommand command = dbQueries.InsertDataIntoDayArcRef(connection, transaction, dayArcRefKey, dayArcBillKey, stringList);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in ArchiveReferences is                  " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in ArchiveReferences " + e.Message, e);
                 throw;
             }
         }
-        public void ArchiveOrder(long arcBillKey, ApiSiteOrderViewModel siteOrderViewModel, long securityRef)
+        public void ArchiveOrder(long arcBillKey, ApiSiteOrderViewModel siteOrderViewModel, long securityRef, List<string> stringList)
         {
             DayArchiveAttributes dayArchiveRow = new DayArchiveAttributes();
 
             try
             {
+                stringList.Add("ArchiveOrder                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 int tableNumber = 0;
                 int.TryParse(siteOrderViewModel.ContainerNumber, out tableNumber);
                 dayArchiveRow.ArcBillId = arcBillKey;
@@ -1675,11 +1710,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArchiveRow.LoyaltyName = "";
                 dayArchiveRow.LoyaltyId = 0;
                 dayArchiveRow.Discount = 0;
-                foreach(var item in siteOrderViewModel.OrderItems)
+                foreach (var item in siteOrderViewModel.OrderItems)
                 {
                     dayArchiveRow.ItemName = item.Name;
                     dayArchiveRow.ItemShortName = "";//Neew to Confirm
-                    foreach(var itemSize in item.OrderItemSizes)
+                    foreach (var itemSize in item.OrderItemSizes)
                     {
                         //dayArchiveRow.ItemShortName = "";//Need to Confirm
                         dayArchiveRow.SizeName = itemSize.Name;
@@ -1697,31 +1732,38 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         dayArchiveRow.ItemSizeIdentifier = itemSize.ItemSizeUniqueId;
                         dayArchiveRow.ArchiveId = GenerateKey("DAYARCHIVE");
                         //Loading Item Info
-                        LoadItemInfoForDayArchiveRow(ref dayArchiveRow, itemSize.ItemSizeUniqueId);
+                        stringList.Add("Loading Item Info                                  ");
+                        LoadItemInfoForDayArchiveRow(ref dayArchiveRow, itemSize.ItemSizeUniqueId, stringList);
                         //Insert row into DayArchive
+                        stringList.Add("Inserting row into DayArchive                      ");
                         ExecuteDayArchiveQuery(dayArchiveRow);
                         //Insert row into DayArcCategory
                         ExecuteDayArcCategoryQuery(dayArchiveRow.ArchiveId, dayArchiveRow.CategoryId);
+                        stringList.Add("Inserting row into DayArcOrderTaxes                ");
                         //Insert row into DayArcOrderTaxes
                         if (itemSize.OrderItemSizeTaxProfiles != null)
                             ExcecuteDayArcOrderTaxesQuery(dayArchiveRow.ArchiveId, itemSize.OrderItemSizeTaxProfiles);
                     }
 
                 }
- 
+
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in ArchiveOrder is                       " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in ArchiveOrder " + e.Message, e);
                 throw;
             }
         }
-        public void LoadItemInfoForDayArchiveRow(ref DayArchiveAttributes dayArchiveRow, string itemSizeUniqueId)
+        public void LoadItemInfoForDayArchiveRow(ref DayArchiveAttributes dayArchiveRow, string itemSizeUniqueId, List<string> stringList)
         {
             try
             {
                 int itemSizeIdentifier = 0;
                 int.TryParse(itemSizeUniqueId, out itemSizeIdentifier);
+                stringList.Add("Inside LoadItemInfoForDayArchiveRow                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("ArchiveOrder                                       " + DateTime.Now.ToString("hh:mm:ss tt"));
                 FbCommand command = dbQueries.GetItemInfoForDayArchiveRow(connection, transaction, itemSizeIdentifier);
                 using (FbDataReader reader = command.ExecuteReader())
                 {
@@ -1744,6 +1786,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in LoadItemInfoForDayArchiveRow          " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in LoadItemInfoForDayArchiveRow " + e.Message, e);
                 throw;
             }
@@ -1761,7 +1805,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
         }
-        public void ExecuteDayArcCategoryQuery(long archiveKey, long categoryKey )
+        public void ExecuteDayArcCategoryQuery(long archiveKey, long categoryKey)
         {
             try
             {
@@ -1780,7 +1824,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 FbCommand command;
                 DayArcOrderTaxesAttributes dayArcOrderTaxesRow = new DayArcOrderTaxesAttributes();
-                foreach(var items in itemSizeTaxInfo)
+                foreach (var items in itemSizeTaxInfo)
                 {
                     dayArcOrderTaxesRow.ArcOrderTaxesID = GenerateKey("DAYARCORDERTAXES");
                     dayArcOrderTaxesRow.ArchiveId = dayArchiveKey;
@@ -1791,18 +1835,18 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     command = dbQueries.InsertDataIntoDayArcOrderTaxes(connection, transaction, dayArcOrderTaxesRow);
                     command.ExecuteNonQuery();
                 }
-                
+
             }
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in ExcecuteDayArcOrderTaxesQuery " + e.Message, e);
                 throw;
             }
- 
+
         }
         private void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
         {
-            try 
+            try
             {
                 string orderGUID = siteOrderViewModel.OrderGuid;
                 var requestData = JsonUtility.Serialize<ApiSiteOrderViewModel>(siteOrderViewModel);
@@ -1834,7 +1878,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     }
                 }
                 //stringList.Add("File saved with new Details for orderGUID " + orderGUID);
-                
+
             }
             catch (Exception exc)
             {
@@ -1863,16 +1907,19 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return syndicateCode;
         }
-        public void ProcessSecurity(string terminalName, long orderSecurityRef, long billSecurityRef)
+        public void ProcessSecurity(string terminalName, long orderSecurityRef, long billSecurityRef, List<string> stringList)
         {
             try
             {
+                stringList.Add("Processing Security at                             " + DateTime.Now.ToString("hh:mm:ss tt"));
                 SecurityAttributes securityRow = new SecurityAttributes();
                 string contactInitials = "";
                 long contactId = 0;
-                LoadSecurityRowInfo("WAITER",ref contactInitials, ref contactId);
+                stringList.Add("Before LoadSecurityRowInfo call                    ");
+                LoadSecurityRowInfo("WAITER", ref contactInitials, ref contactId);
                 //Creating And Inserting Row In Security For Order BY
                 securityRow = CreateSecurityRow(terminalName, orderSecurityRef, false, contactInitials, contactId);
+                stringList.Add("Before ExecuteSecurityQuery call                   ");
                 ExecuteSecurityQuery(securityRow);
                 //Creating And Inserting Row In Security For Billed BY
                 securityRow = CreateSecurityRow(terminalName, billSecurityRef, true, contactInitials, contactId);
@@ -1880,10 +1927,12 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in Process Security                      " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
                 throw;
             }
-        
+
         }
         public SecurityAttributes CreateSecurityRow(string terminalName, long securityRef, bool isBill, string contactInitials, long contactId)
         {
@@ -1891,16 +1940,16 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 securityRow.SecurityId = GenerateKey("SECURITY_KEY");
-                securityRow.SecurityRef =   securityRef;
+                securityRow.SecurityRef = securityRef;
                 if (isBill)
                     securityRow.SecurityEvent = "Billed by";
                 else
                     securityRow.SecurityEvent = "Ordered by";
-                securityRow.FromVal =   "WAITER";
-                securityRow.ToVal =  contactInitials;           
-                securityRow.Note =  "";         
-		        securityRow.TerminalName = terminalName;    
-                securityRow.UserId = contactId; 
+                securityRow.FromVal = "WAITER";
+                securityRow.ToVal = contactInitials;
+                securityRow.Note = "";
+                securityRow.TerminalName = terminalName;
+                securityRow.UserId = contactId;
 
             }
             catch (Exception exc)

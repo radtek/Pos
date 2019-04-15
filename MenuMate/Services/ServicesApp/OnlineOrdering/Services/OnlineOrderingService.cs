@@ -15,18 +15,26 @@ namespace OnlineOrdering.Services
 {
     public class OnlineOrderingService : IOnlineOrderingService
     {
-        public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel)
+        public bool SyncSiteMenu(string inSyndicateCode, ApiSiteMenuViewModel siteMenuViewModel, List<string> stringList)
         {
             bool response = false;
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteMenu, inSyndicateCode, null, WebRequestMethods.Http.Post, siteMenuViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(siteMenuViewModel);
+                stringList.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
             }
@@ -40,18 +48,26 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        public bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings)
+        public bool SyncSiteTaxSettings(string inSyndicateCode, ApiSiteTaxSettings siteTaxSettings, List<string> stringList)
         {
             bool response = false;
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.SyncSiteTaxSettings, inSyndicateCode, null, WebRequestMethods.Http.Post, siteTaxSettings);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(siteTaxSettings);
+                stringList.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
             }
@@ -65,18 +81,26 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        public bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel)
+        public bool UpdateOrderStatus(string inSyndicateCode, List<ApiSiteOrderViewModel> siteOrderViewModel, List<string> stringList)
         {
             bool response = false;
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.UpdateOrderStatus, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(siteOrderViewModel);
+                stringList.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
             }
@@ -90,18 +114,26 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        public bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel)
+        public bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel, List<string> stringList)
         {
             bool response = false;
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(RequestAddress.PostOnlineOrderInvoiceInfo, inSyndicateCode, null, WebRequestMethods.Http.Post, siteOrderViewModel);
             HttpWebResponse webResponse = null;
             try
             {
+                string requestStr = JsonUtility.Serialize(siteOrderViewModel);
+                stringList.Add("Request is                                         " + requestStr);
                 webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (WebException we)
             {
                 webResponse = (HttpWebResponse)we.Response;
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 HandleExceptions(webResponse);
                 return false;
             }
@@ -115,25 +147,35 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        public ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode)
+        public ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode, List<string> stringList)
         {
             ApiOnlineOrderingResponse response = null;
             string requestAddress = RequestAddress.IsOnlineOrderingEnableBySiteId + @"/" + siteCode.ToString();
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(requestAddress, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
-                response = CreateOnlineOrderingResponse(webResponse, webResponse.StatusDescription);
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                response = CreateOnlineOrderingResponse(webResponse, webResponse.StatusDescription, stringList);
+                stringList.Add("CreateOnlineOrderingResponse at                    " + DateTime.Now.ToString("hh:mm:ss tt"));
+
             }
             catch (WebException we)
             {
-                response = CreateOnlineOrderingResponse(webResponse, we.Message);
+                response = CreateOnlineOrderingResponse(webResponse, we.Message, stringList);
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (Exception ex)
             {
-                response = CreateOnlineOrderingResponse(webResponse, ex.Message);
+                response = CreateOnlineOrderingResponse(webResponse, ex.Message, stringList);
+                stringList.Add("Exception                                          " + ex.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {
@@ -144,7 +186,7 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpWebResponse webResponse, string message)
+        private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpWebResponse webResponse, string message, List<string> stringList)
         {
             ApiOnlineOrderingResponse apiOnlineOrderingResponse = new ApiOnlineOrderingResponse();
             if (webResponse == null)
@@ -181,28 +223,35 @@ namespace OnlineOrdering.Services
             return apiOnlineOrderingResponse;
         }
 
-        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList)
         {
             bool isSuccessful = false;
             string requestAddress = RequestAddress.UnsetOrderingDetails + @"/" + siteCode.ToString();
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
             var request = Utility.WebUtility.CreateRequest(requestAddress, inSyndicateCode, null,
                 WebRequestMethods.Http.Get);
             HttpWebResponse webResponse = null;
             try
             {
                 webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 if (webResponse.StatusCode == HttpStatusCode.OK)
                     isSuccessful = true;
                 else
                     isSuccessful = false;
+                
             }
             catch (WebException we)
             {
-
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             catch (Exception ex)
             {
-
+                stringList.Add("Exception                                          " + ex.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             finally
             {

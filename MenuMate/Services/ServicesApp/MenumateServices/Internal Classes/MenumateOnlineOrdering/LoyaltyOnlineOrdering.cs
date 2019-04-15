@@ -34,18 +34,18 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 return _instance;
             }
         }
-        public LoyaltyOOResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode)
+        public LoyaltyOOResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode, List<string> stringList)
         {
-            return GetOrderingInformation(inSyndicateCode, siteCode);
+            return GetOrderingInformation(inSyndicateCode, siteCode, stringList);
         }
 
-        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode)
+        public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList)
         {
             bool retValue = false;
             try
             {
                 OnlineOrderingService onlineOrderingService = new OnlineOrderingService();
-                retValue = onlineOrderingService.UnsetOrderingDetails(inSyndicateCode, siteCode);
+                retValue = onlineOrderingService.UnsetOrderingDetails(inSyndicateCode, siteCode, stringList);
             }
             catch (Exception exc)
             {
@@ -54,12 +54,12 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             return retValue;
         }
 
-        LoyaltyOOResponse GetOrderingInformation(string inSyndicateCode, int siteCode)
+        LoyaltyOOResponse GetOrderingInformation(string inSyndicateCode, int siteCode, List<string> stringList)
         {
             try
             {
                 OnlineOrderingService onlineOrderingService = new OnlineOrderingService();
-                var response = onlineOrderingService.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
+                var response = onlineOrderingService.GetOnlineOrderingInformation(inSyndicateCode, siteCode, stringList);
                 return CreateOrderingResponseNoError(response.IsSuccessful,response.Message);
 
             }

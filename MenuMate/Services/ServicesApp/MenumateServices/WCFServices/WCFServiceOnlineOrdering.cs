@@ -27,18 +27,17 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
-                stringList.Add("-----------------------------------------Inside SyncTaxSettings------------------------------------------------------");
-                WriteAndClearStringList();
-                // Pass String List for logging
-                return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings);
+                stringList.Add("Syncing Tax Settings of services at                " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltySite.Instance.SyncSiteTaxSettings(inSyndicateCode, siteTaxSettings, stringList);
             }
             catch (Exception exc)
             {
                 onlineOrderDB.RollbackTransaction();
-                stringList.Add("Exception in SyncTaxSettings     " + exc.Message);
-                WriteAndClearStringList();
+                stringList.Add("Exception in SaveMember of services is             " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
             }
+            WriteAndClearStringList();
             return null;
         }
 
@@ -46,17 +45,16 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-----------------------------------------Inside SyncMenu------------------------------------------------------");
-                WriteAndClearStringList();
-                // Pass String List for logging
-                return LoyaltySite.Instance.SyncSiteMenu(inSyndicateCode, siteViewModel);
+                stringList.Add("Syncing Menu of services at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltySite.Instance.SyncSiteMenu(inSyndicateCode, siteViewModel, stringList);
             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in SyncMenu of services is               " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in SyncMenu     " + exc.Message);
-                WriteAndClearStringList();
             }
+            WriteAndClearStringList();
             return null;
         }
 
@@ -64,30 +62,31 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-----------------------------------------Inside GetOrdersFromWeb------------------------------------------------------");
-                stringList.Add("received order string is: " + orders);
+                stringList.Add("Getting Orders From Web of services at             " + DateTime.Now.ToString("hh:mm:ss tt"));
+                stringList.Add("Received order string is:                          " + orders);
                 List<ApiSiteOrderViewModel> siteOrderViewModel = new List<ApiSiteOrderViewModel>();
                 siteOrderViewModel = JsonUtility.Deserialize<List<ApiSiteOrderViewModel>>(orders);
                 var requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);//just to test json
-                stringList.Add("Received order json is:                " + requestData);
-                WriteAndClearStringList();
-
+                stringList.Add("Received order json is:                            " + requestData);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                
                 bool retVal = InsertOrdersToDB(ref siteOrderViewModel);
-                stringList.Add("After InsertOrdersToDB function calling.");
-                WriteAndClearStringList();
+                stringList.Add("After InsertOrdersToDB function calling at         " + DateTime.Now.ToString("hh:mm:ss tt"));
 
-                LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel);
+                LoyaltySite.Instance.UpdateOrderStatus(inSyndicateCode, siteOrderViewModel, stringList);
                 requestData = JsonUtility.Serialize<List<ApiSiteOrderViewModel>>(siteOrderViewModel);
-                stringList.Add("After Updating order status to web..json is ..." + requestData);
-                UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel, inSyndicateCode);
-                WriteAndClearStringList();
-            }
+                stringList.Add("After Updating order status to web json            " + requestData);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                UpdateInvoiceInforWaiterAppOrders(siteOrderViewModel, inSyndicateCode, stringList);
+                stringList.Add("UpdateInvoiceInforWaiterAppOrders at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in GetOrdersFromWeb of services is       " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in GetOrdersFromWeb     " + exc.Message);
-                WriteAndClearStringList();
             }
+            WriteAndClearStringList();
         }
 
         private bool InsertOrdersToDB(ref List<ApiSiteOrderViewModel> siteOrderViewModel)
@@ -96,18 +95,15 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
-                stringList.Add("----------------------------Inside InsertOrdersToDB--------------------------------------------");
-                stringList.Add("Making connection...");
+                stringList.Add("Inserting Orders To DB at                          " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
                 {
-                    stringList.Add("Making transaction...");
+                    stringList.Add("Making transaction at                              " + DateTime.Now.ToString("hh:mm:ss tt"));
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        stringList.Add("inside transaction using ...");
-                        WriteAndClearStringList();
-                        onlineOrderDB.ProcessOrders(ref siteOrderViewModel);
-                        stringList.Add("After calling AddRecords inside InsertOrdersToDB function..");
-                        WriteAndClearStringList();
+                        stringList.Add("inside transaction at                              " + DateTime.Now.ToString("hh:mm:ss tt"));
+                        onlineOrderDB.ProcessOrders(ref siteOrderViewModel, stringList);
+                        stringList.Add("After ProcessOrders calling                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in InsertOrdersToDB(ApiSiteOrderViewModel ) with order ");
                     }
@@ -119,10 +115,11 @@ namespace MenumateServices.WCFServices
                 onlineOrderDB.RollbackTransaction();
                 ServiceLogger.Log(@"In InsertOrdersToDB " + e.Message);
                 EventLog.WriteEntry("IN Order Creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
-                stringList.Add("Exception in InsertOrdersToDB     " + e.Message);
-                WriteAndClearStringList();
+                stringList.Add("Exception in InsertOrdersToDB                      " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
             //::::::::::::::::::::::::::::::::::::::::::::::
+            WriteAndClearStringList();
             return result;
 
         }
@@ -131,16 +128,14 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-------------------------------------------------------Inside PostOnlineOrderInvoiceInfo-------------------------------------------------------...");
-                WriteAndClearStringList();
-                // Pass String List for logging
-                return LoyaltySite.Instance.PostOnlineOrderInvoiceInfo(inSyndicateCode, siteOrderModel);
+                stringList.Add("Posting Online Order Invoice Info at               " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltySite.Instance.PostOnlineOrderInvoiceInfo(inSyndicateCode, siteOrderModel, stringList);
             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in PostOnlineOrderInvoiceInfo is         " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in PostOnlineOrderInvoiceInfo     " + exc.Message);
-                WriteAndClearStringList();
             }
             return null;
         }
@@ -149,17 +144,16 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-------------------------------------------------------Inside SyncOnlineOrderingDetails-------------------------------------------------------...");
-                WriteAndClearStringList();
-                // Pass String List for logging
-                return LoyaltyOnlineOrdering.Instance.GetOnlineOrderingInformation(inSyndicateCode, siteCode);
+                stringList.Add("Syncing Online Ordering Details at                 " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltyOnlineOrdering.Instance.GetOnlineOrderingInformation(inSyndicateCode, siteCode, stringList);
             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in SyncOnlineOrderingDetails is          " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in SyncOnlineOrderingDetails     " + exc.Message);
-                WriteAndClearStringList();
             }
+            WriteAndClearStringList();
             return null;
         }
 
@@ -167,16 +161,16 @@ namespace MenumateServices.WCFServices
         {
             try
             {
-                stringList.Add("-------------------------------------------------------Inside UnsetOrderingDetails-------------------------------------------------------...");
-                WriteAndClearStringList();
-                return LoyaltyOnlineOrdering.Instance.UnsetOrderingDetails(inSyndicateCode, siteCode);
+                stringList.Add("Unset Ordering Details at                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltyOnlineOrdering.Instance.UnsetOrderingDetails(inSyndicateCode, siteCode, stringList);
             }
             catch (Exception exc)
             {
+                stringList.Add("Exception in UnsetOrderingDetails is               " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(exc.Message, exc);
-                stringList.Add("Exception in UnsetOrderingDetails     " + exc.Message);
-                WriteAndClearStringList();
             }
+            WriteAndClearStringList();
             return false;
         }
         
@@ -185,19 +179,15 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
-                stringList.Add("----------------------------Inside CreateWaiterTerminal--------------------------------------------");
-                stringList.Add("Making connection...");
+                stringList.Add("Creating Waiter Terminal at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
                 {
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        stringList.Add("inside transaction using ...");
-                        WriteAndClearStringList();
+                        stringList.Add("inside transaction using                       ");
                         //onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
                         onlineOrderDB.AddWaiterStaff(siteID);
-                        stringList.Add("After calling AddWaiterTerminal inside CreateWaiterTerminal function..");
-                        WriteAndClearStringList();
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
                     }
@@ -207,28 +197,28 @@ namespace MenumateServices.WCFServices
             catch (Exception e)
             {
                 onlineOrderDB.RollbackTransaction();
+                stringList.Add("Exception in CreateWaiterTerminal is               " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.Log(@"In CreateWaiterTerminal " + e.Message);
                 EventLog.WriteEntry("IN Waiter terminal creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
-                stringList.Add("Exception in CreateWaiterTerminal     " + e.Message);
-                WriteAndClearStringList();
             }
+            WriteAndClearStringList();
             //::::::::::::::::::::::::::::::::::::::::::::::
         }
-        private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList, string syndicateCode)
+        private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList, string syndicateCode, List<string> stringList)
         {
             try
             {
                 SiteOrderModel siteOrderModel = new SiteOrderModel();
-               
-                stringList.Add("-------------------------------------------------------Inside UpdateInvoiceInforWaiterAppOrders-------------------------------------------------------...");
-                WriteAndClearStringList();
+
+                stringList.Add("Updating InvoiceIn for Waiter App Orders           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 if (!String.IsNullOrEmpty(syndicateCode))
                 {
                     foreach (var siteOrderViewModel in siteOrderViewModelList)
                     {
                         if (siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Staff && siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                         {
-                            siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel);
+                            siteOrderModel = LoyaltySite.Instance.CreateSiteOrderModel(siteOrderViewModel, stringList);
 
                             PostOnlineOrderInvoiceInfo(syndicateCode, siteOrderModel);
                         }
@@ -240,12 +230,13 @@ namespace MenumateServices.WCFServices
             {
                 ServiceLogger.LogException(exc.Message, exc);
                 stringList.Add("Exception in UpdateInvoiceInforWaiterAppOrders     " + exc.Message);
-                WriteAndClearStringList();
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             } 
         }
         private void WriteAndClearStringList()
         {
             // Check folder and file name should remain same as in previous releases
+            stringList.Add("======================================================================================================================");
             FileWriter.WriteToFile(stringList, "Online Ordering Logs", "OnlineOrderingLogs ");
             stringList.Clear();
         }
