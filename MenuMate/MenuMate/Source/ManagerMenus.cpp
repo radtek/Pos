@@ -939,6 +939,7 @@ TListMenu *TManagerMenus::LoadMenuFromDB(Database::TDBControl &DBControl, const 
 				  Item->MenuName = Menu->MenuName;
 				  Item->ItemType = static_cast <TItemType> (Menu->Menu_Type);
 				  Item->Note = "";
+                  Item->ItemIdentifierKey = ItemInfo.ItemIdentifierKey;
 				  // Added for POS
 				  Item->OptionGroup = ItemOptionGroup++;
 				  Item->ItemAppearanceOrder = ItemInfo.IAO;

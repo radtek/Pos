@@ -290,12 +290,19 @@ namespace MewsIntegration
                 {
                     retValue = "Successful";
                     logsList.Add("Status is                                          " + "Successful");
+                    logsList.Add("webResponse.StatusCode is                          " + webResponse.StatusCode != null ? webResponse.StatusCode.ToString() : "was a null value");
                 }
                 else
+                {
                     logsList.Add("Status is                                          " + "UnSuccessful");
+                    logsList.Add("webResponse.StatusCode is                          " + webResponse.StatusCode != null ? webResponse.StatusCode.ToString() : "was a null value");
+                }
             }
             else
+            {
+                logsList.Add("webResponse is found to be null");
                 logsList.Add("Status is                                          " + "UnSuccessful");
+            }
             return retValue;
         }
 
@@ -356,12 +363,19 @@ namespace MewsIntegration
                 {
                     retValue = "Successful";
                     logsList.Add("Status is                                          " + "Successful");
+                    logsList.Add("webResponse.StatusCode is                          " + webResponse.StatusCode != null ? webResponse.StatusCode.ToString() : "a null value");
                 }
                 else
+                {
                     logsList.Add("Status is                                          " + "UnSuccessful");
+                    logsList.Add("webResponse.StatusCode is                          " + webResponse.StatusCode != null ? webResponse.StatusCode.ToString() : "a null value");
+                }
             }
             else
+            {
+                logsList.Add("webResponse is found to be null");
                 logsList.Add("Status is                                          " + "UnSuccessful");
+            }
             return retValue;
         }
         private HttpWebRequest GetWebRequest<T>(string url, T obj, List<string> logsList)

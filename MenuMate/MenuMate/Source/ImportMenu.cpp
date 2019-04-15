@@ -1127,7 +1127,7 @@ void TImportMenu::SaveItemSizeFromMenu( __int32 inIndex, __int32 inItemXMLHandle
         }
         else
         {
-        itemSizeKey = InsertItemSizeInDB(
+            itemSizeKey = InsertItemSizeInDB(
                         inMasterItemKey, sizeFKeyMapped, itemID, sizeID, palmItemID, palmSizeID,
                         sizeName.Trim(), price, maxRetailPrice, specialPrice, cost, isao, free, availableAsStandard,
                         noRecipe, barcode.Trim(), setMenuMask, enabled, gstPercent, costGSTPercent,
