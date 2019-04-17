@@ -1927,6 +1927,70 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand InsertDataIntoOnlineOrders(FbConnection connection, FbTransaction transaction, OnlineOrderAttributes onlineOrderRow)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            //...........................................
+            try
+            {
+                command.CommandText =
+                @"
+		            INSERT INTO ONLINEORDERS ( 
+                            ONLINE_ORDER_KEY,  
+                            PROFILE_KEY,
+                            EFTPOS_RECEIPT,
+                            INVOICE_NUMBER,
+                            APP_TYPE,
+                            ISPOSTED,
+                            TERMINAL_NAME)    
+                    VALUES (
+		                    @ONLINE_ORDER_KEY,  
+                            @PROFILE_KEY,  
+                            @EFTPOS_RECEIPT,  
+                            @INVOICE_NUMBER,  
+                            @APP_TYPE,  
+                            @ISPOSTED,  
+                            @TERMINAL_NAME)
+                            ;";
+
+                command.Parameters.AddWithValue("@ONLINE_ORDER_KEY", onlineOrderRow.OnlineOrderId);
+                command.Parameters.AddWithValue("@PROFILE_KEY", onlineOrderRow.ProfileId);
+                command.Parameters.AddWithValue("@EFTPOS_RECEIPT", onlineOrderRow.EftposReceipt);
+                command.Parameters.AddWithValue("@INVOICE_NUMBER", onlineOrderRow.InvoiceNumber);
+                command.Parameters.AddWithValue("@APP_TYPE", onlineOrderRow.AppType);
+                command.Parameters.AddWithValue("@ISPOSTED", onlineOrderRow.IsPosted);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", onlineOrderRow.TerminalName);
+                
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoOnlineOrders " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand GetProfileKeyQuery(FbConnection connection, FbTransaction transaction, long deviceKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT PROFILE_KEY FROM DEVICES WHERE DEVICE_KEY = @DEVICE_KEY;
+                    ";
+                command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetProfileKeyQuery " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
 
         #endregion
     }

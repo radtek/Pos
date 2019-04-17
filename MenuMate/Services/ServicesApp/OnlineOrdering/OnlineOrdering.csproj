@@ -72,6 +72,7 @@
     <Compile Include="Model\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteMenuViewModel.cs" />
     <Compile Include="Model\OrderModels\ApiOrderDevicesViewModel.cs" />
+    <Compile Include="Model\OrderModels\ApiWaiterAppPosTerminal.cs" />
     <Compile Include="Model\OrderModels\InvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderInvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderItemSizeDiscountViewModel.cs" />

@@ -1493,9 +1493,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             bool retVaule = false;
             try
             {
+                long invoiceNumber = 0;
                 long orderSecurityRef = GetNextSecurityRef();
                 long BillSecurityRef = GetNextSecurityRef();
-                long dayArcBillKey = ArchiveBill(siteOrderViewModel, BillSecurityRef, stringList);
+                long dayArcBillKey = ArchiveBill(siteOrderViewModel, BillSecurityRef, stringList,ref invoiceNumber);
                 //Archive Data For Patron Count
                 stringList.Add("Before ArchivePatronCount call                     " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ArchivePatronCount(dayArcBillKey, stringList);
@@ -1520,7 +1521,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retVaule;
         }
-        public long ArchiveBill(ApiSiteOrderViewModel siteOrderViewModel, long securityRef, List<string> stringList)
+        public long ArchiveBill(ApiSiteOrderViewModel siteOrderViewModel, long securityRef, List<string> stringList,ref long invoiceNo)
         {
             long dayArcBillKey = 0;
             long invoiceNumber = 0;
@@ -1530,6 +1531,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 dayArcBillKey = GenerateKey("DAYARCBILL");
                 invoiceNumber = GenerateKey("INVOICENUMBER");
+                invoiceNo = invoiceNumber;
                 //Creating Row For DayArcBill
                 stringList.Add("Creating Row For DayArcBill                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 dayArcBillRow = CreateDayArcBillRow(dayArcBillKey, invoiceNumber, siteOrderViewModel, securityRef);
@@ -1984,6 +1986,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
         public void ExecuteSecurityQuery(SecurityAttributes securityRow)
         {
+
             try
             {
                 FbCommand command = dbQueries.InsertDataIntoSecurity(connection, transaction, securityRow);
@@ -1994,6 +1997,84 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in InsertDataIntoSecurity " + e.Message, e);
                 throw;
             }
+        }
+                 
+        public OnlineOrderAttributes CreateOnlineOrderRow(ApiSiteOrderViewModel siteOrderViewModel, long invoiceNo)
+        {
+            OnlineOrderAttributes onlineOrderRow = new OnlineOrderAttributes();
+            try
+            {
+                long onlineOrderKey = 0;
+                onlineOrderKey = GenerateKey("ONLINEORDERS");
+
+                onlineOrderRow.InvoiceNumber = invoiceNo ;
+                onlineOrderRow.OnlineOrderId = onlineOrderKey;
+                onlineOrderRow.TerminalName = siteOrderViewModel.TerminalName;
+                onlineOrderRow.IsPosted = false;
+                onlineOrderRow.AppType = DTO.Enum.AppType.WaiterApp;
+                onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                if (siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
+                {
+                    foreach (var orderPaymentViewModel in siteOrderViewModel.ApiSiteOrderPaymentViewModels)
+                    {
+                        if (orderPaymentViewModel.PaymentReceipt != null)
+                        {
+                            onlineOrderRow.EftposReceipt = orderPaymentViewModel.PaymentReceipt;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    onlineOrderRow.EftposReceipt = null;
+ 
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateOnlineOrderRow " + e.Message, e);
+                throw;
+            }
+            return onlineOrderRow;
+        }
+
+        public void ExecuteOnlineOrderQuery(OnlineOrderAttributes onlineOrderRow)
+        {
+
+            try
+            {
+                FbCommand command = dbQueries.InsertDataIntoOnlineOrders(connection, transaction, onlineOrderRow);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in ExecuteOnlineOrderQuery " + e.Message, e);
+                throw;
+            }
+        }
+        public long GetProfileKey(string deviceKey)
+        {
+            long profileKey = 0;
+            try
+            {
+                long deviceKeyNew = 0;
+                long.TryParse(deviceKey, out deviceKeyNew);
+                FbCommand command = dbQueries.GetProfileKeyQuery(connection, transaction, deviceKeyNew);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        profileKey = reader.GetInt32(reader.GetOrdinal("PROFILE_KEY"));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetProfileKey " + e.Message, e);
+                throw;
+            }
+
+            return profileKey;
         }
         #endregion
     }
