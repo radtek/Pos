@@ -9,6 +9,19 @@
 #include "DBOrder.h"
 
 //---------------------------------------------------------------------------
+struct TItemInfoKey
+{
+     long itemId;
+     long itemSizeKey;
+     long itemSizeIdentifierKey;
+     TItemInfoKey(): itemId(0), itemSizeKey(0), itemSizeIdentifierKey(0){}
+};
+struct TPaymentInfo
+{
+    UnicodeString payType;
+    double amount;
+    TPaymentInfo(): payType(""), amount(0){}
+};
 class TDBOnlineOrdering
 {
 public:
@@ -22,12 +35,15 @@ public:
     static Currency GetHappyHourPrice(Database::TDBTransaction &dbTransaction, int itemsizeKey, int priceLevelKey);
     static void UpdateHappyHourPriceForItem(Database::TDBTransaction &dbTransaction, int itemKey, UnicodeString sizeName,
                     UnicodeString onlineOrderId, Currency hhPrice, Currency basePrice);
-    static UnicodeString GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &DBTransaction);
-    static void SetOnlineOrderStatusForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp);
-    static void GetItemKeysFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, std::vector<UnicodeString>* sizeNameList, std::vector<int>* itemKeysList);
-    static long GetItemSizeKeyFromItemKeyAndSizeName(Database::TDBTransaction &dbTransaction, UnicodeString sizeName, int itemKey);
-
-
+    static UnicodeString GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &DBTransaction, bool IsDayArcBill);
+    static void SetStatusAndSaveReceiptForWApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp,TMemoryStream *ReceiptToArchive
+                , bool IsDayArcBill);
+    static std::list<TItemInfoKey> GetItemInfoKeyListFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+    static TMemoryStream* GetEFTPOSReceiptForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+    static std::list<TPaymentInfo> GetPaymentInfoForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+    static void LoadItemCompleteInfoForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID,
+                            TItemComplete *itemComplete, int itemSizeIdentifier);
+    static UnicodeString GetTerminalNameForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);
@@ -37,6 +53,7 @@ private:
     static std::list<TItemSideInfo> GetItemSideInfo(Database::TDBTransaction &dbTransaction, int masterKey, int groupNo);
     static int GetItemIdByItemKey(Database::TDBTransaction &dbTransaction, int itemKey);
 };
+
 #endif
 
 

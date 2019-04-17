@@ -6,6 +6,7 @@
 #include "DBOnlineOrdeing.h"
 #include "MMLogging.h"
 #include "GlobalSettings.h"
+#include "MMMessageBox.h"
 
 //---------------------------------------------------------------------------
 
@@ -562,17 +563,20 @@ void TDBOnlineOrdering::UpdateHappyHourPriceForItem(Database::TDBTransaction &db
 	}
 }
 //------------------------------------------------------------------------------
-UnicodeString TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &dbTransaction)
+UnicodeString TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(Database::TDBTransaction &dbTransaction, bool IsDayArcBill)
 {
     UnicodeString onlineOrderGUIDForWaiterApp = "";
+    UnicodeString tableName = "";
     try
     {
+        tableName =  IsDayArcBill?" DAYARCBILL a ":" ARCBILL a ";
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT  FIRST 1 A.ORDER_GUID "
-                                        "FROM DAYARCBILL a "
-                                        "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
+        ibInternalQuery->SQL->Text  =   "SELECT  FIRST 1 A.ORDER_GUID FROM ";
+        ibInternalQuery->SQL->Text  =   ibInternalQuery->SQL->Text + tableName;
+        ibInternalQuery->SQL->Text  =   ibInternalQuery->SQL->Text + "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
                                         "ORDER BY a.ARCBILL_KEY ASC ";
+
         ibInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "T";
         ibInternalQuery->ExecQuery();
 
@@ -587,16 +591,21 @@ UnicodeString TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(Database::TDBTra
     return onlineOrderGUIDForWaiterApp;
 }
 //------------------------------------------------------------------------------
-void TDBOnlineOrdering::SetOnlineOrderStatusForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp)
+void TDBOnlineOrdering::SetStatusAndSaveReceiptForWApp(Database::TDBTransaction &dbTransaction, UnicodeString orderUniqueIdForWaiterApp, TMemoryStream *ReceiptToArchive, bool IsDayArcBill)
 {
+    UnicodeString tableName = "";
     try
     {
+        tableName =  IsDayArcBill?" DAYARCBILL a ":" ARCBILL a ";
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "UPDATE DAYARCBILL a SET a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
-                                        "WHERE a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->SQL->Text  =    "UPDATE" + tableName;
+        ibInternalQuery->SQL->Text  =    ibInternalQuery->SQL->Text + " SET a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED, a.RECEIPT = :RECEIPT "
+                                         " WHERE a.ORDER_GUID = :ORDER_GUID ";
+
         ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderUniqueIdForWaiterApp;
         ibInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "F";
+        ibInternalQuery->ParamByName("RECEIPT")->LoadFromStream(ReceiptToArchive);
         ibInternalQuery->ExecQuery();
     }
     catch(Exception &E)
@@ -606,21 +615,33 @@ void TDBOnlineOrdering::SetOnlineOrderStatusForWaiterApp(Database::TDBTransactio
 	}
 }
 //------------------------------------------------------------------------------
-void TDBOnlineOrdering::GetItemKeysFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, std::vector<UnicodeString>* sizeNameList, std::vector<int>* itemKeysList)
+std::list<TItemInfoKey> TDBOnlineOrdering::GetItemInfoKeyListFromOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
 {
+    std::list<TItemInfoKey> itemInfoKeyList;
     try
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT a.ITEM_ID, a.SIZE_NAME FROM DAYARCHIVE a "
-                                        "WHERE a.ORDER_GUID = :ORDER_GUID ";
+        ibInternalQuery->SQL->Text =    "SELECT a.ITEMSIZE_KEY, a.ITEM_KEY, b.ITEMSIZE_IDENTIFIER "
+                                        "FROM DAYARCHIVE b "
+                                        "INNER JOIN ITEMSIZE a on b.ITEMSIZE_IDENTIFIER = a.ITEMSIZE_IDENTIFIER "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID "
+                                        "UNION ALL "
+                                        "SELECT a.ITEMSIZE_KEY, a.ITEM_KEY, b.ITEMSIZE_IDENTIFIER "
+                                        "FROM ARCHIVE b "
+                                        "INNER JOIN ITEMSIZE a on b.ITEMSIZE_IDENTIFIER = a.ITEMSIZE_IDENTIFIER "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID ";
+
         ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
         ibInternalQuery->ExecQuery();
 
         for(;!ibInternalQuery->Eof;ibInternalQuery->Next())
         {
-            itemKeysList->push_back(ibInternalQuery->FieldByName("ITEM_ID")->AsInteger);
-            sizeNameList->push_back(ibInternalQuery->FieldByName("SIZE_NAME")->AsString);
+            TItemInfoKey itemInfoKey;
+            itemInfoKey.itemId                = ibInternalQuery->FieldByName("ITEM_KEY")->AsInteger;
+            itemInfoKey.itemSizeKey           = ibInternalQuery->FieldByName("ITEMSIZE_KEY")->AsInteger;
+            itemInfoKey.itemSizeIdentifierKey = ibInternalQuery->FieldByName("ITEMSIZE_IDENTIFIER")->AsInteger;
+            itemInfoKeyList.push_back(itemInfoKey);
         }
     }
     catch(Exception &E)
@@ -628,23 +649,35 @@ void TDBOnlineOrdering::GetItemKeysFromOrderGUID(Database::TDBTransaction &dbTra
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
+    return itemInfoKeyList;
 }
 //------------------------------------------------------------------------------
-long TDBOnlineOrdering::GetItemSizeKeyFromItemKeyAndSizeName(Database::TDBTransaction &dbTransaction, UnicodeString sizeName, int itemKey)
+TMemoryStream* TDBOnlineOrdering::GetEFTPOSReceiptForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
 {
-    int retValue = 0;
+    TMemoryStream *EFTPOSReceipt = new TMemoryStream;;
     try
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =    "SELECT a.ITEMSIZE_KEY FROM ITEMSIZE a "
-                                        "WHERE a.ITEM_KEY = :ITEM_KEY AND a.SIZE_NAME =:SIZE_NAME ";
-        ibInternalQuery->ParamByName("ITEM_KEY")->AsInteger = itemKey;
-        ibInternalQuery->ParamByName("SIZE_NAME")->AsString = sizeName;
+        ibInternalQuery->SQL->Text =    "SELECT a.EFTPOS_RECEIPT "
+                                        "FROM DAYARCBILL b "
+                                        "INNER JOIN ONLINEORDERS a on b.INVOICE_NUMBER = a.INVOICE_NUMBER "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID "
+                                        "UNION ALL "
+                                        "SELECT a.EFTPOS_RECEIPT "
+                                        "FROM ARCBILL b "
+                                        "INNER JOIN ONLINEORDERS a on b.INVOICE_NUMBER = a.INVOICE_NUMBER "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID ";
+
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
         ibInternalQuery->ExecQuery();
 
         if(ibInternalQuery->RecordCount)
-            retValue = ibInternalQuery->FieldByName("ITEMSIZE_KEY")->AsLong;
+        {
+            EFTPOSReceipt->Clear();
+            ibInternalQuery->FieldByName("EFTPOS_RECEIPT")->SaveToStream(EFTPOSReceipt);
+            EFTPOSReceipt->Position = 0;
+        }
 
     }
     catch(Exception &E)
@@ -652,7 +685,150 @@ long TDBOnlineOrdering::GetItemSizeKeyFromItemKeyAndSizeName(Database::TDBTransa
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 		throw;
 	}
-    return retValue;
+    return EFTPOSReceipt;
 }
+//------------------------------------------------------------------------------
+std::list<TPaymentInfo> TDBOnlineOrdering::GetPaymentInfoForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+{
+    std::list<TPaymentInfo> paymentInfoList;
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    "SELECT a.PAY_TYPE, a.SUBTOTAL "
+                                        "FROM DAYARCBILL b "
+                                        "INNER JOIN DAYARCBILLPAY a on b.ARCBILL_KEY = a.ARCBILL_KEY "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND a.NOTE !=:NOTE "
+                                        "UNION ALL "
+                                        "SELECT a.PAY_TYPE, a.SUBTOTAL "
+                                        "FROM ARCBILL b "
+                                        "INNER JOIN ARCBILLPAY a on b.ARCBILL_KEY = a.ARCBILL_KEY "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND a.NOTE !=:NOTE ";
+
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ParamByName("NOTE")->AsString = "Total Change.";
+        ibInternalQuery->ExecQuery();
+
+        for(;!ibInternalQuery->Eof;ibInternalQuery->Next())
+        {
+            if(ibInternalQuery->FieldByName("PAY_TYPE")->AsString.Trim() != "")
+            {
+                TPaymentInfo paymentInfo;
+                paymentInfo.payType = ibInternalQuery->FieldByName("PAY_TYPE")->AsString;
+                paymentInfo.amount  = ibInternalQuery->FieldByName("SUBTOTAL")->AsDouble;
+                paymentInfoList.push_back(paymentInfo);
+            }
+        }
+
+    }
+    catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+    return paymentInfoList;
+}
+//------------------------------------------------------------------------------
+void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID,
+                            TItemComplete *itemComplete, int itemSizeIdentifier)
+{
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =    " SELECT "
+                                        " a.TABLE_NUMBER, "
+                                        " a.SEAT_NUMBER, "
+                                        " a.TIME_STAMP, "
+                                        " a.GST_PERCENT, "
+                                        " a.PRICE_LEVEL0, "
+                                        " a.PRICE_LEVEL1, "
+                                        " a.COST, "
+                                        " a.COST_GST_PERCENT, "
+                                        " a.NOTE, "
+                                        " a.QTY, "
+                                        " a.PLU, "
+                                        " a.TIME_KEY "
+                                        " FROM DAYARCHIVE a "
+                                        " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER "
+                                        " UNION ALL"
+                                        " SELECT "
+                                        " a.TABLE_NUMBER, "
+                                        " a.SEAT_NUMBER, "
+                                        " a.TIME_STAMP, "
+                                        " a.GST_PERCENT, "
+                                        " a.PRICE_LEVEL0, "
+                                        " a.PRICE_LEVEL1, "
+                                        " a.COST, "
+                                        " a.COST_GST_PERCENT, "
+                                        " a.NOTE, "
+                                        " a.QTY, "
+                                        " a.PLU, "
+                                        " a.TIME_KEY "
+                                        " FROM ARCHIVE a "
+                                        " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER ";
+
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsInteger = itemSizeIdentifier;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            itemComplete->TableNo        = ibInternalQuery->FieldByName("TABLE_NUMBER")->AsInteger;
+            itemComplete->SeatNo         = ibInternalQuery->FieldByName("SEAT_NUMBER")->AsInteger;
+            itemComplete->TimeStamp      = ibInternalQuery->FieldByName("TIME_STAMP")->AsDate;
+            itemComplete->GSTPercent     = ibInternalQuery->FieldByName("GST_PERCENT")->AsDouble;
+            itemComplete->PriceLevel0    = ibInternalQuery->FieldByName("PRICE_LEVEL0")->AsDouble;
+            itemComplete->PriceLevel1    = ibInternalQuery->FieldByName("PRICE_LEVEL1")->AsDouble;
+            itemComplete->Cost           = ibInternalQuery->FieldByName("COST")->AsDouble;
+            itemComplete->CostGSTPercent = ibInternalQuery->FieldByName("COST_GST_PERCENT")->AsDouble;
+            itemComplete->Note           = ibInternalQuery->FieldByName("NOTE")->AsString;
+            itemComplete->PLU            = ibInternalQuery->FieldByName("PLU")->AsInteger;
+            itemComplete->ItemKey        = ibInternalQuery->FieldByName("TIME_KEY")->AsInteger;
+            itemComplete->SetQty(ibInternalQuery->FieldByName("QTY")->AsInteger);
+        }
+
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}
+//------------------------------------------------------------------------------
+UnicodeString TDBOnlineOrdering::GetTerminalNameForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+{
+    UnicodeString terminalName = "";
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =   " SELECT "
+                                       " a.TERMINAL_NAME "
+                                       " FROM DAYARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID "
+                                       " UNION ALL "
+                                       " SELECT "
+                                       " a.TERMINAL_NAME "
+                                       " FROM ARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID ";
+
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            if(ibInternalQuery->FieldByName("TERMINAL_NAME")->AsString.Trim() != "")
+                terminalName = ibInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+    return terminalName;
+}
+
 
 

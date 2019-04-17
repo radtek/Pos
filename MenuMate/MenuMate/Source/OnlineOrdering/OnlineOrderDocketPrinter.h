@@ -15,12 +15,14 @@ class TOnlineDocketPrinterThread : public TThread
         void PrintKitchenDockets(TPaymentTransaction &PaymentTransaction, int WebKey, UnicodeString JobName,UnicodeString DeviceName);
         void SendOnlineOrderToChefmate(TPaymentTransaction* inTransaction);
         void ProcessHappyHour(TPaymentTransaction &paymentTransaction, UnicodeString orderUniqueId);
-        void PrintKitchenDocketsForWaiterApp();
-        std::auto_ptr<TList> GetOrderItemList(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
-        TItemComplete* LoadItemCompleteForWaiterAppOrder(Database::TDBTransaction &DBTransaction, TItem* Item, TItemSize* itemSize, TItemComplete *itemComplete);
-        void ManagePrintOperationsForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
-
-
+        void PrintKitchenDocketsForWaiterApp(TPaymentTransaction &PaymentTransaction, int WebKey, UnicodeString JobName,UnicodeString DeviceName);
+        TList* GetOrderItemList(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+        TItemComplete* LoadItemCompleteForWaiterAppOrder(Database::TDBTransaction &DBTransaction, TItem* Item, TItemSize* itemSize,
+                            TItemComplete *itemComplete, UnicodeString orderGUID, int itemSizeIdentifier);
+        void ManagePrintOperationsForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, bool IsDayArcBill);
+        void PrintAndArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
+        void MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt,TReqPrintJob *LastReceipt);
+        void AddPaymentInfo(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
     protected:
         virtual void __fastcall Execute();
     public:
