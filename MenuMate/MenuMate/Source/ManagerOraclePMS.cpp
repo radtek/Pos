@@ -387,7 +387,7 @@ bool TManagerOraclePMS::ExportData(TPaymentTransaction &_paymentTransaction,
                 }
                 int totalInt = atoi(postRequest.TotalAmount.c_str());
                 double paymentD = RoundToNearest(
-                    (double)payment->GetPayTendered() -(double)payment->GetSurcharge(),
+                    (double)payment->GetPayTendered() -(double)payment->GetSurcharge() -(double)payment->GetChange(),
                     0.01,TGlobalSettings::Instance().MidPointRoundsDown);
                 paymentD = paymentD * 100;
                 int paymentInt = paymentD;

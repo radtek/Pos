@@ -49,6 +49,7 @@ const UnicodeString MenuSQL =
 		"Item.Print_Font,"
 		"Item.Print_Double_Width,"
 		"Item.Print_Double_Height,"
+        "Item.ITEM_IDENTIFIER,"
 
 		"ItemSize.ItemSize_Key,"
 		"ItemSize.Size_ID,"
@@ -510,6 +511,7 @@ public:
 
 	std::vector<TItemSideInfo> Sides;
 	std::vector<TNameAndKey>   ForcedOptions;
+    UnicodeString           ItemIdentifierKey;
 };
 //---------------------------------------------------------------------------
 class TCourseOptionInfo : public TDBKey

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1168,7 +1168,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             //...........................................
             try
             {
-                command.CommandText = 
+                command.CommandText =
                                     @"
                                      INSERT INTO PROFILE (
 		                                PROFILE_KEY,
@@ -1193,7 +1193,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction,long deviceKey, long profileKey, string terminalName)
+        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, long deviceKey, long profileKey, string terminalName)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1394,7 +1394,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillRow.ArcBillId);
                 command.Parameters.AddWithValue("@TERMINAL_NAME", dayArcBillRow.TerminalName);
                 command.Parameters.AddWithValue("@STAFF_NAME", dayArcBillRow.StaffName);
-                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now );
+                command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
                 command.Parameters.AddWithValue("@TOTAL", dayArcBillRow.Total);
                 command.Parameters.AddWithValue("@DISCOUNT", dayArcBillRow.Discount);
                 command.Parameters.AddWithValue("@PATRON_COUNT", dayArcBillRow.PatronCount);
@@ -1403,9 +1403,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@BILLED_LOCATION", dayArcBillRow.BilledLocation);
                 command.Parameters.AddWithValue("@INVOICE_NUMBER", dayArcBillRow.InvoiceNumber);
                 command.Parameters.AddWithValue("@SALES_TYPE", dayArcBillRow.SaleType);
-                command.Parameters.AddWithValue("@INVOICE_KEY", 0 );
+                command.Parameters.AddWithValue("@INVOICE_KEY", 0);
                 command.Parameters.AddWithValue("@ROUNDING_ADJUSTMENT", dayArcBillRow.RoundingAdjustment);
-                command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER", 0 );
+                command.Parameters.AddWithValue("@ORDER_IDENTIFICATION_NUMBER", 0);
                 command.Parameters.AddWithValue("@REFUND_REFRECEIPT", "");
                 command.Parameters.AddWithValue("@EFTPOS_SERVICE_ID", "");
                 command.Parameters.AddWithValue("@IS_PRINT_REQUIRED", dayArcBillRow.IsPrintRequired ? 'T' : 'F');
@@ -1480,7 +1480,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@PAYMENT_CARD_TYPE", dayArcBillPayRow.PaymentCardType);
                 command.Parameters.AddWithValue("@PAY_GROUP", dayArcBillPayRow.PayGroup);
                 command.Parameters.AddWithValue("@CHARGED_TO_XERO", 'F');
-                command.Parameters.AddWithValue("@TIP_AMOUNT", 0 );
+                command.Parameters.AddWithValue("@TIP_AMOUNT", 0);
 
             }
             catch (Exception e)
@@ -1490,12 +1490,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayPatronCount(FbConnection connection, FbTransaction transaction,long patronCountKey, long dayArcBillKey)
+        public FbCommand InsertDataIntoDayPatronCount(FbConnection connection, FbTransaction transaction, long patronCountKey, long dayArcBillKey, List<string> stringList)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
             try
             {
+                stringList.Add("Inserting Data Into DayPatronCount table           " + DateTime.Now.ToString("hh:mm:ss tt"));
                 command.CommandText =
                     @"
 				    INSERT INTO DAYPATRONCOUNT ( 
@@ -1516,17 +1517,20 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in InsertDataIntoDayPatronCount          " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in InsertDataIntoDayPatronCount " + e.Message, e);
                 throw;
             }
             return command;
         }
-        public FbCommand InsertDataIntoDayArcRef(FbConnection connection, FbTransaction transaction, long dayArcRefKey , long dayArcBillKey)
+        public FbCommand InsertDataIntoDayArcRef(FbConnection connection, FbTransaction transaction, long dayArcRefKey, long dayArcBillKey, List<string> stringList)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
             try
             {
+                stringList.Add("Inserting Data Into DayArcRef table                " + DateTime.Now.ToString("hh:mm:ss tt"));
                 command.CommandText =
                     @"
 			        INSERT INTO DAYARCREF ( 
@@ -1542,11 +1546,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     ;";
                 command.Parameters.AddWithValue("@DAYARCREF_KEY", dayArcRefKey);
                 command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillKey);
-                command.Parameters.AddWithValue("@REFERENCE", "" );//Need to Confirm
+                command.Parameters.AddWithValue("@REFERENCE", "");//Need to Confirm
                 command.Parameters.AddWithValue("@REFS_KEY", 1);//Need to Confirm
             }
             catch (Exception e)
             {
+                stringList.Add("Exception in InsertDataIntoDayArcRef               " + e.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ServiceLogger.LogException(@"in InsertDataIntoDayArcRef " + e.Message, e);
                 throw;
             }
@@ -1680,18 +1686,18 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@SIZE_NAME", dayArchiveRow.SizeName);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", dayArchiveRow.TableNumber);
                 command.Parameters.AddWithValue("@TABLE_NAME", dayArchiveRow.TableNumber);
-                command.Parameters.AddWithValue("@SEAT_NUMBER", dayArchiveRow.SeatNumber );
+                command.Parameters.AddWithValue("@SEAT_NUMBER", dayArchiveRow.SeatNumber);
                 command.Parameters.AddWithValue("@SERVER_NAME", dayArchiveRow.ServerName);
                 command.Parameters.AddWithValue("@TAB_NAME", dayArchiveRow.TabName);
                 command.Parameters.AddWithValue("@LOYALTY_NAME", dayArchiveRow.LoyaltyName);
-                command.Parameters.AddWithValue("@ORDER_TYPE", dayArchiveRow.OrderType );
+                command.Parameters.AddWithValue("@ORDER_TYPE", dayArchiveRow.OrderType);
                 command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
                 command.Parameters.AddWithValue("@TIME_STAMP_BILLED", DateTime.Now);
                 command.Parameters.AddWithValue("@ORDER_LOCATION", dayArchiveRow.LoyaltyName);
                 command.Parameters.AddWithValue("@PRICE", dayArchiveRow.Price);
                 command.Parameters.AddWithValue("@COST", dayArchiveRow.Cost);
-                command.Parameters.AddWithValue("@HAPPY_HOUR",'F'); //Need to Confirm
-                command.Parameters.AddWithValue("@NOTE", dayArchiveRow.Note );
+                command.Parameters.AddWithValue("@HAPPY_HOUR", 'F'); //Need to Confirm
+                command.Parameters.AddWithValue("@NOTE", dayArchiveRow.Note);
                 command.Parameters.AddWithValue("@SECURITY_REF", dayArchiveRow.SecurityRef);
                 command.Parameters.AddWithValue("@TIME_KEY", dayArchiveRow.TimeKey);
                 command.Parameters.AddWithValue("@GST_PERCENT", dayArchiveRow.GstPercent);
@@ -1831,7 +1837,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
-        public FbCommand GetItemInfoForDayArchiveRow( FbConnection connection, FbTransaction transaction, int itemSizeIdentifier)
+        public FbCommand GetItemInfoForDayArchiveRow(FbConnection connection, FbTransaction transaction, int itemSizeIdentifier)
         {
             FbCommand result = new FbCommand(@"", connection, transaction);
 
@@ -1921,8 +1927,72 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand InsertDataIntoOnlineOrders(FbConnection connection, FbTransaction transaction, OnlineOrderAttributes onlineOrderRow)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
 
-                #endregion
+            //...........................................
+            try
+            {
+                command.CommandText =
+                @"
+		            INSERT INTO ONLINEORDERS ( 
+                            ONLINE_ORDER_KEY,  
+                            PROFILE_KEY,
+                            EFTPOS_RECEIPT,
+                            INVOICE_NUMBER,
+                            APP_TYPE,
+                            ISPOSTED,
+                            TERMINAL_NAME)    
+                    VALUES (
+		                    @ONLINE_ORDER_KEY,  
+                            @PROFILE_KEY,  
+                            @EFTPOS_RECEIPT,  
+                            @INVOICE_NUMBER,  
+                            @APP_TYPE,  
+                            @ISPOSTED,  
+                            @TERMINAL_NAME)
+                            ;";
+
+                command.Parameters.AddWithValue("@ONLINE_ORDER_KEY", onlineOrderRow.OnlineOrderId);
+                command.Parameters.AddWithValue("@PROFILE_KEY", onlineOrderRow.ProfileId);
+                command.Parameters.AddWithValue("@EFTPOS_RECEIPT", onlineOrderRow.EftposReceipt);
+                command.Parameters.AddWithValue("@INVOICE_NUMBER", onlineOrderRow.InvoiceNumber);
+                command.Parameters.AddWithValue("@APP_TYPE", onlineOrderRow.AppType);
+                command.Parameters.AddWithValue("@ISPOSTED", onlineOrderRow.IsPosted);
+                command.Parameters.AddWithValue("@TERMINAL_NAME", onlineOrderRow.TerminalName);
+                
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoOnlineOrders " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand GetProfileKeyQuery(FbConnection connection, FbTransaction transaction, long deviceKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT PROFILE_KEY FROM DEVICES WHERE DEVICE_KEY = @DEVICE_KEY;
+                    ";
+                command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetProfileKeyQuery " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        #endregion
     }
 
     public static class QueryUtilities

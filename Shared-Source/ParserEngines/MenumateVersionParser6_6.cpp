@@ -23,10 +23,16 @@ void TApplyParser::upgrade6_61Tables()
 {
     update6_61Tables();
 }
+
 //6.62
 void TApplyParser::upgrade6_62Tables()
 {
     update6_62Tables();
+}
+//6.63
+void TApplyParser::upgrade6_63Tables()
+{
+    update6_63Tables();
 }
 
 //::::::::::::::::::::::::Version 6.60:::::::::::::::::::::::::::::::::::::::::
@@ -45,11 +51,16 @@ void TApplyParser::update6_61Tables()
 void TApplyParser::update6_62Tables()
 {
     Alter6_62Tables(_dbControl);
-    Create6_62Table(_dbControl);
-    Create6_62Generator(_dbControl);
 
 }
+//------------------------version 6.63---------------------------------------
+void TApplyParser::update6_63Tables()
+{
+    Alter6_63Tables(_dbControl);
+    Create6_63Generator(_dbControl);
+    Create6_63Table(_dbControl);
 
+}
 //---------------------------------------------------------------------------
 void TApplyParser::Alter6_60Tables(TDBControl* const inDBControl)
 {
@@ -359,16 +370,100 @@ void TApplyParser::ALTERDSR_PIVOT_BY_ITEMProcedure6_61( TDBControl* const inDBCo
 		throw;
 	}
 }
+void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
+{
+    AlterOrderTable6_62( _dbControl ) ;
+}
+void TApplyParser::AlterOrderTable6_62(TDBControl* const inDBControl)
+{
+    if (!fieldExists( "ORDERS", "ITEM_IDENTIFIER", inDBControl ) )
+	{
+        executeQuery ( "ALTER TABLE ORDERS ADD ITEM_IDENTIFIER VARCHAR(50) DEFAULT '';", inDBControl);
+	}
+    if (!fieldExists( "ORDERS", "ITEMSIZE_IDENTIFIER", inDBControl ) )
+	{
+        executeQuery ( "ALTER TABLE ORDERS ADD ITEMSIZE_IDENTIFIER VARCHAR(50) DEFAULT '';", inDBControl);
+	}
+
+    if ( fieldExists( "ORDERS", "ITEM_IDENTIFIER", inDBControl) && fieldExists( "ORDERS", "ITEMSIZE_IDENTIFIER", inDBControl))
+    {
+        UpdateItemIdentifierInOrders(inDBControl);
+    }
+}
+void TApplyParser::UpdateItemIdentifierInOrders(TDBControl* const inDBControl)
+{
+    TDBTransaction transaction( *inDBControl );
+    transaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery1       = transaction.Query(transaction.AddQuery());
+        TIBSQL *SelectQuery2       = transaction.Query(transaction.AddQuery());
+        TIBSQL *UpdateQuery       = transaction.Query(transaction.AddQuery());
+        SelectQuery1->Close();
+        SelectQuery1->SQL->Text = "SELECT ORDER_KEY, ITEM_NAME, SIZE_NAME, COURSE_NAME, MENU_NAME FROM ORDERS ";
+        SelectQuery1->ExecQuery();
+
+        for (; !SelectQuery1->Eof; SelectQuery1->Next())
+        {
+            SelectQuery2->Close();
+            SelectQuery2->SQL->Text = " SELECT isz.ITEMSIZE_IDENTIFIER,isz.SIZE_NAME, cr.COURSE_NAME, i.ITEM_IDENTIFIER, i.ITEM_NAME, m.MENU_NAME FROM ITEMSIZE isz"
+                                      " INNER JOIN ITEM i ON i.ITEM_ID = isz.ITEM_KEY"
+                                      " INNER JOIN COURSE cr on cr.COURSE_KEY = i.COURSE_KEY"
+                                      " INNER JOIN MENU m on m.MENU_KEY = cr.MENU_KEY"
+                                      " WHERE isz.SIZE_NAME = :SIZE_NAME AND cr.COURSE_NAME = :COURSE_NAME AND m.MENU_NAME = :MENU_NAME AND i.ITEM_NAME = :ITEM_NAME "
+                                      " ORDER BY m.MENU_NAME";
+
+            SelectQuery2->ParamByName("SIZE_NAME")->AsString   = SelectQuery1->FieldByName("SIZE_NAME")->AsString;
+            SelectQuery2->ParamByName("COURSE_NAME")->AsString = SelectQuery1->FieldByName("COURSE_NAME")->AsString;
+            SelectQuery2->ParamByName("MENU_NAME")->AsString   = SelectQuery1->FieldByName("MENU_NAME")->AsString;
+            SelectQuery2->ParamByName("ITEM_NAME")->AsString   = SelectQuery1->FieldByName("ITEM_NAME")->AsString;
+
+            SelectQuery2->ExecQuery();
+
+            UpdateQuery->Close();
+            UpdateQuery->SQL->Text = " UPDATE ORDERS SET ITEM_IDENTIFIER = :ITEM_IDENTIFIER, ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER"
+                                     " WHERE ORDER_KEY = :ORDER_KEY";
+
+            UpdateQuery->ParamByName("ORDER_KEY")->AsInteger   = SelectQuery1->FieldByName("ORDER_KEY")->AsInteger;
+
+            if(SelectQuery2->RecordCount > 0)
+            {
+                if(SelectQuery2->FieldByName("ITEM_IDENTIFIER")->AsString != NULL && SelectQuery2->FieldByName("ITEM_IDENTIFIER")->AsString != "")
+                    UpdateQuery->ParamByName("ITEM_IDENTIFIER")->AsString = SelectQuery2->FieldByName("ITEM_IDENTIFIER")->AsString;
+                else
+                    UpdateQuery->ParamByName("ITEM_IDENTIFIER")->AsString = "0";
+
+                if(SelectQuery2->FieldByName("ITEMSIZE_IDENTIFIER")->AsString != NULL && SelectQuery2->FieldByName("ITEMSIZE_IDENTIFIER")->AsString != "")
+                    UpdateQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = SelectQuery2->FieldByName("ITEMSIZE_IDENTIFIER")->AsString;
+                else
+                    UpdateQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = "0";
+
+                UpdateQuery->ExecQuery();
+            }
+            else
+            {
+                UpdateQuery->ParamByName("ITEM_IDENTIFIER")->AsString = "0";
+                UpdateQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = "0";
+                UpdateQuery->ExecQuery();
+            }
+        }
+        transaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        transaction.Rollback();
+        throw;
+    }
+}
 
 //---------------------------------------------------------------------------
-void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
+void TApplyParser::Alter6_63Tables(TDBControl* const inDBControl)
 {
     // Changes DayArcBill
     if (!fieldExists( "DAYARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
 	{
         executeQuery ( "ALTER TABLE DAYARCBILL ADD IS_PRINT_REQUIRED  CHAR(1) DEFAULT 'F';", inDBControl);
 	}
-
     if (fieldExists( "DAYARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
 	{
         executeQuery ( "UPDATE DAYARCBILL SET IS_PRINT_REQUIRED = 'F';", inDBControl);
@@ -475,7 +570,7 @@ void TApplyParser::Alter6_62Tables(TDBControl* const inDBControl)
 }
 
 //---------------------------------------------------------------------------
-void TApplyParser::Create6_62Table(TDBControl* const inDBControl)
+void TApplyParser::Create6_63Table(TDBControl* const inDBControl)
 {
     if ( !tableExists( "ONLINEORDERS", _dbControl ) )
 	{
@@ -509,7 +604,7 @@ void TApplyParser::Create6_62Table(TDBControl* const inDBControl)
     }
 }
 //------------------------------------------------------------------------------
-void TApplyParser::Create6_62Generator(TDBControl* const inDBControl)
+void TApplyParser::Create6_63Generator(TDBControl* const inDBControl)
 {
     if(!generatorExists("GEN_ONLINEORDERS_ID", _dbControl))
 	{
@@ -525,4 +620,4 @@ void TApplyParser::Create6_62Generator(TDBControl* const inDBControl)
 }
 //------------------------------------------------------------------------------
 }
-//------------------------------------------------------------------------------
+
