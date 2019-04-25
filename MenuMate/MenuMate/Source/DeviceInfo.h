@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------------
 #include <System.hpp>
 
-enum DeviceType {devAll,devPC,devPalm,devPrinter,devIRModule,devPrinterModule,devUnknown};
+enum DeviceType {devAll,devPC,devPalm,devPrinter,devIRModule,devPrinterModule,devUnknown,devWaiter,devKiosk};
 
 class TDeviceInfo
 {

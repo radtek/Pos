@@ -1221,7 +1221,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in AddWaiterTerminal adding Waiter Terminal " + e.Message, e);
                 throw;
             }
-
+            
         }
         public void AddWaiterStaff(long siteCode)
         {
@@ -1584,7 +1584,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.IsPrintRequired = true;
                 dayArcBillRow.OnlinOrderId = siteOrderViewModel.OrderId;
                 dayArcBillRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                dayArcBillRow.ApplicationType = Enum.AppType.WaiterApp;
+                dayArcBillRow.ApplicationType = Enum.AppType.devWaiter;
             }
             catch (Exception e)
             {
@@ -2011,7 +2011,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;
                 onlineOrderRow.TerminalName = siteOrderViewModel.TerminalName;
                 onlineOrderRow.IsPosted = false;
-                onlineOrderRow.AppType = DTO.Enum.AppType.WaiterApp;
+                onlineOrderRow.AppType = DTO.Enum.AppType.devWaiter;
                 onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
                 if (siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                 {
