@@ -1205,7 +1205,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return isTableOOMarked;
         }
-        public void AddWaiterTerminal(string terminalName)
+        public void AddWaiterTerminal(string terminalName, string deviceId)
         {
             try
             {
@@ -1213,7 +1213,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 FbCommand command = dbQueries.InsertProfileForWaiterApp(connection, transaction, profileKey, terminalName);
                 command.ExecuteNonQuery();
                 long deviceKey = GenerateKey("DEVICES");
-                command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, deviceKey, profileKey, terminalName);
+                command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, deviceKey, profileKey, terminalName, deviceId);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -2057,9 +2057,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             long profileKey = 0;
             try
             {
-                long deviceKeyNew = 0;
-                long.TryParse(deviceKey, out deviceKeyNew);
-                FbCommand command = dbQueries.GetProfileKeyQuery(connection, transaction, deviceKeyNew);
+                FbCommand command = dbQueries.GetProfileKeyQuery(connection, transaction, deviceKey);
                 using (FbDataReader reader = command.ExecuteReader())
                 {
                     if (reader.HasRows && reader.Read())
@@ -2075,6 +2073,66 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
             return profileKey;
+        }
+
+        public bool CheckIfWaiterTerminalExist(string deviceId)
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterAppTerminalExist(connection, transaction, deviceId);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+
+        public bool CheckIfZedRequestExist(string terminalName)
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfZedRequestExistQuery(connection, transaction, terminalName);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+
+        public void InsertAppZedRow(string terminalName, string deviceKey)
+        {
+            try
+            {
+                long profileKey = GetProfileKey(deviceKey);
+                long appZedKey = GenerateKey("APPZEDSTATUS");
+                FbCommand command = dbQueries.InsertAppZedRowQuery(connection, transaction, terminalName, appZedKey, profileKey);
+                command.ExecuteNonQuery();
+                
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateAppZedRow " + e.Message, e);
+                throw;
+            }
+
         }
         #endregion
     }

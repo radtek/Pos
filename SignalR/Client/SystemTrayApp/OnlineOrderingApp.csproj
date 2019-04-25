@@ -67,7 +67,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="Connected Services\OnlineOrdering\Reference.cs">
+    <Compile Include="Connected Services\OnlineOrderingRef\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
@@ -93,31 +93,31 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <None Include="Connected Services\OnlineOrdering\item.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\item1.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\item2.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item2.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\item3.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item3.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\item4.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item4.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\item5.xsd">
+    <None Include="Connected Services\OnlineOrderingRef\item5.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Connected Services\OnlineOrdering\SystemTrayApp.OnlineOrdering.LoyaltyOOResponse.datasource">
+    <None Include="Connected Services\OnlineOrderingRef\SystemTrayApp.OnlineOrderingRef.LoyaltyOOResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Connected Services\OnlineOrdering\SystemTrayApp.OnlineOrdering.OOLoyaltyResponse.datasource">
+    <None Include="Connected Services\OnlineOrderingRef\SystemTrayApp.OnlineOrderingRef.OOLoyaltyResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
-    <None Include="Connected Services\OnlineOrdering\WCFServiceOnlineOrdering.wsdl" />
+    <None Include="Connected Services\OnlineOrderingRef\WCFServiceOnlineOrdering.wsdl" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -130,9 +130,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Connected Services\OnlineOrdering\configuration91.svcinfo" />
-    <None Include="Connected Services\OnlineOrdering\configuration.svcinfo" />
-    <None Include="Connected Services\OnlineOrdering\Reference.svcmap">
+    <None Include="Connected Services\OnlineOrderingRef\configuration91.svcinfo" />
+    <None Include="Connected Services\OnlineOrderingRef\configuration.svcinfo" />
+    <None Include="Connected Services\OnlineOrderingRef\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
@@ -151,7 +151,7 @@
     <Folder Include="Utility\" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Connected Services\OnlineOrdering\" />
+    <WCFMetadataStorage Include="Connected Services\OnlineOrderingRef\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

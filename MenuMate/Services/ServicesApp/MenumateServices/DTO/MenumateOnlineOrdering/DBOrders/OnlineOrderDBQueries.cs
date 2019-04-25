@@ -1193,7 +1193,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, long deviceKey, long profileKey, string terminalName)
+        public FbCommand InsertTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, long deviceKey, long profileKey, string terminalName, string deviceId)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1231,7 +1231,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@DEVICE_TYPE", 1);
                 command.Parameters.AddWithValue("@LOCATION_KEY", 1);
                 command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
-                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", "");
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceId);
                 command.Parameters.AddWithValue("@IP", "");
 
             }
@@ -1972,7 +1972,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand GetProfileKeyQuery(FbConnection connection, FbTransaction transaction, long deviceKey)
+        public FbCommand GetProfileKeyQuery(FbConnection connection, FbTransaction transaction, string deviceKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1980,9 +1980,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 command.CommandText =
                     @"
-                    SELECT PROFILE_KEY FROM DEVICES WHERE DEVICE_KEY = @DEVICE_KEY;
+                    SELECT PROFILE_KEY FROM DEVICES WHERE UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
                     ";
-                command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceKey);
             }
             catch (Exception e)
             {
@@ -1992,6 +1992,84 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return command;
         }
 
+        public FbCommand CheckIfWaiterAppTerminalExist(FbConnection connection, FbTransaction transaction, string terminalInfo)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT DEVICE_KEY FROM DEVICES WHERE UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
+                    ";
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", terminalInfo);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfWaiterAppTerminalExist " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand CheckIfZedRequestExistQuery(FbConnection connection, FbTransaction transaction, string terminalName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT APP_ZED_STATUSKEY FROM APPZEDSTATUS WHERE TERMINAL_NAME = @TERMINAL_NAME AND IS_ZED_REQUIRED = @IS_ZED_REQUIRED;
+                    ";
+                command.Parameters.AddWithValue("@TERMINAL_NAME", terminalName);
+                command.Parameters.AddWithValue("@IS_ZED_REQUIRED", 'T');
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfZedRequestExistQuery " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand InsertAppZedRowQuery(FbConnection connection, FbTransaction transaction, string terminalName, long appZedKey, long profileKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+			        INSERT INTO APPZEDSTATUS ( 
+                            APP_ZED_STATUSKEY,  
+                            PROFILE_KEY,  
+                            APP_TYPE,  
+                            TERMINAL_NAME,
+                            IS_ZED_REQUIRED,
+                            TIME_STAMP_REQUESTED)  
+                    VALUES (
+			                @APP_ZED_STATUSKEY,  
+                            @PROFILE_KEY,  
+                            @APP_TYPE,  
+                            @TERMINAL_NAME,
+                            @IS_ZED_REQUIRED,
+                            @TIME_STAMP_REQUESTED)
+                            ;";
+                command.Parameters.AddWithValue("@APP_ZED_STATUSKEY", appZedKey);
+                command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
+                command.Parameters.AddWithValue("@APP_TYPE", 1);//Need to Confirm
+                command.Parameters.AddWithValue("@TERMINAL_NAME", terminalName);
+                command.Parameters.AddWithValue("@IS_ZED_REQUIRED", 'T');
+                command.Parameters.AddWithValue("@TIME_STAMP_REQUESTED", DateTime.Now);//Need to Confirm
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertDataIntoDayArcRef " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
         #endregion
     }
 

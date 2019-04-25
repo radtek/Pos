@@ -173,8 +173,8 @@ namespace MenumateServices.WCFServices
             WriteAndClearStringList();
             return false;
         }
-        
-        public void CreateWaiterTerminal(long siteID)
+
+        /*public void CreateWaiterTerminal(long siteID)
         {
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
@@ -186,8 +186,8 @@ namespace MenumateServices.WCFServices
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
                         stringList.Add("inside transaction using                       ");
-                        //onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
-                        onlineOrderDB.AddWaiterStaff(siteID);
+                        onlineOrderDB.AddWaiterTerminal("WAITER APP 1");
+                        //onlineOrderDB.AddWaiterStaff(siteID);
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
                     }
@@ -203,8 +203,8 @@ namespace MenumateServices.WCFServices
                 EventLog.WriteEntry("IN Waiter terminal creation ", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 131, short.MaxValue);
             }
             WriteAndClearStringList();
-            //::::::::::::::::::::::::::::::::::::::::::::::
-        }
+            
+        }*/
         private void UpdateInvoiceInforWaiterAppOrders(List<ApiSiteOrderViewModel> siteOrderViewModelList, string syndicateCode, List<string> stringList)
         {
             try
@@ -233,6 +233,70 @@ namespace MenumateServices.WCFServices
                 stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             } 
         }
+
+        public void InsertWaiterTerminal(string terminalInfo)
+        {
+            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+            try 
+            {
+                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(terminalInfo);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+
+                stringList.Add("Creating Waiter Terminal at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+                {
+                    stringList.Add("Making transaction...");
+                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+                    {
+                        bool IsTerminalExist = onlineOrderDB.CheckIfWaiterTerminalExist(apiWaiterAppPosTerminal.DeviceId);
+                        stringList.Add("inside transaction using                       ");
+                        if(!IsTerminalExist)
+                            onlineOrderDB.AddWaiterTerminal(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
+                        //onlineOrderDB.AddWaiterStaff(siteID);
+                        onlineOrderDB.transaction.Commit();
+                        ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
+                    }
+                }
+                ServiceLogger.Log(@"outside using in CreateWaiterTerminal");
+            }
+            catch (Exception exc)
+            {
+                onlineOrderDB.RollbackTransaction();
+                ServiceLogger.LogException(exc.Message, exc);
+            } 
+        }
+
+        public void CreateRequestForAppZed(string zedRequest)
+        {
+            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+            try
+            {
+                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(zedRequest);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+
+                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+                {
+                    stringList.Add("Making transaction...");
+                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+                    {
+                        bool IsAppZedRowExist = onlineOrderDB.CheckIfZedRequestExist(apiWaiterAppPosTerminal.Name);
+
+                        if (!IsAppZedRowExist)
+                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
+                        ServiceLogger.Log(@"after commit in CreateRequestForAppZed ");
+                    }
+                }
+                ServiceLogger.Log(@"outside using in CreateRequestForAppZed");
+
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+        }
+
         private void WriteAndClearStringList()
         {
             // Check folder and file name should remain same as in previous releases

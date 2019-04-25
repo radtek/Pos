@@ -5,8 +5,9 @@ using System.Text;
 using System.Timers;
 using System.Windows.Forms;
 using Microsoft.AspNet.SignalR.Client;
-using SystemTrayApp.OnlineOrdering;
+using SystemTrayApp.OnlineOrderingRef;
 using OnlineOrdersManager;
+using System.Net.NetworkInformation;
 
 namespace SystemTrayApp.SignalR
 {
@@ -124,13 +125,17 @@ namespace SystemTrayApp.SignalR
                 var querystringData = new Dictionary<string, string>
                 {
                     {"siteCode", siteCode},
-                    {"syndicateCode", baseString}
+                    {"syndicateCode", baseString},
+                    {"connectionType","0"},
+                    {"deviceId", GetMACAddress()}
                 };
                 Connection = new HubConnection(ServerURI, querystringData);
                 Connection.Closed += Connection_Closed;
                 _hubProxy = Connection.CreateHubProxy("OrdersHub");
                 //Handle incoming event from server: use Invoke to write to console from SignalR's thread
                 _hubProxy.On<string>("ReceiveLength", order => SendOrderToService(order));
+                _hubProxy.On<string>("CreateWaiterTerminalAtPos", terminalInfo => TerminalInfoToService(terminalInfo));
+                _hubProxy.On<string>("ProcessWaiterTerminalZedAtPos", zedRequest => AppZedInfoToService(zedRequest));
                 Connection.Start().Wait();
                 isConnected = Connection.State == ConnectionState.Connected;
                 ContextMenuHelper helper = new ContextMenuHelper();
@@ -216,6 +221,54 @@ namespace SystemTrayApp.SignalR
             }
             MakeLogFile();
             return isDisconnected;
+        }
+
+        private static void TerminalInfoToService(string terminalInfo)
+        {
+            try
+            {
+                WCFServiceOnlineOrderingClient onlineOrderingClient = new WCFServiceOnlineOrderingClient();
+                logsList.Add("Received TerminalInfoToService at                     " + DateTime.Now.ToString("hh:mm:ss tt"));
+                logsList.Add("Terminal Received is                                  " + terminalInfo);
+                onlineOrderingClient.InsertWaiterTerminal(terminalInfo);
+            }
+            catch (Exception exception)
+            {
+                logsList.Add("Exception in TerminalInfoToService                    " + exception.Message);
+                logsList.Add("Exception at                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            MakeLogFile();
+        }
+
+        private static void AppZedInfoToService(string zedRequest)
+        {
+            try
+            {
+                WCFServiceOnlineOrderingClient onlineOrderingClient = new WCFServiceOnlineOrderingClient();
+                logsList.Add("Received AppZedInfoToService at                       " + DateTime.Now.ToString("hh:mm:ss tt"));
+                logsList.Add("Terminal Received is                                  " + zedRequest);
+                onlineOrderingClient.CreateRequestForAppZed(zedRequest);
+            }
+            catch (Exception exception)
+            {
+                logsList.Add("Exception in AppZedInfoToService                      " + exception.Message);
+                logsList.Add("Exception at                                          " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            MakeLogFile();
+        }
+
+        public static string GetMACAddress()
+        {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            String sMacAddress = string.Empty;
+            foreach (NetworkInterface adapter in nics)
+            {
+                if (sMacAddress == String.Empty)// only return MAC Address from first card  
+                {
+                    IPInterfaceProperties properties = adapter.GetIPProperties();
+                    sMacAddress = adapter.GetPhysicalAddress().ToString();
+                }
+            } return sMacAddress;
         }
 
         static void MakeLogFile()
