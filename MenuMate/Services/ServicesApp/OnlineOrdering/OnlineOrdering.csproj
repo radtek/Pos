@@ -71,7 +71,9 @@
     <Compile Include="Model\MenuModels\ApiSideGroupViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\OnlineOrderingDetailsResponse.cs" />
     <Compile Include="Model\OrderModels\ApiOrderDevicesViewModel.cs" />
+    <Compile Include="Model\ApiSiteTransactionSettingMappingViewModel.cs" />
     <Compile Include="Model\OrderModels\ApiWaiterAppPosTerminal.cs" />
     <Compile Include="Model\OrderModels\InvoiceTransactionViewModel.cs" />
     <Compile Include="Model\OrderModels\OrderInvoiceTransactionViewModel.cs" />

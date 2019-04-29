@@ -21,5 +21,7 @@ namespace OnlineOrdering.Services
         public const string IsOnlineOrderingEnableBySiteId = "api/v5/SiteApi/IsOnlineOrderingEnableBySiteId/";
 
         public const string UnsetOrderingDetails = "api/v5/SiteApi/SignalRDisconnectBySite/";
+
+        public const string GetOnlineOrderingDetailsBySiteCode = "/GetOnlineOrderingDetailsBySiteCode/";
     }
 }

@@ -13,8 +13,6 @@ using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using OnlineOrdering.Model.OrderModels;
 using OnlineOrdering.Utility;
 
-
-
 namespace MenumateServices.WCFServices
 {
     [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
@@ -297,6 +295,23 @@ namespace MenumateServices.WCFServices
             }
         }
 
+        public OnlineOrderingDetails GetOnlineOrderingDetailsBySiteCode(string inSyndicateCode, int siteCode)
+        {
+            try
+            {
+                stringList.Add("Syncing Online Ordering Details at                 " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return LoyaltyOnlineOrdering.Instance.GetOnlineOrderingDetails(inSyndicateCode, siteCode, stringList);
+            }
+            catch (Exception exc)
+            {
+                stringList.Add("Exception in GetOnlineOrderingDetailsBySiteCode is          " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            WriteAndClearStringList();
+            return null;
+        }
+        
         private void WriteAndClearStringList()
         {
             // Check folder and file name should remain same as in previous releases

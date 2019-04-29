@@ -538,7 +538,6 @@ OrderItemSizeTaxProfileModel* TOnlineOrderingInterface::CreateOrderItemSizeTaxPr
 //---------------------------------------------------------------------------
 MMLoyaltyServiceResponse TOnlineOrderingInterface::SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode)
 {
-
     try
     {
         LoyaltyOOResponse* response;
@@ -566,3 +565,43 @@ bool TOnlineOrderingInterface::UnsetOrderingDetails(TSyndCode syndicateCode,int 
     }
     return isSuccesssful;
 }
+//---------------------------------------------------------------------------
+MMOnlineOrderingResponse TOnlineOrderingInterface::GetOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode)
+{
+    try
+    {
+        OnlineOrderingDetails* response;
+        CoInitialize(NULL);
+        response = onlineOrderingClient->GetOnlineOrderingDetailsBySiteCode(syndicateCode.GetSyndCode(),siteCode);
+        MMOnlineOrderingResponse response =  CreateMMOnlineOrderingResponse( response );
+        if(response.IsWaiterOrderingEnabled)
+        {
+            // Create Payment Type for this.
+        }
+        return response;
+    }
+    catch( Exception& exc )
+    {
+        return CreateExceptionMMOnlineOrderingResponse( exc.Message );
+    }
+}
+//---------------------------------------------------------------------------
+MMOnlineOrderingResponse TOnlineOrderingInterface::CreateMMOnlineOrderingResponse(OnlineOrderingDetails* response)
+{
+    return MMOnlineOrderingResponse(
+            response->IsSuccessful,
+            response->IsMemberOrderingEnabled,
+            response->IsWaiterOrderingEnabled,
+            AnsiString( response->ResponseText.t_str() ),
+            "",
+            Successful) ;
+}
+//---------------------------------------------------------------------------
+MMOnlineOrderingResponse TOnlineOrderingInterface::CreateExceptionMMOnlineOrderingResponse(UnicodeString inMessage)
+{
+   if(inMessage.Pos("XML") > 0 || inMessage.Pos("The handle") > 0 )
+       return MMOnlineOrderingResponse(false,false,false,"Not able to connect with server.","",FailedDueToException);
+   else
+       return MMOnlineOrderingResponse(false,false,false,inMessage,"",FailedDueToException);
+}
+//---------------------------------------------------------------------------

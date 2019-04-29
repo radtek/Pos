@@ -11,6 +11,7 @@ class TManagerCloudSync
     void CheckSyndCodes();
     bool SyncOnlineOrderingDetails();
     bool UnsetSinalRConnectionStatus();
+    bool GetOnlineOrderingDetails();
    private:
     TfrmLoyaltyMateOperationDialogBox* _lmOperationDialogBox;
     void __fastcall loyaltyMateOperationCompleted(TObject* sender);

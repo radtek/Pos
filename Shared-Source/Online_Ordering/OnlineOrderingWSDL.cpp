@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (25/04/2019 10:50:51 p.m. - - $Rev: 25127 $)
+// (29/04/2019 5:40:32 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -237,12 +237,16 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSClass(__classid(OOLoyaltyResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponse");
   /* LoyaltyOOResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOOResponse), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"LoyaltyOOResponse");
+  /* OnlineOrderingDetails */
+  RemClassRegistry()->RegisterXSClass(__classid(OnlineOrderingDetails), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OnlineOrderingDetails");
   /* OOLoyaltyResponse */
   RemClassRegistry()->RegisterXSClass(__classid(OOLoyaltyResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOLoyaltyResponse2", L"OOLoyaltyResponse");
   /* OOServiceResponse */
   RemClassRegistry()->RegisterXSClass(__classid(OOServiceResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OOServiceResponse2", L"OOServiceResponse");
   /* LoyaltyOOResponse */
   RemClassRegistry()->RegisterXSClass(__classid(LoyaltyOOResponse2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"LoyaltyOOResponse2", L"LoyaltyOOResponse");
+  /* OnlineOrderingDetails */
+  RemClassRegistry()->RegisterXSClass(__classid(OnlineOrderingDetails2), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering", L"OnlineOrderingDetails2", L"OnlineOrderingDetails");
   /* OrderInvoiceTransactionModel */
   RemClassRegistry()->RegisterXSClass(__classid(OrderInvoiceTransactionModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"OrderInvoiceTransactionModel");
   /* ArrayOfOrderItemModel */
@@ -295,22 +299,22 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemModel");
   /* ArrayOfOrderItemSizeDiscountModel */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeDiscountModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeDiscountModel");
-  /* TaxProfileType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(TaxProfileType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"TaxProfileType");
-  /* ArrayOfCourseInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCourseInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfCourseInfo");
-  /* ArrayOfSideGroupInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfSideGroupInfo");
-  /* ArrayOfOrderItemSizeTaxProfileModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeTaxProfileModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeTaxProfileModel");
-  /* ArrayOfItemSizeInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfItemSizeInfo");
   /* UserType */
   RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(UserType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"UserType");
-  /* ArrayOfOrderItemSizeModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeModel");
+  /* ArrayOfItemSizeInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfItemSizeInfo");
   /* ArrayOfTaxSettingsInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTaxSettingsInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfTaxSettingsInfo");
+  /* ArrayOfOrderItemSizeModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeModel");
+  /* TaxProfileType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(TaxProfileType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"TaxProfileType");
+  /* ArrayOfSideGroupInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfSideGroupInfo");
+  /* ArrayOfCourseInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfCourseInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfCourseInfo");
+  /* ArrayOfOrderItemSizeTaxProfileModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeTaxProfileModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeTaxProfileModel");
 }
 #pragma startup RegTypes 32
 

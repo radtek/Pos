@@ -64,6 +64,20 @@ class MMLoyaltyServiceResponse
         {
         }
 };
+class MMOnlineOrderingResponse
+{
+    public:
+        bool                  IsSuccesful;
+        bool                  IsLoyaltyMateOrderingEnabled;
+        bool                  IsWaiterOrderingEnabled;
+        AnsiString            Message;
+        AnsiString            Description;
+        MMLoyaltyResponseCode ResponseCode;
+        MMOnlineOrderingResponse(bool  inSuccess,bool isLoyaltyMateOrderingEnabled, bool isWaiterOrderingEnabled,AnsiString inMessage,AnsiString  inDescription,MMLoyaltyResponseCode inResponseCode)
+            : IsSuccesful(inSuccess), IsLoyaltyMateOrderingEnabled(isLoyaltyMateOrderingEnabled), IsWaiterOrderingEnabled(isWaiterOrderingEnabled), Message(inMessage),Description(inDescription),ResponseCode(inResponseCode)
+        {
+        }
+};
 //---------------------------------------------------------------------------
 class TLoyaltyMateMemberOperation
 {
