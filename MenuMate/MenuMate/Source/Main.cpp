@@ -105,6 +105,7 @@
 #pragma link "IdIPWatch"
 #include "RegistrationManager.h"
 #include "DBRegistration.h"
+#include "GeneratorManager.h"
 
 #pragma link "C:\\Program Files (x86)\\Embarcadero\RAD Studio\\7.0\\lib\\psdk\\oleacc.lib"
 
@@ -1855,6 +1856,7 @@ void TfrmMain::EnableOnlineOrdering()
             if(signalRUtility->LoadSignalRUtility())
             {
                 TGlobalSettings::Instance().EnableOnlineOrdering = true;
+                CreateWaiterAppPaymentType();
             }
         }
         else
@@ -1948,3 +1950,58 @@ void TfrmMain::VersionCompare()
             DBTransaction.Rollback();
         }
 }
+void TfrmMain::CreateWaiterAppPaymentType()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+		if(CanCreateWaiterAppPaymentType(DBTransaction))
+		{
+            int waiterPaykey = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PAYMENTTYPES");
+            //AnsiString Properties = "";
+		    TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+            InsertQuery->SQL->Text = "INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "COLOUR, " "ROUNDTO," "TAX_RATE,"
+            "DISPLAY_ORDER, INVOICE_EXPORT) " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, " ":PROPERTIES, "
+            ":COLOUR, " ":ROUNDTO," ":TAX_RATE," ":DISPLAY_ORDER, :INVOICE_EXPORT)";
+            InsertQuery->ParamByName("PAYMENT_KEY")->AsInteger = waiterPaykey;
+            InsertQuery->ParamByName("PAYMENT_NAME")->AsString = "WAITERAPP";
+            InsertQuery->ParamByName("PROPERTIES")->AsString = "-3-19-";
+            InsertQuery->ParamByName("COLOUR")->AsInteger = clGreen;
+            InsertQuery->ParamByName("ROUNDTO")->AsCurrency = 0.01;
+            InsertQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+            InsertQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+            InsertQuery->ExecQuery();
+	  }
+	  DBTransaction.Commit();
+	}
+	catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message, "Exception in CreateWaiterAppPaymentType", MB_OK);
+        DBTransaction.Rollback();
+    }
+}
+
+bool TfrmMain::CanCreateWaiterAppPaymentType(Database::TDBTransaction &DBTransaction)
+{
+	bool retValue = false;
+	try
+	{
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM PAYMENTTYPES WHERE PAYMENT_NAME = :PAYMENT_NAME";
+        SelectQuery->ParamByName("PAYMENT_NAME")->AsString = "WAITERAPP";
+        SelectQuery->ExecQuery();
+        if(SelectQuery->RecordCount == 0)
+        {
+			retValue = true;
+		}
+	}
+	catch(Exception &Ex)
+    {
+        MessageBox(Ex.Message, "Exception in CanCreateWaiterAppPaymentType", MB_OK);
+        throw;
+    }
+	return retValue;
+}
+

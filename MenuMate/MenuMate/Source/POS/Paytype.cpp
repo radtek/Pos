@@ -249,7 +249,7 @@ void TfrmPaymentType::Reset()
            return;
         }
         //MM-2850 Hooking the loop since we need to show refund item in alternate column....
-        if (Payment->Visible && !Payment->RefundPoints)
+        if (Payment->Visible && !Payment->RefundPoints && (Payment->Name.Trim() != "WAITERAPP" ))
         {
             tgPayments->Buttons[ButtonPos][PAYCOL]->Color = Payment->Colour;
 

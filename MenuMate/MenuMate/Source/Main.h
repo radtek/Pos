@@ -144,6 +144,8 @@ private:	// User declarations
     void UnsetOrderingDetails();
     void SetUpAustriaFiscal();
     void VersionCompare();
+    void  CreateWaiterAppPaymentType();
+    bool CanCreateWaiterAppPaymentType(Database::TDBTransaction &DBTransaction);
 public:		// User declarations
     void __fastcall AppMessage(tagMSG &Msg, bool &Handled);
     void __fastcall IdleHandler(TObject *Sender, bool &Done);

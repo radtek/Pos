@@ -305,7 +305,7 @@ void  TfrmMessage::DisplayPaymentList(Database::TDBTransaction &DBTransaction,
     PaymentSystem->PaymentLoad(DBTransaction, PaymentList.get());
     for (int i = 1; i < PaymentList->Count; i++)
 	{
-           if(PaymentList->Strings[i] != "Voucher" && PaymentList->Strings[i] != "Gift Card")
+           if(PaymentList->Strings[i] != "Voucher" && PaymentList->Strings[i] != "Gift Card"  && PaymentList->Strings[i] != "WAITERAPP")
            {
                TMessageBtn *NewButton = new TMessageBtn(this);
                NewButton->Parent = this->sbMessages;
