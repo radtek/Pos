@@ -419,10 +419,18 @@ void __fastcall TfrmPaymentMaintenance::tgridContainerListMouseClick(TObject *Se
    TGridButton *GridButton)
 {
    PaymentKey = GridButton->Tag;
-   btnGlCode->Visible = (TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
+   btnGlCode->Visible = ( (TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ))
+                        ||
+                        (TGlobalSettings::Instance().EnableOnlineOrdering  && (GridButton->Caption == "WAITERAPP" )) );
+
    btnGlCode->Caption = "GL Code\r" + GetGlCode(PaymentKey);;
-   tbEditPaymentType->Enabled = !(TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
-   tbDeletePaymentType->Enabled = !(TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ));
+
+     tbEditPaymentType->Enabled = !((TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ))
+     ||
+     (TGlobalSettings::Instance().EnableOnlineOrdering  && (GridButton->Caption == "WAITERAPP" )));
+     tbDeletePaymentType->Enabled = !((TGlobalSettings::Instance().LoyaltyMateEnabled  && (GridButton->Caption == "Gift Card" || GridButton->Caption == "Voucher" ))
+      ||
+     (TGlobalSettings::Instance().EnableOnlineOrdering  && (GridButton->Caption == "WAITERAPP" )));
 }
 
 void __fastcall TfrmPaymentMaintenance::tbtnPaymentGroupClick(TObject *Sender)

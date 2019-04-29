@@ -1223,13 +1223,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             
         }
-        public void AddWaiterStaff(long siteCode)
+        public void AddWaiterStaff()
         {
             try
             {
                 // Check there should not be any conflict with same name present in DB either created by OO code or POS code
                 long contactKey = GenerateKey("CONTACTS");
-                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey, siteCode);
+                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey);
                 command.ExecuteNonQuery();
 
             }
@@ -1509,7 +1509,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 //Processing Data for Security Table
                 stringList.Add("Before ProcessSecurity call                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef, stringList);
-
+                //Adding Record In OnlineOrder
+                AddRecordInOnlineOrder(siteOrderViewModel, invoiceNumber);
+                
                 retVaule = true;
             }
             catch (Exception e)
@@ -2132,8 +2134,44 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in CreateAppZedRow " + e.Message, e);
                 throw;
             }
-
         }
+
+        public void AddRecordInOnlineOrder(ApiSiteOrderViewModel siteOrderViewModel, long invoiceNumber)
+        {
+            try
+            {
+                OnlineOrderAttributes onlineOrderAttributes = new OnlineOrderAttributes();
+                onlineOrderAttributes = CreateOnlineOrderRow(siteOrderViewModel, invoiceNumber);
+                ExecuteOnlineOrderQuery(onlineOrderAttributes);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in AddRecordInOnlineOrder " + e.Message, e);
+                throw;
+            }
+        }
+
+        public bool CheckIfWaiterStaffExist()
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterStaffExistQuery(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+        
         #endregion
     }
 

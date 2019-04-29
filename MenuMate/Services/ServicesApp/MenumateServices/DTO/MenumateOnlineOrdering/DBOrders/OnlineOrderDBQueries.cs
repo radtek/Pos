@@ -1243,7 +1243,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
-        public FbCommand InsertStaffForWaiterApp(FbConnection connection, FbTransaction transaction, long contactKey, long siteID)
+        public FbCommand InsertStaffForWaiterApp(FbConnection connection, FbTransaction transaction, long contactKey)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
@@ -1272,7 +1272,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@CONTACT_TYPE", 0);
                 command.Parameters.AddWithValue("@NAME", "WAITER");
                 command.Parameters.AddWithValue("@PIN", "11");
-                command.Parameters.AddWithValue("@SITE_ID", siteID);
+                command.Parameters.AddWithValue("@SITE_ID", 0);
                 command.Parameters.AddWithValue("@MEMBER_NUMBER", "");
 
 
@@ -2058,7 +2058,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             ;";
                 command.Parameters.AddWithValue("@APP_ZED_STATUSKEY", appZedKey);
                 command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
-                command.Parameters.AddWithValue("@APP_TYPE", 1);//Need to Confirm
+                command.Parameters.AddWithValue("@APP_TYPE", DTO.Enum.AppType.devWaiter);//Need to Confirm
                 command.Parameters.AddWithValue("@TERMINAL_NAME", terminalName);
                 command.Parameters.AddWithValue("@IS_ZED_REQUIRED", 'T');
                 command.Parameters.AddWithValue("@TIME_STAMP_REQUESTED", DateTime.Now);//Need to Confirm
@@ -2066,6 +2066,26 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in InsertDataIntoDayArcRef " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand CheckIfWaiterStaffExistQuery(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT CONTACTS_KEY FROM CONTACTS WHERE NAME = @NAME;
+                    ";
+                command.Parameters.AddWithValue("@NAME", "WAITER");
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfWaiterStaffExistQuery " + e.Message, e);
                 throw;
             }
             return command;

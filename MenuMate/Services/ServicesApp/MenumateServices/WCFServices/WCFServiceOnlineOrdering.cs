@@ -250,10 +250,15 @@ namespace MenumateServices.WCFServices
                         bool IsTerminalExist = onlineOrderDB.CheckIfWaiterTerminalExist(apiWaiterAppPosTerminal.DeviceId);
                         stringList.Add("inside transaction using                       ");
                         if(!IsTerminalExist)
+                        {
                             onlineOrderDB.AddWaiterTerminal(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
-                        //onlineOrderDB.AddWaiterStaff(siteID);
-                        onlineOrderDB.transaction.Commit();
-                        ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
+                        }
+
+                        bool IsWaiterStaffExist = onlineOrderDB.CheckIfWaiterStaffExist();
+                        if(!IsWaiterStaffExist)    
+                            onlineOrderDB.AddWaiterStaff();
+                            onlineOrderDB.transaction.Commit();
+                            ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
                     }
                 }
                 ServiceLogger.Log(@"outside using in CreateWaiterTerminal");
