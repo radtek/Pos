@@ -1715,7 +1715,7 @@ void TfrmAnalysis::PrintConsumption(Database::TDBTransaction &DBTransaction)
 	}
 }
 // ---------------------------------------------------------------------------
-void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName, int zedKey)
+void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembership *Membership, UnicodeString DeviceName, int zedKey, bool IsWaiterAppZed)
 {
     zedLogsList->Add("Update archive code execution starts: ");
 	long NewBillingKey;
@@ -1816,14 +1816,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"ARCHIVE.REDEEMED, ARCHIVE.POINTS_PERCENT, ARCHIVE.POINTS_EARNED, "
 			"ARCHIVE.LOYALTY_KEY,ARCHIVE.THIRDPARTYCODES_KEY,ARCHIVE.CATEGORY_KEY,ARCHIVE.DISCOUNT_REASON, "
 			"ARCHIVE.PRICE_LEVEL0, ARCHIVE.PRICE_LEVEL1,ARCHIVE.SERVINGCOURSES_KEY,ARCHIVE.PLU,ARCHIVE.CHIT_NAME,ARCHIVE.CHIT_OPTION,ARCHIVE.BASE_PRICE, "
-            "ARCHIVE.DISCOUNT_WITHOUT_TAX,ARCHIVE.TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ORDER_GUID ) "
+            "ARCHIVE.DISCOUNT_WITHOUT_TAX,ARCHIVE.TAX_ON_DISCOUNT, PRICE_INCL, PRICE_ADJUST, ONLINE_CHIT_TYPE, ORDER_GUID, ITEMSIZE_IDENTIFIER ) "
 
 			"VALUES " "(:ARCHIVE_KEY, :ARCBILL_KEY, :TERMINAL_NAME, :MENU_NAME, :COURSE_NAME, " ":ITEM_NAME, :ITEM_SHORT_NAME, :ITEM_ID, :ITEM_CATEGORY, "
                     " :SIZE_NAME, " ":TABLE_NUMBER, :TABLE_NAME, :SEAT_NUMBER, :SERVER_NAME, :TAB_NAME, " ":LOYALTY_NAME, :ORDER_TYPE, :TIME_STAMP, "
                     ":TIME_STAMP_BILLED, " ":ORDER_LOCATION, :PRICE, :COST, :HAPPY_HOUR, " ":NOTE, :SECURITY_REF, :TIME_KEY, :GST_PERCENT, :COST_GST_PERCENT, "
                      ":QTY, :DISCOUNT, :REDEEMED, :POINTS_PERCENT, :POINTS_EARNED, " ":LOYALTY_KEY, :THIRDPARTYCODES_KEY, :CATEGORY_KEY, :DISCOUNT_REASON," ":PRICE_LEVEL0, "
                      ":PRICE_LEVEL1, :SERVINGCOURSES_KEY, :PLU, :CHIT_NAME, :CHIT_OPTION,:BASE_PRICE,:DISCOUNT_WITHOUT_TAX,:TAX_ON_DISCOUNT,:PRICE_INCL, "
-                     ":PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ORDER_GUID ); ";
+                     ":PRICE_ADJUST, :ONLINE_CHIT_TYPE, :ORDER_GUID, :ITEMSIZE_IDENTIFIER ); ";
 
 			IBArcBill->Close();
 			IBArcBill->SQL->Text = "insert into \"ARCBILL\" "
@@ -1833,13 +1833,15 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"BILLED_LOCATION\", \"ARCBILL\".\"INVOICE_NUMBER\", \"ARCBILL\".\"INVOICE_KEY\","
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
             "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" , \"ARCBILL\".\"REFUND_REFRECEIPT\", "
-            " \"ARCBILL\".\"IS_POSTED_TO_PANASONIC_SERVER\", \"ARCBILL\".\"CASH_DRAWER_OPENED\" , \"ARCBILL\".\"EFTPOS_SERVICE_ID\") "
+            " \"ARCBILL\".\"IS_POSTED_TO_PANASONIC_SERVER\", \"ARCBILL\".\"CASH_DRAWER_OPENED\" , \"ARCBILL\".\"EFTPOS_SERVICE_ID\", "
+            " \"ARCBILL\".\"IS_PRINT_REQUIRED\", \"ARCBILL\".\"ONLINE_ORDER_ID\", \"ARCBILL\".\"ORDER_GUID\", \"ARCBILL\".\"APP_TYPE\") "
             "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
             " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\", "
-            " :\"REFUND_REFRECEIPT\", :\"IS_POSTED_TO_PANASONIC_SERVER\", :\"CASH_DRAWER_OPENED\", :\"EFTPOS_SERVICE_ID\")";
+            " :\"REFUND_REFRECEIPT\", :\"IS_POSTED_TO_PANASONIC_SERVER\", :\"CASH_DRAWER_OPENED\", :\"EFTPOS_SERVICE_ID\", "
+            " :\"IS_PRINT_REQUIRED\", :\"ONLINE_ORDER_ID\", :\"ORDER_GUID\", :\"APP_TYPE\") ";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
@@ -1889,7 +1891,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 
             zedLogsList->Add("query object created and initialized with query. ");
 
-            if(TGlobalSettings::Instance().mallInfo.MallId)
+            if(TGlobalSettings::Instance().mallInfo.MallId && !IsWaiterAppZed)
             {
                 IBMallQuery->Close();
                 IBMallQuery->SQL->Text = "UPDATE MALLEXPORT_SALES a SET A.ARCBILL_KEY = :ARCBILL_KEY WHERE A.ARCBILL_KEY = :DAYARCBILL_KEY "
@@ -2304,7 +2306,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     }
 
                     //Update MallExport's arcbill key if zed is done..
-                    if(TGlobalSettings::Instance().mallInfo.MallId)
+                    if(TGlobalSettings::Instance().mallInfo.MallId && !IsWaiterAppZed)
                     {
                         IBMallQuery->Close();
                         IBMallQuery->ParamByName("ARCBILL_KEY")->AsInteger = ArcBillKey;
@@ -2350,8 +2352,10 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                     Csv.SaveToFile(ExportFile);
                 }
 
-                if((TGlobalSettings::Instance().MallIndex == 7 && !DuplicateEntryInTable) ||
-                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7))
+                if((
+                (TGlobalSettings::Instance().MallIndex == 7 && !DuplicateEntryInTable) ||
+                    (TGlobalSettings::Instance().MallIndex != 0 && TGlobalSettings::Instance().MallIndex != 9 && TGlobalSettings::Instance().MallIndex != 7)
+                    ) && !IsWaiterAppZed)
                 {
                     zedLogsList->Add("updating zed table for mall");
                     UpdateArcMallExport(DBTransaction);
@@ -3227,6 +3231,21 @@ Zed:
                         && TGlobalSettings::Instance().EftPosTerminalId.Trim() != "")
                 {
                     SettleEFTPOSBills();
+                }
+                //Performing ZED For Waiter App Terminals
+                if(TGlobalSettings::Instance().ZedForAppTerminals)
+                {
+                    int count = CheckIfZedPendingForAnyWApp();
+                    if(count > 0)
+                    {
+                        Processing->Close();
+                        Processing->Message = "Performing ZED For Waiter App Terminals...";
+                        Processing->Show();
+                        ManageZedOperationsForWApp(count);
+                        Processing->Close();
+                        Processing->Message = "Completed";
+                        Processing->Show();
+                    }
                 }
             }
       }
@@ -9312,8 +9331,313 @@ void TfrmAnalysis::UploadMallFilesToFTP()
     }
 
 }
+//------------------------------------------------------------------------------
+int TfrmAnalysis::CheckIfZedPendingForAnyWApp()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    int retValue = 0;
+    try
+    {
+        TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.TERMINAL_NAME FROM APPZEDSTATUS a "
+                                     "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
+
+        IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7; //Need to change
+
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+            retValue = IBInternalQuery->FieldByName("COUNT")->AsInteger;
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+    return retValue;
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::ManageZedOperationsForWApp(int count)
+{
+    UnicodeString DeviceName = "";
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        for(int i = 0; i < count; i++)
+        {
+            //Clearing Data Of Previous Zed Report From ZedToArchive
+            ZedToArchive->Clear();
+            ZedToArchive->Position = 0;
+
+            //Getting Waiter App Terminal Name For Zed Processing And Data Movement
+            DeviceName = GetTerminalNameForWaiterApp(DBTransaction);
+            AddRowInZedTableForWAppTerminal(DBTransaction, DeviceName);
+
+            //Updating APPZEDSTATUS Table After Successfully Completion of Zed
+            UpdateZedStatusForWaiterApp(DBTransaction, DeviceName);
+        }
+
+        DBTransaction.Commit();
+    }
+    catch(Exception & E)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+    }
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::AddRowInZedTableForWAppTerminal(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName)
+{
+	try
+	{
+        TBlindBalances Balances;
+		AnsiString BagID;
+		TStaffHoursInterface StaffHours;
+		TCommissionCache Commission;
+		TPrinterReadingsInterface PrinterReading;
+		TPaxCount PaxCount;
+		int z_key;
+
+		TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+		IBInternalQuery->ExecQuery();
+		z_key = IBInternalQuery->Fields[0]->AsInteger;
+
+		if (TGlobalSettings::Instance().EnablePrinterCounts)
+		{
+			zedLogsList->Add("inside EnablePrinterCounts enable check ");
+			TPrinterReadingController PrinterReadings(this, DBTransaction);
+			PrinterReadings.Run(z_key);
+			PrinterReading = PrinterReadings.Get();
+            zedLogsList->Add("After EnablePrinterCounts enable check ");
+		}
+		if (TGlobalSettings::Instance().EnablePaxCount)
+		{
+            zedLogsList->Add("inside EnablePaxCount enable check ");
+			TPaxCountController PaxCountController(this, DBTransaction);
+			PaxCountController.Run();
+			PaxCountController.Show();
+			PaxCount = PaxCountController.Get();
+            zedLogsList->Add("After EnablePaxCount enable check ");
+		}
+
+		TTransactionInfo TransactionInfo;
+        TTransactionInfoProcessor::Instance().RemoveEntryFromMap(DeviceName);
+        zedLogsList->Add("Befor calling  GetTransactionInfo(DBTransaction, DeviceName)");
+        TransactionInfo = TTransactionInfoProcessor::Instance().GetTransactionInfo(DBTransaction, DeviceName);
+        zedLogsList->Add("After calling  GetTransactionInfo(DBTransaction, DeviceName)");
+
+		DataCalculationUtilities* dataCalculationUtilities;
+        TDateTime trans_date = dataCalculationUtilities->CalculateSessionTransactionDate(Now());
+		ReportManager reportManager;
+
+        WaiterAppZedReport* waiterAppZedReport = reportManager.GetWaiterAppZedReport(&TGlobalSettings::Instance(), &DBTransaction);
+        zedLogsList->Add("Before form show of close till.");
+        bool CompleteZed = waiterAppZedReport->DisplayAndPrint(ZedToArchive);
+
+		if(CompleteZed)
+		{
+            int Zedkey;
+            int _key;
+			zedLogsList->Add("If complete zed flag is true after processing of close till form");
+            //Get terminal earning
+            Currency TotalEarnings = dataCalculationUtilities->GetTotalEarnings(DBTransaction, DeviceName);
+            zedLogsList->Add("After total earning calulation :");
+            //Get Accumulated zed
+            Currency AccumulatedZedTotal = dataCalculationUtilities->GetAccumulatedZedTotal(DBTransaction);
+            AccumulatedZedTotal +=  TotalEarnings;
+
+			if(TGlobalSettings::Instance().EnableBlindBalances)
+            {
+                zedLogsList->Add("Blind balance section start.");
+               Balances = TBlindBalanceControllerInterface::Instance()->GetBalances();
+               BagID = TBlindBalanceControllerInterface::Instance()->GetBagID();
+               zedLogsList->Add("Blind balance section end.");
+            }
+
+			TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+			if(TGlobalSettings::Instance().EnableDontClearZedData)
+			{
+                try
+                {
+                    zedLogsList->Add("if EnableDontClearZedData setting is on ");
+                    IBInternalQuery->Close();
+                    IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+                    IBInternalQuery->ExecQuery();
+                    Zedkey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+                    BagID = "To Be Zed";
+                    UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
+                    UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
+                    UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
+                    if(TGlobalSettings::Instance().EnablePaxCount)
+                    UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
+                    if (TGlobalSettings::Instance().EnableBlindBalances)
+                    PrintBlindBalance(DBTransaction, Balances, DeviceName);
+                    DBTransaction.Commit();
+                    return;
+                }
+                catch(Exception & E)
+                {
+                    DBTransaction.Rollback();
+                    zedLogsList->Add("Catch block of TGlobalSettings::Instance().EnableDontClearZedData ");
+                    TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+                    throw;
+                }
+
+			}
+			else
+			{
+                zedLogsList->Add("Else block if EnableDontClearZedData setting is off ");
+				IBInternalQuery->Close();
+				IBInternalQuery->SQL->Text = "SELECT " "* FROM ZEDS " "WHERE " "TERMINAL_NAME = :TERMINAL_NAME AND " "TIME_STAMP IS NULL";
+				IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+				IBInternalQuery->ExecQuery();
+				if (IBInternalQuery->RecordCount == 0)
+				{
+                    zedLogsList->Add("if zeds table contains no record having time stamp as null for that terminal. ");
+					int CurrentSecurityRef = TDBSecurity::GetNextSecurityRef(DBTransaction);
+					TDBSecurity::ProcessSecurity(DBTransaction, CurrentSecurityRef,
+					lastAuthenticatedUser.ContactKey, SecurityTypes[secZedded],
+					lastAuthenticatedUser.Name,
+					lastAuthenticatedUser.Initials, Now(), DeviceName);
+					IBInternalQuery->Close();
+					IBInternalQuery->SQL->Text = "SELECT MAX(Z_KEY) Z_KEY FROM ZEDS";
+					IBInternalQuery->ExecQuery();
+					int PrevZedKey = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
 
 
+					IBInternalQuery->Close();
+					IBInternalQuery->SQL->Text = "SELECT GEN_ID(GEN_ZED, 1) FROM RDB$DATABASE";
+					IBInternalQuery->ExecQuery();
+					z_key = Zedkey = IBInternalQuery->Fields[0]->AsInteger;
+                    int EMAIL_STATUS = 0;
+					IBInternalQuery->Close();
+                    zedLogsList->Add("After updating security table. Now will update zeds table.");                                                         //
+					IBInternalQuery->SQL->Text =
+					"INSERT INTO ZEDS ( Z_KEY, INITIAL_FLOAT, TERMINAL_NAME, TIME_STAMP, REPORT, SECURITY_REF, EMAIL_STATUS, TRANS_DATE, TERMINAL_EARNINGS, ZED_TOTAL ) "
+					"VALUES (:Z_KEY, :INITIAL_FLOAT, :TERMINAL_NAME, :TIME_STAMP, :REPORT, :SECURITY_REF, :EMAIL_STATUS, :TRANS_DATE, :TERMINAL_EARNINGS, :ZED_TOTAL ); ";
+					IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
+					IBInternalQuery->ParamByName("INITIAL_FLOAT")->AsCurrency = 0;
+					IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+                    IBInternalQuery->ParamByName("TERMINAL_EARNINGS")->AsCurrency = TotalEarnings;
+                    IBInternalQuery->ParamByName("ZED_TOTAL")->AsCurrency = AccumulatedZedTotal;
+					ZedToArchive->Position = 0;
 
+					IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
+					IBInternalQuery->ParamByName("SECURITY_REF")->AsInteger = CurrentSecurityRef;
+                    IBInternalQuery->ParamByName("EMAIL_STATUS")->AsInteger = EMAIL_STATUS;
+                    IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = trans_date;
+					IBInternalQuery->ExecQuery();
+                     zedLogsList->Add("After updating zeds table.");
+					UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
+					UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
+					UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
+					if (TGlobalSettings::Instance().EnablePaxCount)
+				     	UpdatePaxCountDatabase(DBTransaction, Zedkey, PaxCount);
+                    _key = Zedkey;
+                    UpdateCancelItemsTable();
+                    ///changes here for staff hour...
+                    UpdateZedStaffHoursEnable(DBTransaction, Zedkey);
+				}
+				else
+				{
+                    zedLogsList->Add("if zeds table contains record having time stamp as null for that terminal. ");
+					Zedkey = z_key = IBInternalQuery->FieldByName("Z_KEY")->AsInteger;
+					int CurrentSecurityRef = IBInternalQuery->FieldByName("SECURITY_REF")->AsInteger;
+
+					TDBSecurity::ProcessSecurity(DBTransaction, CurrentSecurityRef,
+					lastAuthenticatedUser.ContactKey, SecurityTypes[secZedded],
+					lastAuthenticatedUser.Name,
+					lastAuthenticatedUser.Initials, Now(), DeviceName);
+
+                    zedLogsList->Add("After updating security table. Now will update zeds table.");
+					IBInternalQuery->Close();
+					IBInternalQuery->SQL->Text =
+					"UPDATE ZEDS " "SET " "TIME_STAMP	= :TIME_STAMP, " "REPORT	= :REPORT, " "TERMINAL_EARNINGS = :TERMINAL_EARNINGS, " "ZED_TOTAL = :ZED_TOTAL , TRANS_DATE = :TRANS_DATE  " "WHERE " "Z_KEY = :Z_KEY";
+					IBInternalQuery->ParamByName("Z_KEY")->AsInteger = Zedkey;
+					ZedToArchive->Position = 0;
+					IBInternalQuery->ParamByName("REPORT")->LoadFromStream( FormattedZed(ZedToArchive));
+					IBInternalQuery->ParamByName("TIME_STAMP")->AsDateTime = Now();
+                    IBInternalQuery->ParamByName("TRANS_DATE")->AsDateTime = trans_date;
+                    IBInternalQuery->ParamByName("TERMINAL_EARNINGS")->AsCurrency = TotalEarnings;
+                    IBInternalQuery->ParamByName("ZED_TOTAL")->AsCurrency = AccumulatedZedTotal;
+					IBInternalQuery->ExecQuery();
+                    zedLogsList->Add("After updating zeds table.");
+					UpdateBlindBlances(DBTransaction, Zedkey, Balances, BagID);
+					UpdateCommissionDatabase(DBTransaction, Zedkey, Commission);
+					UpdatePrinterReadingsDatabase(DBTransaction, Zedkey, PrinterReading);
+                    ///changes here for staff hour...
+                    UpdateZedStaffHoursEnable(DBTransaction, Zedkey);
+				}
+			}
+            zedLogsList->Add("Before calling UpdateArchive ");
+            UpdateArchive(DBTransaction, TDeviceRealTerminal::Instance().ManagerMembership->MembershipSystem.get(), DeviceName, Zedkey, true);  // update archive..
+            zedLogsList->Add("After calling UpdateArchive and it was executed. ");
+		}
+	}
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+UnicodeString TfrmAnalysis::GetTerminalNameForWaiterApp(Database::TDBTransaction &_dbTransaction)
+{
+    UnicodeString terminalName = "";
+    try
+    {
+        TIBSQL *IBInternalQuery = _dbTransaction.Query(_dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT FIRST 1 a.TERMINAL_NAME FROM APPZEDSTATUS a "
+                                     "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
+
+        IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7; //Need to change
+
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+            terminalName = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        throw;
+    }
+    return terminalName;
+}
+//------------------------------------------------------------------------------
+void TfrmAnalysis::UpdateZedStatusForWaiterApp(Database::TDBTransaction &_dbTransaction, UnicodeString DeviceName)
+{
+    try
+    {
+        TIBSQL *IBInternalQuery = _dbTransaction.Query(_dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "UPDATE APPZEDSTATUS a SET a.IS_ZED_REQUIRED = 'F' "
+                                     "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.TERMINAL_NAME =:TERMINAL_NAME ";
+
+        IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
+        IBInternalQuery->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
+        IBInternalQuery->ExecQuery();
+
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        TManagerLogs::Instance().AddLastError(EXCEPTIONLOG);
+        throw;
+    }
+}
 
 

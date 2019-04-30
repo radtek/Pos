@@ -1752,5 +1752,122 @@ TReprintDetails::TReprintDetails()
     TimeStamp = "";
 }
 
+std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListForProcessedOrders(TIBSQL *orderQuery, UnicodeString terminalName
+                                                                    ,TDateTime previousZedTime)
+{
+    std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList;
 
+    try
+    {
+        orderQuery->Close();
+        orderQuery->SQL->Text =
+        				        "SELECT DEVICE_NAME, ORDER_ITEM, ITEM_SIZE_NAME,SUM(QUANTITY) AS TOTAL_QTY,SUM(TOTAL) AS TOTAL_AMT FROM "
+				                "( "
+				                "SELECT a.TERMINAL_NAME AS DEVICE_NAME, a.ITEM_NAME AS ORDER_ITEM, a.SIZE_NAME AS ITEM_SIZE_NAME,COUNT(a.QTY) AS QUANTITY, SUM(a.PRICE) AS TOTAL "
+				                "FROM ORDERS a "
+				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND a.TIME_STAMP >:TIME_STAMP "
+				                "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
+				                "UNION ALL "
+				                "SELECT a.TERMINAL_NAME AS DEVICE_NAME, a.ITEM_NAME AS ORDER_ITEM, a.SIZE_NAME AS ITEM_SIZE_NAME,COUNT(a.QTY) AS QUANTITY, SUM(a.PRICE) AS TOTAL "
+				                "FROM DAYARCHIVE a "
+				                "INNER JOIN "
+				                "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+				                "INNER JOIN "
+				                "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
+				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE "
+				                "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
+				                ") AS ORDER_DATA "
+				                "GROUP BY DEVICE_NAME,ORDER_ITEM, ITEM_SIZE_NAME ";
 
+        ;
+        orderQuery->ParamByName("TERMINAL_NAME")->AsString =  terminalName;
+        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITER";
+        orderQuery->ParamByName("NOTE")->AsString = "Total Change.";
+        orderQuery->ParamByName("TIME_STAMP")->AsDate = previousZedTime;
+
+        orderQuery->ExecQuery();
+
+        for (; !orderQuery->Eof; orderQuery->Next())
+        {
+            TWaiterAppOrderInfo waiterAppOrderInfo;
+            waiterAppOrderInfo.itemName = orderQuery->FieldByName("ORDER_ITEM")->AsString;
+            waiterAppOrderInfo.sizeName = orderQuery->FieldByName("ITEM_SIZE_NAME")->AsString;
+            waiterAppOrderInfo.qty      = orderQuery->FieldByName("TOTAL_QTY")->AsInteger;
+            waiterAppOrderInfo.amount   = orderQuery->FieldByName("TOTAL_AMT")->AsDouble;
+
+            waiterAppOrderInfoList.push_back(waiterAppOrderInfo);
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return waiterAppOrderInfoList;
+}
+
+std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListForPaidOrders(TIBSQL *orderQuery, UnicodeString terminalName)
+{
+    std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList;
+
+    try
+    {
+        orderQuery->Close();
+        orderQuery->SQL->Text = "SELECT a.ITEM_NAME,a.SIZE_NAME,COUNT(a.QTY), SUM(a.PRICE) "
+                                "FROM DAYARCHIVE a "
+				                "INNER JOIN "
+                                "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
+                                "INNER JOIN "
+							    "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
+                                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE "
+                                "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
+				                "ORDER BY a.ITEM_NAME asc ";
+        orderQuery->ParamByName("TERMINAL_NAME")->AsString =  terminalName;
+        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITER";
+        orderQuery->ParamByName("NOTE")->AsString = "Total Change.";
+
+        orderQuery->ExecQuery();
+
+        for (; !orderQuery->Eof; orderQuery->Next())
+        {
+            TWaiterAppOrderInfo waiterAppOrderInfo;
+            waiterAppOrderInfo.itemName = orderQuery->FieldByName("ITEM_NAME")->AsString;
+            waiterAppOrderInfo.sizeName = orderQuery->FieldByName("SIZE_NAME")->AsString;
+            waiterAppOrderInfo.qty      = orderQuery->FieldByName("COUNT")->AsInteger;
+            waiterAppOrderInfo.amount   = orderQuery->FieldByName("SUM")->AsDouble;
+
+            waiterAppOrderInfoList.push_back(waiterAppOrderInfo);
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return waiterAppOrderInfoList;
+}
+
+UnicodeString DataCalculationUtilities::GetTerminalName(Database::TDBTransaction &_dbTransaction)
+{
+    UnicodeString terminalName = "";
+    try
+    {
+        TIBSQL *IBInternalQuery = _dbTransaction.Query(_dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT FIRST 1 a.TERMINAL_NAME FROM APPZEDSTATUS a "
+                                     "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
+
+        IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7; //Need to change
+
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount)
+            terminalName = IBInternalQuery->FieldByName("TERMINAL_NAME")->AsString;
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+    return terminalName;
+}

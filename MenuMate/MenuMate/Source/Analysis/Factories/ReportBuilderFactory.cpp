@@ -4,6 +4,7 @@
 #include "XReportBuilder.h"
 #include "XReport.h"
 #include "ConsolidatedZReportBuilder.h"
+#include "WaiterAppZReportBuilder.h"
 
 ReportBuilderFactory::ReportBuilderFactory(TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction)
 {
@@ -37,6 +38,9 @@ IReportBuilder* ReportBuilderFactory::CreateReportBuilder(ReportType reportType)
 		break;
 	case mmConsolidatedZReport:
 		reportBuilder = new ConsolidatedZReportBuilder(reportType, _globalSettings, _dbTransaction, _startTime, _endTime);
+		break;
+    case mmWaiterAppZReport:
+		reportBuilder = new WaiterAppZReportBuilder(reportType, _globalSettings, _dbTransaction);
 		break;
 	default:
 		reportBuilder = NULL;

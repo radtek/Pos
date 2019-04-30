@@ -63,4 +63,22 @@ ConsolidatedZedReport* ReportManager::GetConsolidatedZedReport(TGlobalSettings* 
 	return dynamic_cast<ConsolidatedZedReport*>(report);
 }
 
+WaiterAppZedReport* ReportManager::GetWaiterAppZedReport(TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction)
+{
+	//Get the report builder for the current report type...
+	CreateReportBuilderInstanceForWaiterAppZed(mmWaiterAppZReport, globalSettings, dbTransaction);
 
+	//Now we have the actual report builders...
+	//Create the reports...
+	IReport* report = _reportBuilder->BuildReport();
+
+	return dynamic_cast<WaiterAppZedReport*>(report);
+}
+
+void ReportManager::CreateReportBuilderInstanceForWaiterAppZed(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction)
+{
+	//Actually this should be injected here,
+	//Alas!! we are not able to decouple the dependencies.
+	_reportBuilderFactory.reset(new ReportBuilderFactory(globalSettings, dbTransaction));
+	_reportBuilder.reset(_reportBuilderFactory->CreateReportBuilder(reportType));
+}

@@ -126,7 +126,7 @@ private:	// User declarations
     UnicodeString CheckRegistered();
     void GetCategoryNameAndGLCode(Database::TDBTransaction &DBTransaction, std::map<AnsiString, AnsiString>&CollectCategoryName, TDateTime startTime, TDateTime endTime);
     TPrintout* SetupPrintOutInstance();
-	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName, int zedKey);
+	void UpdateArchive(Database::TDBTransaction &DBTransaction,TMembership *Membership,UnicodeString DeviceName, int zedKey, bool IsWaiterAppZed = false);
 	void ProcessStock(Database::TDBTransaction &DBTransaction);
 	bool UpdateStockAllowed(Database::TDBTransaction &DBTransaction);
 	void UpdateStockComplete(Database::TDBTransaction &DBTransaction);
@@ -204,6 +204,11 @@ private:	// User declarations
     bool DuplicateEntryInTable;
     void SettleEFTPOSBills();
     void UpdateMaxZedTime(int fieldindex);
+    int CheckIfZedPendingForAnyWApp();
+    void ManageZedOperationsForWApp(int count);
+    void AddRowInZedTableForWAppTerminal(Database::TDBTransaction &DBTransaction, UnicodeString DeviceName);
+    UnicodeString GetTerminalNameForWaiterApp(Database::TDBTransaction &_dbTransaction);
+    void UpdateZedStatusForWaiterApp(Database::TDBTransaction &_dbTransaction, UnicodeString DeviceName);
 
 public:		// User declarations
 	bool ZedCancel;

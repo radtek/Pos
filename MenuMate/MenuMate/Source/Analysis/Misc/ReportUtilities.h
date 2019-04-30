@@ -23,6 +23,14 @@ struct TPointTransactions
    std::vector<TPointTransaction> PointsTransactions;
 };
 
+struct TWaiterAppOrderInfo
+{
+     UnicodeString itemName;
+     UnicodeString sizeName;
+     int qty;
+     double amount;
+};
+
 const char* const eStrCalculatedTotals[] =
 {
     NULL,
@@ -249,6 +257,10 @@ public:
     int GetZedNumber(Database::TDBTransaction &dbTransaction);
     Currency CalculateCashWithdrawl(TIBSQL *ibInternalQuery, UnicodeString deviceName);
     int GetCashDrawerOpenCount(Database::TDBTransaction &dbTransaction,TGlobalSettings* globalSettings, UnicodeString deviceName,TDateTime &startTime, TDateTime &endTime, bool consolidated);
+    std::list<TWaiterAppOrderInfo> GetWaiterAppOrderListForPaidOrders(TIBSQL *orderQuery, UnicodeString terminalName);
+    UnicodeString GetTerminalName(Database::TDBTransaction &_dbTransaction);
+    std::list<TWaiterAppOrderInfo> GetWaiterAppOrderListForProcessedOrders(TIBSQL *orderQuery, UnicodeString terminalName
+                                                                    ,TDateTime previousZedTime);
 };
 
 
