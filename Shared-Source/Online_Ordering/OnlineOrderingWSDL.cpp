@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (20/03/2019 8:16:50 p.m. - - $Rev: 25127 $)
+// (25/04/2019 10:50:51 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #include <vcl.h>
@@ -303,14 +303,14 @@ static void RegTypes()
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfSideGroupInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfSideGroupInfo");
   /* ArrayOfOrderItemSizeTaxProfileModel */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeTaxProfileModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeTaxProfileModel");
-  /* UserType */
-  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(UserType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"UserType");
-  /* ArrayOfTaxSettingsInfo */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTaxSettingsInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfTaxSettingsInfo");
-  /* ArrayOfOrderItemSizeModel */
-  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeModel");
   /* ArrayOfItemSizeInfo */
   RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfItemSizeInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfItemSizeInfo");
+  /* UserType */
+  RemClassRegistry()->RegisterXSInfo(GetClsMemberTypeInfo(__typeinfo(UserType_TypeInfoHolder)), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum", L"UserType");
+  /* ArrayOfOrderItemSizeModel */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfOrderItemSizeModel), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels", L"ArrayOfOrderItemSizeModel");
+  /* ArrayOfTaxSettingsInfo */
+  RemClassRegistry()->RegisterXSInfo(__delphirtti(ArrayOfTaxSettingsInfo), L"http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels", L"ArrayOfTaxSettingsInfo");
 }
 #pragma startup RegTypes 32
 

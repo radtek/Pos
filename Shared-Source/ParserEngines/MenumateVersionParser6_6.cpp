@@ -537,7 +537,7 @@ void TApplyParser::Alter6_63Tables(TDBControl* const inDBControl)
         // Changes Device table
     if (!fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )
 	{
-        executeQuery ( "ALTER TABLE DEVICES ADD UNIQUE_DEVICE_ID VARCHAR(50) ;", inDBControl);
+        executeQuery ( "ALTER TABLE DEVICES ADD UNIQUE_DEVICE_ID VARCHAR(250) ;", inDBControl);
 	}
 
     if (fieldExists( "DEVICES", "UNIQUE_DEVICE_ID", _dbControl ) )

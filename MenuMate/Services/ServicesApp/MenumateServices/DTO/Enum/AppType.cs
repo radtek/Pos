@@ -7,8 +7,14 @@ namespace MenumateServices.DTO.Enum
 {
     public enum AppType
     {
-        Pos = 0,
-        WaiterApp,
-        Kiosk
+        devAll,
+        devPC,
+        devPalm,
+        devPrinter,
+        devIRModule,
+        devPrinterModule,
+        devUnknown,
+        devWaiter,
+        devKiosk
     }
 }

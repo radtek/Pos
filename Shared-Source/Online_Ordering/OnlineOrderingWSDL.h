@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (20/03/2019 8:16:50 p.m. - - $Rev: 25127 $)
+// (25/04/2019 10:50:51 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   OnlineOrderingWSDLH
@@ -46,7 +46,7 @@ namespace NS__OnlineOrderingWSDL {
 // The following types, referred to in the WSDL document are not being represented
 // in this file. They are either aliases[@] of other types represented or were referred
 // to but never[!] declared in the document. The types from the latter category
-// typically map to predefined/known XML or Embarcadero types; however, they could also 
+// typically map to predefined/known XML or Embarcadero types; however, they could also
 // indicate incorrect WSDL documents that failed to declare or import a schema type.
 // ************************************************************************ //
 // !:long            - "http://www.w3.org/2001/XMLSchema"[Gbl]
@@ -180,7 +180,7 @@ enum class OrderType   /* "http://schemas.datacontract.org/2004/07/MenumateServi
 {
   NormalOrder, 
   Unused, 
-  CanceledOrder, 
+  CanceledOrder,
   CreditNonExistingOrder
 };
 
@@ -285,7 +285,7 @@ private:
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
-  {  return FDescription_Specified;  } 
+  {  return FDescription_Specified;  }
   void __fastcall SetIsPalmable(int Index, bool _prop_val)
   {  FIsPalmable = _prop_val; FIsPalmable_Specified = true;  }
   bool __fastcall IsPalmable_Specified(int Index)
@@ -635,7 +635,7 @@ private:
   void __fastcall SetTaxProfileId(int Index, __int64 _prop_val)
   {  FTaxProfileId = _prop_val; FTaxProfileId_Specified = true;  }
   bool __fastcall TaxProfileId_Specified(int Index)
-  {  return FTaxProfileId_Specified;  } 
+  {  return FTaxProfileId_Specified;  }
   void __fastcall SetType(int Index, TaxProfileType _prop_val)
   {  FType = _prop_val; FType_Specified = true;  }
   bool __fastcall Type_Specified(int Index)
@@ -1020,7 +1020,7 @@ private:
   void __fastcall SetResponseText(int Index, UnicodeString _prop_val)
   {  FResponseText = _prop_val; FResponseText_Specified = true;  }
   bool __fastcall ResponseText_Specified(int Index)
-  {  return FResponseText_Specified;  } 
+  {  return FResponseText_Specified;  }
 __published:
   __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
   __property UnicodeString ResponseText = { index=(IS_OPTN|IS_NLBL), read=FResponseText, write=SetResponseText, stored = ResponseText_Specified };
@@ -1335,7 +1335,7 @@ private:
   void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
   {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
   bool __fastcall TransactionDate_Specified(int Index)
-  {  return FTransactionDate_Specified;  } 
+  {  return FTransactionDate_Specified;  }
   void __fastcall SetUserReferenceId(int Index, __int64 _prop_val)
   {  FUserReferenceId = _prop_val; FUserReferenceId_Specified = true;  }
   bool __fastcall UserReferenceId_Specified(int Index)
@@ -1650,7 +1650,7 @@ private:
   void __fastcall SetPriority(int Index, int _prop_val)
   {  FPriority = _prop_val; FPriority_Specified = true;  }
   bool __fastcall Priority_Specified(int Index)
-  {  return FPriority_Specified;  } 
+  {  return FPriority_Specified;  }
   void __fastcall SetRate(int Index, double _prop_val)
   {  FRate = _prop_val; FRate_Specified = true;  }
   bool __fastcall Rate_Specified(int Index)
@@ -1782,6 +1782,8 @@ public:
   virtual OOLoyaltyResponse* PostOnlineOrderInvoiceInfo(const UnicodeString inSyndicateCode, const SiteOrderModel* siteOrderModel) = 0; 
   virtual LoyaltyOOResponse* SyncOnlineOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
   virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
+  virtual void            InsertWaiterTerminal(const UnicodeString terminalInfo) = 0; 
+  virtual void            CreateRequestForAppZed(const UnicodeString zedRequest) = 0; 
 };
 typedef DelphiInterface<IWCFServiceOnlineOrdering> _di_IWCFServiceOnlineOrdering;
 

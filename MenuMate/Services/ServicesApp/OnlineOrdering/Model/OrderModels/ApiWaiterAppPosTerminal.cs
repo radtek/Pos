@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OnlineOrdering.Model.OrderModels
 {
-    class ApiWaiterAppPosTerminal
+    public class ApiWaiterAppPosTerminal
     {
         public long SiteCode { get; set; }
         public string DeviceId { get; set; }

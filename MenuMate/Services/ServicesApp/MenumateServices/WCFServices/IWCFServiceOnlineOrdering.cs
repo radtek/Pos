@@ -32,6 +32,13 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         bool UnsetOrderingDetails(string inSyndicateCode, int siteCode);
 
+        [OperationContract]
+        void InsertWaiterTerminal(string terminalInfo);
+
+        [OperationContract]
+        void CreateRequestForAppZed(string zedRequest);
+
+
         //Add CreateTerminals
     }
 }

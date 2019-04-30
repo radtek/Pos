@@ -1205,7 +1205,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return isTableOOMarked;
         }
-        public void AddWaiterTerminal(string terminalName)
+        public void AddWaiterTerminal(string terminalName, string deviceId)
         {
             try
             {
@@ -1213,7 +1213,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 FbCommand command = dbQueries.InsertProfileForWaiterApp(connection, transaction, profileKey, terminalName);
                 command.ExecuteNonQuery();
                 long deviceKey = GenerateKey("DEVICES");
-                command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, deviceKey, profileKey, terminalName);
+                command = dbQueries.InsertTerminalForWaiterApp(connection, transaction, deviceKey, profileKey, terminalName, deviceId);
                 command.ExecuteNonQuery();
             }
             catch (Exception e)
@@ -1221,15 +1221,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(@"in AddWaiterTerminal adding Waiter Terminal " + e.Message, e);
                 throw;
             }
-
+            
         }
-        public void AddWaiterStaff(long siteCode)
+        public void AddWaiterStaff()
         {
             try
             {
                 // Check there should not be any conflict with same name present in DB either created by OO code or POS code
                 long contactKey = GenerateKey("CONTACTS");
-                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey, siteCode);
+                FbCommand command = dbQueries.InsertStaffForWaiterApp(connection, transaction, contactKey);
                 command.ExecuteNonQuery();
 
             }
@@ -1509,7 +1509,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 //Processing Data for Security Table
                 stringList.Add("Before ProcessSecurity call                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef, stringList);
-
+                //Adding Record In OnlineOrder
+                AddRecordInOnlineOrder(siteOrderViewModel, invoiceNumber);
+                
                 retVaule = true;
             }
             catch (Exception e)
@@ -1584,7 +1586,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.IsPrintRequired = true;
                 dayArcBillRow.OnlinOrderId = siteOrderViewModel.OrderId;
                 dayArcBillRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                dayArcBillRow.ApplicationType = Enum.AppType.WaiterApp;
+                dayArcBillRow.ApplicationType = Enum.AppType.devWaiter;
             }
             catch (Exception e)
             {
@@ -2011,7 +2013,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;
                 onlineOrderRow.TerminalName = siteOrderViewModel.TerminalName;
                 onlineOrderRow.IsPosted = false;
-                onlineOrderRow.AppType = DTO.Enum.AppType.WaiterApp;
+                onlineOrderRow.AppType = DTO.Enum.AppType.devWaiter;
                 onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
                 if (siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                 {
@@ -2057,9 +2059,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             long profileKey = 0;
             try
             {
-                long deviceKeyNew = 0;
-                long.TryParse(deviceKey, out deviceKeyNew);
-                FbCommand command = dbQueries.GetProfileKeyQuery(connection, transaction, deviceKeyNew);
+                FbCommand command = dbQueries.GetProfileKeyQuery(connection, transaction, deviceKey);
                 using (FbDataReader reader = command.ExecuteReader())
                 {
                     if (reader.HasRows && reader.Read())
@@ -2076,6 +2076,102 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return profileKey;
         }
+
+        public bool CheckIfWaiterTerminalExist(string deviceId)
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterAppTerminalExist(connection, transaction, deviceId);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+
+        public bool CheckIfZedRequestExist(string terminalName)
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfZedRequestExistQuery(connection, transaction, terminalName);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+
+        public void InsertAppZedRow(string terminalName, string deviceKey)
+        {
+            try
+            {
+                long profileKey = GetProfileKey(deviceKey);
+                long appZedKey = GenerateKey("APPZEDSTATUS");
+                FbCommand command = dbQueries.InsertAppZedRowQuery(connection, transaction, terminalName, appZedKey, profileKey);
+                command.ExecuteNonQuery();
+                
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateAppZedRow " + e.Message, e);
+                throw;
+            }
+        }
+
+        public void AddRecordInOnlineOrder(ApiSiteOrderViewModel siteOrderViewModel, long invoiceNumber)
+        {
+            try
+            {
+                OnlineOrderAttributes onlineOrderAttributes = new OnlineOrderAttributes();
+                onlineOrderAttributes = CreateOnlineOrderRow(siteOrderViewModel, invoiceNumber);
+                ExecuteOnlineOrderQuery(onlineOrderAttributes);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in AddRecordInOnlineOrder " + e.Message, e);
+                throw;
+            }
+        }
+
+        public bool CheckIfWaiterStaffExist()
+        {
+            bool result = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterStaffExistQuery(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        result = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return result;
+        }
+        
         #endregion
     }
 
