@@ -249,15 +249,18 @@ namespace MenumateServices.WCFServices
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
+                        stringList.Add("Checking If Waiter Terminal Exist              ");
                         bool IsTerminalExist = onlineOrderDB.CheckIfWaiterTerminalExist(apiWaiterAppPosTerminal.DeviceId);
-                        stringList.Add("inside transaction using                       ");
                         if(!IsTerminalExist)
                         {
+                            stringList.Add("Adding Waiter Terminal                         ");
                             onlineOrderDB.AddWaiterTerminal(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
                         }
 
+                        stringList.Add("Checking If Waiter Staff Exist                 ");
                         bool IsWaiterStaffExist = onlineOrderDB.CheckIfWaiterStaffExist();
-                        if(!IsWaiterStaffExist)    
+                        if(!IsWaiterStaffExist)
+                            stringList.Add("Adding Waiter Staff                            ");
                             onlineOrderDB.AddWaiterStaff();
                             onlineOrderDB.transaction.Commit();
                             ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
@@ -269,6 +272,8 @@ namespace MenumateServices.WCFServices
             {
                 onlineOrderDB.RollbackTransaction();
                 ServiceLogger.LogException(exc.Message, exc);
+                stringList.Add("Exception in Inserting Waiter Terminal             " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             } 
         }
 
@@ -280,25 +285,31 @@ namespace MenumateServices.WCFServices
                 ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
                 apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(zedRequest);
                 var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
-
+                stringList.Add("Creating Request For AppZed                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+                
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
                 {
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
+                        stringList.Add("Checking If Zed Request Exist                  ");
                         bool IsAppZedRowExist = onlineOrderDB.CheckIfZedRequestExist(apiWaiterAppPosTerminal.Name);
 
                         if (!IsAppZedRowExist)
+                            stringList.Add("Inserting in AppZed Row                        ");
                             onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
                         ServiceLogger.Log(@"after commit in CreateRequestForAppZed ");
                     }
                 }
                 ServiceLogger.Log(@"outside using in CreateRequestForAppZed");
 
+
             }
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
+                stringList.Add("Exception in Creating Request For AppZed           " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
             }
         }
 

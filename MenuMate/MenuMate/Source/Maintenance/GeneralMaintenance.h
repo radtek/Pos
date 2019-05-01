@@ -340,6 +340,7 @@ __published:	// IDE-managed Components
         TCheckBox *cbIntegratedAuthorisationOnCards;
         TCheckBox *cbEnableTableLock;
         TCheckBox *cbHideFreeSides;
+        TCheckBox *cbPerformZedforAppTerminals;
         //**********
         void __fastcall FormShow(TObject *Sender);
         void __fastcall FormResize(TObject *Sender);
@@ -616,6 +617,7 @@ private:
         void EnableOrDisableEFTPOS(bool value);
         void SaveEFTPOSSettings();
         bool IsEftposSettingChanged;
+        bool CheckIfZedForAppTerminalEnabled();
 public:		// User declarations
         TTouchBtn *CurrentButton;
         void __fastcall ReDrawLogs();
