@@ -30,7 +30,7 @@ namespace MenumateServices.MenumateRunners
             try
             {
                 WorkerThread.Start();
-                CreateOrderStatusDir();
+                //CreateOrderStatusDir();
                 Paused = false;
             }
             catch (Exception exc)

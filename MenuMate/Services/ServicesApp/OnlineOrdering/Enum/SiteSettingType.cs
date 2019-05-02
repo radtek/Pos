@@ -17,6 +17,12 @@ namespace OnlineOrdering.Enum
         CalculateScPreDiscountedPrice,
         ReCalculateScAfterDiscount,
         ApplyServiceChargeTax,
-        ServiceChargeTaxRate
+        ServiceChargeTaxRate,
+        PickUpPayNow,
+        PickUpPayLater,
+        DineInPayNow,
+        DineInPayLater,
+        TakeAwayPayNow,
+        TakeAwayPayLater
     }
 }

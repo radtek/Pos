@@ -139,7 +139,7 @@ private:	// User declarations
     void EnableOnlineOrdering();
     void DisableOnlineOrdering();
     void UnloadSignalR();
-    bool SyncOnlineOrderingDetails();
+    bool SyncOnlineOrderingDetails(bool &isLoyaltyMateOrderingEnabled, bool &isWaiterAppOrderingEnabled);
     void WriteDBPathAndIPToFile();
     void UnsetOrderingDetails();
     void SetUpAustriaFiscal();

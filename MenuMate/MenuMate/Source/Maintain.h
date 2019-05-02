@@ -220,14 +220,14 @@ private:
     bool TrySyncForLoyaltyMate();
     void DeactivateLoyaltymate();
     void UnloadSignalR();
-    bool SyncOnlineOrderingDetails();
+    bool SyncOnlineOrderingDetails(bool &isLoyaltyMateOrderingEnabled, bool &isWaiterAppOrderingEnabled);
     bool SetUpMews();
     void SetUpAustriaFiscal();
     void SetUpPosPlus();
     int ChooseOperation(Database::TDBTransaction &DBTransaction, int selectedNumber);
     void CreateWaiterAppPaymentType();
     bool CanCreateWaiterAppPaymentType(Database::TDBTransaction &DBTransaction);
-
+    
     public: // User declarations
 };
 #endif

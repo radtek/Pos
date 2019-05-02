@@ -221,7 +221,7 @@ object frmGeneralMaintenance: TfrmGeneralMaintenance
     Top = 4
     Width = 850
     Height = 768
-    ActivePage = tsPointOfSale
+    ActivePage = tsEndOfDayOptions
     TabOrder = 1
     object tsPointOfSale: TTabSheet
       Caption = 'Point Of Sale.'

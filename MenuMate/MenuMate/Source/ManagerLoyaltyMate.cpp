@@ -888,6 +888,8 @@ TLoyaltyMateOnlineOrderingThread::TLoyaltyMateOnlineOrderingThread(TSyndCode inS
 {
 	FreeOnTerminate = true;
     UnsetSignalRStatus = false;
+    IsLoyaltyMateOrderingEnabled = false;
+    IsWaiterAppOrderingEnabled = false;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::ThreadTerminated()
@@ -901,7 +903,9 @@ void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
     if(UnsetSignalRStatus)
         UnsetSignalRStatusAtCloud();
     else
-        SyncOnlineOrderingDetails();
+        GetOnlineOrderingDetails();
+        //GetOnlineOrderingDetails();
+        //SyncOnlineOrderingDetails();
     ReturnValue = 1;
 }
 //---------------------------------------------------------------------------
@@ -957,7 +961,7 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
             ErrorMessage = createResponse.Message;
             throw Exception(createResponse.Message);
         }
-   }
+    }
     catch(Exception &E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
@@ -965,5 +969,41 @@ void TLoyaltyMateOnlineOrderingThread::SyncOnlineOrderingDetails()
     }
 //    delete onlineOrderingInterface;
 }
-//------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void TLoyaltyMateOnlineOrderingThread::GetOnlineOrderingDetails()
+{
+   std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
+   try
+    {
+        if(Terminated)
+        {
+            ThreadTerminated();
+            return;
+        }
+        MMOnlineOrderingResponse createResponse = onlineOrderingInterface->GetOnlineOrderingDetails(_syndicateCode,TGlobalSettings::Instance().SiteID);
 
+        if(!createResponse.IsSuccesful  && createResponse.ResponseCode == AuthenticationFailed)
+        {
+            throw Exception("Authentication failed with Loyaltymate Service");
+        }
+        else if(createResponse.IsSuccesful)
+        {
+            OperationSuccessful = createResponse.IsLoyaltyMateOrderingEnabled || createResponse.IsWaiterOrderingEnabled;
+            IsLoyaltyMateOrderingEnabled = createResponse.IsLoyaltyMateOrderingEnabled;
+            IsWaiterAppOrderingEnabled = createResponse.IsWaiterOrderingEnabled;
+        }
+        else
+        {
+            ErrorMessage = createResponse.Message;
+            IsLoyaltyMateOrderingEnabled = false;
+            IsWaiterAppOrderingEnabled = false;
+            throw Exception(createResponse.Message);
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        ErrorMessage = E.Message;
+    }
+}
+//-----------------------------------------------------------------------------

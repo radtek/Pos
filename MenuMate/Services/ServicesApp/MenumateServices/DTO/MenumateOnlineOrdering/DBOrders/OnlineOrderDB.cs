@@ -1417,6 +1417,14 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     //Assigning Correct Tabele Number And Table Name
                                     siteOrderViewModel.ContainerName = tableNameFromDB;
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
+                                    if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
+                                    {
+                                        AddWaiterTerminal(siteOrderViewModel.TerminalName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                                    }
+                                    if (!CheckIfWaiterStaffExist())
+                                    {
+                                        AddWaiterStaff();
+                                    }
                                     //Order Processing - Insert orders details in tables
                                     stringList.Add("Before ArchiveTransaction call                     ");
                                     if (ArchiveTransaction(siteOrderViewModel, stringList))
@@ -1435,6 +1443,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 else
                                 {
                                     stringList.Add("Before AddRecords                                  ");
+                                    if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
+                                    {
+                                        AddWaiterTerminal(siteOrderViewModel.TerminalName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                                    }
+                                    if (!CheckIfWaiterStaffExist())
+                                    {
+                                        AddWaiterStaff();
+                                    }
+
                                     if (AddRecords(siteOrderViewModel, true))
                                     {
                                         stringList.Add("After AddRecords                                   ");
@@ -2007,7 +2024,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long onlineOrderKey = 0;
-                onlineOrderKey = GenerateKey("ONLINEORDERS");
+                onlineOrderKey = GenerateKey("ONLINEORDERS_ID");
 
                 onlineOrderRow.InvoiceNumber = invoiceNo ;
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using MenumateServices.DTO.MenumateOnlineOrdering;
 using OnlineOrdering.Services;
+using OnlineOrdering.Model;
 
 namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
 {
@@ -34,9 +35,15 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 return _instance;
             }
         }
+        
         public LoyaltyOOResponse GetOnlineOrderingInformation(string inSyndicateCode, int siteCode, List<string> stringList)
         {
             return GetOrderingInformation(inSyndicateCode, siteCode, stringList);
+        }
+
+        public OnlineOrderingDetails GetOnlineOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList)
+        {
+            return GetOrderingDetails(inSyndicateCode, siteCode, stringList);
         }
 
         public bool UnsetOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList)
@@ -70,6 +77,31 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             return new LoyaltyOOResponse();
         }
 
+        OnlineOrderingDetails GetOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList)
+        {
+            try
+            {
+                OnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                var response = onlineOrderingService.GetOnlineOrderingDetails(inSyndicateCode, siteCode, stringList);
+                return CreateOrderingDetailsResponseNoError(response);
+
+            }
+            catch (Exception exc)
+            {
+                return CreateOrderingDetailsResponseError("Unsuccessful sync for online ordering.");
+            }
+            return new OnlineOrderingDetails();
+        }
+
+        private LoyaltyOOResponse CreateOrderingResponseNoError(bool inSuccesful, string inMessage)
+        {
+            return new LoyaltyOOResponse
+            {
+                IsSuccessful = inSuccesful,
+                ResponseText = inMessage
+            };
+        }
+
         private LoyaltyOOResponse CreateOrderingResponseError(string inMessage)
         {
             return new LoyaltyOOResponse
@@ -78,13 +110,29 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 ResponseText = inMessage
             };
         }
-        private LoyaltyOOResponse CreateOrderingResponseNoError(bool inSuccesful, string inMessage)
+
+        private OnlineOrderingDetails CreateOrderingDetailsResponseError(string inMessage)
         {
-            return new LoyaltyOOResponse
+            return new OnlineOrderingDetails
             {
-                IsSuccessful = inSuccesful,
-                ResponseText = inMessage
+                IsSuccessful = false,
+                ResponseText = inMessage,
+                IsMemberOrderingEnabled = false,
+                IsWaiterOrderingEnabled = false,
             };
+        }
+
+        private OnlineOrderingDetails CreateOrderingDetailsResponseNoError(OnlineOrderingDetailsResponse onlineOrderingDetailsResponse)
+        {
+            OnlineOrderingDetails onlineOrderingDetails =  new OnlineOrderingDetails
+            {
+                IsSuccessful = onlineOrderingDetailsResponse.IsSuccessful,
+                ResponseText = onlineOrderingDetailsResponse.Message,
+                IsMemberOrderingEnabled = onlineOrderingDetailsResponse.IsLoyaltyMateOrderingEnabled,
+                IsWaiterOrderingEnabled = onlineOrderingDetailsResponse.IsWaiterOrderingEnabled
+            };
+
+            return onlineOrderingDetails;
         }
     }
 }

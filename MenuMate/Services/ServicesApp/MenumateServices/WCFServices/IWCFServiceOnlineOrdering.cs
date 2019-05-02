@@ -38,7 +38,8 @@ namespace MenumateServices.WCFServices
         [OperationContract]
         void CreateRequestForAppZed(string zedRequest);
 
-
+        [OperationContract]
+        OnlineOrderingDetails GetOnlineOrderingDetailsBySiteCode(string inSyndicateCode, int siteCode);
         //Add CreateTerminals
     }
 }

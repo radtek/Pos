@@ -267,7 +267,7 @@ void __fastcall TfrmGeneralMaintenance::FormShow(TObject *Sender)
     cbShowCashDrawerCount->Checked = TGlobalSettings::Instance().ShowCashDrawerOpeningsCount;
      cbIntegratedEftposPreAuthorisaton->Checked = TGlobalSettings::Instance().EnableEftPosPreAuthorisation;
      cbIntegratedAuthorisationOnCards->Checked = TGlobalSettings::Instance().EnableAdjustAuthorisationOnCards;
-
+     cbPerformZedforAppTerminals->Checked = TGlobalSettings::Instance().ZedForAppTerminals;
 
 	int SerialPortNumber = TManagerVariable::Instance().GetInt(DBTransaction,vmEftposSerialPort);
 	if(SerialPortNumber != -1)
@@ -4909,5 +4909,58 @@ void __fastcall TfrmGeneralMaintenance::cbHideFreeSidesClick(TObject *Sender)
 //------------------------------------------------------------------------------------------------------
 void __fastcall TfrmGeneralMaintenance::cbPerformZedforAppTerminalsClick(TObject *Sender)
 {
+	Database::TDBTransaction DBTransaction(DBControl);
+	DBTransaction.StartTransaction();
+    if(cbPerformZedforAppTerminals->Checked)
+    {
+        if(CheckIfZedForAppTerminalEnabled())
+        {
+            TGlobalSettings::Instance().ZedForAppTerminals = true;
+            TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmZedForAppTerminals, TGlobalSettings::Instance().ZedForAppTerminals);
+        }
+        else
+        {
+            MessageBox("This option is already enabled on a different POS at the site.","Information",MB_OK + MB_ICONINFORMATION);
+            cbPerformZedforAppTerminals->Checked = false;
+        }
+    }
+    else
+    {
+        TGlobalSettings::Instance().ZedForAppTerminals = cbPerformZedforAppTerminals->Checked;
+        TManagerVariable::Instance().SetDeviceBool(DBTransaction, vmZedForAppTerminals, TGlobalSettings::Instance().ZedForAppTerminals);
+    }
+    DBTransaction.Commit();
 }
+//------------------------------------------------------------------------------------------------------
+bool TfrmGeneralMaintenance::CheckIfZedForAppTerminalEnabled()
+{
+    bool retValue = false;
+
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    try
+    {
+        TIBSQL *SelectQuery= DBTransaction.Query(DBTransaction.AddQuery());
+        SelectQuery->Close();
+        SelectQuery->SQL->Text = "SELECT * FROM VARSPROFILE WHERE VARIABLES_KEY = :VARIABLES_KEY AND INTEGER_VAL = 1 AND PROFILE_KEY <> :PROFILE_KEY";
+        SelectQuery->ParamByName("PROFILE_KEY")->AsInteger = TManagerVariable::Instance().DeviceProfileKey;
+        SelectQuery->ParamByName("VARIABLES_KEY")->AsInteger = 4152;
+        SelectQuery->ExecQuery();
+
+        if(SelectQuery->RecordCount == 0)
+        {
+            retValue = true;
+        }
+        DBTransaction.Commit();
+    }
+
+    catch(Exception &Ex)
+    {
+        DBTransaction.Rollback();
+        retValue = false;
+    }
+    return retValue;
+}
+
+
 
