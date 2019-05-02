@@ -202,7 +202,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 orderRow.Location = siteOrderViewModel.Location;
                 orderRow.OrderType = siteOrderViewModel.OrderType;
                 orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                orderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
                 orderRow.TransactionType = siteOrderViewModel.TransactionType;
                 orderRow.UserType = siteOrderViewModel.UserType;
@@ -1508,7 +1508,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ArchiveOrder(dayArcBillKey, siteOrderViewModel, BillSecurityRef, stringList);
                 //Processing Data for Security Table
                 stringList.Add("Before ProcessSecurity call                        " + DateTime.Now.ToString("hh:mm:ss tt"));
-                ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef, stringList);
+                ProcessSecurity(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName, orderSecurityRef, BillSecurityRef, stringList);
                 //Adding Record In OnlineOrder
                 AddRecordInOnlineOrder(siteOrderViewModel, invoiceNumber);
                 
@@ -1572,7 +1572,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 dayArcBillRow.ArcBillId = dayArcBillKey;
-                dayArcBillRow.TerminalName = siteOrderViewModel.TerminalName;
+                dayArcBillRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 dayArcBillRow.StaffName = "";//Need to Confirm
                 dayArcBillRow.Total = siteOrderViewModel.TotalAmount;
                 dayArcBillRow.Discount = 0;
@@ -1699,7 +1699,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 int tableNumber = 0;
                 int.TryParse(siteOrderViewModel.ContainerNumber, out tableNumber);
                 dayArchiveRow.ArcBillId = arcBillKey;
-                dayArchiveRow.TerminalName = siteOrderViewModel.TerminalName;
+                dayArchiveRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 dayArchiveRow.TableNumber = tableNumber;
                 if (IsFloorPlanEnabled())
                     dayArchiveRow.TableName = siteOrderViewModel.ContainerName;
@@ -2011,7 +2011,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 onlineOrderRow.InvoiceNumber = invoiceNo ;
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;
-                onlineOrderRow.TerminalName = siteOrderViewModel.TerminalName;
+                onlineOrderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 onlineOrderRow.IsPosted = false;
                 onlineOrderRow.AppType = DTO.Enum.AppType.devWaiter;
                 onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);

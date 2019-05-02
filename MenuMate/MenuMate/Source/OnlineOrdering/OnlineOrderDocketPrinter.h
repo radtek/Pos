@@ -23,6 +23,7 @@ class TOnlineDocketPrinterThread : public TThread
         void PrintAndArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
         void MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt,TReqPrintJob *LastReceipt);
         void AddPaymentInfo(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
+        void ManagePostingToMews(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
     protected:
         virtual void __fastcall Execute();
     public:

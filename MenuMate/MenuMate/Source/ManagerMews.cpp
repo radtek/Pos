@@ -271,7 +271,8 @@ bool TManagerMews::GetCategories(UnicodeString url, UnicodeString clientToken, U
 }
 bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int StaffID)
 {
-    WaitOrProceedWithPost();
+    if(!_paymentTransaction.IsBackGroundPosting)
+        WaitOrProceedWithPost();
     std::auto_ptr<TStringList> postLogs(new TStringList);
     postLogs->Clear();
     if((_paymentTransaction.Money.PaymentAmount == 0) || _paymentTransaction.Orders->Count == 0)
@@ -377,7 +378,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                                 postLogs->Add("Mews interface is disabled now");
                                 auxMessage += "\rMews interface is disabled now.";
                             }
-                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                            if(!_paymentTransaction.IsBackGroundPosting)
+                                MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                             isPostedRoomPost = isSuccessful;
                             postLogs->Add("=================================================================================");
                             break;
@@ -391,7 +393,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                             auxMessage += "\rMews interface is disabled now.";
                             TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
                             postLogs->Add("Mews interface is disabled now");
-                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                            if(!_paymentTransaction.IsBackGroundPosting)
+                                MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                             postLogs->Add("=================================================================================");
                             isSuccessful = false;
                         }
@@ -515,7 +518,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                             postLogs->Add("Mews interface is disabled now");
                             auxMessage += "\rMews interface is disabled now.";
                         }
-                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                        if(!_paymentTransaction.IsBackGroundPosting)
+                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         postLogs->Add("=================================================================================");
                         isSuccessful = false;
                     }
@@ -528,7 +532,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                         auxMessage += "\rMews interface is disabled now.";
                         TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
                         postLogs->Add("Mews interface is disabled now");
-                        MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
+                        if(!_paymentTransaction.IsBackGroundPosting)
+                            MessageBox(auxMessage,"Info",MB_OK+MB_ICONINFORMATION);
                         postLogs->Add("=================================================================================");
                         isSuccessful = false;
                     }
@@ -542,7 +547,8 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 //        DBTransaction.Rollback();
     }
-    UnsetPostingFlag();
+    if(!_paymentTransaction.IsBackGroundPosting)
+        UnsetPostingFlag();
 //    if(!isSuccessful)
 //       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     LogWaitStatus(postLogs)  ;
@@ -712,12 +718,18 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
     {
         TBill billMews;
         billMews.OutletId = TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount;
-        billMews.Number   = GetInvoiceNumber(paymentTransaction);// Invoice Number
+        if(paymentTransaction.IsBackGroundPosting)
+            billMews.Number   = paymentTransaction.InvoiceNumber;
+        else
+            billMews.Number   = GetInvoiceNumber(paymentTransaction);// Invoice Number
         billMews.Items.clear();
         mewsOrder.ConsumptionUtc = "";
         if(!isBill)
         {
-            mewsOrder.ConsumptionUtc = GetInvoiceNumber(paymentTransaction);
+            if(paymentTransaction.IsBackGroundPosting)
+                mewsOrder.ConsumptionUtc = paymentTransaction.InvoiceNumber;
+            else
+                mewsOrder.ConsumptionUtc = GetInvoiceNumber(paymentTransaction);
         }
 
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)

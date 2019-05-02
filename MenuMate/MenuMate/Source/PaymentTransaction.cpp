@@ -72,6 +72,7 @@ TPaymentTransaction::TPaymentTransaction(Database::TDBTransaction &inDBTransacti
     IsCashDrawerOpened = false;
     PatronCountFromMenu = 0;
     IsPatronAdded = false;
+    IsBackGroundPosting = false;
 }
 
 __fastcall TPaymentTransaction::~TPaymentTransaction()
@@ -135,6 +136,7 @@ TPaymentTransaction::TPaymentTransaction(const TPaymentTransaction &OtherTransac
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
     PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
     IsPatronAdded = OtherTransaction.IsPatronAdded;
+    IsBackGroundPosting = OtherTransaction.IsBackGroundPosting;
 }
 
 TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &OtherTransaction)
@@ -188,6 +190,7 @@ TPaymentTransaction& TPaymentTransaction::operator=(const TPaymentTransaction &O
     IsCashDrawerOpened = OtherTransaction.IsCashDrawerOpened;
     PatronCountFromMenu = OtherTransaction.PatronCountFromMenu;
     IsPatronAdded = OtherTransaction.IsPatronAdded;
+    IsBackGroundPosting = OtherTransaction.IsBackGroundPosting;
 }
 //-----------------------------------------------------------------------------
 bool __fastcall UseDifferentPattern(void *Item1,void *Item2)

@@ -206,6 +206,7 @@ class TPaymentTransaction
         bool IsCashDrawerOpened;
         int PatronCountFromMenu;
         bool IsPatronAdded;
+        bool IsBackGroundPosting;
 };
 
 #endif

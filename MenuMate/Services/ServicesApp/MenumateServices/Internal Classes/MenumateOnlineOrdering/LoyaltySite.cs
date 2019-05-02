@@ -174,7 +174,7 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 siteOrderModel.OrderGuid = siteOrderViewModel.OrderGuid;
                 siteOrderModel.UserReferenceId = siteOrderViewModel.UserReferenceId;
                 siteOrderModel.UserType = siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Member? DTO.Enum.UserType.Member : DTO.Enum.UserType.Staff;
-                siteOrderModel.TerminalName = siteOrderViewModel.TerminalName;
+                siteOrderModel.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 siteOrderModel.TransactionDate = siteOrderViewModel.TransactionDate;
                 siteOrderModel.OrderType = LoadOrderType(siteOrderViewModel.OrderType, stringList);
                 siteOrderModel.OrderItems = LoadOrderItems(siteOrderViewModel.OrderItems, stringList);
@@ -681,7 +681,7 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             siteOrderViewModel.OrderId = siteOrderModel.OrderId;
             siteOrderViewModel.OrderType = (OnlineOrdering.Enum.OrderType)siteOrderModel.OrderType;
             siteOrderViewModel.SiteId = siteOrderModel.SiteId;
-            siteOrderViewModel.TerminalName = siteOrderModel.TerminalName;
+            siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName = siteOrderModel.TerminalName;
             siteOrderViewModel.TotalAmount = siteOrderModel.TotalAmount;
             siteOrderViewModel.TransactionDate = siteOrderModel.TransactionDate;
             siteOrderViewModel.TransactionType = (OnlineOrdering.Enum.SiteSettingType)siteOrderModel.TransactionType;

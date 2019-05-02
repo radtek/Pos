@@ -829,6 +829,38 @@ UnicodeString TDBOnlineOrdering::GetTerminalNameForOrderGUID(Database::TDBTransa
     }
     return terminalName;
 }
+//------------------------------------------------------------------------------
+UnicodeString TDBOnlineOrdering::GetInvoiceNumberForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+{
+    UnicodeString invoiceNumber = "";
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =   " SELECT "
+                                       " a.INVOICE_NUMBER "
+                                       " FROM DAYARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID "
+                                       " UNION ALL "
+                                       " SELECT "
+                                       " a.INVOICE_NUMBER "
+                                       " FROM ARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID ";
 
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ExecQuery();
 
+        if(ibInternalQuery->RecordCount)
+        {
+            if(ibInternalQuery->FieldByName("INVOICE_NUMBER")->AsString.Trim() != "")
+                invoiceNumber = ibInternalQuery->FieldByName("INVOICE_NUMBER")->AsString;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+    return invoiceNumber;
+}
 

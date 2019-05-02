@@ -151,22 +151,21 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 {
 	try
 	{
+        //First Checking In DayArcBill Table
+        UnicodeString orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, true);
 
-            //First Checking In DayArcBill Table
-            UnicodeString orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, true);
-
+        if(orderUniqueIdForWAiterApp.Trim() != "")
+        {
+            ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, true);
+        }
+        else
+        {
+            orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, false);
             if(orderUniqueIdForWAiterApp.Trim() != "")
             {
-                ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, true);
+                ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, false);
             }
-            else
-            {
-                orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, false);
-                if(orderUniqueIdForWAiterApp.Trim() != "")
-                {
-                    ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, false);
-                }
-            }
+        }
 
 
         UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderGUID(dBTransaction);
@@ -523,6 +522,13 @@ void TOnlineDocketPrinterThread::ManagePrintOperationsForWaiterApp(Database::TDB
         //Set The IsPrintRequired Flag And Save The Generated Receipt Using OrderGuid After Performing Print Operations
         TDBOnlineOrdering::SetStatusAndSaveReceiptForWApp(paymentTransactionNew.DBTransaction, orderGUID, ManagerReceipt->ReceiptToArchive, IsDayArcBill);
 
+        //Posting To MEWS PMS
+        if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
+        {
+            if(TGlobalSettings::Instance().PMSType == Mews)
+                ManagePostingToMews(paymentTransactionNew, orderGUID);
+        }
+
     }
     catch(Exception & E)
 	{
@@ -830,12 +836,13 @@ void TOnlineDocketPrinterThread::AddPaymentInfo(TPaymentTransaction &PaymentTran
         //Loading Payment Details From DayArcBillPay
         paymentInfoList = TDBOnlineOrdering::GetPaymentInfoForOrderGUID(PaymentTransaction.DBTransaction, orderGUID);
 
-        //Running Bill Calculator For Loading Cost And Assining Payment Details
+        //Running Bill Calculator For Loading Cost And Assigning Payment Details
         PaymentTransaction.Recalc();
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(PaymentTransaction);
         for(std::list<TPaymentInfo>::iterator it = paymentInfoList.begin(); it != paymentInfoList.end(); ++it)
         {
             PaymentTransaction.Type = eTransQuickSale;
-            TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(PaymentTransaction);
+
             TPayment *Payment = PaymentTransaction.PaymentFind(it->payType);
             if (Payment == NULL)
             {
@@ -844,6 +851,22 @@ void TOnlineDocketPrinterThread::AddPaymentInfo(TPaymentTransaction &PaymentTran
             Payment->SetPay(it->amount);
         }
 
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::ManagePostingToMews(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID)
+{
+    try
+    {
+        PaymentTransaction.IsBackGroundPosting = true;
+        PaymentTransaction.InvoiceNumber = TDBOnlineOrdering::GetInvoiceNumberForOrderGUID(PaymentTransaction.DBTransaction, orderGUID);
+
+        TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey);
     }
     catch(Exception & E)
     {
