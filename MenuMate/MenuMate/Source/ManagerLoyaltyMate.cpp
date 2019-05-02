@@ -988,7 +988,7 @@ void TLoyaltyMateOnlineOrderingThread::GetOnlineOrderingDetails()
         }
         else if(createResponse.IsSuccesful)
         {
-            OperationSuccessful = true;
+            OperationSuccessful = createResponse.IsLoyaltyMateOrderingEnabled || createResponse.IsWaiterOrderingEnabled;
             IsLoyaltyMateOrderingEnabled = createResponse.IsLoyaltyMateOrderingEnabled;
             IsWaiterAppOrderingEnabled = createResponse.IsWaiterOrderingEnabled;
         }

@@ -285,11 +285,11 @@ namespace OnlineOrdering.Services
                         onlineOrderingDetailsResponse.IsSuccessful = false;
                     else
                     {
-                        onlineOrderingDetailsResponse.IsSuccessful = true;
-                        onlineOrderingDetailsResponse.Message = "";
                         var orderStream = new StreamReader(webResponse.GetResponseStream());
                         string responseStr = orderStream.ReadToEnd();
                         onlineOrderingDetailsResponse = JsonUtility.Deserialize<OnlineOrderingDetailsResponse>(responseStr);
+                        onlineOrderingDetailsResponse.IsSuccessful = true;
+                        onlineOrderingDetailsResponse.Message = "";
                     }
                 }
             }
