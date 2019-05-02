@@ -901,7 +901,8 @@ void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
     if(UnsetSignalRStatus)
         UnsetSignalRStatusAtCloud();
     else
-        GetOnlineOrderingDetails();
+        SyncOnlineOrderingDetails();
+        //GetOnlineOrderingDetails();
         //SyncOnlineOrderingDetails();
     ReturnValue = 1;
 }

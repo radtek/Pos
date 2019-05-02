@@ -3654,7 +3654,7 @@ bool TfrmMaintain::SyncOnlineOrderingDetails()
 {
     bool result = false;
     TManagerCloudSync ManagerCloudSync;
-    result = ManagerCloudSync.GetOnlineOrderingDetails();
+    result = ManagerCloudSync.SyncOnlineOrderingDetails();//GetOnlineOrderingDetails();
     return result;
 }
 //-----------------------------------------------------------------------------
