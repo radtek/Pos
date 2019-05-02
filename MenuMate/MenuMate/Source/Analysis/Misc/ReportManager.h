@@ -10,6 +10,7 @@
 #include "ReportBuilderFactory.h"
 #include "ReportEnums.h"
 #include "ConsolidatedZedReport.h"
+#include "WaiterAppZedReport.h"
 
 class ReportManager
 {
@@ -22,10 +23,12 @@ public:
     ZedReport* GetZedReport(TGlobalSettings* settings, Database::TDBTransaction*  dbTransaction);
     XReport* GetXReport(TGlobalSettings* settings, Database::TDBTransaction*  dbTransaction);
     ConsolidatedZedReport* GetConsolidatedZedReport(TGlobalSettings* settings, Database::TDBTransaction*  dbTransaction, TDateTime* StartTime, TDateTime* EndTime);
+    WaiterAppZedReport* GetWaiterAppZedReport(TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction);
 
 private:
     void CreateReportBuilderInstance(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction);
     void CreateReportBuilderInstanceForConsolidatedZed(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction, TDateTime* startTime,  TDateTime* endTime);
+    void CreateReportBuilderInstanceForWaiterAppZed(ReportType reportType, TGlobalSettings* globalSettings, Database::TDBTransaction*  dbTransaction);
 
     std::auto_ptr<IReportBuilder> _reportBuilder;
     std::auto_ptr<ReportBuilderFactory> _reportBuilderFactory;

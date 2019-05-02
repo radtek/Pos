@@ -3440,6 +3440,10 @@
 				<DependentOn>TransactionHelper.h</DependentOn>
 				<BuildOrder>787</BuildOrder>
 			</CppCompile>
+			<CppCompile Include="..\..\..\Shared-Source\Online_Ordering\OnlineOrderingWSDL.cpp">
+				<DependentOn>..\..\..\Shared-Source\Online_Ordering\OnlineOrderingWSDL.h</DependentOn>
+				<BuildOrder>790</BuildOrder>
+			</CppCompile>
 			<CppCompile Include="Chefmate\TcpStreamSenderSettings.cpp">
 				<DependentOn>Chefmate\TcpStreamSenderSettings.h</DependentOn>
 				<BuildOrder>411</BuildOrder>
@@ -3460,9 +3464,25 @@
 				<DependentOn>..\..\..\Shared-Source\Loyalty_Mate\LoyaltyMateWSDL.h</DependentOn>
 				<BuildOrder>789</BuildOrder>
 			</CppCompile>
-			<CppCompile Include="..\..\..\Shared-Source\Online_Ordering\OnlineOrderingWSDL.cpp">
-				<DependentOn>..\..\..\Shared-Source\Online_Ordering\OnlineOrderingWSDL.h</DependentOn>
+			<CppCompile Include="Analysis\Reports\WaiterAppZedReport.cpp">
+				<DependentOn>Analysis\Reports\WaiterAppZedReport.h</DependentOn>
 				<BuildOrder>790</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportBuilders\WaiterAppEndOfDayReportBuilder.cpp">
+				<DependentOn>Analysis\ReportBuilders\WaiterAppEndOfDayReportBuilder.h</DependentOn>
+				<BuildOrder>791</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportBuilders\WaiterAppZReportBuilder.cpp">
+				<DependentOn>Analysis\ReportBuilders\WaiterAppZReportBuilder.h</DependentOn>
+				<BuildOrder>792</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\Factories\WaiterAppZedReportSectionFactory.cpp">
+				<DependentOn>Analysis\Factories\WaiterAppZedReportSectionFactory.h</DependentOn>
+				<BuildOrder>793</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Analysis\ReportSections\ZWaiterAppOrderDetailsReportSection.cpp">
+				<DependentOn>Analysis\ReportSections\ZWaiterAppOrderDetailsReportSection.h</DependentOn>
+				<BuildOrder>794</BuildOrder>
 			</CppCompile>
 			<FormResources Include="DiscountEditor.dfm"/>
 			<FormResources Include="GenericGroupGUI.dfm"/>

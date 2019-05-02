@@ -5,7 +5,8 @@ enum ReportType
 {
 	mmZReport,
 	mmXReport,
-    mmConsolidatedZReport
+    mmConsolidatedZReport,
+    mmWaiterAppZReport
 };
 
 enum ReportSectionType
@@ -46,7 +47,8 @@ enum ReportSectionType
     mmRefundCancelDetailsSections,
 	mmMasterCashDenominationDetailsSection,
     mmCashDenominationDetailsSection,
-    mmReprintReceiptDetailsSection
+    mmReprintReceiptDetailsSection,
+    mmWaiterAppOrderDetailsSection
 };
 
 enum CalculatedTotals

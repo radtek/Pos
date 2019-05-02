@@ -2,6 +2,7 @@
 #include "ZedReportSectionFactory.h"
 #include "XReportSectionFactory.h"
 #include "ConsolidatedZedReportSectionFactory.h"
+#include "WaiterAppZedReportSectionFactory.h"
 
 
 ReportSectionFactoryProvider::ReportSectionFactoryProvider()
@@ -23,6 +24,9 @@ IReportSectionFactory* ReportSectionFactoryProvider::CreateReportSectionFactory(
             break;
         case mmXReport:
             reportSectionFactory = new XReportSectionFactory(dbTransaction, globalSettings);
+            break;
+        case mmWaiterAppZReport:
+            reportSectionFactory = new WaiterAppZedReportSectionFactory(dbTransaction, globalSettings);
             break;
         default:
             reportSectionFactory = NULL;
