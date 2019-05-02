@@ -888,6 +888,8 @@ TLoyaltyMateOnlineOrderingThread::TLoyaltyMateOnlineOrderingThread(TSyndCode inS
 {
 	FreeOnTerminate = true;
     UnsetSignalRStatus = false;
+    IsLoyaltyMateOrderingEnabled = false;
+    IsWaiterAppOrderingEnabled = false;
 }
 //---------------------------------------------------------------------------
 void TLoyaltyMateOnlineOrderingThread::ThreadTerminated()
@@ -901,7 +903,7 @@ void __fastcall TLoyaltyMateOnlineOrderingThread::Execute()
     if(UnsetSignalRStatus)
         UnsetSignalRStatusAtCloud();
     else
-        SyncOnlineOrderingDetails();
+        GetOnlineOrderingDetails();
         //GetOnlineOrderingDetails();
         //SyncOnlineOrderingDetails();
     ReturnValue = 1;
@@ -987,10 +989,14 @@ void TLoyaltyMateOnlineOrderingThread::GetOnlineOrderingDetails()
         else if(createResponse.IsSuccesful)
         {
             OperationSuccessful = true;
+            IsLoyaltyMateOrderingEnabled = createResponse.IsLoyaltyMateOrderingEnabled;
+            IsWaiterAppOrderingEnabled = createResponse.IsWaiterOrderingEnabled;
         }
         else
         {
             ErrorMessage = createResponse.Message;
+            IsLoyaltyMateOrderingEnabled = false;
+            IsWaiterAppOrderingEnabled = false;
             throw Exception(createResponse.Message);
         }
     }

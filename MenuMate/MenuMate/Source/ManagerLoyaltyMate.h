@@ -211,6 +211,8 @@ class TLoyaltyMateOnlineOrderingThread: public TThread
         bool OperationSuccessful;
         AnsiString ErrorMessage;
         bool UnsetSignalRStatus;
+        bool IsLoyaltyMateOrderingEnabled;
+        bool IsWaiterAppOrderingEnabled;
 };
 //--------------------------------------------------------------------------
 class TManagerLoyaltyMate

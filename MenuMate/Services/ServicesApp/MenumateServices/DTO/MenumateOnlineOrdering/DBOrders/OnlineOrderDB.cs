@@ -2024,7 +2024,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long onlineOrderKey = 0;
-                onlineOrderKey = GenerateKey("ONLINEORDERS");
+                onlineOrderKey = GenerateKey("ONLINEORDERS_ID");
 
                 onlineOrderRow.InvoiceNumber = invoiceNo ;
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;

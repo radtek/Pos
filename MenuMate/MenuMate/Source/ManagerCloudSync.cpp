@@ -164,6 +164,8 @@ bool TManagerCloudSync::GetOnlineOrderingDetails()
         _lmOperationDialogBox->ShowModal();
 
         result = syncThread->OperationSuccessful;
+        IsWaiterAppOrderingEnabled = syncThread->IsWaiterAppOrderingEnabled;
+        IsLoyaltyMateOrderingEnabled = syncThread->IsLoyaltyMateOrderingEnabled;
 
         if(!result)
             MessageBox(syncThread->ErrorMessage,"Failed to perform sync operation", MB_ICONERROR + MB_OK);

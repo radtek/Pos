@@ -3554,7 +3554,9 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
             // 1. Make a seed file.
             // 2. Use seed file and connect the SignalR application.
             //if(TrySyncForLoyaltyMate())
-            if(SyncOnlineOrderingDetails())
+            bool isLoyaltyMateOrderingEnabled = false;
+            bool isWaiterAppOrderingEnabled = false;
+            if(SyncOnlineOrderingDetails(isLoyaltyMateOrderingEnabled, isWaiterAppOrderingEnabled))
             {
                 std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
                 if(signalRUtility->LoadSignalRUtility())
@@ -3572,7 +3574,8 @@ bool TfrmMaintain::CanEnableOnlineOrdering()
                         WebDevice->Create(DBTransaction);
                     }
                     MessageBox("Please make sure, this option is enabled on this system only at the site.","Information",MB_OK + MB_ICONINFORMATION);
-                    CreateWaiterAppPaymentType();
+                    if(isWaiterAppOrderingEnabled)
+                        CreateWaiterAppPaymentType();
                 }
                 else
                 {
@@ -3650,11 +3653,14 @@ void TfrmMaintain::UnloadSignalR()
     TGlobalSettings::Instance().EnableOnlineOrdering = false;
 }
 //-----------------------------------------------------------------------------
-bool TfrmMaintain::SyncOnlineOrderingDetails()
+bool TfrmMaintain::SyncOnlineOrderingDetails(bool &isLoyaltyMateOrderingEnabled, bool &isWaiterAppOrderingEnabled)
 {
     bool result = false;
     TManagerCloudSync ManagerCloudSync;
-    result = ManagerCloudSync.SyncOnlineOrderingDetails();//GetOnlineOrderingDetails();
+    //result = ManagerCloudSync.SyncOnlineOrderingDetails();//GetOnlineOrderingDetails();
+    result = ManagerCloudSync.GetOnlineOrderingDetails();
+    isLoyaltyMateOrderingEnabled = ManagerCloudSync.IsLoyaltyMateOrderingEnabled;
+    isWaiterAppOrderingEnabled = ManagerCloudSync.IsWaiterAppOrderingEnabled;
     return result;
 }
 //-----------------------------------------------------------------------------
@@ -3762,24 +3768,23 @@ void TfrmMaintain::CreateWaiterAppPaymentType()
     {
 		if(CanCreateWaiterAppPaymentType(DBTransaction))
 		{
-		int waiterPaykey = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PAYMENTTYPES");
-		//AnsiString Properties = "";
-		 TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
-		InsertQuery->SQL->Text = "INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "COLOUR, " "ROUNDTO," "TAX_RATE,"
-	  "DISPLAY_ORDER, INVOICE_EXPORT) " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, " ":PROPERTIES, "
-	  ":COLOUR, " ":ROUNDTO," ":TAX_RATE," ":DISPLAY_ORDER, :INVOICE_EXPORT)";
-      InsertQuery->ParamByName("PAYMENT_KEY")->AsInteger = waiterPaykey;
-      InsertQuery->ParamByName("PAYMENT_NAME")->AsString = "WAITERAPP";
-      InsertQuery->ParamByName("PROPERTIES")->AsString = "-3-19-";
-      InsertQuery->ParamByName("COLOUR")->AsInteger = clGreen;
-      InsertQuery->ParamByName("ROUNDTO")->AsCurrency = 0.01;
-      InsertQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
-      InsertQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
-      InsertQuery->ExecQuery();
-
+            int waiterPaykey = TGeneratorManager::GetNextGeneratorKey(DBTransaction,"GEN_PAYMENTTYPES");
+            //AnsiString Properties = "";
+            TIBSQL *InsertQuery= DBTransaction.Query(DBTransaction.AddQuery());
+            InsertQuery->SQL->Text = "INSERT INTO PAYMENTTYPES (" "PAYMENT_KEY, " "PAYMENT_NAME, " "PROPERTIES, " "COLOUR, " "ROUNDTO," "TAX_RATE,"
+            "DISPLAY_ORDER, INVOICE_EXPORT) " "VALUES (" ":PAYMENT_KEY, " ":PAYMENT_NAME, " ":PROPERTIES, "
+            ":COLOUR, " ":ROUNDTO," ":TAX_RATE," ":DISPLAY_ORDER, :INVOICE_EXPORT)";
+            InsertQuery->ParamByName("PAYMENT_KEY")->AsInteger = waiterPaykey;
+            InsertQuery->ParamByName("PAYMENT_NAME")->AsString = "WAITERAPP";
+            InsertQuery->ParamByName("PROPERTIES")->AsString = "-3-19-";
+            InsertQuery->ParamByName("COLOUR")->AsInteger = clGreen;
+            InsertQuery->ParamByName("ROUNDTO")->AsCurrency = 0.01;
+            InsertQuery->ParamByName("TAX_RATE")->AsCurrency = 0;
+            InsertQuery->ParamByName("INVOICE_EXPORT")->AsInteger = 0;
+            InsertQuery->ExecQuery();
 	  }
 
-		DBTransaction.Commit();
+	DBTransaction.Commit();
 	}
 	catch(Exception &Ex)
     {

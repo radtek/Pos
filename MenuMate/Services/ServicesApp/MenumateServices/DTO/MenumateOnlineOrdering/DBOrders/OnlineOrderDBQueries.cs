@@ -1615,7 +1615,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             PRICE_INCL, 
                             PRICE_ADJUST, 
                             ONLINE_CHIT_TYPE,
-                            ONLINE_ORDER_ID,
                             ORDER_GUID,
                             ITEMSIZE_IDENTIFIER 
 				            )
@@ -1669,7 +1668,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @PRICE_INCL, 
                             @PRICE_ADJUST, 
                             @ONLINE_CHIT_TYPE,  
-                            @ONLINE_ORDER_ID,
                             @ORDER_GUID,
                             @ITEMSIZE_IDENTIFIER 
 				        );
@@ -1722,7 +1720,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@PRICE_INCL", dayArchiveRow.PriceIncl);
                 command.Parameters.AddWithValue("@PRICE_ADJUST", dayArchiveRow.PriceAdjust);
                 command.Parameters.AddWithValue("@ONLINE_CHIT_TYPE", 0);//Need to confirm
-                command.Parameters.AddWithValue("@ONLINE_ORDER_ID", dayArchiveRow.OnlineOrderId);
+                //command.Parameters.AddWithValue("@ONLINE_ORDER_ID", dayArchiveRow.OnlineOrderId);
                 command.Parameters.AddWithValue("@ORDER_GUID", dayArchiveRow.OrderGuid);
                 command.Parameters.AddWithValue("@ITEMSIZE_IDENTIFIER", dayArchiveRow.ItemSizeIdentifier);
             }

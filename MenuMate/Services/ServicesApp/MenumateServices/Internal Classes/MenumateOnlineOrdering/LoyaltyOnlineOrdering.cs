@@ -128,17 +128,10 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             {
                 IsSuccessful = onlineOrderingDetailsResponse.IsSuccessful,
                 ResponseText = onlineOrderingDetailsResponse.Message,
+                IsMemberOrderingEnabled = onlineOrderingDetailsResponse.IsLoyaltyMateOrderingEnabled,
+                IsWaiterOrderingEnabled = onlineOrderingDetailsResponse.IsWaiterOrderingEnabled
             };
-            if (onlineOrderingDetailsResponse.ApiSiteTransactionSettingMappingViewModels != null && onlineOrderingDetailsResponse.ApiSiteTransactionSettingMappingViewModels.Count > 0)
-            {
-                onlineOrderingDetails.IsMemberOrderingEnabled = true;
-                onlineOrderingDetails.IsWaiterOrderingEnabled = true;
-            }
-            else
-            {
-                onlineOrderingDetails.IsWaiterOrderingEnabled = false;
-                onlineOrderingDetails.IsMemberOrderingEnabled = false;
-            }
+
             return onlineOrderingDetails;
         }
     }

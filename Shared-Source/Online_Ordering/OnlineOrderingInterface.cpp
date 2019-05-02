@@ -574,10 +574,6 @@ MMOnlineOrderingResponse TOnlineOrderingInterface::GetOnlineOrderingDetails(TSyn
         CoInitialize(NULL);
         response = onlineOrderingClient->GetOnlineOrderingDetailsBySiteCode(syndicateCode.GetSyndCode(),siteCode);
         MMOnlineOrderingResponse mmResponse =  CreateMMOnlineOrderingResponse( response );
-        if(mmResponse.IsWaiterOrderingEnabled)
-        {
-            // Create Payment Type for this.
-        }
         return mmResponse;
     }
     catch( Exception& exc )
