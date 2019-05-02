@@ -1957,7 +1957,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@EFTPOS_RECEIPT", onlineOrderRow.EftposReceipt);
                 command.Parameters.AddWithValue("@INVOICE_NUMBER", onlineOrderRow.InvoiceNumber);
                 command.Parameters.AddWithValue("@APP_TYPE", onlineOrderRow.AppType);
-                command.Parameters.AddWithValue("@ISPOSTED", onlineOrderRow.IsPosted);
+                command.Parameters.AddWithValue("@ISPOSTED", onlineOrderRow.IsPosted ? "T" : "F");
                 command.Parameters.AddWithValue("@TERMINAL_NAME", onlineOrderRow.TerminalName);
                 
 
