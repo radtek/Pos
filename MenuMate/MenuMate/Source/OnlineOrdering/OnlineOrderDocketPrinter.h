@@ -20,10 +20,17 @@ class TOnlineDocketPrinterThread : public TThread
         TItemComplete* LoadItemCompleteForWaiterAppOrder(Database::TDBTransaction &DBTransaction, TItem* Item, TItemSize* itemSize,
                             TItemComplete *itemComplete, UnicodeString orderGUID, int itemSizeIdentifier);
         void ManagePrintOperationsForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, bool IsDayArcBill);
-        void PrintAndArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
+        void ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
         void MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt,TReqPrintJob *LastReceipt);
         void AddPaymentInfo(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
         void ManagePostingToMews(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
+        void GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction, UnicodeString terminalName,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive);
+        TSiteOrderModel GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive);
+        std::list<TOrderItemModel> GetOrderItemModel(TPaymentTransaction paymentTransaction);
+        std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
+        TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID);
+        TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID);
+
     protected:
         virtual void __fastcall Execute();
     public:

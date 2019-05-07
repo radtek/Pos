@@ -1228,7 +1228,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@DEVICE_NAME", terminalName);
                 command.Parameters.AddWithValue("@PRODUCT", terminalName);
                 command.Parameters.AddWithValue("@DEVICE_ID", 0);
-                command.Parameters.AddWithValue("@DEVICE_TYPE", 1);
+                command.Parameters.AddWithValue("@DEVICE_TYPE", DTO.Enum.AppType.devWaiter);
                 command.Parameters.AddWithValue("@LOCATION_KEY", 1);
                 command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
                 command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceId);
@@ -1366,7 +1366,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             IS_PRINT_REQUIRED,
                             APP_TYPE,
                             ONLINE_ORDER_ID,
-                            ORDER_GUID) 
+                            ORDER_GUID,
+                            SITE_ID) 
                       VALUES (
 		                    @ARCBILL_KEY,  
                             @TERMINAL_NAME,  
@@ -1388,7 +1389,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             @IS_PRINT_REQUIRED,
                             @APP_TYPE,
                             @ONLINE_ORDER_ID,
-                            @ORDER_GUID)
+                            @ORDER_GUID,
+                            @SITE_ID)
                     ;";
 
                 command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillRow.ArcBillId);
@@ -1412,6 +1414,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@APP_TYPE", dayArcBillRow.ApplicationType);
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", dayArcBillRow.OnlinOrderId);
                 command.Parameters.AddWithValue("@ORDER_GUID", dayArcBillRow.OrderGuid);
+                command.Parameters.AddWithValue("@SITE_ID", dayArcBillRow.SiteId);
             }
             catch (Exception e)
             {

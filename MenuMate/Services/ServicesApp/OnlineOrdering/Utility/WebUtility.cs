@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using OnlineOrdering.Services;
+using System.IO;
 
 namespace OnlineOrdering.Utility
 {
@@ -25,7 +26,8 @@ namespace OnlineOrdering.Utility
         public static HttpWebRequest CreateRequest(string requestaddress, string syndicateCode, List<KeyValuePair<string, string>> parameters,
             string requestMode)
         {
-            var requestUri = RequestAddress.BaseAddress + requestaddress;
+            //var requestUri = RequestAddress.BaseAddress + requestaddress;
+            var requestUri = File.ReadAllText(@"C:\Program Files\MenuMate\Menumate Services\OnlineOrderingRequestAddress.txt") + requestaddress;
             if (parameters != null)
             {
                 foreach (var keyValuePair in parameters)

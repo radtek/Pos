@@ -84,8 +84,9 @@ void TManagerDevices::GetDeviceList(Database::TDBTransaction &DBTransaction,int 
 		"FROM "
 			"DEVICES "
 		"WHERE "
-			"DEVICE_TYPE = :DEVICE_TYPE";
+			"DEVICE_TYPE IN (:DEVICE_TYPE, :APP_TYPE) ";
 		IBInternalQuery->ParamByName("DEVICE_TYPE")->AsInteger = DeviceType;
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7;
 		IBInternalQuery->ExecQuery();
 
 		for (;!IBInternalQuery->Eof ; IBInternalQuery->Next())

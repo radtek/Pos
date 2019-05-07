@@ -273,6 +273,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     //siteOrderViewModel.IsConfirmed = true;
                     siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
                     siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                    siteOrderViewModel.IsConfirmed = true;
                     retValue = true;
                 }
             }
@@ -1419,7 +1420,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
                                     if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
                                     {
-                                        AddWaiterTerminal(siteOrderViewModel.TerminalName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                                        AddWaiterTerminal(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
                                     }
                                     if (!CheckIfWaiterStaffExist())
                                     {
@@ -1431,6 +1432,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     {
                                         stringList.Add("After ArchiveTransaction call                      ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                                        siteOrderViewModel.IsConfirmed = true;
                                     }
                                     else
                                     {
@@ -1456,6 +1458,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     {
                                         stringList.Add("After AddRecords                                   ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                                        siteOrderViewModel.IsConfirmed = true;
                                     }
                                     else
                                     {
@@ -1469,14 +1472,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             }
                             else
                             {
-                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;//To do , Assign item not found
+                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                                siteOrderViewModel.ErrorContent = GetErrorContent(notFoundItemName, notFoundItemSizeName);
                                 stringList.Add("Exception while Validating Items in orders         " + DateTime.Now.ToString("hh:mm:ss tt"));
                                 throw new Exception("Items ordered are not available.");
                             }
                         }
                         else
                         {
-                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
                             stringList.Add("Exception while Validating Table                   " + DateTime.Now.ToString("hh:mm:ss tt"));
                             throw new Exception("Invalid Table.");
                         }
@@ -1487,6 +1491,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         if (AddRecords(siteOrderViewModel, false))
                         {
                             siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                            siteOrderViewModel.IsConfirmed = true;
                         }
                         else
                         {
@@ -1590,7 +1595,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 dayArcBillRow.ArcBillId = dayArcBillKey;
                 dayArcBillRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
-                dayArcBillRow.StaffName = "";//Need to Confirm
+                dayArcBillRow.StaffName = "WAITER";//Need to Confirm
                 dayArcBillRow.Total = siteOrderViewModel.TotalAmount;
                 dayArcBillRow.Discount = 0;
                 dayArcBillRow.PatronCount = 1;
@@ -1604,6 +1609,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.OnlinOrderId = siteOrderViewModel.OrderId;
                 dayArcBillRow.OrderGuid = siteOrderViewModel.OrderGuid;
                 dayArcBillRow.ApplicationType = Enum.AppType.devWaiter;
+                dayArcBillRow.SiteId = siteOrderViewModel.SiteId;
             }
             catch (Exception e)
             {
@@ -1865,7 +1871,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        private void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
+        public void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
         {
             try
             {
@@ -2141,7 +2147,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long profileKey = GetProfileKey(deviceKey);
-                long appZedKey = GenerateKey("APPZEDSTATUS");
+                long appZedKey = GenerateKey("APPZEDSTATUS_ID");
                 FbCommand command = dbQueries.InsertAppZedRowQuery(connection, transaction, terminalName, appZedKey, profileKey);
                 command.ExecuteNonQuery();
                 
@@ -2188,7 +2194,20 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return result;
         }
-        
+        public List<string> GetErrorContent(string notFoundItemName, string notFoundItemSizeName)
+        {
+            List<string> errorContent = new List<string>();
+            try
+            {
+                string content = notFoundItemName + " ( " + notFoundItemSizeName + " ) ";
+                errorContent.Add(content);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return errorContent;
+        }
         #endregion
     }
 

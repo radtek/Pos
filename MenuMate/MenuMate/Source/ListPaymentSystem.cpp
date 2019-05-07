@@ -7207,7 +7207,19 @@ void TListPaymentSystem::LogDetailsForVoucherProcess(TPaymentTransaction &Paymen
 
     }
 }
-
+//---------------------------------------------------------------------------
+void TListPaymentSystem::GetAndUploadOnlineOrderingInvoice(TSiteOrderModel siteOrderModel)
+{
+    try
+    {
+        std::auto_ptr<TOnlineOrderingInterface>onlineOrderingInterface(new TOnlineOrderingInterface());
+        MMLoyaltyServiceResponse createResponse = onlineOrderingInterface->PostOnlineOrderInvoiceInfo(siteOrderModel);
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
 
 
 //------------------------------

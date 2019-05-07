@@ -748,7 +748,8 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
                                         " a.NOTE, "
                                         " a.QTY, "
                                         " a.PLU, "
-                                        " a.TIME_KEY "
+                                        " a.TIME_KEY, "
+                                        " a.TABLE_NAME "
                                         " FROM DAYARCHIVE a "
                                         " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER "
                                         " UNION ALL"
@@ -764,7 +765,8 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
                                         " a.NOTE, "
                                         " a.QTY, "
                                         " a.PLU, "
-                                        " a.TIME_KEY "
+                                        " a.TIME_KEY, "
+                                        " a.TABLE_NAME "
                                         " FROM ARCHIVE a "
                                         " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER ";
 
@@ -786,6 +788,7 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
             itemComplete->PLU            = ibInternalQuery->FieldByName("PLU")->AsInteger;
             itemComplete->ItemKey        = ibInternalQuery->FieldByName("TIME_KEY")->AsInteger;
             itemComplete->SetQty(ibInternalQuery->FieldByName("QTY")->AsInteger);
+            itemComplete->TabContainerName = ibInternalQuery->FieldByName("TABLE_NAME")->AsString;
         }
 
     }
@@ -863,4 +866,34 @@ UnicodeString TDBOnlineOrdering::GetInvoiceNumberForOrderGUID(Database::TDBTrans
     }
     return invoiceNumber;
 }
+void TDBOnlineOrdering::LoadSiteIDAndOOIdForOrderGuid(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, int &siteID, int &onlineOrderID)
+{
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =   " SELECT "
+                                       " a.SITE_ID, a.ONLINE_ORDER_ID "
+                                       " FROM DAYARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID "
+                                       " UNION ALL "
+                                       " SELECT "
+                                       " a.SITE_ID, a.ONLINE_ORDER_ID "
+                                       " FROM ARCBILL a "
+                                       " WHERE a.ORDER_GUID =:ORDER_GUID ";
 
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            siteID = ibInternalQuery->FieldByName("SITE_ID")->AsInteger;
+            onlineOrderID = ibInternalQuery->FieldByName("ONLINE_ORDER_ID")->AsInteger;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}

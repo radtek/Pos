@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" />
+  <xs:complexType name="SiteMenuInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CompanyId" type="xs:long" />
+      <xs:element minOccurs="0" name="MenuConsumables" nillable="true" type="tns:ArrayOfMenuConsumableInfo" />
+      <xs:element minOccurs="0" name="SiteId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteMenuInfo" nillable="true" type="tns:SiteMenuInfo" />
+  <xs:complexType name="ArrayOfMenuConsumableInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="MenuConsumableInfo" nillable="true" type="tns:MenuConsumableInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfMenuConsumableInfo" nillable="true" type="tns:ArrayOfMenuConsumableInfo" />
+  <xs:complexType name="MenuConsumableInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsPalmable" type="xs:boolean" />
+      <xs:element minOccurs="0" name="MenuId" type="xs:long" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteCourses" nillable="true" type="tns:ArrayOfCourseInfo" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" minOccurs="0" name="Type" type="q1:MenuType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="MenuConsumableInfo" nillable="true" type="tns:MenuConsumableInfo" />
+  <xs:complexType name="ArrayOfCourseInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CourseInfo" nillable="true" type="tns:CourseInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCourseInfo" nillable="true" type="tns:ArrayOfCourseInfo" />
+  <xs:complexType name="CourseInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CourseId" type="xs:long" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Items" nillable="true" type="tns:ArrayOfSiteItemInfo" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServingCourseDescription" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ServingCourseName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CourseInfo" nillable="true" type="tns:CourseInfo" />
+  <xs:complexType name="ArrayOfSiteItemInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SiteItemInfo" nillable="true" type="tns:SiteItemInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSiteItemInfo" nillable="true" type="tns:ArrayOfSiteItemInfo" />
+  <xs:complexType name="SiteItemInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CompanyId" type="xs:long" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ImagePath" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizes" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+      <xs:element minOccurs="0" name="ItemUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OnlyAsSide" type="xs:boolean" />
+      <xs:element minOccurs="0" name="SideGroups" nillable="true" type="tns:ArrayOfSideGroupInfo" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteMenuCourseId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteItemInfo" nillable="true" type="tns:SiteItemInfo" />
+  <xs:complexType name="ArrayOfItemSizeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSizeInfo" nillable="true" type="tns:ItemSizeInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSizeInfo" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+  <xs:complexType name="ItemSizeInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CanBePaidUsingPoints" type="xs:boolean" />
+      <xs:element minOccurs="0" name="DefaultPatronCount" type="xs:int" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="IsFree" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsWeighted" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ItemSizeId" type="xs:long" />
+      <xs:element minOccurs="0" name="ItemSizeTaxProfiles" nillable="true" type="tns:ArrayOfItemSizeTaxProfileInfo" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OrderingUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="PointsPercentage" type="xs:double" />
+      <xs:element minOccurs="0" name="PointsPrice" type="xs:double" />
+      <xs:element minOccurs="0" name="Price" type="xs:double" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+      <xs:element minOccurs="0" name="ThirdPartyId" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSizeInfo" nillable="true" type="tns:ItemSizeInfo" />
+  <xs:complexType name="ArrayOfItemSizeTaxProfileInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSizeTaxProfileInfo" nillable="true" type="tns:ItemSizeTaxProfileInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSizeTaxProfileInfo" nillable="true" type="tns:ArrayOfItemSizeTaxProfileInfo" />
+  <xs:complexType name="ItemSizeTaxProfileInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizeTaxProfileId" type="xs:long" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Priority" type="xs:int" />
+      <xs:element minOccurs="0" name="Rate" type="xs:double" />
+      <xs:element minOccurs="0" name="TaxProfileId" type="xs:long" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" minOccurs="0" name="Type" type="q2:TaxProfileType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSizeTaxProfileInfo" nillable="true" type="tns:ItemSizeTaxProfileInfo" />
+  <xs:complexType name="ArrayOfSideGroupInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SideGroupInfo" nillable="true" type="tns:SideGroupInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfSideGroupInfo" nillable="true" type="tns:ArrayOfSideGroupInfo" />
+  <xs:complexType name="SideGroupInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AllowSkip" type="xs:boolean" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSides" nillable="true" type="tns:ArrayOfItemSideInfo" />
+      <xs:element minOccurs="0" name="MaxSelect" type="xs:int" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SideGroupId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SideGroupInfo" nillable="true" type="tns:SideGroupInfo" />
+  <xs:complexType name="ArrayOfItemSideInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ItemSideInfo" nillable="true" type="tns:ItemSideInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfItemSideInfo" nillable="true" type="tns:ArrayOfItemSideInfo" />
+  <xs:complexType name="ItemSideInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ItemSizes" nillable="true" type="tns:ArrayOfItemSizeInfo" />
+      <xs:element minOccurs="0" name="ItemUniqueId" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OnlyAsSide" type="xs:boolean" />
+      <xs:element minOccurs="0" name="SiteItemId" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ItemSideInfo" nillable="true" type="tns:ItemSideInfo" />
+  <xs:complexType name="SiteTaxSettingsinfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="SiteId" type="xs:long" />
+      <xs:element minOccurs="0" name="SiteTaxSettings" nillable="true" type="tns:ArrayOfTaxSettingsInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SiteTaxSettingsinfo" nillable="true" type="tns:SiteTaxSettingsinfo" />
+  <xs:complexType name="ArrayOfTaxSettingsInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="TaxSettingsInfo" nillable="true" type="tns:TaxSettingsInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfTaxSettingsInfo" nillable="true" type="tns:ArrayOfTaxSettingsInfo" />
+  <xs:complexType name="TaxSettingsInfo">
+    <xs:sequence>
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" minOccurs="0" name="SettingType" type="q3:SiteSettingType" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="TaxSettingsInfo" nillable="true" type="tns:TaxSettingsInfo" />
+</xs:schema>

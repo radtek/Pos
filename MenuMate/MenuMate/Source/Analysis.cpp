@@ -9603,7 +9603,7 @@ UnicodeString TfrmAnalysis::GetTerminalNameForWaiterApp(Database::TDBTransaction
                                      "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
 
         IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
-        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7; //Need to change
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = devWaiter;
 
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount)

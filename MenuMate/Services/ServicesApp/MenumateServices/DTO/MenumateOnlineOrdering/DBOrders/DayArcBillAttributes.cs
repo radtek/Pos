@@ -23,5 +23,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         public AppType ApplicationType { get; set; }
         public long OnlinOrderId { get; set; }
         public string OrderGuid { get; set; }
+        public long SiteId { get; set; }
     }
 }
