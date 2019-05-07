@@ -2110,5 +2110,14 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             else
                 return original;
         }
+
+        public static string GetFromSubstring(string str, int start, int maxLength)
+        {
+            if (str != null)
+                str = str.Length > maxLength ? str.Substring(start, maxLength) : str;
+            else
+                str = "";
+            return str;
+        }
     }
 }

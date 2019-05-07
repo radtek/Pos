@@ -2188,6 +2188,25 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return result;
         }
+
+        public void PerformPreRequisiteWaiterOperation(List<string> stringList, string deviceId, string terminalName)
+        {
+            stringList.Add("Checking If Waiter Terminal Exist              ");
+            bool IsTerminalExist = CheckIfWaiterTerminalExist(deviceId);
+            if (!IsTerminalExist)
+            {
+                stringList.Add("Adding Waiter Terminal                         ");
+                AddWaiterTerminal(terminalName, deviceId);
+            }
+
+            stringList.Add("Checking If Waiter Staff Exist                 ");
+            bool IsWaiterStaffExist = CheckIfWaiterStaffExist();
+            if (!IsWaiterStaffExist)
+            {
+                stringList.Add("Adding Waiter Staff                            ");
+                AddWaiterStaff();
+            }
+        }
         
         #endregion
     }
