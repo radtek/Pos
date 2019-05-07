@@ -1812,7 +1812,6 @@ AnsiString TLoyaltyMateInterface::GetLogFileName()
 //---------------------------------------------------------------------------------------------------
 void TLoyaltyMateInterface::AddLoyaltyLogs(std::auto_ptr<TStringList> loyaltyLogs)
 {
-
     try
     {
         AnsiString fileName = GetLogFileName();

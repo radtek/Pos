@@ -118,6 +118,7 @@ class TListPaymentSystem : public TMMPaymentSystem
     bool ProcessTipAfterZED(UnicodeString invoiceNumber, WideString paymentRefNumber, Currency OriginalAmount, Currency tipAmount);
     void PrintReceipt(bool RequestEFTPOSReceipt, bool duplicateReceipt = false);
     void PrintFiscalReceipt(TPaymentTransaction &paymentTransactionNew);
+    void GetAndUploadOnlineOrderingInvoice(TSiteOrderModel siteOrderModel);
 
 protected:
 

@@ -114,6 +114,9 @@
     <None Include="Connected Services\OnlineOrderingRef\SystemTrayApp.OnlineOrderingRef.LoyaltyOOResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="Connected Services\OnlineOrderingRef\SystemTrayApp.OnlineOrderingRef.OnlineOrderingDetails.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Connected Services\OnlineOrderingRef\SystemTrayApp.OnlineOrderingRef.OOLoyaltyResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>

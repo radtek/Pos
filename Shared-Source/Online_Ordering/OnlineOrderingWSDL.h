@@ -11,7 +11,7 @@
 //  >Import : http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1
 // Encoding : utf-8
 // Version  : 1.0
-// (25/04/2019 10:50:51 p.m. - - $Rev: 25127 $)
+// (29/04/2019 5:40:32 p.m. - - $Rev: 25127 $)
 // ************************************************************************ //
 
 #ifndef   OnlineOrderingWSDLH
@@ -80,9 +80,11 @@ class SOAP_REMOTABLE_CLASS TaxSettingsInfo2;
 class SOAP_REMOTABLE_CLASS OOServiceResponse;
 class SOAP_REMOTABLE_CLASS OOLoyaltyResponse;
 class SOAP_REMOTABLE_CLASS LoyaltyOOResponse;
+class SOAP_REMOTABLE_CLASS OnlineOrderingDetails;
 class SOAP_REMOTABLE_CLASS OOLoyaltyResponse2;
 class SOAP_REMOTABLE_CLASS OOServiceResponse2;
 class SOAP_REMOTABLE_CLASS LoyaltyOOResponse2;
+class SOAP_REMOTABLE_CLASS OnlineOrderingDetails2;
 class SOAP_REMOTABLE_CLASS OrderInvoiceTransactionModel;
 class SOAP_REMOTABLE_CLASS SiteOrderModel;
 class SOAP_REMOTABLE_CLASS InvoiceTransactionModel;
@@ -180,7 +182,7 @@ enum class OrderType   /* "http://schemas.datacontract.org/2004/07/MenumateServi
 {
   NormalOrder, 
   Unused, 
-  CanceledOrder,
+  CanceledOrder, 
   CreditNonExistingOrder
 };
 
@@ -285,7 +287,7 @@ private:
   void __fastcall SetDescription(int Index, UnicodeString _prop_val)
   {  FDescription = _prop_val; FDescription_Specified = true;  }
   bool __fastcall Description_Specified(int Index)
-  {  return FDescription_Specified;  }
+  {  return FDescription_Specified;  } 
   void __fastcall SetIsPalmable(int Index, bool _prop_val)
   {  FIsPalmable = _prop_val; FIsPalmable_Specified = true;  }
   bool __fastcall IsPalmable_Specified(int Index)
@@ -635,7 +637,7 @@ private:
   void __fastcall SetTaxProfileId(int Index, __int64 _prop_val)
   {  FTaxProfileId = _prop_val; FTaxProfileId_Specified = true;  }
   bool __fastcall TaxProfileId_Specified(int Index)
-  {  return FTaxProfileId_Specified;  }
+  {  return FTaxProfileId_Specified;  } 
   void __fastcall SetType(int Index, TaxProfileType _prop_val)
   {  FType = _prop_val; FType_Specified = true;  }
   bool __fastcall Type_Specified(int Index)
@@ -1020,9 +1022,49 @@ private:
   void __fastcall SetResponseText(int Index, UnicodeString _prop_val)
   {  FResponseText = _prop_val; FResponseText_Specified = true;  }
   bool __fastcall ResponseText_Specified(int Index)
-  {  return FResponseText_Specified;  }
+  {  return FResponseText_Specified;  } 
 __published:
   __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
+  __property UnicodeString ResponseText = { index=(IS_OPTN|IS_NLBL), read=FResponseText, write=SetResponseText, stored = ResponseText_Specified };
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : OnlineOrderingDetails, global, <complexType>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
+// ************************************************************************ //
+class OnlineOrderingDetails : public TRemotable {
+private:
+  bool            FIsMemberOrderingEnabled;
+  bool            FIsMemberOrderingEnabled_Specified;
+  bool            FIsSuccessful;
+  bool            FIsSuccessful_Specified;
+  bool            FIsWaiterOrderingEnabled;
+  bool            FIsWaiterOrderingEnabled_Specified;
+  UnicodeString   FResponseText;
+  bool            FResponseText_Specified;
+  void __fastcall SetIsMemberOrderingEnabled(int Index, bool _prop_val)
+  {  FIsMemberOrderingEnabled = _prop_val; FIsMemberOrderingEnabled_Specified = true;  }
+  bool __fastcall IsMemberOrderingEnabled_Specified(int Index)
+  {  return FIsMemberOrderingEnabled_Specified;  } 
+  void __fastcall SetIsSuccessful(int Index, bool _prop_val)
+  {  FIsSuccessful = _prop_val; FIsSuccessful_Specified = true;  }
+  bool __fastcall IsSuccessful_Specified(int Index)
+  {  return FIsSuccessful_Specified;  } 
+  void __fastcall SetIsWaiterOrderingEnabled(int Index, bool _prop_val)
+  {  FIsWaiterOrderingEnabled = _prop_val; FIsWaiterOrderingEnabled_Specified = true;  }
+  bool __fastcall IsWaiterOrderingEnabled_Specified(int Index)
+  {  return FIsWaiterOrderingEnabled_Specified;  } 
+  void __fastcall SetResponseText(int Index, UnicodeString _prop_val)
+  {  FResponseText = _prop_val; FResponseText_Specified = true;  }
+  bool __fastcall ResponseText_Specified(int Index)
+  {  return FResponseText_Specified;  } 
+__published:
+  __property bool       IsMemberOrderingEnabled = { index=(IS_OPTN), read=FIsMemberOrderingEnabled, write=SetIsMemberOrderingEnabled, stored = IsMemberOrderingEnabled_Specified };
+  __property bool       IsSuccessful = { index=(IS_OPTN), read=FIsSuccessful, write=SetIsSuccessful, stored = IsSuccessful_Specified };
+  __property bool       IsWaiterOrderingEnabled = { index=(IS_OPTN), read=FIsWaiterOrderingEnabled, write=SetIsWaiterOrderingEnabled, stored = IsWaiterOrderingEnabled_Specified };
   __property UnicodeString ResponseText = { index=(IS_OPTN|IS_NLBL), read=FResponseText, write=SetResponseText, stored = ResponseText_Specified };
 };
 
@@ -1058,6 +1100,18 @@ __published:
 // Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
 // ************************************************************************ //
 class LoyaltyOOResponse2 : public LoyaltyOOResponse {
+private:
+__published:
+};
+
+
+
+
+// ************************************************************************ //
+// XML       : OnlineOrderingDetails, global, <element>
+// Namespace : http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering
+// ************************************************************************ //
+class OnlineOrderingDetails2 : public OnlineOrderingDetails {
 private:
 __published:
 };
@@ -1335,7 +1389,7 @@ private:
   void __fastcall SetTransactionDate(int Index, TXSDateTime* _prop_val)
   {  FTransactionDate = _prop_val; FTransactionDate_Specified = true;  }
   bool __fastcall TransactionDate_Specified(int Index)
-  {  return FTransactionDate_Specified;  }
+  {  return FTransactionDate_Specified;  } 
   void __fastcall SetUserReferenceId(int Index, __int64 _prop_val)
   {  FUserReferenceId = _prop_val; FUserReferenceId_Specified = true;  }
   bool __fastcall UserReferenceId_Specified(int Index)
@@ -1650,7 +1704,7 @@ private:
   void __fastcall SetPriority(int Index, int _prop_val)
   {  FPriority = _prop_val; FPriority_Specified = true;  }
   bool __fastcall Priority_Specified(int Index)
-  {  return FPriority_Specified;  }
+  {  return FPriority_Specified;  } 
   void __fastcall SetRate(int Index, double _prop_val)
   {  FRate = _prop_val; FRate_Specified = true;  }
   bool __fastcall Rate_Specified(int Index)
@@ -1784,6 +1838,7 @@ public:
   virtual bool            UnsetOrderingDetails(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
   virtual void            InsertWaiterTerminal(const UnicodeString terminalInfo) = 0; 
   virtual void            CreateRequestForAppZed(const UnicodeString zedRequest) = 0; 
+  virtual OnlineOrderingDetails* GetOnlineOrderingDetailsBySiteCode(const UnicodeString inSyndicateCode, const int siteCode) = 0; 
 };
 typedef DelphiInterface<IWCFServiceOnlineOrdering> _di_IWCFServiceOnlineOrdering;
 

@@ -1774,16 +1774,16 @@ std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListFo
 				                "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
 				                "INNER JOIN "
 				                "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
-				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE "
+				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
 				                "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
 				                ") AS ORDER_DATA "
 				                "GROUP BY DEVICE_NAME,ORDER_ITEM, ITEM_SIZE_NAME ";
 
-        ;
         orderQuery->ParamByName("TERMINAL_NAME")->AsString =  terminalName;
-        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITER";
+        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITERAPP";
         orderQuery->ParamByName("NOTE")->AsString = "Total Change.";
         orderQuery->ParamByName("TIME_STAMP")->AsDate = previousZedTime;
+        orderQuery->ParamByName("APP_TYPE")->AsInteger = devWaiter;
 
         orderQuery->ExecQuery();
 
@@ -1819,12 +1819,14 @@ std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListFo
                                 "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 "INNER JOIN "
 							    "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
-                                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE "
+                                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
                                 "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
 				                "ORDER BY a.ITEM_NAME asc ";
+
         orderQuery->ParamByName("TERMINAL_NAME")->AsString =  terminalName;
-        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITER";
+        orderQuery->ParamByName("PAY_TYPE")->AsString = "WAITERAPP";
         orderQuery->ParamByName("NOTE")->AsString = "Total Change.";
+        orderQuery->ParamByName("APP_TYPE")->AsInteger = devWaiter;
 
         orderQuery->ExecQuery();
 
@@ -1858,7 +1860,7 @@ UnicodeString DataCalculationUtilities::GetTerminalName(Database::TDBTransaction
                                      "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
 
         IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
-        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = 7; //Need to change
+        IBInternalQuery->ParamByName("APP_TYPE")->AsInteger = devWaiter;
 
         IBInternalQuery->ExecQuery();
         if(IBInternalQuery->RecordCount)

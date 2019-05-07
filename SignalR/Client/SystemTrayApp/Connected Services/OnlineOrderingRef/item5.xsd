@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" />
+  <xs:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" />
+  <xs:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels" />
+  <xs:element name="SyncMenu">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" minOccurs="0" name="siteViewModel" nillable="true" type="q1:SiteMenuInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncMenuResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" minOccurs="0" name="SyncMenuResult" nillable="true" type="q2:OOLoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncTaxSettings">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" minOccurs="0" name="siteTaxSettings" nillable="true" type="q3:SiteTaxSettingsinfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncTaxSettingsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" minOccurs="0" name="SyncTaxSettingsResult" nillable="true" type="q4:OOLoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOrdersFromWeb">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="orders" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOrdersFromWebResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostOnlineOrderInvoiceInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels" minOccurs="0" name="siteOrderModel" nillable="true" type="q5:SiteOrderModel" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="PostOnlineOrderInvoiceInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" minOccurs="0" name="PostOnlineOrderInvoiceInfoResult" nillable="true" type="q6:OOLoyaltyResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncOnlineOrderingDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="siteCode" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SyncOnlineOrderingDetailsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" minOccurs="0" name="SyncOnlineOrderingDetailsResult" nillable="true" type="q7:LoyaltyOOResponse" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnsetOrderingDetails">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="siteCode" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnsetOrderingDetailsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="UnsetOrderingDetailsResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InsertWaiterTerminal">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="terminalInfo" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="InsertWaiterTerminalResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateRequestForAppZed">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="zedRequest" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateRequestForAppZedResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOnlineOrderingDetailsBySiteCode">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="inSyndicateCode" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="siteCode" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOnlineOrderingDetailsBySiteCodeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" minOccurs="0" name="GetOnlineOrderingDetailsBySiteCodeResult" nillable="true" type="q8:OnlineOrderingDetails" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

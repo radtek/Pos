@@ -157,301 +157,6 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 return null;
             }
         }
-        public SiteOrderModel CreateSiteOrderModel(ApiSiteOrderViewModel siteOrderViewModel, List<string> stringList)
-        {
-            SiteOrderModel siteOrderModel = new SiteOrderModel();
-            try
-            {
-                stringList.Add("Creating Site Order Model                          ");
-                siteOrderModel.CompanyId = siteOrderViewModel.CompanyId;
-                siteOrderModel.SiteId = siteOrderViewModel.SiteId;
-                siteOrderModel.OrderId = siteOrderViewModel.OrderId;
-                siteOrderModel.Location = siteOrderViewModel.Location;
-                siteOrderModel.TotalAmount = siteOrderViewModel.TotalAmount;
-                siteOrderModel.ContainerNumber = siteOrderViewModel.ContainerNumber;
-                siteOrderModel.ContainerType = siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Tab ? DTO.Enum.OrderContainerType.Tab: DTO.Enum.OrderContainerType.Table;
-                siteOrderModel.ContainerName = siteOrderViewModel.ContainerName;
-                siteOrderModel.OrderGuid = siteOrderViewModel.OrderGuid;
-                siteOrderModel.UserReferenceId = siteOrderViewModel.UserReferenceId;
-                siteOrderModel.UserType = siteOrderViewModel.UserType == OnlineOrdering.Enum.UserType.Member? DTO.Enum.UserType.Member : DTO.Enum.UserType.Staff;
-                siteOrderModel.TerminalName = siteOrderViewModel.TerminalName;
-                siteOrderModel.TransactionDate = siteOrderViewModel.TransactionDate;
-                siteOrderModel.OrderType = LoadOrderType(siteOrderViewModel.OrderType, stringList);
-                siteOrderModel.OrderItems = LoadOrderItems(siteOrderViewModel.OrderItems, stringList);
-                siteOrderModel.TransactionType = LoadTransactionType(siteOrderViewModel.TransactionType, stringList);
-                //siteOrderModel.IsConfirmed = siteOrderViewModel.IsConfirmed;
-                siteOrderModel.IsConfirmed = siteOrderViewModel.OrderStatus == OnlineOrdering.Enum.OrderStatus.IsConfirmed ? true : false;
-                siteOrderModel.UserEmailId = siteOrderViewModel.UserEmailId;
-                siteOrderModel.MemberGuid = siteOrderViewModel.MemberGuid;
-                siteOrderModel.OrderInvoiceTransaction = LoadInvoiceTransaction(siteOrderViewModel.OrderInvoiceTransaction, stringList);
-                siteOrderModel.IsHappyHourApplied = siteOrderViewModel.IsHappyHourApplied;
- 
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                return null;
-            }
-
-            return siteOrderModel;
-        }
-        public OrderInvoiceTransactionModel LoadInvoiceTransaction(ApiOrderInvoiceTransactionViewModel apiOrderInvoiceTransactionViewModel, List<string> stringList)
-        {
-            OrderInvoiceTransactionModel orderInvoiceTransactionModel = new OrderInvoiceTransactionModel();
-            try
-            {
-                stringList.Add("Loading Invoice Transaction                        ");
-                orderInvoiceTransactionModel.OrderInvoiceTransactionId = apiOrderInvoiceTransactionViewModel.OrderInvoiceTransactionId;
-                orderInvoiceTransactionModel.OrderId = apiOrderInvoiceTransactionViewModel.OrderId;
-                orderInvoiceTransactionModel.InvoiceTransactionId = apiOrderInvoiceTransactionViewModel.InvoiceTransactionId;
-                orderInvoiceTransactionModel.InvoiceTransaction = LoadInvoiceTransactionItem(apiOrderInvoiceTransactionViewModel.InvoiceTransaction, stringList);
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                return null;
-            }
-            return orderInvoiceTransactionModel;
-        }
-        public InvoiceTransactionModel LoadInvoiceTransactionItem(ApiInvoiceTransactionViewModel apiInvoiceTransactionViewModel, List<string> stringList)
-        {
-            InvoiceTransactionModel invoiceTransactionModel = new InvoiceTransactionModel();
-            try
-            {
-                stringList.Add("Loading Invoice Transaction Item                   ");
-                invoiceTransactionModel.InvoiceTransactionId = apiInvoiceTransactionViewModel.InvoiceTransactionId;
-                invoiceTransactionModel.InvoiceNumber = apiInvoiceTransactionViewModel.InvoiceNumber;
-                invoiceTransactionModel.TotalSaleAmount = apiInvoiceTransactionViewModel.TotalSaleAmount;
-                invoiceTransactionModel.TransactionDate = apiInvoiceTransactionViewModel.TransactionDate;
-                invoiceTransactionModel.SiteId = apiInvoiceTransactionViewModel.SiteId;
-                invoiceTransactionModel.TerminalName = apiInvoiceTransactionViewModel.TerminalName;
-                invoiceTransactionModel.Receipt = apiInvoiceTransactionViewModel.Receipt;
-                invoiceTransactionModel.ReceiptPath = apiInvoiceTransactionViewModel.ReceiptPath;
-                invoiceTransactionModel.Rounding = apiInvoiceTransactionViewModel.Rounding;
-                invoiceTransactionModel.UserReferenceId = apiInvoiceTransactionViewModel.UserReferenceId;
-                invoiceTransactionModel.UserType = apiInvoiceTransactionViewModel.UserType == OnlineOrdering.Enum.UserType.Member ? DTO.Enum.UserType.Member : DTO.Enum.UserType.Staff;
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                return null;
-            }
-            return invoiceTransactionModel;
-        }
-        public DTO.Enum.SiteSettingType LoadTransactionType(OnlineOrdering.Enum.SiteSettingType apiSiteSettingType, List<string> stringList)
-        {
-            DTO.Enum.SiteSettingType siteSettingType = 0;
-            try
-            {
-                stringList.Add("Loading Transaction Type                           ");
-                if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ApplyServiceChargeTax)
-                    siteSettingType = DTO.Enum.SiteSettingType.ApplyServiceChargeTax;
-                else if(apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateScPreDiscountedPrice)
-                    siteSettingType = DTO.Enum.SiteSettingType.CalculateScPreDiscountedPrice;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateTaxAfterDiscount)
-                    siteSettingType = DTO.Enum.SiteSettingType.CalculateTaxAfterDiscount;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.CalculateTaxBeforeDiscount)
-                    siteSettingType = DTO.Enum.SiteSettingType.CalculateTaxBeforeDiscount;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.DineIn)
-                    siteSettingType = DTO.Enum.SiteSettingType.DineIn;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ItemPriceIncludeServiceCharge)
-                    siteSettingType = DTO.Enum.SiteSettingType.ItemPriceIncludeServiceCharge;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ItemPriceIncludeTax)
-                    siteSettingType = DTO.Enum.SiteSettingType.ItemPriceIncludeTax;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.PickUp)
-                    siteSettingType = DTO.Enum.SiteSettingType.PickUp;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ReCalculateScAfterDiscount)
-                    siteSettingType = DTO.Enum.SiteSettingType.ReCalculateScAfterDiscount;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.ServiceChargeTaxRate)
-                    siteSettingType = DTO.Enum.SiteSettingType.ServiceChargeTaxRate;
-                else if (apiSiteSettingType == OnlineOrdering.Enum.SiteSettingType.TakeAway)
-                    siteSettingType = DTO.Enum.SiteSettingType.TakeAway;
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return siteSettingType;
-        }
-        public List<OrderItemModel> LoadOrderItems(List<ApiOrderItemViewModel> orderItemViewModelList, List<string> stringList)
-        {
-            List<OrderItemModel> orderItemModelList = new List<OrderItemModel>();
-            try
-            {
-                foreach(var orderItem in orderItemViewModelList)
-                {
-                    stringList.Add("Loading Order Items List                           ");
-                    OrderItemModel orderItemModel = new OrderItemModel();
-                    orderItemModel.Description = orderItem.Description;
-                    orderItemModel.ItemUniqueId = orderItem.ItemUniqueId;
-                    orderItemModel.Name = orderItem.Name;
-                    orderItemModel.OrderId = orderItem.OrderId;
-                    orderItemModel.OrderItemSizes = LoadOrderItemSizes(orderItem.OrderItemSizes, stringList);
-                    orderItemModel.Price = orderItem.Price;
-                    orderItemModel.SiteItemId = orderItem.SiteItemId;
-
-                    orderItemModelList.Add(orderItemModel);
-
-                }
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return orderItemModelList;
-        }
-        public List<OrderItemSizeModel> LoadOrderItemSizes(List<ApiOrderItemSizeViewModel> apiOrderItemSizeViewModelList, List<string> stringList)
-        {
-            List<OrderItemSizeModel> orderItemSizeModelList = new List<OrderItemSizeModel>();
-            try
-            {
-                foreach(var apiOrderItemSizeViewModel in apiOrderItemSizeViewModelList)
-                {
-                    stringList.Add("Loading Order Items Size List                      ");
-                    OrderItemSizeModel orderItemSizeModel = new OrderItemSizeModel();
-                    orderItemSizeModel.BasePrice = apiOrderItemSizeViewModel.BasePrice;
-                    orderItemSizeModel.ItemSizeId = apiOrderItemSizeViewModel.ItemSizeId; 
-                    orderItemSizeModel.ItemSizeUniqueId = apiOrderItemSizeViewModel.ItemSizeUniqueId; 
-                    orderItemSizeModel.MenuPrice = apiOrderItemSizeViewModel.MenuPrice; 
-                    orderItemSizeModel.Name = apiOrderItemSizeViewModel.Name; 
-                    orderItemSizeModel.OrderItemId = apiOrderItemSizeViewModel.OrderItemId;
-                    orderItemSizeModel.OrderItemSizeDiscounts = LoadItemSizeDiscounts(apiOrderItemSizeViewModel.OrderItemSizeDiscounts, stringList);
-                    orderItemSizeModel.OrderItemSizeId = apiOrderItemSizeViewModel.OrderItemSizeId;
-                    orderItemSizeModel.OrderItemSizeTaxProfiles = LoadItemSizeTaxProfiles(apiOrderItemSizeViewModel.OrderItemSizeTaxProfiles, stringList);
-                    orderItemSizeModel.Price = apiOrderItemSizeViewModel.Price;
-                    orderItemSizeModel.PriceInclusive = apiOrderItemSizeViewModel.PriceInclusive;
-                    orderItemSizeModel.Quantity = apiOrderItemSizeViewModel.Quantity;
-                    orderItemSizeModel.ReferenceOrderItemSizeId = apiOrderItemSizeViewModel.ReferenceOrderItemSizeId;
-
-                    orderItemSizeModelList.Add(orderItemSizeModel);
-                }
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return orderItemSizeModelList;
-        }
-        public List<OrderItemSizeDiscountModel> LoadItemSizeDiscounts(List<ApiOrderItemSizeDiscountViewModel> apiOrderItemSizeDiscountViewModelList, List<string> stringList)
-        {
-            List<OrderItemSizeDiscountModel> orderItemSizeDiscountModelList = new List<OrderItemSizeDiscountModel>();
-            try
-            {
-                foreach(var apiOrderItemSizeDiscountViewModel in apiOrderItemSizeDiscountViewModelList)
-                {
-                    stringList.Add("Loading Item Size Discounts List                   ");
-                    OrderItemSizeDiscountModel orderItemSizeDiscountModel = new OrderItemSizeDiscountModel();
-                    orderItemSizeDiscountModel.Code = apiOrderItemSizeDiscountViewModel.Code;
-                    orderItemSizeDiscountModel.Name = apiOrderItemSizeDiscountViewModel.Name;
-                    orderItemSizeDiscountModel.OrderItemSizeDiscountId = apiOrderItemSizeDiscountViewModel.OrderItemSizeDiscountId;
-                    orderItemSizeDiscountModel.OrderItemSizeId = apiOrderItemSizeDiscountViewModel.OrderItemSizeId;
-                    orderItemSizeDiscountModel.Value = apiOrderItemSizeDiscountViewModel.Value;
-                    
-                    orderItemSizeDiscountModelList.Add(orderItemSizeDiscountModel);
-                }
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return orderItemSizeDiscountModelList;
-        }
-        public List<OrderItemSizeTaxProfileModel> LoadItemSizeTaxProfiles(List<ApiOrderItemSizeTaxProfileViewModel> apiOrderItemSizeTaxProfileViewModelList, List<string> stringList)
-        {
-            List<OrderItemSizeTaxProfileModel> orderItemSizeTaxProfileModelList = new List<OrderItemSizeTaxProfileModel>();
-            try
-            {
-                foreach (var apiOrderItemSizeTaxProfileViewModel in apiOrderItemSizeTaxProfileViewModelList)
-                {
-                    stringList.Add("Loading Item Size Tax Profiles List                ");
-                    OrderItemSizeTaxProfileModel orderItemSizeTaxProfileModel = new OrderItemSizeTaxProfileModel();
-                    orderItemSizeTaxProfileModel.CompanyId = apiOrderItemSizeTaxProfileViewModel.CompanyId;
-                    orderItemSizeTaxProfileModel.Description = apiOrderItemSizeTaxProfileViewModel.Description;
-                    orderItemSizeTaxProfileModel.ItemSizeTaxProfileId = apiOrderItemSizeTaxProfileViewModel.ItemSizeTaxProfileId;
-                    orderItemSizeTaxProfileModel.Name = apiOrderItemSizeTaxProfileViewModel.Name;
-                    orderItemSizeTaxProfileModel.OrderItemSizeId = apiOrderItemSizeTaxProfileViewModel.OrderItemSizeId;
-                    orderItemSizeTaxProfileModel.OrderItemSizeTaxProfileId = apiOrderItemSizeTaxProfileViewModel.OrderItemSizeTaxProfileId;
-                    orderItemSizeTaxProfileModel.Percentage = apiOrderItemSizeTaxProfileViewModel.Percentage;
-                    orderItemSizeTaxProfileModel.Priority = apiOrderItemSizeTaxProfileViewModel.Priority;
-                    orderItemSizeTaxProfileModel.Rate = apiOrderItemSizeTaxProfileViewModel.Rate;
-                    orderItemSizeTaxProfileModel.TaxProfileType = LoadTaxProfileType(apiOrderItemSizeTaxProfileViewModel.TaxProfileType, stringList);
-                    orderItemSizeTaxProfileModel.Value = apiOrderItemSizeTaxProfileViewModel.Value;
-
-                    orderItemSizeTaxProfileModelList.Add(orderItemSizeTaxProfileModel);
-                }
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return orderItemSizeTaxProfileModelList;
-        }
-        public DTO.Enum.TaxProfileType LoadTaxProfileType(OnlineOrdering.Enum.TaxProfileType apiTaxProfileType, List<string> stringList)
-        {
-            DTO.Enum.TaxProfileType taxProfileType = 0;
-            try
-            {
-                stringList.Add("Loading Tax Profile Type                           ");
-                if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.LocalTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.LocalTax;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.ProfitTax;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.Purchasetax;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ProfitTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.Purchasetax;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.SalesTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.SalesTax;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ServiceCharge)
-                    taxProfileType = DTO.Enum.TaxProfileType.ServiceCharge;
-                else if (apiTaxProfileType == OnlineOrdering.Enum.TaxProfileType.ServiceChargeTax)
-                    taxProfileType = DTO.Enum.TaxProfileType.ServiceChargeTax;
-
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return taxProfileType;
-        }
-        public DTO.Enum.OrderType LoadOrderType(OnlineOrdering.Enum.OrderType apiOrderType, List<string> stringList)
-        {
-            DTO.Enum.OrderType orderType = 0;
-            try
-            {
-                stringList.Add("Loading Order Type                                 ");
-                if (apiOrderType == OnlineOrdering.Enum.OrderType.CanceledOrder)
-                    orderType = DTO.Enum.OrderType.CanceledOrder;
-                else if (apiOrderType == OnlineOrdering.Enum.OrderType.CreditNonExistingOrder)
-                    orderType = DTO.Enum.OrderType.CreditNonExistingOrder;
-                else if (apiOrderType == OnlineOrdering.Enum.OrderType.NormalOrder)
-                    orderType = DTO.Enum.OrderType.NormalOrder;
-                else if (apiOrderType == OnlineOrdering.Enum.OrderType.Unused)
-                    orderType = DTO.Enum.OrderType.Unused;
-            }
-            catch (Exception ex)
-            {
-                stringList.Add("Exception is                                       " + ex.Message);
-                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
-                //return null;
-            }
-            return orderType;
-        }
         #endregion
 
         #region private
@@ -674,22 +379,29 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
             siteOrderViewModel.ContainerName = siteOrderModel.ContainerName;
             siteOrderViewModel.ContainerNumber = siteOrderModel.ContainerNumber;
             siteOrderViewModel.ContainerType = (OnlineOrdering.Enum.OrderContainerType)siteOrderModel.ContainerType;
-            //siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
-            siteOrderViewModel.OrderStatus = siteOrderModel.IsConfirmed ? OnlineOrdering.Enum.OrderStatus.IsConfirmed : OnlineOrdering.Enum.OrderStatus.PosOrderError;
+            siteOrderViewModel.IsConfirmed = siteOrderModel.IsConfirmed;
+            siteOrderViewModel.OrderStatus = siteOrderModel.IsConfirmed ? OnlineOrdering.Enum.OrderStatus.PaymentReceived : OnlineOrdering.Enum.OrderStatus.PosOrderError;
             siteOrderViewModel.Location = siteOrderModel.Location;
             siteOrderViewModel.OrderGuid = siteOrderModel.OrderGuid;
             siteOrderViewModel.OrderId = siteOrderModel.OrderId;
             siteOrderViewModel.OrderType = (OnlineOrdering.Enum.OrderType)siteOrderModel.OrderType;
             siteOrderViewModel.SiteId = siteOrderModel.SiteId;
-            siteOrderViewModel.TerminalName = siteOrderModel.TerminalName;
+            ApiOrderDevicesViewModel apiOrderDevicesViewModel = new ApiOrderDevicesViewModel();
+            apiOrderDevicesViewModel.DeviceName = siteOrderModel.TerminalName;
+            apiOrderDevicesViewModel.DeviceType = 0;
+            apiOrderDevicesViewModel.OrderId = siteOrderModel.OrderId;
+            apiOrderDevicesViewModel.DeviceId = "";
+            siteOrderViewModel.ApiOrderDevicesViewModel = apiOrderDevicesViewModel;
             siteOrderViewModel.TotalAmount = siteOrderModel.TotalAmount;
             siteOrderViewModel.TransactionDate = siteOrderModel.TransactionDate;
             siteOrderViewModel.TransactionType = (OnlineOrdering.Enum.SiteSettingType)siteOrderModel.TransactionType;
             siteOrderViewModel.UserReferenceId = siteOrderModel.UserReferenceId;
             siteOrderViewModel.UserType = (OnlineOrdering.Enum.UserType)siteOrderModel.UserType;
+            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.PaymentReceived;
             siteOrderViewModel.UserEmailId = siteOrderModel.UserEmailId;
             siteOrderViewModel.MemberGuid = siteOrderModel.MemberGuid;
             siteOrderViewModel.IsHappyHourApplied = siteOrderModel.IsHappyHourApplied;
+            siteOrderViewModel.TerminalName = siteOrderModel.TerminalName;
             siteOrderViewModel.OrderItems = new List<ApiOrderItemViewModel>();            
             siteOrderViewModel.OrderInvoiceTransaction = new ApiOrderInvoiceTransactionViewModel();
 

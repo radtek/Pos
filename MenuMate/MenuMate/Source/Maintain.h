@@ -220,7 +220,7 @@ private:
     bool TrySyncForLoyaltyMate();
     void DeactivateLoyaltymate();
     void UnloadSignalR();
-    bool SyncOnlineOrderingDetails();
+    bool SyncOnlineOrderingDetails(bool &isLoyaltyMateOrderingEnabled, bool &isWaiterAppOrderingEnabled);
     bool SetUpMews();
     void SetUpAustriaFiscal();
     void SetUpPosPlus();

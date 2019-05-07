@@ -496,6 +496,14 @@ void TApplyParser::Alter6_63Tables(TDBControl* const inDBControl)
         executeQuery ("UPDATE DAYARCBILL SET APP_TYPE = 0 ;", inDBControl);
     }
 
+    if ( !fieldExists( "DAYARCBILL", "SITE_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE DAYARCBILL ADD SITE_ID INTEGER DEFAULT 0 ;", inDBControl);
+    }
+    if (fieldExists( "DAYARCBILL", "SITE_ID", _dbControl ) )
+    {
+        executeQuery ("UPDATE DAYARCBILL SET SITE_ID = 0 ;", inDBControl);
+    }
 
         // Changes ArcBill
     if (!fieldExists( "ARCBILL", "IS_PRINT_REQUIRED", _dbControl ) )
@@ -532,6 +540,15 @@ void TApplyParser::Alter6_63Tables(TDBControl* const inDBControl)
     if (fieldExists( "ARCBILL", "APP_TYPE", _dbControl ) )
     {
         executeQuery ("UPDATE ARCBILL SET APP_TYPE = 0 ;", inDBControl);
+    }
+
+    if ( !fieldExists( "ARCBILL", "SITE_ID", _dbControl ) )
+    {
+        executeQuery ("ALTER TABLE ARCBILL ADD SITE_ID INTEGER DEFAULT 0 ;", inDBControl);
+    }
+    if (fieldExists( "ARCBILL", "SITE_ID", _dbControl ) )
+    {
+        executeQuery ("UPDATE ARCBILL SET SITE_ID = 0 ;", inDBControl);
     }
 
         // Changes Device table

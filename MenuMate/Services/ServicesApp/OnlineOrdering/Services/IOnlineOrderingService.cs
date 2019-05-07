@@ -14,5 +14,6 @@ namespace OnlineOrdering.Services
         bool PostOnlineOrderInvoiceInfo(string inSyndicateCode, ApiSiteOrderViewModel siteOrderViewModel, List<string> stringList);
         ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int inSiteCode, List<string> stringList);
         bool UnsetOrderingDetails(string inSyndicateCode, int inSiteCode, List<string> stringList);
+        OnlineOrderingDetailsResponse GetOnlineOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList);
     }
 }

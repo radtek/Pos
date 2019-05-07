@@ -44,6 +44,8 @@ public:
     static void LoadItemCompleteInfoForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID,
                             TItemComplete *itemComplete, int itemSizeIdentifier);
     static UnicodeString GetTerminalNameForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+    static UnicodeString GetInvoiceNumberForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID);
+    static void LoadSiteIDAndOOIdForOrderGuid(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, int &siteID, int &onlineOrderID);
 private:
     static std::list<TCourseInfo> GetCourseInfo(Database::TDBTransaction &dbTransaction, int menuKey);
     static std::list<TSiteItemInfo> GetItemInfo(Database::TDBTransaction &dbTransaction, int courseId);

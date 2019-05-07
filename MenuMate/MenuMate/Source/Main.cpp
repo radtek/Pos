@@ -1850,13 +1850,16 @@ void TfrmMain::EnableOnlineOrdering()
     DBTransaction.StartTransaction();
     try
     {
-        if(SyncOnlineOrderingDetails())
+        bool isLoyaltyMateOrderingEnabled;
+        bool isWaiterAppOrderingEnabled;
+        if(SyncOnlineOrderingDetails(isLoyaltyMateOrderingEnabled,isWaiterAppOrderingEnabled))
         {
             std::auto_ptr<TSignalRUtility> signalRUtility(new TSignalRUtility());
             if(signalRUtility->LoadSignalRUtility())
             {
                 TGlobalSettings::Instance().EnableOnlineOrdering = true;
-                CreateWaiterAppPaymentType();
+                if(isWaiterAppOrderingEnabled)
+                    CreateWaiterAppPaymentType();
             }
         }
         else
@@ -1899,11 +1902,14 @@ void TfrmMain::UnloadSignalR()
     signalRUtility->UnloadSignalRUtility();
 }
 //-----------------------------------------------------------------------------
-bool TfrmMain::SyncOnlineOrderingDetails()
+bool TfrmMain::SyncOnlineOrderingDetails(bool &isLoyaltyMateOrderingEnabled, bool &isWaiterAppOrderingEnabled)
 {
     bool result = false;
     TManagerCloudSync ManagerCloudSync;
-    result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    //result = ManagerCloudSync.SyncOnlineOrderingDetails();
+    result = ManagerCloudSync.GetOnlineOrderingDetails();
+    isLoyaltyMateOrderingEnabled = ManagerCloudSync.IsLoyaltyMateOrderingEnabled;
+    isWaiterAppOrderingEnabled = ManagerCloudSync.IsWaiterAppOrderingEnabled;
     return result;
 }
 //-----------------------------------------------------------------------------

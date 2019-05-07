@@ -202,7 +202,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 orderRow.Location = siteOrderViewModel.Location;
                 orderRow.OrderType = siteOrderViewModel.OrderType;
                 orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                orderRow.TerminalName = siteOrderViewModel.TerminalName;
+                orderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
                 orderRow.TransactionType = siteOrderViewModel.TransactionType;
                 orderRow.UserType = siteOrderViewModel.UserType;
@@ -273,6 +273,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     //siteOrderViewModel.IsConfirmed = true;
                     siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
                     siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                    siteOrderViewModel.IsConfirmed = true;
                     retValue = true;
                 }
             }
@@ -1419,7 +1420,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
                                     if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
                                     {
-                                        AddWaiterTerminal(siteOrderViewModel.TerminalName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                                        AddWaiterTerminal(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
                                     }
                                     if (!CheckIfWaiterStaffExist())
                                     {
@@ -1431,6 +1432,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     {
                                         stringList.Add("After ArchiveTransaction call                      ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                                        siteOrderViewModel.IsConfirmed = true;
                                     }
                                     else
                                     {
@@ -1456,6 +1458,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     {
                                         stringList.Add("After AddRecords                                   ");
                                         siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                                        siteOrderViewModel.IsConfirmed = true;
                                     }
                                     else
                                     {
@@ -1469,14 +1472,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             }
                             else
                             {
-                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;//To do , Assign item not found
+                                siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                                siteOrderViewModel.ErrorContent = GetErrorContent(notFoundItemName, notFoundItemSizeName);
                                 stringList.Add("Exception while Validating Items in orders         " + DateTime.Now.ToString("hh:mm:ss tt"));
                                 throw new Exception("Items ordered are not available.");
                             }
                         }
                         else
                         {
-                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.ItemNotFound;
+                            siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
                             stringList.Add("Exception while Validating Table                   " + DateTime.Now.ToString("hh:mm:ss tt"));
                             throw new Exception("Invalid Table.");
                         }
@@ -1487,6 +1491,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         if (AddRecords(siteOrderViewModel, false))
                         {
                             siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
+                            siteOrderViewModel.IsConfirmed = true;
                         }
                         else
                         {
@@ -1525,7 +1530,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ArchiveOrder(dayArcBillKey, siteOrderViewModel, BillSecurityRef, stringList);
                 //Processing Data for Security Table
                 stringList.Add("Before ProcessSecurity call                        " + DateTime.Now.ToString("hh:mm:ss tt"));
-                ProcessSecurity(siteOrderViewModel.TerminalName, orderSecurityRef, BillSecurityRef, stringList);
+                ProcessSecurity(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName, orderSecurityRef, BillSecurityRef, stringList);
                 //Adding Record In OnlineOrder
                 AddRecordInOnlineOrder(siteOrderViewModel, invoiceNumber);
                 
@@ -1589,8 +1594,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 dayArcBillRow.ArcBillId = dayArcBillKey;
-                dayArcBillRow.TerminalName = siteOrderViewModel.TerminalName;
-                dayArcBillRow.StaffName = "";//Need to Confirm
+                dayArcBillRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
+                dayArcBillRow.StaffName = "WAITER";//Need to Confirm
                 dayArcBillRow.Total = siteOrderViewModel.TotalAmount;
                 dayArcBillRow.Discount = 0;
                 dayArcBillRow.PatronCount = 1;
@@ -1604,6 +1609,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArcBillRow.OnlinOrderId = siteOrderViewModel.OrderId;
                 dayArcBillRow.OrderGuid = siteOrderViewModel.OrderGuid;
                 dayArcBillRow.ApplicationType = Enum.AppType.devWaiter;
+                dayArcBillRow.SiteId = siteOrderViewModel.SiteId;
             }
             catch (Exception e)
             {
@@ -1716,7 +1722,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 int tableNumber = 0;
                 int.TryParse(siteOrderViewModel.ContainerNumber, out tableNumber);
                 dayArchiveRow.ArcBillId = arcBillKey;
-                dayArchiveRow.TerminalName = siteOrderViewModel.TerminalName;
+                dayArchiveRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 dayArchiveRow.TableNumber = tableNumber;
                 if (IsFloorPlanEnabled())
                     dayArchiveRow.TableName = siteOrderViewModel.ContainerName;
@@ -1865,7 +1871,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        private void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
+        public void SaveOrderJSON(ApiSiteOrderViewModel siteOrderViewModel)
         {
             try
             {
@@ -2024,11 +2030,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long onlineOrderKey = 0;
-                onlineOrderKey = GenerateKey("ONLINEORDERS");
+                onlineOrderKey = GenerateKey("ONLINEORDERS_ID");
 
                 onlineOrderRow.InvoiceNumber = invoiceNo ;
                 onlineOrderRow.OnlineOrderId = onlineOrderKey;
-                onlineOrderRow.TerminalName = siteOrderViewModel.TerminalName;
+                onlineOrderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 onlineOrderRow.IsPosted = false;
                 onlineOrderRow.AppType = DTO.Enum.AppType.devWaiter;
                 onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
@@ -2141,7 +2147,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 long profileKey = GetProfileKey(deviceKey);
-                long appZedKey = GenerateKey("APPZEDSTATUS");
+                long appZedKey = GenerateKey("APPZEDSTATUS_ID");
                 FbCommand command = dbQueries.InsertAppZedRowQuery(connection, transaction, terminalName, appZedKey, profileKey);
                 command.ExecuteNonQuery();
                 
@@ -2187,6 +2193,20 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(exc.Message, exc);
             }
             return result;
+        }
+        public List<string> GetErrorContent(string notFoundItemName, string notFoundItemSizeName)
+        {
+            List<string> errorContent = new List<string>();
+            try
+            {
+                string content = notFoundItemName + " ( " + notFoundItemSizeName + " ) ";
+                errorContent.Add(content);
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return errorContent;
         }
 
         public void PerformPreRequisiteWaiterOperation(List<string> stringList, string deviceId, string terminalName)

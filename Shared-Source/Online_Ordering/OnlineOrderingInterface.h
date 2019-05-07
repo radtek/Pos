@@ -20,6 +20,7 @@ class TOnlineOrderingInterface
     MMLoyaltyServiceResponse PostOnlineOrderInvoiceInfo(TSiteOrderModel siteOrderModel);
     MMLoyaltyServiceResponse SyncOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
     bool UnsetOrderingDetails(TSyndCode syndicateCode,int siteCode);
+    MMOnlineOrderingResponse GetOnlineOrderingDetails(TSyndCode syndicateCode,int siteCode);
 
     private:
     _di_IWCFServiceOnlineOrdering onlineOrderingClient;
@@ -34,6 +35,7 @@ class TOnlineOrderingInterface
     InvoiceTransactionModel* CreateOrderInvoiceTransaction(TInvoiceTransactionModel invoiceTransaction);
     OrderItemSizeTaxProfileModel* CreateOrderItemSizeTaxProfileModel(TOrderItemSizeTaxProfileModel itemSizeTaxProfileModel);
     MMLoyaltyServiceResponse CreateMMResponse(LoyaltyOOResponse*  inWCFResponse);
-
+    MMOnlineOrderingResponse CreateMMOnlineOrderingResponse(OnlineOrderingDetails* response);
+    MMOnlineOrderingResponse CreateExceptionMMOnlineOrderingResponse(UnicodeString inMessage);
 };
 #endif

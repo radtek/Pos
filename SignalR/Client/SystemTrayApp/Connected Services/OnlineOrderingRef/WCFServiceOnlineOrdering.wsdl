@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="WCFServiceOnlineOrdering" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://tempuri.org/Imports">
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.MenuModels" />
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.Enum" />
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering" />
+      <xsd:import schemaLocation="http://localhost:8750/MenumateServices/OnlineOrdering/?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/MenumateServices.DTO.MenumateOnlineOrdering.OrderModels" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncMenu_InputMessage">
+    <wsdl:part name="parameters" element="tns:SyncMenu" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncMenu_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SyncMenuResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncTaxSettings_InputMessage">
+    <wsdl:part name="parameters" element="tns:SyncTaxSettings" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncTaxSettings_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SyncTaxSettingsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_GetOrdersFromWeb_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOrdersFromWeb" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_GetOrdersFromWeb_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOrdersFromWebResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_PostOnlineOrderInvoiceInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:PostOnlineOrderInvoiceInfo" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_PostOnlineOrderInvoiceInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PostOnlineOrderInvoiceInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncOnlineOrderingDetails_InputMessage">
+    <wsdl:part name="parameters" element="tns:SyncOnlineOrderingDetails" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_SyncOnlineOrderingDetails_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SyncOnlineOrderingDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_UnsetOrderingDetails_InputMessage">
+    <wsdl:part name="parameters" element="tns:UnsetOrderingDetails" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_UnsetOrderingDetails_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UnsetOrderingDetailsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_InsertWaiterTerminal_InputMessage">
+    <wsdl:part name="parameters" element="tns:InsertWaiterTerminal" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_InsertWaiterTerminal_OutputMessage">
+    <wsdl:part name="parameters" element="tns:InsertWaiterTerminalResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_CreateRequestForAppZed_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateRequestForAppZed" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_CreateRequestForAppZed_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateRequestForAppZedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_GetOnlineOrderingDetailsBySiteCode_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOnlineOrderingDetailsBySiteCode" />
+  </wsdl:message>
+  <wsdl:message name="IWCFServiceOnlineOrdering_GetOnlineOrderingDetailsBySiteCode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOnlineOrderingDetailsBySiteCodeResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IWCFServiceOnlineOrdering">
+    <wsdl:operation name="SyncMenu">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncMenu" message="tns:IWCFServiceOnlineOrdering_SyncMenu_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncMenuResponse" message="tns:IWCFServiceOnlineOrdering_SyncMenu_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SyncTaxSettings">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncTaxSettings" message="tns:IWCFServiceOnlineOrdering_SyncTaxSettings_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncTaxSettingsResponse" message="tns:IWCFServiceOnlineOrdering_SyncTaxSettings_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOrdersFromWeb">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/GetOrdersFromWeb" message="tns:IWCFServiceOnlineOrdering_GetOrdersFromWeb_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/GetOrdersFromWebResponse" message="tns:IWCFServiceOnlineOrdering_GetOrdersFromWeb_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PostOnlineOrderInvoiceInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/PostOnlineOrderInvoiceInfo" message="tns:IWCFServiceOnlineOrdering_PostOnlineOrderInvoiceInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/PostOnlineOrderInvoiceInfoResponse" message="tns:IWCFServiceOnlineOrdering_PostOnlineOrderInvoiceInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SyncOnlineOrderingDetails">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncOnlineOrderingDetails" message="tns:IWCFServiceOnlineOrdering_SyncOnlineOrderingDetails_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/SyncOnlineOrderingDetailsResponse" message="tns:IWCFServiceOnlineOrdering_SyncOnlineOrderingDetails_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UnsetOrderingDetails">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/UnsetOrderingDetails" message="tns:IWCFServiceOnlineOrdering_UnsetOrderingDetails_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/UnsetOrderingDetailsResponse" message="tns:IWCFServiceOnlineOrdering_UnsetOrderingDetails_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="InsertWaiterTerminal">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/InsertWaiterTerminal" message="tns:IWCFServiceOnlineOrdering_InsertWaiterTerminal_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/InsertWaiterTerminalResponse" message="tns:IWCFServiceOnlineOrdering_InsertWaiterTerminal_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateRequestForAppZed">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/CreateRequestForAppZed" message="tns:IWCFServiceOnlineOrdering_CreateRequestForAppZed_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/CreateRequestForAppZedResponse" message="tns:IWCFServiceOnlineOrdering_CreateRequestForAppZed_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOnlineOrderingDetailsBySiteCode">
+      <wsdl:input wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/GetOnlineOrderingDetailsBySiteCode" message="tns:IWCFServiceOnlineOrdering_GetOnlineOrderingDetailsBySiteCode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IWCFServiceOnlineOrdering/GetOnlineOrderingDetailsBySiteCodeResponse" message="tns:IWCFServiceOnlineOrdering_GetOnlineOrderingDetailsBySiteCode_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="basicHttpBinding_ServiceOnlineOrdering" type="tns:IWCFServiceOnlineOrdering">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="SyncMenu">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/SyncMenu" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SyncTaxSettings">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/SyncTaxSettings" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOrdersFromWeb">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/GetOrdersFromWeb" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PostOnlineOrderInvoiceInfo">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/PostOnlineOrderInvoiceInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SyncOnlineOrderingDetails">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/SyncOnlineOrderingDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UnsetOrderingDetails">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/UnsetOrderingDetails" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsertWaiterTerminal">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/InsertWaiterTerminal" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateRequestForAppZed">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/CreateRequestForAppZed" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetOnlineOrderingDetailsBySiteCode">
+      <soap:operation soapAction="http://tempuri.org/IWCFServiceOnlineOrdering/GetOnlineOrderingDetailsBySiteCode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WCFServiceOnlineOrdering">
+    <wsdl:port name="basicHttpBinding_ServiceOnlineOrdering" binding="tns:basicHttpBinding_ServiceOnlineOrdering">
+      <soap:address location="http://localhost:8750/MenumateServices/OnlineOrdering/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

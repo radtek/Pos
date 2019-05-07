@@ -151,22 +151,21 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 {
 	try
 	{
+        //First Checking In DayArcBill Table
+        UnicodeString orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, true);
 
-            //First Checking In DayArcBill Table
-            UnicodeString orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, true);
-
+        if(orderUniqueIdForWAiterApp.Trim() != "")
+        {
+            ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, true);
+        }
+        else
+        {
+            orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, false);
             if(orderUniqueIdForWAiterApp.Trim() != "")
             {
-                ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, true);
+                ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, false);
             }
-            else
-            {
-                orderUniqueIdForWAiterApp = TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(dBTransaction, false);
-                if(orderUniqueIdForWAiterApp.Trim() != "")
-                {
-                    ManagePrintOperationsForWaiterApp(dBTransaction, orderUniqueIdForWAiterApp, false);
-                }
-            }
+        }
 
 
         UnicodeString orderUniqueId = TDBOnlineOrdering::GetOnlineOrderGUID(dBTransaction);
@@ -518,10 +517,22 @@ void TOnlineDocketPrinterThread::ManagePrintOperationsForWaiterApp(Database::TDB
         AddPaymentInfo(paymentTransactionNew, orderGUID);
 
         //Creating And Saving The Receipt
-        PrintAndArchiveReceiptForWaiterAppOrders(paymentTransactionNew, orderGUID);
+        paymentTransactionNew.InvoiceNumber = TDBOnlineOrdering::GetInvoiceNumberForOrderGUID(paymentTransactionNew.DBTransaction, orderGUID);
+        ArchiveReceiptForWaiterAppOrders(paymentTransactionNew, orderGUID);
 
         //Set The IsPrintRequired Flag And Save The Generated Receipt Using OrderGuid After Performing Print Operations
         TDBOnlineOrdering::SetStatusAndSaveReceiptForWApp(paymentTransactionNew.DBTransaction, orderGUID, ManagerReceipt->ReceiptToArchive, IsDayArcBill);
+
+        
+        //Posting Invoice To Web For Waiter App Orders(Paid)
+        GetAndUploadOnlineOrderingInvoice(paymentTransactionNew, terminalName, orderGUID, ManagerReceipt->ReceiptToArchive);
+        
+        //Posting To MEWS PMS
+        if (TDeviceRealTerminal::Instance().BasePMS->Enabled)
+        {
+            if(TGlobalSettings::Instance().PMSType == Mews)
+                ManagePostingToMews(paymentTransactionNew, orderGUID);
+        }
 
     }
     catch(Exception & E)
@@ -673,7 +684,7 @@ TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete, UnicodeString o
 {
     try
     {
-	    //Loading Available ItemComplete Details From DayArchive And Archive Tabel
+	    //Loading Available ItemComplete Details From DayArchive And Archive Table
         TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(DBTransaction, orderGUID, itemComplete, itemSizeIdentifier);
 
         //Loading Remaining ItemComplete Details
@@ -722,7 +733,7 @@ TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete, UnicodeString o
     return itemComplete;
 }
 //------------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::PrintAndArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID)
+void TOnlineDocketPrinterThread::ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID)
 {
     TReqPrintJob *LastReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
     try
@@ -830,12 +841,13 @@ void TOnlineDocketPrinterThread::AddPaymentInfo(TPaymentTransaction &PaymentTran
         //Loading Payment Details From DayArcBillPay
         paymentInfoList = TDBOnlineOrdering::GetPaymentInfoForOrderGUID(PaymentTransaction.DBTransaction, orderGUID);
 
-        //Running Bill Calculator For Loading Cost And Assining Payment Details
+        //Running Bill Calculator For Loading Cost And Assigning Payment Details
         PaymentTransaction.Recalc();
+        TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(PaymentTransaction);
         for(std::list<TPaymentInfo>::iterator it = paymentInfoList.begin(); it != paymentInfoList.end(); ++it)
         {
             PaymentTransaction.Type = eTransQuickSale;
-            TDeviceRealTerminal::Instance().PaymentSystem->PaymentsReload(PaymentTransaction);
+
             TPayment *Payment = PaymentTransaction.PaymentFind(it->payType);
             if (Payment == NULL)
             {
@@ -850,4 +862,231 @@ void TOnlineDocketPrinterThread::AddPaymentInfo(TPaymentTransaction &PaymentTran
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         throw;
     }
+}
+//------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::ManagePostingToMews(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID)
+{
+    try
+    {
+        PaymentTransaction.IsBackGroundPosting = true;
+
+        TDeviceRealTerminal::Instance().BasePMS->ExportData(PaymentTransaction, TDeviceRealTerminal::Instance().User.ContactKey);
+    }
+    catch(Exception & E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
+        throw;
+    }
+}
+//------------------------------------------------------------------------------
+void TOnlineDocketPrinterThread::GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction, UnicodeString terminalName, UnicodeString orderGUID, TMemoryStream *ReceiptToArchive)
+{
+    try
+    {
+        TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction, terminalName, orderGUID, ReceiptToArchive);
+        MessageBox("Inside GetAndUploadOnlineOrderingInvoice","",MB_OK);
+        TDeviceRealTerminal::Instance().PaymentSystem->GetAndUploadOnlineOrderingInvoice(siteOrderModel);
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        //throw;
+    }
+}
+//----------------------------------------------------------------------------
+TSiteOrderModel TOnlineDocketPrinterThread::GetInvoiceInfoForOnlineOrdering(TPaymentTransaction paymentTransaction, UnicodeString terminalName, UnicodeString orderGUID, TMemoryStream *ReceiptToArchive)
+{
+    TSiteOrderModel siteOrderModel;
+    try
+    {
+        TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+        siteOrderModel.CompanyId = 0;
+        int siteID = 0;
+        int onlineOrderID = 0;
+        TDBOnlineOrdering::LoadSiteIDAndOOIdForOrderGuid(paymentTransaction.DBTransaction, orderGUID, siteID, onlineOrderID);
+        siteOrderModel.SiteId = siteID;
+        siteOrderModel.OrderId = onlineOrderID;
+        siteOrderModel.Location = TDeviceRealTerminal::Instance().ID.Location;;
+        siteOrderModel.TotalAmount = paymentTransaction.Money.RoundedGrandTotal;
+        siteOrderModel.ContainerNumber = Order->TableNo;
+        siteOrderModel.ContainerType = OnlineTable;
+        siteOrderModel.ContainerName = Order->TabContainerName;
+        siteOrderModel.OrderGuid = orderGUID;
+        siteOrderModel.UserReferenceId = 0;
+        siteOrderModel.UserType = 1;//         to do check whetrher user is a member or staff..
+        siteOrderModel.TerminalName = terminalName;
+        siteOrderModel.TransactionDate = Order->TimeStamp; // Add function
+        siteOrderModel.OrderType = Order->OrderType;
+        siteOrderModel.IsConfirmed = true;
+        siteOrderModel.UserEmailId = Order->Email;
+        siteOrderModel.OrderItems = GetOrderItemModel(paymentTransaction);
+        siteOrderModel.TransactionType = eTableSeat;
+        siteOrderModel.OrderInvoiceTransaction = GetOrderInvoiceTransaction(paymentTransaction, terminalName , orderGUID, ReceiptToArchive, siteID);
+    }
+     catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return siteOrderModel;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemModel> TOnlineDocketPrinterThread::GetOrderItemModel(TPaymentTransaction paymentTransaction)
+{
+    std::list<TOrderItemModel> orderItemModelList;
+    try
+    {
+        std::map<int, TOrderItemModel >OrderItemModelMap;
+        for (int CurrentIndex = 0; CurrentIndex < paymentTransaction.Orders->Count; CurrentIndex++)
+        {
+            TOrderItemModel orderItemModel;
+            TItemComplete* Order = (TItemComplete*)(paymentTransaction.Orders->Items[CurrentIndex]);
+
+
+             std::map<int,TOrderItemModel>::iterator it;
+             it = OrderItemModelMap.find(Order->OrderItemId);
+
+             if(it == OrderItemModelMap.end())
+             {
+                orderItemModel.OrderItemId = Order->OrderItemId;
+                orderItemModel.Name = Order->Item;
+                orderItemModel.Description = Order->Item;
+                orderItemModel.SiteItemId = 0;//Order->SiteId;
+                orderItemModel.Price = Order->PriceEach_BillCalc();
+
+                std::list<TOrderItemSizeModel> orderItemSizeModelList;
+
+                TOrderItemSizeModel orderItemSizeModel;
+
+                orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+                orderItemSizeModel.OrderItemId = Order->OrderItemId;
+                orderItemSizeModel.Name = Order->Size;
+                orderItemSizeModel.ItemSizeId = Order->Item_ID;
+                orderItemSizeModel.Quantity = Order->GetQty();
+                orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+                orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+                orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+                orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
+                orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+
+                orderItemSizeModelList.push_back(orderItemSizeModel);
+
+                orderItemModel.OrderItemSizes = orderItemSizeModelList;//.push_back(orderItemSizeModel);
+
+                OrderItemModelMap[Order->OrderItemId] = orderItemModel;
+            }
+            else
+            {
+                it->second.Price = it->second.Price + Order->PriceEach_BillCalc();
+
+                TOrderItemSizeModel orderItemSizeModel;
+
+                orderItemSizeModel.OrderItemSizeId = Order->OrderItemSizeId;
+                orderItemSizeModel.OrderItemId = Order->OrderItemId;
+                orderItemSizeModel.Name = Order->Size;
+                orderItemSizeModel.ItemSizeId = Order->Item_ID;
+                orderItemSizeModel.Quantity = Order->GetQty();
+                orderItemSizeModel.MenuPrice = Order->PriceLevel0;
+                orderItemSizeModel.Price = Order->PriceEach_BillCalc();
+                orderItemSizeModel.PriceInclusive = Order->BillCalcResult.PriceIncl;
+                orderItemSizeModel.BasePrice = Order->BillCalcResult.BasePrice;
+                orderItemSizeModel.ReferenceOrderItemSizeId  = Order->ReferenceOrderItemSizeId;
+                orderItemSizeModel.OrderItemSizeDiscounts = GetOrderItemSizeDiscountModel(Order);
+
+                it->second.OrderItemSizes.push_back(orderItemSizeModel);
+            }
+        }
+
+        //Now iterate values from map and insert it into list..
+        for(std::map<int,TOrderItemModel>::iterator it = OrderItemModelMap.begin();  it != OrderItemModelMap.end(); it++)
+        {
+            orderItemModelList.push_back(it->second);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderItemModelList;
+}
+//--------------------------------------------------------------------------------------
+std::list<TOrderItemSizeDiscountModel> TOnlineDocketPrinterThread::GetOrderItemSizeDiscountModel(TItemMinorComplete *Order)
+{
+    std::list<TOrderItemSizeDiscountModel> orderItemSizeDiscountModelList;
+    try
+    {
+        for (std::vector <TDiscount> ::const_iterator ptrDiscounts = Order->Discounts.begin(); ptrDiscounts != Order->Discounts.end();
+        std::advance(ptrDiscounts, 1))
+        {
+            if(Order->DiscountValue_BillCalc(ptrDiscounts) == 0)
+                continue;
+
+            TOrderItemSizeDiscountModel orderItemSizeDisountModel;
+            orderItemSizeDisountModel.OrderItemSizeId = Order->OrderItemSizeId;
+            orderItemSizeDisountModel.Name = ptrDiscounts->Name.SubString(1, 15);
+            orderItemSizeDisountModel.Value = RoundToNearest(Order->DiscountValue_BillCalc(ptrDiscounts),0.01,TGlobalSettings::Instance().MidPointRoundsDown);
+            orderItemSizeDisountModel.Code = ptrDiscounts->DiscountCode;
+            orderItemSizeDiscountModelList.push_back(orderItemSizeDisountModel);
+        }
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderItemSizeDiscountModelList;
+}
+//-------------------------------------------------------------------------------------------------
+TOrderInvoiceTransactionModel TOnlineDocketPrinterThread::GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID)
+{
+    TOrderInvoiceTransactionModel orderInvoiceTransactionModel;
+    try
+    {
+        orderInvoiceTransactionModel.OrderInvoiceTransactionId = 0;
+        orderInvoiceTransactionModel.OrderId = 0;//;
+        orderInvoiceTransactionModel.InvoiceTransactionId = 0;           //todo
+        orderInvoiceTransactionModel.InvoiceTransaction = GetInvoiceTransaction(paymentTransaction, terminalName, orderGUID, ReceiptToArchive, siteID);
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return orderInvoiceTransactionModel;
+}
+//---------------------------------------------------------------------------------------
+TInvoiceTransactionModel TOnlineDocketPrinterThread::GetInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName, UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID)
+{
+    TInvoiceTransactionModel invoiceTransactionModel;
+    try
+    {
+         TItemComplete *Order = (TItemComplete*)(paymentTransaction.Orders->Items[0]);
+         invoiceTransactionModel.InvoiceTransactionId = 0;;
+	     invoiceTransactionModel.InvoiceNumber = paymentTransaction.InvoiceNumber;
+	     invoiceTransactionModel.TotalSaleAmount = paymentTransaction.Money.RoundedGrandTotal;
+	     invoiceTransactionModel.TransactionDate = Order->TimeStamp;
+	     invoiceTransactionModel.SiteId = siteID;
+	     invoiceTransactionModel.TerminalName = terminalName;
+
+         if( ReceiptToArchive->Size > 0 )
+		 {
+            ReceiptToArchive-> Position =  0 ;
+            invoiceTransactionModel.Receipt.set_length ( ReceiptToArchive->Size) ;
+            ReceiptToArchive->ReadBuffer ( & invoiceTransactionModel.Receipt[ 0 ] , ReceiptToArchive-> Size ) ;
+		 }
+
+	     invoiceTransactionModel.ReceiptPath = "";
+	     invoiceTransactionModel.Rounding = RoundToNearest(paymentTransaction.Money.RoundingAdjustment, 0.01,
+                                                    TGlobalSettings::Instance().MidPointRoundsDown);
+	     invoiceTransactionModel.UserReferenceId = 0;
+	     invoiceTransactionModel.UserType = 1;//         to do check whetrher user is a member or staff..
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return invoiceTransactionModel;
 }
