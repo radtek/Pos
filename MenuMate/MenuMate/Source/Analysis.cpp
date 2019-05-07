@@ -1834,14 +1834,14 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 			"\"ARCBILL\".\"ORDER_TYPE_MESSAGE\", \"ARCBILL\".\"CONTACTS_KEY\", \"ARCBILL\".\"ROUNDING_ADJUSTMENT\","
             "\"ARCBILL\".\"ORDER_IDENTIFICATION_NUMBER\", \"ARCBILL\".\"Z_KEY\" , \"ARCBILL\".\"REFUND_REFRECEIPT\", "
             " \"ARCBILL\".\"IS_POSTED_TO_PANASONIC_SERVER\", \"ARCBILL\".\"CASH_DRAWER_OPENED\" , \"ARCBILL\".\"EFTPOS_SERVICE_ID\", "
-            " \"ARCBILL\".\"IS_PRINT_REQUIRED\", \"ARCBILL\".\"ONLINE_ORDER_ID\", \"ARCBILL\".\"ORDER_GUID\", \"ARCBILL\".\"APP_TYPE\") "
+            " \"ARCBILL\".\"IS_PRINT_REQUIRED\", \"ARCBILL\".\"ONLINE_ORDER_ID\", \"ARCBILL\".\"ORDER_GUID\", \"ARCBILL\".\"APP_TYPE\", \"ARCBILL\".\"SITE_ID\") "
             "values "
 			"(:\"ARCBILL_KEY\", :\"TERMINAL_NAME\", :\"STAFF_NAME\", :\"TIME_STAMP\", :\"TOTAL\", "
 			":\"DISCOUNT\", :\"PATRON_COUNT\", :\"RECEIPT\", :\"SECURITY_REF\", :\"SALES_TYPE\", "
 			":\"BILLED_LOCATION\", :\"INVOICE_NUMBER\", :\"INVOICE_KEY\", :\"ORDER_TYPE_MESSAGE\","
             " :\"CONTACTS_KEY\", :\"ROUNDING_ADJUSTMENT\", :\"ORDER_IDENTIFICATION_NUMBER\", :\"Z_KEY\", "
             " :\"REFUND_REFRECEIPT\", :\"IS_POSTED_TO_PANASONIC_SERVER\", :\"CASH_DRAWER_OPENED\", :\"EFTPOS_SERVICE_ID\", "
-            " :\"IS_PRINT_REQUIRED\", :\"ONLINE_ORDER_ID\", :\"ORDER_GUID\", :\"APP_TYPE\") ";
+            " :\"IS_PRINT_REQUIRED\", :\"ONLINE_ORDER_ID\", :\"ORDER_GUID\", :\"APP_TYPE\", :\"SITE_ID\") ";
 
 			IBArcBillPay->Close();
 			IBArcBillPay->SQL->Text = "insert into \"ARCBILLPAY\" ("
