@@ -1418,14 +1418,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     //Assigning Correct Tabele Number And Table Name
                                     siteOrderViewModel.ContainerName = tableNameFromDB;
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
-                                    if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
-                                    {
-                                        AddWaiterTerminal(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
-                                    }
-                                    if (!CheckIfWaiterStaffExist())
-                                    {
-                                        AddWaiterStaff();
-                                    }
+
+                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
                                     //Order Processing - Insert orders details in tables
                                     stringList.Add("Before ArchiveTransaction call                     ");
                                     if (ArchiveTransaction(siteOrderViewModel, stringList))
@@ -1444,15 +1438,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 }
                                 else
                                 {
-                                    stringList.Add("Before AddRecords                                  ");
-                                    if (!CheckIfWaiterTerminalExist(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId))
-                                    {
-                                        AddWaiterTerminal(siteOrderViewModel.TerminalName, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
-                                    }
-                                    if (!CheckIfWaiterStaffExist())
-                                    {
-                                        AddWaiterStaff();
-                                    }
+                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
 
                                     if (AddRecords(siteOrderViewModel, true))
                                     {
@@ -2100,9 +2086,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return profileKey;
         }
 
-        public bool CheckIfWaiterTerminalExist(string deviceId)
+        public string CheckIfWaiterTerminalExist(string deviceId)
         {
-            bool result = false;
+            string result = "";
             try
             {
                 FbCommand command = dbQueries.CheckIfWaiterAppTerminalExist(connection, transaction, deviceId);
@@ -2110,7 +2096,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 {
                     if (reader.HasRows && reader.Read())
                     {
-                        result = true;
+                        result = reader.GetString(reader.GetOrdinal("DEVICE_NAME"));
                     }
                 }
             }
@@ -2119,6 +2105,22 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 ServiceLogger.LogException(exc.Message, exc);
             }
             return result;
+        }
+        
+        
+        public void UpdateTerminalInfo(string deviceID, string deviceName)
+        {
+            try
+            {
+                FbCommand command = dbQueries.UpdateTerminalName(connection, transaction, deviceID, deviceName);
+                command.ExecuteNonQuery();
+
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CreateAppZedRow " + e.Message, e);
+                throw;
+            }
         }
 
         public bool CheckIfZedRequestExist(string terminalName)
@@ -2209,22 +2211,34 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return errorContent;
         }
 
-        public void PerformPreRequisiteWaiterOperation(List<string> stringList, string deviceId, string terminalName)
+        public void PerformPreRequisiteWaiterAppOperation(List<string> stringList, string deviceId, string terminalName)
         {
-            stringList.Add("Checking If Waiter Terminal Exist              ");
-            bool IsTerminalExist = CheckIfWaiterTerminalExist(deviceId);
-            if (!IsTerminalExist)
+            try
             {
-                stringList.Add("Adding Waiter Terminal                         ");
-                AddWaiterTerminal(terminalName, deviceId);
-            }
+                stringList.Add("Checking If Waiter Terminal Exist              ");
+                string oldTerminalName = CheckIfWaiterTerminalExist(deviceId);
+                if (oldTerminalName.Trim() == "")
+                {
+                    stringList.Add("Adding Waiter Terminal                         ");
+                    AddWaiterTerminal(terminalName, deviceId);
+                }
+                else
+                {
+                    if (string.Equals(oldTerminalName, terminalName))
+                        UpdateTerminalInfo(deviceId, terminalName);
+                }
 
-            stringList.Add("Checking If Waiter Staff Exist                 ");
-            bool IsWaiterStaffExist = CheckIfWaiterStaffExist();
-            if (!IsWaiterStaffExist)
+                stringList.Add("Checking If Waiter Staff Exist                 ");
+                bool IsWaiterStaffExist = CheckIfWaiterStaffExist();
+                if (!IsWaiterStaffExist)
+                {
+                    stringList.Add("Adding Waiter Staff                            ");
+                    AddWaiterStaff();
+                }
+            }
+            catch (Exception exc)
             {
-                stringList.Add("Adding Waiter Staff                            ");
-                AddWaiterStaff();
+                ServiceLogger.LogException(exc.Message, exc);
             }
         }
         
