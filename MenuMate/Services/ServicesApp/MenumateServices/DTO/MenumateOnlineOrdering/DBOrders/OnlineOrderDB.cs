@@ -1241,7 +1241,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
+        /*public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
         {
             bool retValue = false;
             int tableNoContainer = 0;
@@ -1270,7 +1270,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retValue;
 
-        }
+        }*/
+        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)        {            bool retValue = false;            try            {                int containerNumber = 0;                string tableName = "";                int containerNumberAux = 0;                string containerNameAux = "";                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);                if (isTableNumberInteger)                    containerNumberAux = containerNumber;                else                    containerNameAux = tableName = tableNo;                bool isTabOrder = false;                if (IsFloorPlanEnabled())                {                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))                    {                        tableNoFromDB = containerNumber;                        tableNameFromDB = tableName;                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;                        retValue = true;                    }                    else                    {                        isTabOrder = true;                    }                }                else                {                    if (containerNumberAux < 1 || containerNumberAux >= 100)                    {                        retValue = false;                    }                    else                    {                        //bool retVal = IsTableBusy(containerNumberAux, orderRow.TableName, siteOrderViewModel.UserEmailId);                        //if (retVal)                        //    throw new Exception("Order can't be saved to this table because it already contains orders.");                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;                        tableNameFromDB = "Table #" + tableNo;                    }                }            }            catch (Exception e)            {                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);                throw;            }            return retValue;        }
         public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
             bool retValue = false;

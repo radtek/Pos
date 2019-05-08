@@ -849,10 +849,6 @@ void TOnlineDocketPrinterThread::AddPaymentInfo(TPaymentTransaction &PaymentTran
             PaymentTransaction.Type = eTransQuickSale;
 
             TPayment *Payment = PaymentTransaction.PaymentFind(it->payType);
-            if (Payment == NULL)
-            {
-                throw Exception("Unable to load "+it->payType+" Payment.");
-            }
             Payment->SetPay(it->amount);
         }
 
@@ -884,7 +880,7 @@ void TOnlineDocketPrinterThread::GetAndUploadOnlineOrderingInvoice(TPaymentTrans
     try
     {
         TSiteOrderModel siteOrderModel = GetInvoiceInfoForOnlineOrdering(paymentTransaction, terminalName, orderGUID, ReceiptToArchive);
-        MessageBox("Inside GetAndUploadOnlineOrderingInvoice","",MB_OK);
+
         TDeviceRealTerminal::Instance().PaymentSystem->GetAndUploadOnlineOrderingInvoice(siteOrderModel);
     }
      catch(Exception &Ex)

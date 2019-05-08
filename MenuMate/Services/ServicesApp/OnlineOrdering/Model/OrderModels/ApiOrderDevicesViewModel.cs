@@ -12,5 +12,6 @@ namespace OnlineOrdering.Model.OrderModels
         public DeviceType DeviceType { get; set; }
         public string DeviceId { get; set; }
         public string DeviceName { get; set; }
+        public string MacAddress { get; set; }
     }
 }

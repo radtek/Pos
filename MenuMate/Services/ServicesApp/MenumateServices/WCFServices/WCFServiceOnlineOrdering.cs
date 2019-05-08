@@ -172,9 +172,9 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try 
             {
-                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
-                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(terminalInfo);
-                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+                ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(terminalInfo);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
 
                 stringList.Add("Creating Waiter Terminal at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
@@ -217,9 +217,9 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
-                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
-                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(zedRequest);
-                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+                ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(zedRequest);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
                 stringList.Add("Creating Request For AppZed                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
