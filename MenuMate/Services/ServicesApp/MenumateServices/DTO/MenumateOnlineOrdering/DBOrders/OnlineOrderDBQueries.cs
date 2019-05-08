@@ -2001,7 +2001,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 command.CommandText =
                     @"
-                    SELECT DEVICE_KEY FROM DEVICES WHERE UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
+                    SELECT DEVICE_NAME FROM DEVICES WHERE UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
                     ";
                 command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", terminalInfo);
             }
@@ -2091,6 +2091,30 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return command;
         }
+
+        public FbCommand UpdateTerminalName(FbConnection connection, FbTransaction transaction, string deviceID, string deviceName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                         UPDATE PROFILE a SET a.NAME = @NAME  
+                                         INNER JOIN DEVICES b ON a.PROFILE_KEY = b.PROFILE_KEY 
+                                         WHERE b.DEVICE_ID = @DEVICE_ID;
+                                         ";
+
+                command.Parameters.AddWithValue("@DEVICE_ID", deviceID);
+                command.Parameters.AddWithValue("@NAME", deviceName);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
         #endregion
     }
 
@@ -2110,6 +2134,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 return original.Substring(start, maxLength);
             else
                 return original;
+        }
+
+        public static string GetFromSubstring(string str, int start, int maxLength)
+        {
+            if (str != null)
+                str = str.Length > maxLength ? str.Substring(start, maxLength) : str;
+            else
+                str = "";
+            return str;
         }
     }
 }
