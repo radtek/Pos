@@ -182,7 +182,7 @@ namespace MenumateServices.WCFServices
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        onlineOrderDB.PerformPreRequisiteWaiterAppOperation(stringList, apiWaiterAppPosTerminal.DeviceId, apiWaiterAppPosTerminal.Name);
+                        onlineOrderDB.PerformPreRequisiteWaiterAppOperation(stringList, apiWaiterAppPosTerminal.MacAddress, apiWaiterAppPosTerminal.Name);
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
                     }
@@ -219,7 +219,7 @@ namespace MenumateServices.WCFServices
                         if (!IsAppZedRowExist)
                         {
                             stringList.Add("Inserting in AppZed Row                        ");
-                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
+                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.MacAddress);
                         }
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateRequestForAppZed ");

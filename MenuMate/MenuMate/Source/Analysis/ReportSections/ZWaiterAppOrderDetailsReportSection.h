@@ -22,6 +22,7 @@ private:
     void PrintHeader(UnicodeString textToPrint, TPrintout &printOut);
     void PrintItemRow(TWaiterAppOrderInfo waiterAppOrderInfo, UnicodeString &itemName, TPrintout &printOut);
     void PrintColumnHeader(TPrintout &printOut);
+    void ZWaiterAppOrderDetailsReportSection::AddDoubleLine(TPrintout &printOut);
 
 };
 #endif
