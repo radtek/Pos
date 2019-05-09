@@ -6818,8 +6818,17 @@ TSiteOrderModel TListPaymentSystem::GetInvoiceInfoForOnlineOrdering(TPaymentTran
 
         siteOrderModel.OrderGuid = Order->OrderGuid;
         siteOrderModel.UserReferenceId = Order->ContactsKey;
-        siteOrderModel.UserType = 0;;//         to do check whetrher user is a member or staff..
-        siteOrderModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
+        
+        if(Order->Email.Trim() == "")
+        {
+            siteOrderModel.TerminalName =  Order->Terminal;
+            siteOrderModel.UserType = 1;
+        }
+        else
+        {
+            siteOrderModel.TerminalName = TDeviceRealTerminal::Instance().ID.Name;
+            siteOrderModel.UserType = 0;
+        }
         siteOrderModel.TransactionDate = Now();;
         siteOrderModel.OrderType = Order->OrderType;
         siteOrderModel.IsConfirmed = true;

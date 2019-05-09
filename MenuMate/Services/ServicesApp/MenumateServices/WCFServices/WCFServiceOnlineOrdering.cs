@@ -172,9 +172,9 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try 
             {
-                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
-                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(terminalInfo);
-                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+                ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(terminalInfo);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
 
                 stringList.Add("Creating Waiter Terminal at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
@@ -182,7 +182,7 @@ namespace MenumateServices.WCFServices
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        onlineOrderDB.PerformPreRequisiteWaiterAppOperation(stringList, apiWaiterAppPosTerminal.DeviceId, apiWaiterAppPosTerminal.Name);
+                        onlineOrderDB.PerformPreRequisiteWaiterAppOperation(stringList, apiWaiterAppPosTerminal.MacAddress, apiWaiterAppPosTerminal.Name);
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateWaiterTerminal ");
                     }
@@ -203,9 +203,9 @@ namespace MenumateServices.WCFServices
             OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
             try
             {
-                ApiWaiterAppPosTerminal apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminal();
-                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminal>(zedRequest);
-                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminal>(apiWaiterAppPosTerminal);
+                ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
+                apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(zedRequest);
+                var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
                 stringList.Add("Creating Request For AppZed                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
@@ -219,7 +219,7 @@ namespace MenumateServices.WCFServices
                         if (!IsAppZedRowExist)
                         {
                             stringList.Add("Inserting in AppZed Row                        ");
-                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.DeviceId);
+                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.MacAddress);
                         }
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateRequestForAppZed ");

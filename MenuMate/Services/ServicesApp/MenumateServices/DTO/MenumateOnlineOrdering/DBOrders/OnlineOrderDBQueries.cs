@@ -2092,19 +2092,42 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return command;
         }
 
-        public FbCommand UpdateTerminalName(FbConnection connection, FbTransaction transaction, string deviceID, string deviceName)
+        public FbCommand UpdateProfileForWaiterApp(FbConnection connection, FbTransaction transaction, string deviceID, string deviceName)
         {
             FbCommand command = new FbCommand(@"", connection, transaction);
 
             try
             {
                 command.CommandText = @"
-                                         UPDATE PROFILE a SET a.NAME = @NAME  
-                                         INNER JOIN DEVICES b ON a.PROFILE_KEY = b.PROFILE_KEY 
-                                         WHERE b.DEVICE_ID = @DEVICE_ID;
+                                         UPDATE PROFILE a 
+                                         SET a.NAME = @NAME
+                                         WHERE a.PROFILE_KEY =
+                                         (SELECT b.PROFILE_KEY FROM DEVICES b WHERE b.UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID);
                                          ";
 
-                command.Parameters.AddWithValue("@DEVICE_ID", deviceID);
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceID);
+                command.Parameters.AddWithValue("@NAME", deviceName);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
+        public FbCommand UpdateTerminalForWaiterApp(FbConnection connection, FbTransaction transaction, string deviceID, string deviceName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME
+                                         WHERE a.UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
+                                         ";
+
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceID);
                 command.Parameters.AddWithValue("@NAME", deviceName);
             }
             catch (Exception e)

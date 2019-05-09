@@ -36,26 +36,17 @@ void ZWaiterAppOrderDetailsReportSection::GetOutput(TPrintout* printOut)
         //Get Terminal Name For Waiter App Zed
         UnicodeString terminalName = dataCalculationUtilities->GetTerminalName(*_dbTransaction);
 
-        //Get The Object List Of Required Data
-        TIBSQL *orderQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
-        std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList = dataCalculationUtilities->GetWaiterAppOrderListForPaidOrders(orderQuery, terminalName);
-
-        printOut->PrintFormat->AddLine();
         AddTitle(printOut, terminalName);
-        printOut->PrintFormat->AddLine();
-
         PrintHeader(Now().DateTimeString(), *printOut);
-
-        printOut->PrintFormat->Line->ColCount = 1;
-        printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-        printOut->PrintFormat->Line->Columns[0]->DoubleLine();
-
+        printOut->PrintFormat->AddLine();
         PrintHeader("Total Orders Paid :", *printOut);
         printOut->PrintFormat->AddLine();
         PrintColumnHeader(*printOut);
-        printOut->PrintFormat->AddLine();
+        AddDoubleLine(*printOut);
+
+        //Get The Object List Of Required Data
+        TIBSQL *orderQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
+        std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList = dataCalculationUtilities->GetWaiterAppOrderListForPaidOrders(orderQuery, terminalName);
 
         //Printing Available Order Information
         for(std::list<TWaiterAppOrderInfo>::iterator it = waiterAppOrderInfoList.begin(); it != waiterAppOrderInfoList.end(); ++it)
@@ -67,19 +58,16 @@ void ZWaiterAppOrderDetailsReportSection::GetOutput(TPrintout* printOut)
             waiterAppOrderInfo.amount   = it->amount;
             PrintItemRow(waiterAppOrderInfo, itemName, *printOut);
         }
+
+        AddDoubleLine(*printOut);
         TDateTime prevZedTime  = dataCalculationUtilities->GetPreviousZedTimeForTerminal(*_dbTransaction,terminalName);
         waiterAppOrderInfoList = dataCalculationUtilities->GetWaiterAppOrderListForProcessedOrders(orderQuery, terminalName, prevZedTime);
         itemName = "";
-
-        printOut->PrintFormat->Line->ColCount = 1;
-        printOut->PrintFormat->Line->FontInfo.Height = fsNormalSize;
-        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
-        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
-        printOut->PrintFormat->Line->Columns[0]->DoubleLine();
+        printOut->PrintFormat->AddLine();
         PrintHeader("Total Orders Processed :", *printOut);
         printOut->PrintFormat->AddLine();
         PrintColumnHeader(*printOut);
-        printOut->PrintFormat->AddLine();
+        AddDoubleLine(*printOut);
 
         //Printing Available Order Information
         for(std::list<TWaiterAppOrderInfo>::iterator it = waiterAppOrderInfoList.begin(); it != waiterAppOrderInfoList.end(); ++it)
@@ -171,6 +159,23 @@ void ZWaiterAppOrderDetailsReportSection::PrintColumnHeader(TPrintout &printOut)
         printOut.PrintFormat->Line->Columns[3]->Text = "Total";
         printOut.PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
         printOut.PrintFormat->AddLine();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+
+void ZWaiterAppOrderDetailsReportSection::AddDoubleLine(TPrintout &printOut)
+{
+    try
+    {
+        printOut.PrintFormat->Line->ColCount = 1;
+        printOut.PrintFormat->Line->FontInfo.Height = fsNormalSize;
+        printOut.PrintFormat->Line->Columns[0]->Width = printOut.PrintFormat->Width;
+        printOut.PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        printOut.PrintFormat->Line->Columns[0]->DoubleLine();
     }
     catch(Exception &E)
     {

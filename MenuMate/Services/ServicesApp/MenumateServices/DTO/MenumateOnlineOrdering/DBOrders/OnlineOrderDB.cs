@@ -123,10 +123,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
         public bool AddRecords(ApiSiteOrderViewModel siteOrderViewModel, bool IsOrderFromWaiterApp)
         {
-            // try
-            // {
-            //foreach (var siteOrderViewModel in siteOrderViewModelList)
-            //{
             bool retValue = false;
             try
             {
@@ -135,7 +131,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 orderRow.ContainerType = siteOrderViewModel.ContainerType;
                 orderRow.ContainerName = siteOrderViewModel.ContainerName;
 
-                if (siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table)
+                if (siteOrderViewModel.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table && !IsOrderFromWaiterApp)
                 {
                     int containerNumber = 0;
                     string tableName = "";
@@ -148,7 +144,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     bool isTabOrder = false;
                     //if (IsFloorPlanEnabled())
                     //{
-                    if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName) || IsOrderFromWaiterApp) //CheckTableExistAndGetTableInfo removed for china changes
+                    if (IsTableMarkedForOnlineordering(ref containerNumber, ref tableName)) //CheckTableExistAndGetTableInfo removed for china changes
                     {
                         orderRow.ContainerNumber = containerNumber;
                         orderRow.TableName = tableName;
@@ -167,7 +163,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             }
                         }
 
-                        if (retVal && !IsOrderFromWaiterApp)
+                        if (retVal)
                             throw new Exception("Order can't be saved to this table because it already contains orders.");
                     }
                     else
@@ -1241,7 +1237,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
 
         }
-        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
+        /*public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
         {
             bool retValue = false;
             int tableNoContainer = 0;
@@ -1270,7 +1266,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return retValue;
 
-        }
+        }*/
+        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)        {            bool retValue = false;            try            {                int containerNumber = 0;                string tableName = "";                int containerNumberAux = 0;                string containerNameAux = "";                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);                if (isTableNumberInteger)                    containerNumberAux = containerNumber;                else                    containerNameAux = tableName = tableNo;                bool isTabOrder = false;                if (IsFloorPlanEnabled())                {                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))                    {                        tableNoFromDB = containerNumber;                        tableNameFromDB = tableName;                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;                        retValue = true;                    }                    else                    {                        isTabOrder = true;                    }                }                else                {                    if (containerNumberAux < 1 || containerNumberAux >= 100)                    {                        retValue = false;                    }                    else                    {                        //bool retVal = IsTableBusy(containerNumberAux, orderRow.TableName, siteOrderViewModel.UserEmailId);                        //if (retVal)                        //    throw new Exception("Order can't be saved to this table because it already contains orders.");                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;                        tableNameFromDB = "Table #" + tableNo;                    }                }            }            catch (Exception e)            {                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);                throw;            }            return retValue;        }
         public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
             bool retValue = false;
@@ -1419,7 +1416,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     siteOrderViewModel.ContainerName = tableNameFromDB;
                                     siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
 
-                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
+                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
                                     //Order Processing - Insert orders details in tables
                                     stringList.Add("Before ArchiveTransaction call                     ");
                                     if (ArchiveTransaction(siteOrderViewModel, stringList))
@@ -1438,7 +1435,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 }
                                 else
                                 {
-                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
+                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
 
                                     if (AddRecords(siteOrderViewModel, true))
                                     {
@@ -2023,7 +2020,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 onlineOrderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 onlineOrderRow.IsPosted = false;
                 onlineOrderRow.AppType = DTO.Enum.AppType.devWaiter;
-                onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.DeviceId);
+                onlineOrderRow.ProfileId = GetProfileKey(siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress);
                 if (siteOrderViewModel.ApiSiteOrderPaymentViewModels != null)
                 {
                     foreach (var orderPaymentViewModel in siteOrderViewModel.ApiSiteOrderPaymentViewModels)
@@ -2106,13 +2103,15 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             return result;
         }
-        
-        
-        public void UpdateTerminalInfo(string deviceID, string deviceName)
+
+
+        public void UpdateWaiterTerminal(string deviceKey, string terminalName)
         {
             try
             {
-                FbCommand command = dbQueries.UpdateTerminalName(connection, transaction, deviceID, deviceName);
+                FbCommand command = dbQueries.UpdateProfileForWaiterApp(connection, transaction, deviceKey, terminalName);
+                command.ExecuteNonQuery();
+                command = dbQueries.UpdateTerminalForWaiterApp(connection, transaction, deviceKey, terminalName);
                 command.ExecuteNonQuery();
 
             }
@@ -2225,7 +2224,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 else
                 {
                     if (string.Equals(oldTerminalName, terminalName))
-                        UpdateTerminalInfo(deviceId, terminalName);
+                        UpdateWaiterTerminal(deviceId, terminalName);
                 }
 
                 stringList.Add("Checking If Waiter Staff Exist                 ");
