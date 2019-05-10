@@ -150,8 +150,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         orderRow.TableName = tableName;
 
                         bool retVal = IsTableBusy(orderRow.ContainerNumber, orderRow.TableName, siteOrderViewModel.UserEmailId);
-                        if (!IsOrderFromWaiterApp)
-                        {
                             if (IsFloorPlanEnabled())
                             {
                                 siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;
@@ -161,7 +159,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 siteOrderViewModel.ContainerName = orderRow.ContainerType == OnlineOrdering.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;
                                 orderRow.TableName = "Table #" + orderRow.ContainerNumber;
                             }
-                        }
+                        
 
                         if (retVal)
                             throw new Exception("Order can't be saved to this table because it already contains orders.");
@@ -209,8 +207,20 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 //to do happy hour implementation
 
                 //generate tab key if tab not exist..
-                orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
-                                    : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName); //TODo 
+                if (IsOrderFromWaiterApp)
+                {
+                    int containerNoInt = 0;
+                    int.TryParse(siteOrderViewModel.ContainerNumber,out containerNoInt);
+
+                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(siteOrderViewModel.ContainerName)
+                                    : GetOrCreateTableForOnlineOrdering(containerNoInt, siteOrderViewModel.ContainerName, siteOrderViewModel.ContainerNumber);
+                }
+                else
+                {
+                    orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(orderRow.ContainerName)
+                                    : GetOrCreateTableForOnlineOrdering(orderRow.ContainerNumber, orderRow.ContainerName, orderRow.TableName);
+                }
+                 //TODo 
 
                 //Generate Security ref..
                 orderRow.SecurityRef = GetNextSecurityRef();
@@ -1267,7 +1277,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
 
         }*/
-        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)        {            bool retValue = false;            try            {                int containerNumber = 0;                string tableName = "";                int containerNumberAux = 0;                string containerNameAux = "";                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);                if (isTableNumberInteger)                    containerNumberAux = containerNumber;                else                    containerNameAux = tableName = tableNo;                bool isTabOrder = false;                if (IsFloorPlanEnabled())                {                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))                    {                        tableNoFromDB = containerNumber;                        tableNameFromDB = tableName;                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? orderRow.TableName : orderRow.Email;                        retValue = true;                    }                    else                    {                        isTabOrder = true;                    }                }                else                {                    if (containerNumberAux < 1 || containerNumberAux >= 100)                    {                        retValue = false;                    }                    else                    {                        //bool retVal = IsTableBusy(containerNumberAux, orderRow.TableName, siteOrderViewModel.UserEmailId);                        //if (retVal)                        //    throw new Exception("Order can't be saved to this table because it already contains orders.");                        //siteOrderViewModel.ContainerName = orderRow.ContainerType == Loyaltymate.Enum.OrderContainerType.Table ? " #" + orderRow.ContainerNumber : orderRow.Email;                        tableNameFromDB = "Table #" + tableNo;                    }                }            }            catch (Exception e)            {                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);                throw;            }            return retValue;        }
+        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)        {            bool retValue = false;            try            {                int containerNumber = 0;                string tableName = "";                int containerNumberAux = 0;                string containerNameAux = "";                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);                if (isTableNumberInteger)                    containerNumberAux = containerNumber;                else                    containerNameAux = tableName = tableNo;                bool isTabOrder = false;                if (IsFloorPlanEnabled())                {                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))                    {                        tableNoFromDB = containerNumber;                        tableNameFromDB = tableName;                        retValue = true;                    }                    else                    {                        isTabOrder = true;                    }                }                else                {                    if (containerNumberAux < 1 || containerNumberAux >= 100)                    {                        retValue = false;                    }                    else                    {                        tableNameFromDB = "Table #" + tableNo;
+                        tableNoFromDB = containerNumberAux;
+                        retValue = true;                    }                }            }            catch (Exception e)            {                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);                throw;            }            return retValue;        }
         public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
             bool retValue = false;
@@ -1409,13 +1421,12 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             stringList.Add("After Validating Table                             ");
                             if (ValidateItemsInOrders(siteOrderViewModel.OrderItems, ref notFoundItemName, ref notFoundItemSizeName))
                             {
+                                //Assigning Correct Tabele Number And Table Name
+                                siteOrderViewModel.ContainerName = tableNameFromDB;
+                                siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
                                 stringList.Add("Validating Items In Orders                         ");
                                 if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow)
                                 {
-                                    //Assigning Correct Tabele Number And Table Name
-                                    siteOrderViewModel.ContainerName = tableNameFromDB;
-                                    siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
-
                                     PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
                                     //Order Processing - Insert orders details in tables
                                     stringList.Add("Before ArchiveTransaction call                     ");
@@ -2223,7 +2234,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 }
                 else
                 {
-                    if (string.Equals(oldTerminalName, terminalName))
+                    if (!string.Equals(oldTerminalName, terminalName))
                         UpdateWaiterTerminal(deviceId, terminalName);
                 }
 
