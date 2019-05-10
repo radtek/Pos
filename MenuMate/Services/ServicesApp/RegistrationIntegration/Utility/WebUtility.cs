@@ -26,8 +26,7 @@ namespace RegistrationIntegration.Utility
         public static HttpWebRequest CreateRequest(string requestaddress, string syndicateCode, List<KeyValuePair<string, string>> parameters,
             string requestMode)
         {
-            //var requestUri = RequestAddress.BaseAddress + requestaddress;
-            var requestUri = File.ReadAllText(@"C:\Program Files\MenuMate\Menumate Services\RegistrationRequestAddress.txt") + requestaddress;
+            var requestUri = RequestAddress.BaseAddress + requestaddress;
             if (parameters != null)
             {
                 foreach (var keyValuePair in parameters)

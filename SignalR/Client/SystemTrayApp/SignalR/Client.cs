@@ -14,9 +14,9 @@ namespace SystemTrayApp.SignalR
     public static class Client
     {
         private static IHubProxy _hubProxy { get; set; }
-        const string ServerURI = "http://menumatepos.com";
+        //const string ServerURI = "http://menumatepos.com";
 
-        //const string ServerURI = "http://192.168.0.104/Menumatedev";
+        const string ServerURI = "http://192.168.0.104/Menumatedev";
         public static HubConnection Connection { get; set; }
         private static NotifyIcon notifyIcon;
         private static List<string> logsList;
