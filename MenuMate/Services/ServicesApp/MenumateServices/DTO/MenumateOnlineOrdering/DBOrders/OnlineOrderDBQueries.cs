@@ -1269,7 +1269,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                     ";
 
                 command.Parameters.AddWithValue("@CONTACTS_KEY", contactKey);
-                command.Parameters.AddWithValue("@CONTACT_TYPE", 0);
+                command.Parameters.AddWithValue("@CONTACT_TYPE", 12); //Value of eWaiterAppStaff enum in POS
                 command.Parameters.AddWithValue("@NAME", "WAITER");
                 command.Parameters.AddWithValue("@PIN", "11");
                 command.Parameters.AddWithValue("@SITE_ID", 0);
@@ -2110,7 +2110,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
+                ServiceLogger.LogException(@"in UpdateProfileForWaiterApp " + e.Message, e);
                 throw;
             }
 
@@ -2123,16 +2123,16 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 command.CommandText = @"
-                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME
+                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME, a.PRODUCT = @DEVICE_NAME
                                          WHERE a.UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
                                          ";
 
                 command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceID);
-                command.Parameters.AddWithValue("@NAME", deviceName);
+                command.Parameters.AddWithValue("@DEVICE_NAME", deviceName);
             }
             catch (Exception e)
             {
-                ServiceLogger.LogException(@"in SetTableName " + e.Message, e);
+                ServiceLogger.LogException(@"in UpdateTerminalForWaiterApp " + e.Message, e);
                 throw;
             }
 

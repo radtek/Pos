@@ -212,33 +212,35 @@ void TBlindBalanceController::PopulateListManager()
          ///Get Totalpayment done by every payment
          std::map< AnsiString, Currency> payTypeTotal = LoadAutoBlindBalance(IsMaster);
 
-		  for (std::vector<TPayment>::iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
-		  {
-			if(BlindBalances.find(ptr->Name) == BlindBalances.end())
-			{
-                Currency amount = 0;
-
-                ///Get Auto Populate Blind BAlance Value If AutoPopulate Setting is on
-                if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance)
+         for (std::vector<TPayment>::iterator ptr = Payments.begin(); ptr != Payments.end(); std::advance(ptr,1))
+         {
+            if(!SameStr(ptr->Name,"WAITERAPP"))//Adding Condition For Eliminating WaiterAPP Payment Type From List
+            {
+                if(BlindBalances.find(ptr->Name) == BlindBalances.end())
                 {
-                    amount = payTypeTotal.find(ptr->Name)->second;
-                }
+                    Currency amount = 0;
 
-                if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
+                    ///Get Auto Populate Blind BAlance Value If AutoPopulate Setting is on
+                    if(payTypeTotal.find(ptr->Name) != payTypeTotal.end() && ptr->AutoPopulateBlindBalance)
+                    {
+                        amount = payTypeTotal.find(ptr->Name)->second;
+                    }
+
+                    if(TGlobalSettings::Instance().CashDenominationEntry && ptr->Name.UpperCase() == "CASH")
+                    {
+                      TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations(IsMaster);
+                      amount = cashDenominations.GetTotal();
+                    }
+                    BlindBalances.UpdateBlindBalance(ptr->Name, amount);
+                }
+                if(ptr->GetPaymentAttribute(ePayTypeAllowCashOut))
                 {
-                  TCashDenominations cashDenominations = TCashDenominationControllerInterface::Instance()->GetCashDenominations(IsMaster);
-                  amount = cashDenominations.GetTotal();
+                    if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
+                    {
+                        BlindBalances.UpdateBlindBalance(ptr->Name + " Cash Out", 0);
+                    }
                 }
-                BlindBalances.UpdateBlindBalance(ptr->Name, amount);
-			}
-
-				if(ptr->GetPaymentAttribute(ePayTypeAllowCashOut))
-				{
-					 if (BlindBalances.find(ptr->Name + " Cash Out") == BlindBalances.end())
-					 {
-						BlindBalances.UpdateBlindBalance(ptr->Name + " Cash Out", 0);
-					 }
-				}
+             }
 		  }
 
 		frmListManager->sgDisplay->ColCount = 2;
