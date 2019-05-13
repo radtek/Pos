@@ -1226,7 +1226,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
                 command.Parameters.AddWithValue("@DEVICE_NAME", terminalName);
-                command.Parameters.AddWithValue("@PRODUCT", terminalName);
+                command.Parameters.AddWithValue("@PRODUCT", "WaiterApp"); //Assigning Product Name As WaiterApp
                 command.Parameters.AddWithValue("@DEVICE_ID", 0);
                 command.Parameters.AddWithValue("@DEVICE_TYPE", DTO.Enum.AppType.devWaiter);
                 command.Parameters.AddWithValue("@LOCATION_KEY", 1);
@@ -2123,7 +2123,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 command.CommandText = @"
-                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME, a.PRODUCT = @DEVICE_NAME
+                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME
                                          WHERE a.UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
                                          ";
 
