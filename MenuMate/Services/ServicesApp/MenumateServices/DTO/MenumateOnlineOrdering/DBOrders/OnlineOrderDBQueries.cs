@@ -1255,14 +1255,16 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 			                        INSERT INTO CONTACTS ( 
                                         CONTACTS_KEY, 
                                         CONTACT_TYPE, 
-                                        NAME, 
+                                        NAME,
+                                        INITIALS, 
                                         PIN, 
                                         SITE_ID,
                                         MEMBER_NUMBER)
                                     VALUES ( 
                                         @CONTACTS_KEY, 
                                         @CONTACT_TYPE, 
-                                        @NAME, 
+                                        @NAME,
+                                        @INITIALS, 
                                         @PIN, 
                                         @SITE_ID, 
                                         @MEMBER_NUMBER);
@@ -1271,6 +1273,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@CONTACTS_KEY", contactKey);
                 command.Parameters.AddWithValue("@CONTACT_TYPE", 12); //Value of eWaiterAppStaff enum in POS
                 command.Parameters.AddWithValue("@NAME", "WAITER");
+                command.Parameters.AddWithValue("@INITIALS", "WS");
                 command.Parameters.AddWithValue("@PIN", "11");
                 command.Parameters.AddWithValue("@SITE_ID", 0);
                 command.Parameters.AddWithValue("@MEMBER_NUMBER", "");
