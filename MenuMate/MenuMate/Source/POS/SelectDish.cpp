@@ -13556,6 +13556,14 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
        {
           SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
        }
+
+       if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0)  || (!TPaySubsUtility::IsLocalLoyalty())
+         || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
+        {
+           ManagerDiscount->AddCurrencyModeDiscountsByTime(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
+        }
+
+      
         //if(!itemAdded)
         //  SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
         if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
@@ -13726,7 +13734,11 @@ TItemComplete * TfrmSelectDish::createItemComplete(
     itemComplete->ResetPrice();
     if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0)  || (!TPaySubsUtility::IsLocalLoyalty())
          || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-	   ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
+    {
+
+	    ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
+
+    }
 
 	itemComplete->Cost = itemSize->Cost; // Get default cost if assigned.
     itemComplete->MaxRetailPrice = itemSize->MaxRetailPrice;
@@ -14309,6 +14321,7 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                std::auto_ptr<TList> allOrders(new TList());
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
+               MessageBox("Message","Message",MB_OK);
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
 
                if(CurrentDiscount.IsComplimentaryDiscount())
