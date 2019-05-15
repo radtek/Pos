@@ -14321,7 +14321,6 @@ void __fastcall TfrmSelectDish::tbtnDiscountClick(bool combo)
                std::auto_ptr<TList> allOrders(new TList());
                GetAllOrders(allOrders.get());
                CurrentDiscount.DiscountKey = frmMessage->Key;
-               MessageBox("Message","Message",MB_OK);
                ManagerDiscount->GetDiscount(DBTransaction, CurrentDiscount.DiscountKey, CurrentDiscount);
 
                if(CurrentDiscount.IsComplimentaryDiscount())
