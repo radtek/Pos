@@ -94,7 +94,6 @@ class TManagerDiscount
     double GetOrderQty(TList *DiscountItems);
     Currency GetOrderPointsTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty);
     void CopyDiscountDetails(TDiscount& destination,TDiscount& source);
-    std::set<int> DiscountKeys;
     void GetCurrencyModeDiscountsByTime(Database::TDBTransaction &DBTransaction,TDateTime DateTime, std::vector<TDiscountTimes> &discountTimesList);
 	public:
 	void Initialise();
