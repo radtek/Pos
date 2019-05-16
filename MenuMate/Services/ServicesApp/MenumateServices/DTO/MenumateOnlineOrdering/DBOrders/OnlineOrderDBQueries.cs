@@ -1182,7 +1182,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
                 command.Parameters.AddWithValue("@PROFILE_TYPE", 1);
-                command.Parameters.AddWithValue("@NAME", terminalName);
+                command.Parameters.AddWithValue("@NAME", QueryUtilities.GetFromSubstring(terminalName, 0, 255));
 
             }
             catch (Exception e)
@@ -1226,12 +1226,12 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@DEVICE_KEY", deviceKey);
                 command.Parameters.AddWithValue("@DEVICE_NAME", terminalName);
-                command.Parameters.AddWithValue("@PRODUCT", terminalName);
+                command.Parameters.AddWithValue("@PRODUCT", "WaiterApp"); //Assigning Product Name As WaiterApp
                 command.Parameters.AddWithValue("@DEVICE_ID", 0);
                 command.Parameters.AddWithValue("@DEVICE_TYPE", DTO.Enum.AppType.devWaiter);
                 command.Parameters.AddWithValue("@LOCATION_KEY", 1);
                 command.Parameters.AddWithValue("@PROFILE_KEY", profileKey);
-                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", deviceId);
+                command.Parameters.AddWithValue("@UNIQUE_DEVICE_ID", QueryUtilities.GetFromSubstring(deviceId, 0, 250));
                 command.Parameters.AddWithValue("@IP", "");
 
             }
@@ -1255,14 +1255,16 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 			                        INSERT INTO CONTACTS ( 
                                         CONTACTS_KEY, 
                                         CONTACT_TYPE, 
-                                        NAME, 
+                                        NAME,
+                                        INITIALS, 
                                         PIN, 
                                         SITE_ID,
                                         MEMBER_NUMBER)
                                     VALUES ( 
                                         @CONTACTS_KEY, 
                                         @CONTACT_TYPE, 
-                                        @NAME, 
+                                        @NAME,
+                                        @INITIALS, 
                                         @PIN, 
                                         @SITE_ID, 
                                         @MEMBER_NUMBER);
@@ -1271,6 +1273,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@CONTACTS_KEY", contactKey);
                 command.Parameters.AddWithValue("@CONTACT_TYPE", 12); //Value of eWaiterAppStaff enum in POS
                 command.Parameters.AddWithValue("@NAME", "WAITER");
+                command.Parameters.AddWithValue("@INITIALS", "WS");
                 command.Parameters.AddWithValue("@PIN", "11");
                 command.Parameters.AddWithValue("@SITE_ID", 0);
                 command.Parameters.AddWithValue("@MEMBER_NUMBER", "");
@@ -1413,7 +1416,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@IS_PRINT_REQUIRED", dayArcBillRow.IsPrintRequired ? 'T' : 'F');
                 command.Parameters.AddWithValue("@APP_TYPE", dayArcBillRow.ApplicationType);
                 command.Parameters.AddWithValue("@ONLINE_ORDER_ID", dayArcBillRow.OnlinOrderId);
-                command.Parameters.AddWithValue("@ORDER_GUID", dayArcBillRow.OrderGuid);
+                command.Parameters.AddWithValue("@ORDER_GUID", QueryUtilities.GetFromSubstring(dayArcBillRow.OrderGuid, 0, 50));
                 command.Parameters.AddWithValue("@SITE_ID", dayArcBillRow.SiteId);
             }
             catch (Exception e)
@@ -1470,7 +1473,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
                 command.Parameters.AddWithValue("@DAYARCBILLPAY_KEY", dayArcBillPayRow.DayArcBillPayId);
                 command.Parameters.AddWithValue("@ARCBILL_KEY", dayArcBillPayRow.DayArcBillId);
-                command.Parameters.AddWithValue("@PAY_TYPE", dayArcBillPayRow.PayType);
+                command.Parameters.AddWithValue("@PAY_TYPE", QueryUtilities.GetFromSubstring(dayArcBillPayRow.PayType, 0, 50));
                 command.Parameters.AddWithValue("@VOUCHER_NUMBER", "");
                 command.Parameters.AddWithValue("@SUBTOTAL", dayArcBillPayRow.SubTotal);
                 command.Parameters.AddWithValue("@ROUNDING", dayArcBillPayRow.Rounding);
@@ -1689,7 +1692,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@TABLE_NAME", dayArchiveRow.TableNumber);
                 command.Parameters.AddWithValue("@SEAT_NUMBER", dayArchiveRow.SeatNumber);
                 command.Parameters.AddWithValue("@SERVER_NAME", dayArchiveRow.ServerName);
-                command.Parameters.AddWithValue("@TAB_NAME", dayArchiveRow.TabName);
+                command.Parameters.AddWithValue("@TAB_NAME", QueryUtilities.GetFromSubstring(dayArchiveRow.TabName, 0, 80));
                 command.Parameters.AddWithValue("@LOYALTY_NAME", dayArchiveRow.LoyaltyName);
                 command.Parameters.AddWithValue("@ORDER_TYPE", dayArchiveRow.OrderType);
                 command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
@@ -1698,7 +1701,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@PRICE", dayArchiveRow.Price);
                 command.Parameters.AddWithValue("@COST", dayArchiveRow.Cost);
                 command.Parameters.AddWithValue("@HAPPY_HOUR", 'F'); //Need to Confirm
-                command.Parameters.AddWithValue("@NOTE", dayArchiveRow.Note);
+                command.Parameters.AddWithValue("@NOTE", QueryUtilities.GetFromSubstring(dayArchiveRow.Note, 0, 80));
                 command.Parameters.AddWithValue("@SECURITY_REF", dayArchiveRow.SecurityRef);
                 command.Parameters.AddWithValue("@TIME_KEY", dayArchiveRow.TimeKey);
                 command.Parameters.AddWithValue("@GST_PERCENT", dayArchiveRow.GstPercent);
@@ -1823,10 +1826,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                            @TIME_STAMP);";
                 command.Parameters.AddWithValue("@SECURITY_KEY", securityRow.SecurityId);
                 command.Parameters.AddWithValue("@SECURITY_REF", securityRow.SecurityRef);
-                command.Parameters.AddWithValue("@SECURITY_EVENT", securityRow.SecurityEvent);
-                command.Parameters.AddWithValue("@FROM_VAL", securityRow.FromVal);
-                command.Parameters.AddWithValue("@TO_VAL", securityRow.ToVal);
-                command.Parameters.AddWithValue("@NOTE", securityRow.Note);
+                command.Parameters.AddWithValue("@SECURITY_EVENT", QueryUtilities.GetFromSubstring(securityRow.SecurityEvent, 0, 50));
+                command.Parameters.AddWithValue("@FROM_VAL", QueryUtilities.GetFromSubstring(securityRow.FromVal, 0, 50));
+                command.Parameters.AddWithValue("@TO_VAL", QueryUtilities.GetFromSubstring(securityRow.ToVal, 0, 50));
+                command.Parameters.AddWithValue("@NOTE", QueryUtilities.GetFromSubstring(securityRow.Note, 0, 50));
                 command.Parameters.AddWithValue("@TERMINAL_NAME", securityRow.TerminalName);
                 command.Parameters.AddWithValue("@USER_KEY", securityRow.UserId);
                 command.Parameters.AddWithValue("@TIME_STAMP", DateTime.Now);
@@ -2123,7 +2126,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 command.CommandText = @"
-                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME, a.PRODUCT = @DEVICE_NAME
+                                         UPDATE DEVICES a SET a.DEVICE_NAME = @DEVICE_NAME
                                          WHERE a.UNIQUE_DEVICE_ID = @UNIQUE_DEVICE_ID;
                                          ";
 

@@ -108,9 +108,9 @@ object frmSelectReceipt: TfrmSelectReceipt
     end
     object btnBillUp: TTouchBtn
       Left = 153
-      Top = 564
+      Top = 627
       Width = 81
-      Height = 65
+      Height = 67
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -17
@@ -130,9 +130,9 @@ object frmSelectReceipt: TfrmSelectReceipt
     end
     object btnBillDown: TTouchBtn
       Left = 240
-      Top = 564
+      Top = 627
       Width = 81
-      Height = 65
+      Height = 67
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
       Font.Height = -17
@@ -154,7 +154,7 @@ object frmSelectReceipt: TfrmSelectReceipt
       Left = 8
       Top = 8
       Width = 449
-      Height = 550
+      Height = 615
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -219,8 +219,9 @@ object frmSelectReceipt: TfrmSelectReceipt
     end
     object btnNext: TTouchBtn
       Left = 327
-      Top = 567
+      Top = 630
       Width = 129
+      Height = 59
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
       Font.Height = -19
@@ -238,8 +239,9 @@ object frmSelectReceipt: TfrmSelectReceipt
     end
     object btnPrev: TTouchBtn
       Left = 18
-      Top = 567
+      Top = 630
       Width = 129
+      Height = 59
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -19
