@@ -36,5 +36,17 @@ class TManagerMews : public TBasePMS
        UnicodeString CheckMewsCategoryExists(UnicodeString category);
        void AddPaymentToPMSPaymentTypes(TPayment *payment,AnsiString defaultCode);
        int GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Database::TDBTransaction &DBTransaction);
+       void GetMewsCategoriesList();
+       std::vector<TAccountingCategoriesMapping> MewsAccountingCategoriesList;
+       void LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey);
+       void LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, bool isCategoryKeyFromItemValues);
+       AnsiString GetErrorDetectionLogFileName();
+};
+
+class MewsCategoryNotFoundException : public Exception
+{
+    public:
+        MewsCategoryNotFoundException(const UnicodeString message);
+//        ~MewsCategoryNotFoundException() throw();
 };
 #endif
