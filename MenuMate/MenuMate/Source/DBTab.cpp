@@ -2325,10 +2325,13 @@ bool TDBTab::HasOnlineOrders(int tabKey)
     try
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
-        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TAB_KEY = :TAB_KEY AND "
-                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS "
+                           "WHERE TAB_KEY = :TAB_KEY AND "
+                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL "
+                           "AND ORDER_LOCATION <> :ORDER_LOCATION AND ORDER_LOCATION IS NOT NULL ";
         query->ParamByName("TAB_KEY")->AsInteger = tabKey;
         query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ParamByName("ORDER_LOCATION")->AsString = "WaiterApp";
         query->ExecQuery();
         if(query->RecordCount > 0)
         {

@@ -29,6 +29,7 @@ class TManagerDevices
 		void GetChitProfilesList(Database::TDBTransaction &DBTransaction,long DeviceKey, typChitDefaultMap &DeviceChitsDefaults);
 		void SetChitProfilesList(Database::TDBTransaction &DBTransaction,long DeviceKey, const typChitDefaultMap &DeviceChitProfiles);
         void GetDeviceNameList(Database::TDBTransaction &DBTransaction,int DeviceType,TStringList *Devices);
+        int GetDevicType(Database::TDBTransaction &DBTransaction,long DeviceKey);
 };
 
 #endif

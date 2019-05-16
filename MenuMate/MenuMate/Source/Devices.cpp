@@ -291,3 +291,36 @@ void TManagerDevices::GetDeviceNameList(Database::TDBTransaction &DBTransaction,
 	}
 }
 
+int TManagerDevices::GetDevicType(Database::TDBTransaction &DBTransaction,long DeviceKey)
+{
+	int RetVal = 0;
+	if(!Enabled) return RetVal;
+
+	try
+	{
+		Database::TcpIBSQL IBInternalQuery(new TIBSQL(NULL));
+		DBTransaction.RegisterQuery(IBInternalQuery);
+
+		IBInternalQuery->Close();
+		IBInternalQuery->SQL->Text =
+		"SELECT "
+			"DEVICE_TYPE "
+		"FROM "
+			"DEVICES "
+		"WHERE "
+			"DEVICE_KEY = :DEVICE_KEY";
+		IBInternalQuery->ParamByName("DEVICE_KEY")->AsInteger = DeviceKey;
+		IBInternalQuery->ExecQuery();
+
+		if(IBInternalQuery->RecordCount)
+		{
+			RetVal = IBInternalQuery->FieldByName("DEVICE_TYPE")->AsInteger;
+		}
+	}
+	catch(Exception &E)
+	{
+		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+	}
+	return RetVal;
+}

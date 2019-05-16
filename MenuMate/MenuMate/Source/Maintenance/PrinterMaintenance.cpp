@@ -705,6 +705,13 @@ void TfrmPrinterMaintenance::UpdateProfileListDisplay()
 	  std::auto_ptr <TManagerDevices> ManagerDevices(new TManagerDevices);
 	  ManagerDevices->GetPrinterProfilesList(DBTransaction, CurrentDeviceKey, DevicesPrinterProfile[CurrentDeviceKey]);
 
+      //Getting Device Type To Disable Delete Button For Waiter App Terminal
+      int deviceType = ManagerDevices->GetDevicType(DBTransaction, CurrentDeviceKey);
+      if(deviceType == devWaiter)
+        btnDeleteDevice->Enabled = false;
+      else
+        btnDeleteDevice->Enabled = true;
+
 	  tgridProfileList->RowCount = 0; // Clears all the Latching.
 	  tgridProfileList->ColCount = 1;
 	  tgridProfileList->RowCount = PrinterProfiles->Count;

@@ -1680,7 +1680,7 @@ std::set<int> TDBTables::GetMezzanineAreaTables(TMezzanineTable mezzanineDetails
     return mezzanineTables;
 }
 //---------------------------------------------------------------------------
-bool TDBTables::HasOnlineOrders(int tableNumber)
+bool TDBTables::HasOnlineOrders(int tableNumber, bool IsWaiterAppOrder)
 {
     bool retValue = false;
     Database::TDBTransaction dbTransaction(TDeviceRealTerminal::Instance().DBControl);
@@ -1689,10 +1689,21 @@ bool TDBTables::HasOnlineOrders(int tableNumber)
     try
     {
         TIBSQL* query = dbTransaction.Query(dbTransaction.AddQuery());
-        query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
-                           "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL";
+        if(IsWaiterAppOrder)
+        {
+            query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
+                               "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL "
+                               "AND ORDER_LOCATION = :ORDER_LOCATION AND ORDER_LOCATION IS NOT NULL ";
+        }
+        else
+        {
+            query->SQL->Text = "SELECT ORDER_KEY FROM  ORDERS WHERE TABLE_NUMBER = :TABLE_NUMBER AND "
+                               "ORDER_GUID <> :ORDER_GUID AND ORDER_GUID IS NOT NULL "
+                               "AND ORDER_LOCATION <> :ORDER_LOCATION AND ORDER_LOCATION IS NOT NULL ";
+        }
         query->ParamByName("TABLE_NUMBER")->AsInteger = tableNumber;
         query->ParamByName("ORDER_GUID")->AsString = "";
+        query->ParamByName("ORDER_LOCATION")->AsString = "WaiterApp";
         query->ExecQuery();
         if(query->RecordCount > 0)
         {

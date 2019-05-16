@@ -799,22 +799,33 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
     }
 }
 //------------------------------------------------------------------------------
-UnicodeString TDBOnlineOrdering::GetTerminalNameForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID)
+UnicodeString TDBOnlineOrdering::GetTerminalNameForOrderGUID(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, bool IsPayLaterOrder)
 {
     UnicodeString terminalName = "";
     try
     {
         TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
         ibInternalQuery->Close();
-        ibInternalQuery->SQL->Text =   " SELECT "
-                                       " a.TERMINAL_NAME "
-                                       " FROM DAYARCBILL a "
-                                       " WHERE a.ORDER_GUID =:ORDER_GUID "
-                                       " UNION ALL "
-                                       " SELECT "
-                                       " a.TERMINAL_NAME "
-                                       " FROM ARCBILL a "
-                                       " WHERE a.ORDER_GUID =:ORDER_GUID ";
+
+        if(IsPayLaterOrder)
+        {
+            ibInternalQuery->SQL->Text =   " SELECT "
+                                           " a.TERMINAL_NAME "
+                                           " FROM ORDERS a "
+                                           " WHERE a.ORDER_GUID =:ORDER_GUID ";
+        }
+        else
+        {
+            ibInternalQuery->SQL->Text =   " SELECT "
+                                           " a.TERMINAL_NAME "
+                                           " FROM DAYARCBILL a "
+                                           " WHERE a.ORDER_GUID =:ORDER_GUID "
+                                           " UNION ALL "
+                                           " SELECT "
+                                           " a.TERMINAL_NAME "
+                                           " FROM ARCBILL a "
+                                           " WHERE a.ORDER_GUID =:ORDER_GUID ";
+        }
 
         ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
         ibInternalQuery->ExecQuery();
@@ -889,6 +900,34 @@ void TDBOnlineOrdering::LoadSiteIDAndOOIdForOrderGuid(Database::TDBTransaction &
         {
             siteID = ibInternalQuery->FieldByName("SITE_ID")->AsInteger;
             onlineOrderID = ibInternalQuery->FieldByName("ONLINE_ORDER_ID")->AsInteger;
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+		throw;
+    }
+}
+
+void TDBOnlineOrdering::LoadWaiterContactDetails(Database::TDBTransaction &dbTransaction, int &contactKey, UnicodeString &contactName, UnicodeString &contactInitials)
+{
+    try
+    {
+        TIBSQL *ibInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        ibInternalQuery->Close();
+        ibInternalQuery->SQL->Text =   " SELECT "
+                                       " a.CONTACTS_KEY, a.NAME, a.INITIALS "
+                                       " FROM CONTACTS a "
+                                       " WHERE a.CONTACT_TYPE =:CONTACT_TYPE ";
+
+        ibInternalQuery->ParamByName("CONTACT_TYPE")->AsInteger = 12;  // Enum Value Of DeviceType devWaiter
+        ibInternalQuery->ExecQuery();
+
+        if(ibInternalQuery->RecordCount)
+        {
+            contactKey = ibInternalQuery->FieldByName("CONTACTS_KEY")->AsInteger;
+            contactName = ibInternalQuery->FieldByName("NAME")->AsString;
+            contactInitials = ibInternalQuery->FieldByName("INITIALS")->AsString;
         }
     }
     catch(Exception &E)

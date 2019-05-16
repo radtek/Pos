@@ -196,7 +196,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 orderRow.Location = siteOrderViewModel.Location;
                 orderRow.OrderType = siteOrderViewModel.OrderType;
                 orderRow.OrderGuid = siteOrderViewModel.OrderGuid;
-                orderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
+                if (siteOrderViewModel.ApiOrderDevicesViewModel != null)
+                    orderRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
+                else
+                    orderRow.TerminalName = null;
                 orderRow.TransactionDate = siteOrderViewModel.TransactionDate;
                 orderRow.TransactionType = siteOrderViewModel.TransactionType;
                 orderRow.UserType = siteOrderViewModel.UserType;
@@ -213,7 +216,9 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     int.TryParse(siteOrderViewModel.ContainerNumber,out containerNoInt);
 
                     orderRow.TabKey = orderRow.ContainerType == 0 ? GetOrCreateTabForOnlineOrdering(siteOrderViewModel.ContainerName)
-                                    : GetOrCreateTableForOnlineOrdering(containerNoInt, siteOrderViewModel.ContainerName, siteOrderViewModel.ContainerNumber);
+                                    : GetOrCreateTableForOnlineOrdering(containerNoInt, "Guest 1", siteOrderViewModel.ContainerNumber);
+                    orderRow.TableName = siteOrderViewModel.ContainerName;
+                    orderRow.ContainerNumber = containerNoInt;
                 }
                 else
                 {
@@ -276,7 +281,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                         //Insert Order tax profile info..
                         ExecuteTaxProfileOrders(orderRow);
                     }
-                    //siteOrderViewModel.IsConfirmed = true;
                     siteOrderViewModel.IsHappyHourApplied = CanHappyHourBeApplied();
                     siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.IsConfirmed;
                     siteOrderViewModel.IsConfirmed = true;
@@ -286,7 +290,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception ex)
             {
                 siteOrderViewModel.OrderStatus = OnlineOrdering.Enum.OrderStatus.InvalidTable;
-                //siteOrderViewModel.IsConfirmed = false;
+                siteOrderViewModel.IsConfirmed = false;
                 siteOrderViewModel.IsHappyHourApplied = false;
                 //addDetailsTransaction.Rollback();
                 ServiceLogger.LogException(@"in AddRecords to orders table " + ex.Message, ex);
@@ -2235,7 +2239,13 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 else
                 {
                     if (!string.Equals(oldTerminalName, terminalName))
+                    {
+                        //Updating DeviceName In Devices And Profile Tables
                         UpdateWaiterTerminal(deviceId, terminalName);
+
+                        //Updating Terminal Name In Orders Table
+                        UpdateTerminalNameInOrders(oldTerminalName, terminalName);
+                    }
                 }
 
                 stringList.Add("Checking If Waiter Staff Exist                 ");
@@ -2245,6 +2255,19 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     stringList.Add("Adding Waiter Staff                            ");
                     AddWaiterStaff();
                 }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+        }
+
+        public void UpdateTerminalNameInOrders(string oldTerminalName, string newTerminalName)
+        {
+            try
+            {
+                FbCommand command = dbQueries.UpdateTerminalNameInOrdersQuery(connection, transaction, oldTerminalName, newTerminalName);
+                command.ExecuteNonQuery();
             }
             catch (Exception exc)
             {

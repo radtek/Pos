@@ -9315,33 +9315,36 @@ void TfrmSelectDish::InitializeTablePatrons()
         std::vector<TPatronType> selectedTablePatrons = TDBTables::GetPatronCount(DBTransaction, SelectedTable);
         int patronCount = GetCount(selectedTablePatrons);
 
-        //Verify if the patrons have already not been assigned, if selected table is a valid table and the setting for patron count is enabled
-        if(patronCount <= 0 && SelectedTable > 0 && (TGlobalSettings::Instance().PromptForPatronCount || TGlobalSettings::Instance().PromptPatronCountOnTableSales))
+        if(!TDBTables::HasOnlineOrders(SelectedTable, true))
         {
-            if (TManagerPatron::Instance().GetCount(DBTransaction) > 0)
+            //Verify if the patrons have already not been assigned, if selected table is a valid table and the setting for patron count is enabled
+            if(patronCount <= 0 && SelectedTable > 0 && (TGlobalSettings::Instance().PromptForPatronCount || TGlobalSettings::Instance().PromptPatronCountOnTableSales))
             {
-                std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
-
-                //Set to table patron count table...
-                if(ArePatronsChanged(selectedTablePatrons,patrons))
+                if (TManagerPatron::Instance().GetCount(DBTransaction) > 0)
                 {
-                    //call for restructure
-                    RestructureBillForPatrons(patrons);
-                }
-                TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
+                    std::vector<TPatronType> patrons = GetPatronCount(DBTransaction);
 
-                if(!patrons.empty())
+                    //Set to table patron count table...
+                    if(ArePatronsChanged(selectedTablePatrons,patrons))
+                    {
+                        //call for restructure
+                        RestructureBillForPatrons(patrons);
+                    }
+                    TDBTables::SetPatronCount(DBTransaction, SelectedTable, patrons);
+
+                    if(!patrons.empty())
+                    {
+                        patronCount = GetCount(patrons);
+                        setPatronCount(patronCount);
+                    }
+                }
+                else
                 {
-                    patronCount = GetCount(patrons);
-                    setPatronCount(patronCount);
+                    MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
                 }
-            }
-            else
-            {
-                MessageBox("There are no Patron Types Configured.", "Patron Error.", MB_OK + MB_ICONERROR);
-            }
 
-            DBTransaction.Commit();
+                DBTransaction.Commit();
+            }
         }
     }
     catch(Exception & E)
