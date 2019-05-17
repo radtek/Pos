@@ -1777,6 +1777,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
             IBDayArcBill->SQL->Text = "Select * from DAYARCBILL a where a.TERMINAL_NAME = :TERMINAL_NAME ";
             IBDayArcBill->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
 
+            if(IsWaiterAppZed)
+            {
+                IBDayArcBill->SQL->Text += "AND a.APP_TYPE = :APP_TYPE ";
+                IBDayArcBill->ParamByName("APP_TYPE")->AsInteger = 7;
+            }
+
             IBDayArcBillPay->Close();
             IBDayArcBillPay->SQL->Text = "select * from DAYARCBILLPAY where ARCBILL_KEY = :ARCBILL_KEY";
 
@@ -9341,7 +9347,7 @@ int TfrmAnalysis::CheckIfZedPendingForAnyWApp()
     {
         TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
         IBInternalQuery->Close();
-        IBInternalQuery->SQL->Text = "SELECT a.TERMINAL_NAME FROM APPZEDSTATUS a "
+        IBInternalQuery->SQL->Text = "SELECT COUNT(a.TERMINAL_NAME) FROM APPZEDSTATUS a "
                                      "WHERE a.IS_ZED_REQUIRED =:IS_ZED_REQUIRED AND a.APP_TYPE =:APP_TYPE ";
 
         IBInternalQuery->ParamByName("IS_ZED_REQUIRED")->AsString = "T";
