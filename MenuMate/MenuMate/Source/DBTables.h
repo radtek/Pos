@@ -89,7 +89,7 @@ class TDBTables
 
     //load table which are in mezzanine area.
     static std::set<int> GetMezzanineAreaTables(TMezzanineTable mezzanineDetails);
-    static bool HasOnlineOrders(int tableNumber);
+    static bool HasOnlineOrders(int tableNumber, bool IsWaiterAppOrder = false);
     static UnicodeString GetMemberEmail(int tableNumber);
     static bool IsTableLocked(Database::TDBTransaction &DBTransaction,int TableNumber);
     static UnicodeString GetStaffNameForSelectedTable(Database::TDBTransaction &DBTransaction,int TableNumber);

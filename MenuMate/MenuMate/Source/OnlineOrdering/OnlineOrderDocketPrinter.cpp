@@ -63,7 +63,8 @@ void TOnlineOrderDocketPrinter::InitiateDocketPrinterThread()
 //-----------------------------------------------------------
 void __fastcall TOnlineOrderDocketPrinter::OnDocketPrinterThreadTimerTick(TObject *Sender)
 {
-    if(docketPrinterThreadTerminated && IsDocketPrintingPending())
+    if(docketPrinterThreadTerminated )
+//    && IsDocketPrintingPending())
     {
         InitiateDocketPrinterThread();
         StartDocketPrinterThread();
@@ -193,6 +194,11 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 
 		int SecRefNumber = TDBSecurity::GetNextSecurityRef(PaymentTransaction.DBTransaction);
 
+        int contactKey = 0;
+        UnicodeString contactName = "";
+        UnicodeString contactInitials = "";
+        bool IsPayLaterOrder = false;
+
 		for (int i = 0; i < PaymentTransaction.Orders->Count; i++)
 		{
 			TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[i];
@@ -200,10 +206,22 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 			// Complete Order Security.
 			Order->Security->SetSecurityRefNumber(SecRefNumber);
 			TSecurityReference SecRef;
-			SecRef.UserKey = TDeviceRealTerminal::Instance().User.ContactKey;
+            if(Order->Email.Trim() == "")
+            {
+                TDBOnlineOrdering::LoadWaiterContactDetails(PaymentTransaction.DBTransaction, contactKey, contactName, contactInitials);
+                SecRef.UserKey = contactKey;
+                SecRef.From = contactName;
+			    SecRef.To = contactInitials;
+                IsPayLaterOrder = true;
+            }
+            else
+            {
+			    SecRef.UserKey = TDeviceRealTerminal::Instance().User.ContactKey;
+                SecRef.From = TDeviceRealTerminal::Instance().User.Name;
+			    SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
+            }
+
 			SecRef.Event = SecurityTypes[secOrderedBy];
-			SecRef.From = TDeviceRealTerminal::Instance().User.Name;
-			SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
 			SecRef.TimeStamp = Now();
 			Order->Security->SecurityUpdate(secOrderedBy, SecRef);
 			for (int j = 0; j < Order->SubOrders->Count; j++)
@@ -213,10 +231,20 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 				{
 					SubOrder->Security->SetSecurityRefNumber(SecRefNumber);
 					TSecurityReference SecRef;
-					SecRef.UserKey = TDeviceRealTerminal::Instance().User.ContactKey;
+                    if(SubOrder->Email.Trim() == "")
+                    {
+                        SecRef.UserKey = contactKey;
+                        SecRef.From = contactName;
+			            SecRef.To = contactInitials;
+                    }
+                    else
+                    {
+                        SecRef.UserKey = TDeviceRealTerminal::Instance().User.ContactKey;
+                        SecRef.From = TDeviceRealTerminal::Instance().User.Name;
+					    SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
+                    }
+
 					SecRef.Event = SecurityTypes[secOrderedBy];
-					SecRef.From = TDeviceRealTerminal::Instance().User.Name;
-					SecRef.To = TDeviceRealTerminal::Instance().User.Initials;
 					SecRef.TimeStamp = Now();
 					SubOrder->Security->SecurityUpdate(secOrderedBy, SecRef);
 				}
@@ -228,7 +256,16 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 		ProcessSecurity(PaymentTransaction);
 
 		// Print the Order to the Kitchen.
-		PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"OnlineOrder");   //tab key to be changed
+        if(IsPayLaterOrder)
+        {
+            UnicodeString deviceName = "";
+            deviceName = TDBOnlineOrdering::GetTerminalNameForOrderGUID(PaymentTransaction.DBTransaction, orderUniqueId, IsPayLaterOrder);
+		    PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId, deviceName);
+        }
+        else
+        {
+            PrintKitchenDockets(PaymentTransaction, 15,orderUniqueId,"OnlineOrder");
+        }
 
         // Change the Order Status.
         TDBOnlineOrdering::SetOnlineOrderStatus(PaymentTransaction.DBTransaction, orderUniqueId);

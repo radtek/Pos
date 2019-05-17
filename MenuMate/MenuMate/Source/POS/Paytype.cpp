@@ -226,10 +226,14 @@ void TfrmPaymentType::Reset()
     int i = 0;
     CurrentTransaction.PaymentsSort();
     TPayment* refundPayment = CurrentTransaction.GetRefundPointsPayment();
+    TPayment* waiterAppPayment = CurrentTransaction.PaymentFind("WAITERAPP");
+    if(waiterAppPayment)
+        waiterAppPayment->Visible = false;
+
     tgPayments->RowCount = 0; // Clears all the Latching.
     tgPayments->ColCount = 2;
     tgPayments->RowCount = refundPayment ? CurrentTransaction.VisiablePaymentsCount() - 1 : CurrentTransaction.VisiablePaymentsCount();
-    tgPayments->RowCount = CurrentTransaction.PaymentFind("WAITERAPP") ? CurrentTransaction.VisiablePaymentsCount() - 1 : CurrentTransaction.VisiablePaymentsCount();
+
     int ButtonPos = 0;
 
     for (int i = 0; i < CurrentTransaction.PaymentsCount(); i++)
@@ -248,10 +252,6 @@ void TfrmPaymentType::Reset()
         {
            tgPayments->RowCount = 1;
            return;
-        }
-        if(SameStr(Payment->Name,"WAITERAPP"))
-        {
-            Payment->Visible = false;
         }
         //MM-2850 Hooking the loop since we need to show refund item in alternate column....
         if (Payment->Visible && !Payment->RefundPoints)
@@ -394,7 +394,7 @@ void TfrmPaymentType::Reset()
 
             }
             ButtonPos++;
-        }
+            }
     }
 
     if (CurrentTransaction.CreditTransaction)

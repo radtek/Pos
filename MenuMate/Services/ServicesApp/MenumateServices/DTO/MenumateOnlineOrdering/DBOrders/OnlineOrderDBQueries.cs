@@ -2141,6 +2141,29 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
             return command;
         }
+        public FbCommand UpdateTerminalNameInOrdersQuery(FbConnection connection, FbTransaction transaction, string oldTerminalName, string newTerminalName)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                         UPDATE ORDERS a SET a.TERMINAL_NAME = @NEW_TERMINAL_NAME 
+                                         WHERE a.TERMINAL_NAME = @OLD_TERMINAL_NAME AND a.ORDER_LOCATION = @ORDER_LOCATION;
+                                         ";
+
+                command.Parameters.AddWithValue("@OLD_TERMINAL_NAME", oldTerminalName);
+                command.Parameters.AddWithValue("@NEW_TERMINAL_NAME", newTerminalName);
+                command.Parameters.AddWithValue("@ORDER_LOCATION", "WaiterApp");
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in UpdateTerminalNameInOrdersQuery " + e.Message, e);
+                throw;
+            }
+
+            return command;
+        }
         #endregion
     }
 
