@@ -94,6 +94,7 @@ class TManagerDiscount
     double GetOrderQty(TList *DiscountItems);
     Currency GetOrderPointsTotal(TList *DiscountItems,TDiscount DiscountToBeApplied, double maxDiscountQty);
     void CopyDiscountDetails(TDiscount& destination,TDiscount& source);
+    void GetCurrencyModeDiscountsByTime(Database::TDBTransaction &DBTransaction,TDateTime DateTime, std::vector<TDiscountTimes> &discountTimesList);
 	public:
 	void Initialise();
     __property bool Enabled  = { read=GetEnabled, write=SetEnabled };
@@ -149,6 +150,7 @@ class TManagerDiscount
     void ClearMemberExemtDiscounts(TList * DiscountItems);
     void GetMembershipDiscounts(Database::TDBTransaction &DBTransaction,std::set<int> &discountKeys);
     void ClearLoyaltyMemberDiscounts(TList * DiscountItems);
+    void AddCurrencyModeDiscountsByTime(Database::TDBTransaction &DBTransaction,TList *Orders);
 };
 
 extern TManagerDiscount *ManagerDiscount;
