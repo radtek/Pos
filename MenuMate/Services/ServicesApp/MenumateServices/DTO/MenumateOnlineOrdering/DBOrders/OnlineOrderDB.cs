@@ -1425,13 +1425,14 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                             stringList.Add("After Validating Table                             ");
                             if (ValidateItemsInOrders(siteOrderViewModel.OrderItems, ref notFoundItemName, ref notFoundItemSizeName))
                             {
-                                //Assigning Correct Tabele Number And Table Name
+                                //Assigning Correct Table Number And Table Name
                                 siteOrderViewModel.ContainerName = tableNameFromDB;
                                 siteOrderViewModel.ContainerNumber = tableNoFromDB.ToString();
+                                //Perfoming Pre-Checks Before Inserting Processing Order
+                                PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
                                 stringList.Add("Validating Items In Orders                         ");
                                 if (siteOrderViewModel.PaymentType == OnlineOrdering.Enum.PaymentType.PayNow)
                                 {
-                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
                                     //Order Processing - Insert orders details in tables
                                     stringList.Add("Before ArchiveTransaction call                     ");
                                     if (ArchiveTransaction(siteOrderViewModel, stringList))
@@ -1450,8 +1451,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                                 }
                                 else
                                 {
-                                    PerformPreRequisiteWaiterAppOperation(stringList, siteOrderViewModel.ApiOrderDevicesViewModel.MacAddress, siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName);
-
                                     if (AddRecords(siteOrderViewModel, true))
                                     {
                                         stringList.Add("After AddRecords                                   ");
@@ -1636,7 +1635,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 dayArcBillPayRow.DayArcBillPayId = GenerateKey("DAYARCBILLPAY");
                 dayArcBillPayRow.DayArcBillId = dayArcBillKey;
-                dayArcBillPayRow.PayType = "";//Need to Confirm
+                dayArcBillPayRow.PayType = "WAITERAPP";
                 dayArcBillPayRow.Rounding = 0;
                 if (isChangeAdjRow)
                 {
@@ -1651,7 +1650,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     dayArcBillPayRow.Tip = orderPayment.Tip;
                 }
                 dayArcBillPayRow.PayTypeDetails = "";
-                dayArcBillPayRow.Properties = "";//Need to confirm
+                dayArcBillPayRow.Properties = "-3-19-";
                 dayArcBillPayRow.PaymentCardType = orderPayment.CardType;
                 dayArcBillPayRow.PayGroup = ""; // Need to Confirm
 
@@ -1722,10 +1721,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 dayArchiveRow.ArcBillId = arcBillKey;
                 dayArchiveRow.TerminalName = siteOrderViewModel.ApiOrderDevicesViewModel.DeviceName;
                 dayArchiveRow.TableNumber = tableNumber;
-                if (IsFloorPlanEnabled())
-                    dayArchiveRow.TableName = siteOrderViewModel.ContainerName;
-                else
-                    dayArchiveRow.TableName = "Table #" + siteOrderViewModel.ContainerNumber;
+                dayArchiveRow.TableName = siteOrderViewModel.ContainerName;
                 dayArchiveRow.TabName = "Guest 1";//Need to confirm
                 dayArchiveRow.OrderLocation = siteOrderViewModel.Location;// Need to confirm
                 dayArchiveRow.OrderGuid = siteOrderViewModel.OrderGuid;
@@ -2255,6 +2251,11 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                     stringList.Add("Adding Waiter Staff                            ");
                     AddWaiterStaff();
                 }
+                //Check If Payment Type For Waiter App Is Created Or Not
+                if(!CheckIfWaiterAppPaymentTypeExist())
+                {
+                    AddWaiterAppPaymentType();
+                }
             }
             catch (Exception exc)
             {
@@ -2267,6 +2268,40 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             try
             {
                 FbCommand command = dbQueries.UpdateTerminalNameInOrdersQuery(connection, transaction, oldTerminalName, newTerminalName);
+                command.ExecuteNonQuery();
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+        }
+        public bool CheckIfWaiterAppPaymentTypeExist()
+        {
+            bool retValue = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterAppPaymentTypeExistQuery(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        retValue = true;
+                    }
+                }
+
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return retValue;
+        }
+        public void AddWaiterAppPaymentType()
+        {
+            try
+            {
+                long paymentTypeKey = GenerateKey("PAYMENTTYPES");
+                FbCommand command = dbQueries.InsertWaiterAppPaymentTypeQuery(connection, transaction, paymentTypeKey);
                 command.ExecuteNonQuery();
             }
             catch (Exception exc)

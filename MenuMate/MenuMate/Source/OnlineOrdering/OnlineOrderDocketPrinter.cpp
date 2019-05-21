@@ -63,8 +63,7 @@ void TOnlineOrderDocketPrinter::InitiateDocketPrinterThread()
 //-----------------------------------------------------------
 void __fastcall TOnlineOrderDocketPrinter::OnDocketPrinterThreadTimerTick(TObject *Sender)
 {
-    if(docketPrinterThreadTerminated )
-//    && IsDocketPrintingPending())
+    if(docketPrinterThreadTerminated && IsDocketPrintingPending())
     {
         InitiateDocketPrinterThread();
         StartDocketPrinterThread();
@@ -130,6 +129,8 @@ bool TOnlineOrderDocketPrinter::IsDocketPrintingPending()
 
         if(IBInternalQuery->RecordCount)
             isRecordExist = true;
+        else
+            isRecordExist = IsPrePaidOrderPrintingPending(dbTransaction);
 
         dbTransaction.Commit();
     }
@@ -555,7 +556,7 @@ void TOnlineDocketPrinterThread::ManagePrintOperationsForWaiterApp(Database::TDB
 
         //Creating And Saving The Receipt
         paymentTransactionNew.InvoiceNumber = TDBOnlineOrdering::GetInvoiceNumberForOrderGUID(paymentTransactionNew.DBTransaction, orderGUID);
-        ArchiveReceiptForWaiterAppOrders(paymentTransactionNew, orderGUID);
+        ArchiveReceiptForWaiterAppOrders(paymentTransactionNew, orderGUID, terminalName);
 
         //Set The IsPrintRequired Flag And Save The Generated Receipt Using OrderGuid After Performing Print Operations
         TDBOnlineOrdering::SetStatusAndSaveReceiptForWApp(paymentTransactionNew.DBTransaction, orderGUID, ManagerReceipt->ReceiptToArchive, IsDayArcBill);
@@ -586,11 +587,11 @@ void TOnlineDocketPrinterThread::PrintKitchenDocketsForWaiterApp(TPaymentTransac
     {
         // Print the Orders In the Kitchen if any.
         std::auto_ptr<TDeviceWeb>WebDevice(new TDeviceWeb());
-
-        if(DeviceName == "")
-        {
-            DeviceName = "OnlineOrder";
-        }
+//
+//        if(DeviceName == "")
+//        {
+//            DeviceName = "OnlineOrder";
+//        }
 
         if(WebDevice->NameToKey(PaymentTransaction.DBTransaction, DeviceName) != 0)
         {
@@ -611,7 +612,7 @@ void TOnlineDocketPrinterThread::PrintKitchenDocketsForWaiterApp(TPaymentTransac
                 if(PaymentTransaction.Orders->Count)
                 {
                     TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
-                    Request->Waiter = Order->Security->SecurityGetField(secOrderedBy, secfFrom);
+                    Request->Waiter = "WAITER";
 
                     if (Order->TabType == TabTableSeat)
                     {
@@ -761,6 +762,8 @@ TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete, UnicodeString o
 	    itemComplete->SalesRecipesToApply->RecipeCopyList(inItemSize->Recipes);
         itemComplete->MaxRetailPrice = inItemSize->MaxRetailPrice;
         itemComplete->PatronCount(itemComplete->DefaultPatronCount());
+        itemComplete->ContainerTabType = TabTableSeat;
+        itemComplete->TabType = TabTableSeat;
     }
     catch(Exception & E)
     {
@@ -770,59 +773,68 @@ TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete, UnicodeString o
     return itemComplete;
 }
 //------------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID)
+void TOnlineDocketPrinterThread::ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID, UnicodeString DeviceName)
 {
-    TReqPrintJob *LastReceipt = new TReqPrintJob(&TDeviceRealTerminal::Instance());
     try
     {
-	    LastReceipt->Transaction = &PaymentTransaction;
-	    LastReceipt->JobType = pjReceiptReceipt;
-	    LastReceipt->SenderType = devPalm;
-	    LastReceipt->Waiter = "WAITER";
-	    LastReceipt->PaymentType = ptFinal;
-//	    LastReceipt->WaitTime = TDBSaleTimes::GetAverageWaitTimeMins(PaymentTransaction.DBTransaction);
-	    LastReceipt->MiscData = PaymentTransaction.MiscPrintData;
+        std::auto_ptr<TDeviceWeb>WebDevice(new TDeviceWeb());
+        if(WebDevice->NameToKey(PaymentTransaction.DBTransaction, DeviceName) != 0)
+        {
+            WebDevice->Load(PaymentTransaction.DBTransaction);
 
-	    Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt, TComms::Instance().ReceiptPrinter);
+            std::auto_ptr<TReqPrintJob>LastReceipt(new TReqPrintJob(WebDevice.get()));
 
-        std::auto_ptr <TStringList> StringReceipt(new TStringList);
-        //Get EFTPOS Receipt
-        TMemoryStream *EFTPOSReceipt  = new  TMemoryStream;
-        EFTPOSReceipt = TDBOnlineOrdering::GetEFTPOSReceiptForOrderGUID(PaymentTransaction.DBTransaction, orderGUID);
-        StringReceipt->LoadFromStream(EFTPOSReceipt);
+	        LastReceipt->Transaction = &PaymentTransaction;
+            LastReceipt->JobType = pjReceiptReceipt;
+            LastReceipt->SenderType = devPalm;
+            LastReceipt->Waiter = "WAITER";
+            LastReceipt->PaymentType = ptFinal;
+    //	    LastReceipt->WaitTime = TDBSaleTimes::GetAverageWaitTimeMins(PaymentTransaction.DBTransaction);
+            LastReceipt->MiscData = PaymentTransaction.MiscPrintData;
 
-        //Merge EFTPOS Receipt
-        MergePOSAndEFTPOSReceipt(StringReceipt, LastReceipt);
+            std::auto_ptr<TReceipt> Receipt(new TReceipt());
+            Receipt->Initialise(PaymentTransaction.DBTransaction);
+            Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt.get(), TComms::Instance().ReceiptPrinter);
 
-        StringReceipt->Clear();
-        LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
+            //Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt, TComms::Instance().ReceiptPrinter);
 
-        //Saving Final Merged Receipt
-        ManagerReceipt->ReceiptToArchive->Clear();
-	    ManagerReceipt->ReceiptToArchive->Position = 0;
-	    StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
+            std::auto_ptr <TStringList> StringReceipt(new TStringList);
+            //Get EFTPOS Receipt
+            TMemoryStream *EFTPOSReceipt  = new  TMemoryStream;
+            EFTPOSReceipt = TDBOnlineOrdering::GetEFTPOSReceiptForOrderGUID(PaymentTransaction.DBTransaction, orderGUID);
+            StringReceipt->LoadFromStream(EFTPOSReceipt);
+
+            //Merge EFTPOS Receipt
+            MergePOSAndEFTPOSReceipt(StringReceipt, LastReceipt);
+
+            StringReceipt->Clear();
+            LastReceipt->Printouts->PrintToStrings(StringReceipt.get());
+
+            //Saving Final Merged Receipt
+            ManagerReceipt->ReceiptToArchive->Clear();
+            ManagerReceipt->ReceiptToArchive->Position = 0;
+            StringReceipt->SaveToStream(ManagerReceipt->ReceiptToArchive);
 
 
-//        if(TGlobalSettings::Instance().ExportReprintReceipt)
-//            ExportReceipt(StringReceipt.get(),PaymentTransaction);
+    //        if(TGlobalSettings::Instance().ExportReprintReceipt)
+    //            ExportReceipt(StringReceipt.get(),PaymentTransaction);
 
-	    ManagerReceipt->ReceiptToArchive->Position = 0;
+            ManagerReceipt->ReceiptToArchive->Position = 0;
 
-	    for (int i = 0; i < StringReceipt->Count; i++)
-	    {
-		    TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
-	    }
+            for (int i = 0; i < StringReceipt->Count; i++)
+            {
+                TDeviceRealTerminal::Instance().SecurityPort->SetData(StringReceipt->Strings[i]);
+            }
+        }
     }
     catch(Exception & E)
     {
         TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, E.Message);
         throw;
     }
-    //Deleting Last Receipt Object When No Longer In Use
-    delete LastReceipt;
 }
 //------------------------------------------------------------------------------
-void TOnlineDocketPrinterThread::MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt, TReqPrintJob *LastReceipt)
+void TOnlineDocketPrinterThread::MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt, std::auto_ptr<TReqPrintJob> &LastReceipt)
 {
     try
     {
@@ -1122,4 +1134,34 @@ TInvoiceTransactionModel TOnlineDocketPrinterThread::GetInvoiceTransaction(TPaym
         throw;
     }
     return invoiceTransactionModel;
+}
+//------------------------------------------------------------------------------
+bool TOnlineOrderDocketPrinter::IsPrePaidOrderPrintingPending(Database::TDBTransaction &dbTransaction)
+{
+    bool retVal = false;
+    try
+    {
+        TIBSQL *IBInternalQuery = dbTransaction.Query(dbTransaction.AddQuery());
+        IBInternalQuery->Close();
+        IBInternalQuery->SQL->Text = "SELECT a.ARCBILL_KEY "
+                                      "FROM DAYARCBILL a "
+                                      "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
+                                      "UNION ALL "
+                                      "SELECT a.ARCBILL_KEY "
+                                      "FROM ARCBILL a "
+                                      "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED ";
+
+        IBInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "T";
+        IBInternalQuery->ExecQuery();
+
+        if(IBInternalQuery->RecordCount)
+            retVal = true;
+
+    }
+    catch(Exception &Ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__, EXCEPTIONLOG, Ex.Message);
+        throw;
+    }
+    return retVal;
 }

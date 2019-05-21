@@ -20,8 +20,8 @@ class TOnlineDocketPrinterThread : public TThread
         TItemComplete* LoadItemCompleteForWaiterAppOrder(Database::TDBTransaction &DBTransaction, TItem* Item, TItemSize* itemSize,
                             TItemComplete *itemComplete, UnicodeString orderGUID, int itemSizeIdentifier);
         void ManagePrintOperationsForWaiterApp(Database::TDBTransaction &dbTransaction, UnicodeString orderGUID, bool IsDayArcBill);
-        void ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
-        void MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt,TReqPrintJob *LastReceipt);
+        void ArchiveReceiptForWaiterAppOrders(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID, UnicodeString DeviceName);
+        void MergePOSAndEFTPOSReceipt(std::auto_ptr<TStringList> &eftPosReceipt,std::auto_ptr<TReqPrintJob> &LastReceipt);
         void AddPaymentInfo(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
         void ManagePostingToMews(TPaymentTransaction &PaymentTransaction, UnicodeString orderGUID);
         void GetAndUploadOnlineOrderingInvoice(TPaymentTransaction paymentTransaction, UnicodeString terminalName,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive);
@@ -30,7 +30,6 @@ class TOnlineDocketPrinterThread : public TThread
         std::list<TOrderItemSizeDiscountModel> GetOrderItemSizeDiscountModel(TItemMinorComplete *Order);
         TOrderInvoiceTransactionModel GetOrderInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID);
         TInvoiceTransactionModel GetInvoiceTransaction(TPaymentTransaction paymentTransaction, UnicodeString terminalName ,UnicodeString orderGUID, TMemoryStream *ReceiptToArchive, int siteID);
-
     protected:
         virtual void __fastcall Execute();
     public:
@@ -58,6 +57,7 @@ class TOnlineOrderDocketPrinter
         void StopDocketPrinterThreadTimer();
         void __fastcall OnDocketPrinterThreadTimerTick(TObject *Sender);
         bool IsDocketPrintingPending();
+        bool IsPrePaidOrderPrintingPending(Database::TDBTransaction &dbTransaction);
 
     public:
 

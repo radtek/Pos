@@ -1689,7 +1689,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 command.Parameters.AddWithValue("@ITEM_ID", dayArchiveRow.ItemId);
                 command.Parameters.AddWithValue("@SIZE_NAME", dayArchiveRow.SizeName);
                 command.Parameters.AddWithValue("@TABLE_NUMBER", dayArchiveRow.TableNumber);
-                command.Parameters.AddWithValue("@TABLE_NAME", dayArchiveRow.TableNumber);
+                command.Parameters.AddWithValue("@TABLE_NAME", dayArchiveRow.TableName);
                 command.Parameters.AddWithValue("@SEAT_NUMBER", dayArchiveRow.SeatNumber);
                 command.Parameters.AddWithValue("@SERVER_NAME", dayArchiveRow.ServerName);
                 command.Parameters.AddWithValue("@TAB_NAME", QueryUtilities.GetFromSubstring(dayArchiveRow.TabName, 0, 80));
@@ -2162,6 +2162,67 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 throw;
             }
 
+            return command;
+        }
+        public FbCommand CheckIfWaiterAppPaymentTypeExistQuery(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT PAYMENT_KEY FROM PAYMENTTYPES WHERE PAYMENT_NAME = @PAYMENT_NAME AND PROPERTIES = @PROPERTIES;
+                    ";
+                command.Parameters.AddWithValue("@PAYMENT_NAME", "WAITERAPP");
+                command.Parameters.AddWithValue("@PROPERTIES", "-3-19-");
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfWaiterAppPaymentTypeExistQuery " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+        public FbCommand InsertWaiterAppPaymentTypeQuery(FbConnection connection, FbTransaction transaction, long paymentTypeKey)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+			        INSERT INTO PAYMENTTYPES ( 
+                            PAYMENT_KEY,  
+                            PAYMENT_NAME,  
+                            PROPERTIES,  
+                            COLOUR,
+                            ROUNDTO,
+                            TAX_RATE,
+                            INVOICE_EXPORT)  
+                    VALUES (
+                            @PAYMENT_KEY,  
+                            @PAYMENT_NAME,  
+                            @PROPERTIES,  
+                            @COLOUR,
+                            @ROUNDTO,
+                            @TAX_RATE,
+                            @INVOICE_EXPORT
+			                )
+                            ;";
+                command.Parameters.AddWithValue("@PAYMENT_KEY", paymentTypeKey);
+                command.Parameters.AddWithValue("@PAYMENT_NAME", "WAITERAPP");
+                command.Parameters.AddWithValue("@PROPERTIES", "-3-19-");
+                command.Parameters.AddWithValue("@COLOUR", 32768);
+                command.Parameters.AddWithValue("@ROUNDTO", 0.01);
+                command.Parameters.AddWithValue("@TAX_RATE", 0);
+                command.Parameters.AddWithValue("@INVOICE_EXPORT", 0);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in InsertWaiterAppPaymentTypeQuery " + e.Message, e);
+                throw;
+            }
             return command;
         }
         #endregion

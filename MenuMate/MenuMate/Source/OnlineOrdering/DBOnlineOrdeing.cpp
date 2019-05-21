@@ -574,10 +574,11 @@ UnicodeString TDBOnlineOrdering::GetOnlineOrderGUIDForWaiterApp(Database::TDBTra
         ibInternalQuery->Close();
         ibInternalQuery->SQL->Text  =   "SELECT  FIRST 1 A.ORDER_GUID FROM ";
         ibInternalQuery->SQL->Text  =   ibInternalQuery->SQL->Text + tableName;
-        ibInternalQuery->SQL->Text  =   ibInternalQuery->SQL->Text + "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED "
+        ibInternalQuery->SQL->Text  =   ibInternalQuery->SQL->Text + "WHERE a.IS_PRINT_REQUIRED = :IS_PRINT_REQUIRED AND a.ORDER_GUID <> :ORDER_GUID AND a.ORDER_GUID IS NOT NULL "
                                         "ORDER BY a.ARCBILL_KEY ASC ";
 
         ibInternalQuery->ParamByName("IS_PRINT_REQUIRED")->AsString = "T";
+        ibInternalQuery->ParamByName("ORDER_GUID")->AsString = "";
         ibInternalQuery->ExecQuery();
 
         if(ibInternalQuery->RecordCount)
@@ -749,7 +750,8 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
                                         " a.QTY, "
                                         " a.PLU, "
                                         " a.TIME_KEY, "
-                                        " a.TABLE_NAME "
+                                        " a.TABLE_NAME, "
+                                        " a.TAB_NAME "
                                         " FROM DAYARCHIVE a "
                                         " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER "
                                         " UNION ALL"
@@ -766,7 +768,8 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
                                         " a.QTY, "
                                         " a.PLU, "
                                         " a.TIME_KEY, "
-                                        " a.TABLE_NAME "
+                                        " a.TABLE_NAME, "
+                                        " a.TAB_NAME "
                                         " FROM ARCHIVE a "
                                         " WHERE a.ORDER_GUID =:ORDER_GUID AND a.ITEMSIZE_IDENTIFIER =:ITEMSIZE_IDENTIFIER ";
 
@@ -787,8 +790,9 @@ void TDBOnlineOrdering::LoadItemCompleteInfoForOrderGUID(Database::TDBTransactio
             itemComplete->Note           = ibInternalQuery->FieldByName("NOTE")->AsString;
             itemComplete->PLU            = ibInternalQuery->FieldByName("PLU")->AsInteger;
             itemComplete->ItemKey        = ibInternalQuery->FieldByName("TIME_KEY")->AsInteger;
-            itemComplete->SetQty(ibInternalQuery->FieldByName("QTY")->AsInteger);
+            itemComplete->SetQty(ibInternalQuery->FieldByName("QTY")->AsDouble);
             itemComplete->TabContainerName = ibInternalQuery->FieldByName("TABLE_NAME")->AsString;
+            itemComplete->PartyName = ibInternalQuery->FieldByName("TAB_NAME")->AsString;
         }
 
     }
