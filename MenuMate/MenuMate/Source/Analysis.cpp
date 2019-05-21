@@ -1779,7 +1779,7 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 
             if(IsWaiterAppZed)
             {
-                IBDayArcBill->SQL->Text += "AND a.APP_TYPE = :APP_TYPE ";
+                IBDayArcBill->SQL->Text = IBDayArcBill->SQL->Text + "AND a.APP_TYPE = :APP_TYPE ";
                 IBDayArcBill->ParamByName("APP_TYPE")->AsInteger = 7;
             }
 

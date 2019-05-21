@@ -13,7 +13,6 @@
 WaiterAppZedReportSectionFactory::WaiterAppZedReportSectionFactory(Database::TDBTransaction* dbTransaction, TGlobalSettings* globalSettings)
 	:BaseReportSectionFactory(dbTransaction, globalSettings)
 {
-MessageBox("WaiterAppZedReportSectionFactory","1",MB_OK);
 }
 
 WaiterAppZedReportSectionFactory::~WaiterAppZedReportSectionFactory()
