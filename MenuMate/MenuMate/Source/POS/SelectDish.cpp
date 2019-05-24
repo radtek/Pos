@@ -13560,11 +13560,14 @@ void TfrmSelectDish::AddItemToSeat(Database::TDBTransaction& inDBTransaction,TIt
        {
           SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
        }
-        //if(!itemAdded)
+
+         //if(!itemAdded)
         //  SeatOrders[SelectedSeat]->Orders->Add( Order, inItem );
         if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0) || (!TPaySubsUtility::IsLocalLoyalty()) ||
             SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
         {
+
+            ManagerDiscount->AddCurrencyModeDiscountsByTime(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
      		TManagerFreebie::IsPurchasing(inDBTransaction, SeatOrders[SelectedSeat]->Orders->List);
         }
 		CheckDeals(inDBTransaction);
@@ -13730,7 +13733,11 @@ TItemComplete * TfrmSelectDish::createItemComplete(
     itemComplete->ResetPrice();
     if((SeatOrders[SelectedSeat]->Orders->AppliedMembership.ContactKey == 0)  || (!TPaySubsUtility::IsLocalLoyalty())
          || SeatOrders[SelectedSeat]->Orders->AppliedMembership.Points.PointsRulesSubs.Contains(eprAllowDiscounts))
-	   ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
+    {
+
+	    ManagerDiscount->AddDiscountsByTime(DBTransaction, itemComplete);
+
+    }
 
 	itemComplete->Cost = itemSize->Cost; // Get default cost if assigned.
     itemComplete->MaxRetailPrice = itemSize->MaxRetailPrice;

@@ -1347,6 +1347,36 @@ double TManagerDiscount::GetOrderQty(TList *DiscountItems)
   return orderQty;
 }
 //---------------------------------------------------------------------------
+void TManagerDiscount::AddCurrencyModeDiscountsByTime(Database::TDBTransaction &DBTransaction,TList * Orders)
+{
+    TDateTime DateTime = Now();
+
+    //GetDiscountKeysByTime(DBTransaction,DateTime, DiscountKeys);
+    std::vector<TDiscountTimes> discountTimesList;
+    discountTimesList.clear();
+    GetCurrencyModeDiscountsByTime(DBTransaction,DateTime, discountTimesList);
+    for (std::vector<TDiscountTimes>::iterator ptrDiscountTimes = discountTimesList.begin() ;
+      ptrDiscountTimes != discountTimesList.end(); ++ptrDiscountTimes)
+    {
+        TDiscount CurrentDiscount;
+        GetDiscount(DBTransaction,ptrDiscountTimes->DiscountKey, CurrentDiscount);
+        std::auto_ptr<TList> itemList(new TList());
+        for(int orderIndex = 0; orderIndex < Orders->Count; orderIndex++)
+        {
+            TItemComplete *ic = (TItemComplete*)Orders->Items[orderIndex];
+
+            if(ic->TimeStamp < ptrDiscountTimes->EndTime && ic->TimeStamp > ptrDiscountTimes->StartTime)
+            {
+
+                itemList->Add(ic);
+            }
+        }
+
+        ClearDiscount(itemList.get(),CurrentDiscount);
+        AddDiscount(itemList.get(),CurrentDiscount);
+    }
+}
+//---------------------------------------------------------------------------
 void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransaction,TItemMinorComplete *Order)
 {
 	std::set<int> DiscountKeys;
@@ -1357,9 +1387,12 @@ void TManagerDiscount::AddDiscountsByTime(Database::TDBTransaction &DBTransactio
 	{
         TDiscount CurrentDiscount;
 		GetDiscount(DBTransaction,*ptrDiscountKey, CurrentDiscount);
-        std::auto_ptr<TList> itemList(new TList());
-        itemList->Add(Order);
-        AddDiscount(itemList.get(),CurrentDiscount);
+        if(CurrentDiscount.Mode != DiscModeCurrency)
+        {
+            std::auto_ptr<TList> itemList(new TList());
+            itemList->Add(Order);
+            AddDiscount(itemList.get(),CurrentDiscount);
+        }
 	}
 }
 //---------------------------------------------------------------------------
@@ -2247,4 +2280,37 @@ void TManagerDiscount::ClearLoyaltyMemberDiscounts(TList * DiscountItems)
             SubOrder->DiscountByTypeLevelRemove(dsMMMembership);
         }
 	}
+}
+//---------------------------------------------------------------------------
+void TManagerDiscount::GetCurrencyModeDiscountsByTime(Database::TDBTransaction &DBTransaction,TDateTime DateTime,
+                                                    std::vector<TDiscountTimes> &discountTimesList)
+{
+
+   	TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+
+	IBInternalQuery->Close();
+	IBInternalQuery->SQL->Text =
+	" SELECT DISCOUNTSTIME.TIME_STAMP_END ,DISCOUNTSTIME.TIME_STAMP_START,DISCOUNTSTIME.DISCOUNT_KEY"
+	" FROM"
+	" DISCOUNTSTIME"
+    " INNER JOIN DISCOUNTS ON DISCOUNTSTIME.DISCOUNT_KEY = DISCOUNTS.DISCOUNT_KEY"
+	" WHERE "
+    " DISCOUNTS.DISCOUNT_MODE = 0 AND "
+	" TIME_STAMP_START < :CURRENT_TIME AND"
+	" TIME_STAMP_END > :CURRENT_TIME";
+	IBInternalQuery->ParamByName("CURRENT_TIME")->AsDateTime = DateTime;
+    IBInternalQuery->ExecQuery();
+   	if(IBInternalQuery->RecordCount)
+	{
+
+		for (;!IBInternalQuery->Eof; IBInternalQuery->Next())
+		{
+               TDiscountTimes DiscountTime;
+        	   DiscountTime.StartTime =  IBInternalQuery->FieldByName("TIME_STAMP_START")->AsDateTime;
+               DiscountTime.EndTime =  IBInternalQuery->FieldByName("TIME_STAMP_END")->AsDateTime;
+               DiscountTime.DiscountKey = IBInternalQuery->FieldByName("DISCOUNT_KEY")->AsInteger;
+               discountTimesList.push_back(DiscountTime);
+
+        }
+     }
 }

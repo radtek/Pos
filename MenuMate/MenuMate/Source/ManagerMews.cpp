@@ -280,6 +280,7 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
         UnsetPostingFlag();
         return true;
     }
+    GetMewsCategoriesList();
     std::auto_ptr<TMewsDataProcessor> processor(new TMewsDataProcessor());
     double tip = 0;
     double tipEftPOS = 0;
@@ -545,12 +546,9 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
     {
         UnsetPostingFlag();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-//        DBTransaction.Rollback();
     }
     if(!_paymentTransaction.IsBackGroundPosting)
         UnsetPostingFlag();
-//    if(!isSuccessful)
-//       TDeviceRealTerminal::Instance().BasePMS->Enabled = false;
     LogWaitStatus(postLogs)  ;
     return isSuccessful;
 }
@@ -572,7 +570,6 @@ void TManagerMews::GetMewsCustomer(UnicodeString queryString, std::vector<TCusto
     }
     catch(Exception &ex)
     {
-        //MessageBox(ex.Message,"Exception",MB_OK);
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
     Processing->Close();
@@ -944,10 +941,14 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             mewsOrder.Bills = billList;
         }
     }
+    catch(MewsCategoryNotFoundException &mewsException)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,mewsException.Message);
+        throw;
+    }
 	catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
-        //MessageBox(E.Message,"",MB_OK);
 	}
 
 }
@@ -1005,38 +1006,47 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-    std::vector<TAccountingCategoriesMapping> mewsAccountingCategoriesList;
-    mewsAccountingCategoriesList.clear();
-    if(name.Trim().Length() == 0)
-    {
-        std::auto_ptr<TMewsDataProcessor> processor (new TMewsDataProcessor());
-        mewsAccountingCategoriesList = processor->GetMewsCategoriesList(DBTransaction);
-    }
+
     UnicodeString code = "";
     try
     {
         if(name.Trim().Length() == 0)
         {
             int categoryKey = 0;
+            bool isCategoryKeyFromItemValues = false;
             if(itemComplete->ItemSizeIdentifierKey != 0)
             {
                 IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
                 IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
                 IBInternalQuery->ExecQuery();
-                categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
-            }
-            else
-            {
-                categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
-            }
-            std::vector<TAccountingCategoriesMapping> ::iterator it = mewsAccountingCategoriesList.begin();
-            for(;it != mewsAccountingCategoriesList.end();advance(it,1))
-            {
-                if(it->CategoryKey == categoryKey)
+                if(IBInternalQuery->RecordCount > 0)
                 {
-                    code = it->MewsCategoryCode;
-                    break;
+                    categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
                 }
+            }
+
+            if(categoryKey == 0)
+            {
+                isCategoryKeyFromItemValues = true;
+                categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
+                LogItemDetailsForMewsCategory(itemComplete, categoryKey);
+            }
+            if(categoryKey != 0)
+            {
+                std::vector<TAccountingCategoriesMapping> ::iterator it = MewsAccountingCategoriesList.begin();
+                for(;it != MewsAccountingCategoriesList.end();advance(it,1))
+                {
+                    if(it->CategoryKey == categoryKey)
+                    {
+                        code = it->MewsCategoryCode;
+                        break;
+                    }
+                }
+            }
+            if(categoryKey == 0 || code == "")
+            {
+                LogMewsCategoryFailure(itemComplete, categoryKey, code, isCategoryKeyFromItemValues);
+                throw MewsCategoryNotFoundException("Category Not Found");
             }
         }
         else
@@ -1066,10 +1076,15 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
         }
         DBTransaction.Commit();
     }
+    catch(MewsCategoryNotFoundException &mewsExc)
+    {
+        throw;
+    }
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
     }
     return code;
 }
@@ -1243,8 +1258,106 @@ int TManagerMews::GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Datab
     catch(Exception &ex)
     {
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        throw;
     }
     return categoryKey;
 }
-//----------------------------------------------//
+void TManagerMews::GetMewsCategoriesList()
+{
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    MewsAccountingCategoriesList.clear();
+    try
+    {
+        std::auto_ptr<TMewsDataProcessor> processor (new TMewsDataProcessor());
+        MewsAccountingCategoriesList = processor->GetMewsCategoriesList(DBTransaction);
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+        throw;
+    }
+}
+void TManagerMews::LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey)
+{
+    try
+    {
+        std::auto_ptr<TStringList> List(new TStringList);
+        AnsiString fileName = GetErrorDetectionLogFileName();
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+
+        List->Add((UnicodeString)"Logging for Mews Category using Item Details");
+        List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
+        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:mm:ss tt"));
+        UnicodeString itemDetails = "Item Name " + itemComplete->Item + " Size Name :- " + itemComplete->Size + " Course Name :- " +itemComplete->Course + " Menu Name :- " + itemComplete->MenuName;
+        List->Add(itemDetails + "\n");
+        List->Add((UnicodeString)"Item Size Identifier :- " + IntToStr(itemComplete->ItemSizeIdentifierKey));
+        List->Add("===========================================================================================================");
+        List->SaveToFile(fileName );
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+void TManagerMews::LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, bool isCategoryKeyFromItemValues)
+{
+    try
+    {
+        std::auto_ptr<TStringList> List(new TStringList);
+        UnicodeString messageDetails = "Item " + itemComplete->Item + " seems to be not properly configured for Mews.\r"+
+                                        "Please remove the item and select again before proceeding.\rPlease contact Menumate if problem persists.";
+        MessageBox(messageDetails,"Error",MB_OK);
+        AnsiString fileName = GetErrorDetectionLogFileName();
+        if (FileExists(fileName) )
+          List->LoadFromFile(fileName);
+
+        List->Add((UnicodeString)"Logging Mews category Failure");
+        List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
+        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:mm:ss tt"));
+        UnicodeString itemDetails = "Item Name " + itemComplete->Item + " Size Name :- " + itemComplete->Size + " Course Name :- " +itemComplete->Course + " Menu Name :- " + itemComplete->MenuName;
+        List->Add(itemDetails + "\n");
+        List->Add((UnicodeString)"Item Size Identifier :- " + IntToStr(itemComplete->ItemSizeIdentifierKey));
+        List->Add((UnicodeString)"Code is :- " + code);
+
+        if(code == "")
+        {
+            for(std::vector<TAccountingCategoriesMapping> ::iterator it = MewsAccountingCategoriesList.begin(); it != MewsAccountingCategoriesList.end(); advance(it,1))
+            {
+                UnicodeString accountingCategoriesMap = " CategoryMapId :- " + IntToStr(it->CategoryMapId) + " CategoryKey :- " +
+                                                            IntToStr(it->CategoryKey) + " MMCategoryName :- " + it->MMCategoryName + " MewsCategoryId :- " +
+                                                            it->MewsCategoryId + " MewsCategoryCode :- " + it->MewsCategoryCode;
+                List->Add(accountingCategoriesMap);
+            }
+        }
+        List->Add("===========================================================================================================");
+        List->SaveToFile(fileName );
+
+    }
+    catch(Exception &ex)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
+    }
+}
+AnsiString TManagerMews::GetErrorDetectionLogFileName()
+{
+    AnsiString directoryName = ExtractFilePath(Application->ExeName) + "Menumate Services";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    directoryName = directoryName + "\\Mews Error Detection Logs";
+    if (!DirectoryExists(directoryName))
+        CreateDir(directoryName);
+    AnsiString name = "ErrorDetection " + Now().CurrentDate().FormatString("DDMMMYYYY")+ ".txt";
+    AnsiString fileName =  directoryName + "\\" + name;
+    return fileName;
+}
+//----------------------Mews Exception------------------------//
+MewsCategoryNotFoundException::MewsCategoryNotFoundException(const UnicodeString message):Exception(message)
+{
+}
+//-----------------------------------------------------------//
