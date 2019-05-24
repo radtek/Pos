@@ -699,12 +699,12 @@ std::list<TPaymentInfo> TDBOnlineOrdering::GetPaymentInfoForOrderGUID(Database::
         ibInternalQuery->SQL->Text =    "SELECT a.PAY_TYPE, a.SUBTOTAL "
                                         "FROM DAYARCBILL b "
                                         "INNER JOIN DAYARCBILLPAY a on b.ARCBILL_KEY = a.ARCBILL_KEY "
-                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND a.NOTE !=:NOTE "
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND (a.NOTE !=:NOTE OR a.NOTE IS NULL) "
                                         "UNION ALL "
                                         "SELECT a.PAY_TYPE, a.SUBTOTAL "
                                         "FROM ARCBILL b "
                                         "INNER JOIN ARCBILLPAY a on b.ARCBILL_KEY = a.ARCBILL_KEY "
-                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND a.NOTE !=:NOTE ";
+                                        "WHERE b.ORDER_GUID =:ORDER_GUID AND (a.NOTE !=:NOTE OR a.NOTE IS NULL) ";
 
         ibInternalQuery->ParamByName("ORDER_GUID")->AsString = orderGUID;
         ibInternalQuery->ParamByName("NOTE")->AsString = "Total Change.";

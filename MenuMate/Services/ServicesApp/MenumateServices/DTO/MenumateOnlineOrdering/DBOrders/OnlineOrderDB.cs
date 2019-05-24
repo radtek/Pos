@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using OnlineOrdering.Model.OrderModels;
+using OnlineOrdering.Model.NotificationModels;
 using OnlineOrdering.Enum;
 using MenumateServices.Tools;
 using System.IO;
@@ -2260,6 +2261,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
+                throw;
             }
         }
 
@@ -2273,6 +2275,7 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
+                throw;
             }
         }
         public bool CheckIfWaiterAppPaymentTypeExist()
@@ -2307,9 +2310,71 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception exc)
             {
                 ServiceLogger.LogException(exc.Message, exc);
+                throw;
             }
         }
-        
+        public void CreateApiWaiterAppPosTerminalViewModel(List<string> stringList, ref ApiZedRequestNotificationViewModel apiZedRequestNotificationViewModel, ref string inSyndicateCode)
+        {
+            try
+            {
+                apiZedRequestNotificationViewModel.ProcessingTerminal = GetWaiterAppZedProcessingTerminalName();
+                if (apiZedRequestNotificationViewModel.ZedRequestStatus != OnlineOrdering.Enum.ZedRequestStatus.ZedRequestInsertionError)
+                {
+                    if (!CheckIfWaiterAppZedProcessingEnabled())
+                    {
+                        apiZedRequestNotificationViewModel.ZedRequestStatus = OnlineOrdering.Enum.ZedRequestStatus.ZedRequestNotEnabled;
+                    }
+                }
+                apiZedRequestNotificationViewModel.Message = "";
+                inSyndicateCode = GetSyndicateCode();
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+                throw;
+            }
+        }
+        public string GetWaiterAppZedProcessingTerminalName()
+        {
+            string retValue = "";
+            try
+            {
+                FbCommand command = dbQueries.GetWaiterAppZedProcessingTerminalName(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        retValue = reader.GetString(reader.GetOrdinal("DEVICE_NAME"));
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return retValue;
+        }
+
+        public bool CheckIfWaiterAppZedProcessingEnabled()
+        {
+            bool retValue = false;
+            try
+            {
+                FbCommand command = dbQueries.CheckIfWaiterAppZedProcessingEnabledQuery(connection, transaction);
+                using (FbDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows && reader.Read())
+                    {
+                        retValue = true;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                ServiceLogger.LogException(exc.Message, exc);
+            }
+            return retValue;
+        }
         #endregion
     }
 

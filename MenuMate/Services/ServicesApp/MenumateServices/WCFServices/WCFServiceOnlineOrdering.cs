@@ -11,6 +11,8 @@ using MenumateServices.DTO.MenumateOnlineOrdering.DBOrders;
 using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using OnlineOrdering.Model.OrderModels;
+using OnlineOrdering.Model.NotificationModels;
+using OnlineOrdering.Enum;
 using OnlineOrdering.Utility;
 
 namespace MenumateServices.WCFServices
@@ -175,6 +177,7 @@ namespace MenumateServices.WCFServices
                 ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
                 apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(terminalInfo);
                 var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
+                stringList.Add("Received terminal info json is:                    " + requestData);
 
                 stringList.Add("Creating Waiter Terminal at                        " + DateTime.Now.ToString("hh:mm:ss tt"));
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
@@ -206,31 +209,34 @@ namespace MenumateServices.WCFServices
                 ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal = new ApiWaiterAppPosTerminalViewModel();
                 apiWaiterAppPosTerminal = JsonUtility.Deserialize<ApiWaiterAppPosTerminalViewModel>(zedRequest);
                 var requestData = JsonUtility.Serialize<ApiWaiterAppPosTerminalViewModel>(apiWaiterAppPosTerminal);
-                stringList.Add("Creating Request For AppZed                        " + DateTime.Now.ToString("hh:mm:ss tt"));
-                
+                stringList.Add("Received zed request json is:                      " + requestData);
+
+                ApiZedRequestNotificationViewModel apiZedRequestNotificationViewModel = new ApiZedRequestNotificationViewModel();
+                string inSyndicateCode = "";
+                ZedRequestStatus zedRequestStatus = OnlineOrdering.Enum.ZedRequestStatus.ZedRequestInsertionError;
+
+                InsertZedRequestInDB(apiWaiterAppPosTerminal, ref zedRequestStatus);
+                apiZedRequestNotificationViewModel.ZedRequestStatus = zedRequestStatus;
+                apiZedRequestNotificationViewModel.ApiWaiterAppPosTerminalViewModel = apiWaiterAppPosTerminal;
+
                 using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
                 {
                     stringList.Add("Making transaction...");
                     using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
                     {
-                        stringList.Add("Checking If Zed Request Exist                  ");
-                        bool IsAppZedRowExist = onlineOrderDB.CheckIfZedRequestExist(apiWaiterAppPosTerminal.Name);
-
-                        if (!IsAppZedRowExist)
-                        {
-                            stringList.Add("Inserting in AppZed Row                        ");
-                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.MacAddress);
-                        }
+                        onlineOrderDB.CreateApiWaiterAppPosTerminalViewModel(stringList, ref apiZedRequestNotificationViewModel, ref inSyndicateCode);
                         onlineOrderDB.transaction.Commit();
                         ServiceLogger.Log(@"after commit in CreateRequestForAppZed ");
                     }
                 }
                 ServiceLogger.Log(@"outside using in CreateRequestForAppZed");
 
+                LoyaltySite.Instance.SendZedRequestNotification(inSyndicateCode, apiZedRequestNotificationViewModel, stringList);
 
             }
             catch (Exception exc)
             {
+                onlineOrderDB.RollbackTransaction();
                 ServiceLogger.LogException(exc.Message, exc);
                 stringList.Add("Exception in Creating Request For AppZed           " + exc.Message);
                 stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
@@ -252,6 +258,48 @@ namespace MenumateServices.WCFServices
             }
             WriteAndClearStringList();
             return null;
+        }
+
+        public void InsertZedRequestInDB(ApiWaiterAppPosTerminalViewModel apiWaiterAppPosTerminal, ref ZedRequestStatus zedRequestStatus)
+        { 
+            OnlineOrderDB onlineOrderDB = new OnlineOrderDB();
+            try
+            {
+                stringList.Add("Creating Request For AppZed                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+
+                using (onlineOrderDB.connection = onlineOrderDB.BeginConnection())
+                {
+                    stringList.Add("Making transaction...");
+                    using (onlineOrderDB.transaction = onlineOrderDB.BeginFBtransaction())
+                    {
+                        stringList.Add("Checking If Zed Request Exist                  ");
+                        bool IsAppZedRowExist = onlineOrderDB.CheckIfZedRequestExist(apiWaiterAppPosTerminal.Name);
+
+                        if (!IsAppZedRowExist)
+                        {
+                            stringList.Add("Inserting in AppZed Row                        ");
+                            onlineOrderDB.InsertAppZedRow(apiWaiterAppPosTerminal.Name, apiWaiterAppPosTerminal.MacAddress);
+                            zedRequestStatus = OnlineOrdering.Enum.ZedRequestStatus.ZedRequestAccepted;
+                        }
+                        else
+                        {
+                            zedRequestStatus = OnlineOrdering.Enum.ZedRequestStatus.ZedRequestAlreadyPresent;
+                        }
+                        onlineOrderDB.transaction.Commit();
+                        ServiceLogger.Log(@"after commit in InsertZedRequestInDB ");
+                    }
+                }
+                ServiceLogger.Log(@"outside using in InsertZedRequestInDB");
+ 
+            }
+            catch (Exception exc)
+            {
+                onlineOrderDB.RollbackTransaction();
+                zedRequestStatus = OnlineOrdering.Enum.ZedRequestStatus.ZedRequestInsertionError;
+                stringList.Add("Exception in InsertZedRequestInDB is          " + exc.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                ServiceLogger.LogException(exc.Message, exc);
+            }
         }
         
         private void WriteAndClearStringList()

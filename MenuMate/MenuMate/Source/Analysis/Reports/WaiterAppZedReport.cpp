@@ -37,10 +37,25 @@ int WaiterAppZedReport::DisplayAndPrint(TMemoryStream* memoryStream)
     TForm* currentForm = Screen->ActiveForm;
     if(printOut->ContinuePrinting)
     {
+        TPrintout *PrintOutReport = new TPrintout;
+	    PrintOutReport->Printer = TComms::Instance().ReceiptPrinter;
+
         if(memoryStream)
         {
             printOut->PrintToStream(memoryStream);
         }
+
+        try
+	    {
+		    memoryStream->Position = 0;
+		    PrintOutReport->PrintToPrinterStream(memoryStream, TComms::Instance().ReceiptPrinter.UNCName());
+	    }
+	    __finally
+	    {
+		    delete PrintOutReport;
+	    }
+
+
         SkipZedProcess = false;
     }
     else

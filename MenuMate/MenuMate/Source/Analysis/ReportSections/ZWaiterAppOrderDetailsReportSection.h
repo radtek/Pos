@@ -22,7 +22,10 @@ private:
     void PrintHeader(UnicodeString textToPrint, TPrintout &printOut);
     void PrintItemRow(TWaiterAppOrderInfo waiterAppOrderInfo, UnicodeString &itemName, TPrintout &printOut);
     void PrintColumnHeader(TPrintout &printOut);
-    void ZWaiterAppOrderDetailsReportSection::AddDoubleLine(TPrintout &printOut);
+    void AddDoubleLine(TPrintout &printOut);
+    void PrintOrderInformation(std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList, UnicodeString itemName, TPrintout* printout);
+    void PrintSectionHeader(UnicodeString sectionName, TPrintout* printout);
+    void PrintReportHeader(UnicodeString title, UnicodeString subTitle, TPrintout* printOut);
 
 };
 #endif

@@ -790,10 +790,18 @@ void TOnlineDocketPrinterThread::ArchiveReceiptForWaiterAppOrders(TPaymentTransa
             LastReceipt->Waiter = "WAITER";
             LastReceipt->PaymentType = ptFinal;
     //	    LastReceipt->WaitTime = TDBSaleTimes::GetAverageWaitTimeMins(PaymentTransaction.DBTransaction);
-            LastReceipt->MiscData = PaymentTransaction.MiscPrintData;
 
+//            LastReceipt->MiscData = PaymentTransaction.MiscPrintData;
+            if(PaymentTransaction.Orders->Count)
+            {
+                TItemComplete *Order = (TItemComplete*)PaymentTransaction.Orders->Items[0];
+                LastReceipt->MiscData["PartyName"] = Order->PartyName;
+            }
             std::auto_ptr<TReceipt> Receipt(new TReceipt());
             Receipt->Initialise(PaymentTransaction.DBTransaction);
+            Receipt->SetHeaderFooter(TGlobalSettings::Instance().Header.get(), TGlobalSettings::Instance().PHeader.get(), TGlobalSettings::Instance().Footer.get(), TGlobalSettings::Instance().VoidFooter.get(),
+            TGlobalSettings::Instance().SubHeader.get());
+
             Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt.get(), TComms::Instance().ReceiptPrinter);
 
             //Receipt->GetPrintouts(PaymentTransaction.DBTransaction, LastReceipt, TComms::Instance().ReceiptPrinter);

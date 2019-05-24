@@ -1775,13 +1775,12 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
 
             IBDayArcBill->Close();
             IBDayArcBill->SQL->Text = "Select * from DAYARCBILL a where a.TERMINAL_NAME = :TERMINAL_NAME ";
-            IBDayArcBill->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
-
             if(IsWaiterAppZed)
             {
                 IBDayArcBill->SQL->Text = IBDayArcBill->SQL->Text + "AND a.APP_TYPE = :APP_TYPE ";
                 IBDayArcBill->ParamByName("APP_TYPE")->AsInteger = 7;
             }
+            IBDayArcBill->ParamByName("TERMINAL_NAME")->AsString = DeviceName;
 
             IBDayArcBillPay->Close();
             IBDayArcBillPay->SQL->Text = "select * from DAYARCBILLPAY where ARCBILL_KEY = :ARCBILL_KEY";
@@ -1948,7 +1947,6 @@ void TfrmAnalysis::UpdateArchive(Database::TDBTransaction &DBTransaction, TMembe
                                     VariantDBAssign(IBDayArcBill->FieldByName(FieldName), IBArcBill->ParamByName(FieldName));
                                 }
                             }
-
                             IBArcBill->ExecQuery();
                             zedLogsList->Add("Invoice number : " + IBDayArcBill->FieldByName("INVOICE_NUMBER")->AsString + " data moved from dayarcbill to arcbill: IBArcBill->ExecQuery() ");
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OnlineOrdering.Model.MenuModels;
 using OnlineOrdering.Model.TaxSettingsModels;
 using OnlineOrdering.Model.OrderModels;
+using OnlineOrdering.Model.NotificationModels;
 
 namespace OnlineOrdering.Services
 {
@@ -15,5 +16,6 @@ namespace OnlineOrdering.Services
         ApiOnlineOrderingResponse GetOnlineOrderingInformation(string inSyndicateCode, int inSiteCode, List<string> stringList);
         bool UnsetOrderingDetails(string inSyndicateCode, int inSiteCode, List<string> stringList);
         OnlineOrderingDetailsResponse GetOnlineOrderingDetails(string inSyndicateCode, int siteCode, List<string> stringList);
+        bool SendZedRequestNotification(string inSyndicateCode, ApiZedRequestNotificationViewModel apiZedRequestNotificationViewModel, List<string> stringList);
     }
 }

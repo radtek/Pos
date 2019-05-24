@@ -1898,9 +1898,10 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             {
                 command.CommandText =
                     @"
-                    SELECT NAME FROM SYNDCODES WHERE ENABLED = @ENABLED;
+                    SELECT NAME FROM SYNDCODES WHERE ENABLED = @ENABLED AND USE_FOR_LM_CLOUD = @USE_FOR_LM_CLOUD;
                     ";
                 command.Parameters.AddWithValue("@ENABLED", 'T');
+                command.Parameters.AddWithValue("@USE_FOR_LM_CLOUD", 'T');
             }
             catch (Exception e)
             {
@@ -2221,6 +2222,49 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             catch (Exception e)
             {
                 ServiceLogger.LogException(@"in InsertWaiterAppPaymentTypeQuery " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand GetWaiterAppZedProcessingTerminalName(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText = @"
+                                        SELECT a.DEVICE_NAME FROM DEVICES a
+                                        INNER JOIN VARSPROFILE b ON a.PROFILE_KEY = b.PROFILE_KEY
+                                        WHERE  b.VARIABLES_KEY = @VARIABLES_KEY AND b.INTEGER_VAL = @INTEGER_VAL;
+                                        ";
+                command.Parameters.AddWithValue("@VARIABLES_KEY", 9637); //Value Of Variable Key For EnableOnlineOrdering Setting
+                command.Parameters.AddWithValue("@INTEGER_VAL", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in GetWaiterAppZedProcessingTerminalName " + e.Message, e);
+                throw;
+            }
+            return command;
+        }
+
+        public FbCommand CheckIfWaiterAppZedProcessingEnabledQuery(FbConnection connection, FbTransaction transaction)
+        {
+            FbCommand command = new FbCommand(@"", connection, transaction);
+
+            try
+            {
+                command.CommandText =
+                    @"
+                    SELECT a.VARSPROFILE_KEY FROM VARSPROFILE a WHERE a.VARIABLES_KEY = @VARIABLES_KEY AND a.INTEGER_VAL = @INTEGER_VAL;
+                    ";
+                command.Parameters.AddWithValue("@VARIABLES_KEY", 4152);//Value Of Variable Key For ZedForAppTerminal Setting
+                command.Parameters.AddWithValue("@INTEGER_VAL", 1);
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfWaiterAppZedProcessingEnabledQuery " + e.Message, e);
                 throw;
             }
             return command;

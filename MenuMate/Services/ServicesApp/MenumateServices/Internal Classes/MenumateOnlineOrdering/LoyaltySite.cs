@@ -8,6 +8,7 @@ using OnlineOrdering.Services;
 using OnlineOrdering.Model.TaxSettingsModels;
 using OnlineOrdering.Utility;
 using OnlineOrdering.Model.OrderModels;
+using OnlineOrdering.Model.NotificationModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.OrderModels;
 using MenumateServices.DTO.MenumateOnlineOrdering.MenuModels;
 using MenumateServices.DTO.MenumateOnlineOrdering;
@@ -157,6 +158,36 @@ namespace MenumateServices.Internal_Classes.MenumateOnlineOrdering
                 return null;
             }
         }
+
+        public OOLoyaltyResponse SendZedRequestNotification(string inSyndicateCode, ApiZedRequestNotificationViewModel apiZedRequestNotificationViewModel, List<string> stringList)
+        {
+            try
+            {
+                IOnlineOrderingService onlineOrderingService = new OnlineOrderingService();
+                stringList.Add("Updating Order Status                              ");
+                var response = onlineOrderingService.SendZedRequestNotification(inSyndicateCode, apiZedRequestNotificationViewModel, stringList);
+                if (response)
+                {
+                    stringList.Add("Creating Response With No Error                    ");
+                    return CreateResponseNoError();
+                }
+                else
+                {
+                    stringList.Add("Creating Response With Error                       ");
+                    return CreateResponseError(
+                        "@Failed to update order status.",
+                        "",
+                        OOLoyaltyResponseCode.UpdateOnlineOrderStatusFailed);
+                }
+            }
+            catch (Exception ex)
+            {
+                stringList.Add("Exception is                                       " + ex.Message);
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                return null;
+            }
+        }
+
         #endregion
 
         #region private

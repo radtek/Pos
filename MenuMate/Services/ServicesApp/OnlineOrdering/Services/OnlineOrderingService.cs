@@ -8,6 +8,7 @@ using OnlineOrdering.Model;
 using OnlineOrdering.Model.MenuModels;
 using OnlineOrdering.Model.TaxSettingsModels;
 using OnlineOrdering.Model.OrderModels;
+using OnlineOrdering.Model.NotificationModels;
 using OnlineOrdering.Utility;
 using OnlineOrdering.Exceptions;
 
@@ -229,7 +230,41 @@ namespace OnlineOrdering.Services
             }
             return response;
         }
-        
+
+        public bool SendZedRequestNotification(string inSyndicateCode, ApiZedRequestNotificationViewModel apiZedRequestNotificationViewModel, List<string> stringList)
+        {
+            bool response = false;
+            stringList.Add("Creating Web Request                               " + DateTime.Now.ToString("hh:mm:ss tt"));
+            var request = Utility.WebUtility.CreateRequest(RequestAddress.SendZedRequestNotification, inSyndicateCode, null, WebRequestMethods.Http.Post, apiZedRequestNotificationViewModel);
+            HttpWebResponse webResponse = null;
+            try
+            {
+                string requestStr = JsonUtility.Serialize(apiZedRequestNotificationViewModel);
+                stringList.Add("Request is                                         " + requestStr);
+                webResponse = (HttpWebResponse)request.GetResponse();
+                stringList.Add("Web response Status Code is                        " + webResponse.StatusCode.ToString());
+                stringList.Add("Response at                                        " + DateTime.Now.ToString("hh:mm:ss tt"));
+            }
+            catch (WebException we)
+            {
+                webResponse = (HttpWebResponse)we.Response;
+                stringList.Add("WebException                                       " + we.Message);
+                stringList.Add("WebException Status                                " + we.Status.ToString());
+                stringList.Add("Time is                                            " + DateTime.Now.ToString("hh:mm:ss tt"));
+                HandleExceptions(webResponse);
+                return false;
+            }
+            finally
+            {
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                    response = true;
+                }
+            }
+            return response;
+        }
+
         private ApiOnlineOrderingResponse CreateOnlineOrderingResponse(HttpWebResponse webResponse, string message, List<string> stringList)
         {
             ApiOnlineOrderingResponse apiOnlineOrderingResponse = new ApiOnlineOrderingResponse();

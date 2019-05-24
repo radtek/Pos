@@ -29,7 +29,8 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering
         UpdateOnlineOrderStatusFailed,
         PostOnlineOrderInvoiceInfoFailed,
         MultipleGUIDExist,
-        GUIDNotFound
+        GUIDNotFound,
+        SendZedRequestNotificationFailed
     };
     [DataContract]
     public class OOLoyaltyResponse : OOServiceResponse

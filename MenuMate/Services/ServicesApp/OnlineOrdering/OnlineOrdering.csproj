@@ -57,6 +57,7 @@
     <Compile Include="Enum\SiteSettingType.cs" />
     <Compile Include="Enum\TaxProfileType.cs" />
     <Compile Include="Enum\UserType.cs" />
+    <Compile Include="Enum\ZedRequestStatus.cs" />
     <Compile Include="Exceptions\AuthenticationFailedException.cs" />
     <Compile Include="Exceptions\CustomException.cs" />
     <Compile Include="Exceptions\GUIDNotFoundException.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Model\MenuModels\ApiSideGroupViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteItemViewModel.cs" />
     <Compile Include="Model\MenuModels\ApiSiteMenuViewModel.cs" />
+    <Compile Include="Model\NotificationModels\ApiZedRequestNotificationViewModel.cs" />
     <Compile Include="Model\OnlineOrderingDetailsResponse.cs" />
     <Compile Include="Model\OrderModels\ApiOrderDevicesViewModel.cs" />
     <Compile Include="Model\OrderModels\ApiWaiterAppPosTerminal.cs" />

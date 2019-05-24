@@ -35,5 +35,7 @@ namespace OnlineOrdering.Services
         public const string UnsetOrderingDetails = "api/v6/SiteApi/SignalRDisconnectBySite/";
 
         public const string GetOnlineOrderingDetailsBySiteCode = "api/v6/SiteApi/GetOnlineOrderingDetailsBySiteCode/";
+
+        public const string SendZedRequestNotification = "api/v6/SiteApi/SendZedRequestNotification";
     }
 }

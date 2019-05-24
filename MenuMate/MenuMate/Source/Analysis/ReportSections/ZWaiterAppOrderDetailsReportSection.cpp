@@ -36,49 +36,25 @@ void ZWaiterAppOrderDetailsReportSection::GetOutput(TPrintout* printOut)
         //Get Terminal Name For Waiter App Zed
         UnicodeString terminalName = dataCalculationUtilities->GetTerminalName(*_dbTransaction);
 
-        AddTitle(printOut, terminalName);
-        PrintHeader(Now().DateTimeString(), *printOut);
-        printOut->PrintFormat->AddLine();
-        PrintHeader("Total Orders Paid :", *printOut);
-        printOut->PrintFormat->AddLine();
-        PrintColumnHeader(*printOut);
-        AddDoubleLine(*printOut);
+        PrintReportHeader(terminalName, Now().DateTimeString(), printOut);
+        PrintSectionHeader("Total Orders Paid :", printOut);
 
         //Get The Object List Of Required Data
         TIBSQL *orderQuery = _dbTransaction->Query(_dbTransaction->AddQuery());
         std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList = dataCalculationUtilities->GetWaiterAppOrderListForPaidOrders(orderQuery, terminalName);
 
         //Printing Available Order Information
-        for(std::list<TWaiterAppOrderInfo>::iterator it = waiterAppOrderInfoList.begin(); it != waiterAppOrderInfoList.end(); ++it)
-        {
-            TWaiterAppOrderInfo waiterAppOrderInfo;
-            waiterAppOrderInfo.itemName = it->itemName;
-            waiterAppOrderInfo.sizeName = it->sizeName;
-            waiterAppOrderInfo.qty      = it->qty;
-            waiterAppOrderInfo.amount   = it->amount;
-            PrintItemRow(waiterAppOrderInfo, itemName, *printOut);
-        }
+        PrintOrderInformation(waiterAppOrderInfoList, itemName, printOut);
 
         AddDoubleLine(*printOut);
+
         TDateTime prevZedTime  = dataCalculationUtilities->GetPreviousZedTimeForTerminal(*_dbTransaction,terminalName);
         waiterAppOrderInfoList = dataCalculationUtilities->GetWaiterAppOrderListForProcessedOrders(orderQuery, terminalName, prevZedTime);
         itemName = "";
-        printOut->PrintFormat->AddLine();
-        PrintHeader("Total Orders Processed :", *printOut);
-        printOut->PrintFormat->AddLine();
-        PrintColumnHeader(*printOut);
-        AddDoubleLine(*printOut);
+        PrintSectionHeader("Total Orders Processed :", printOut);
 
         //Printing Available Order Information
-        for(std::list<TWaiterAppOrderInfo>::iterator it = waiterAppOrderInfoList.begin(); it != waiterAppOrderInfoList.end(); ++it)
-        {
-            TWaiterAppOrderInfo waiterAppOrderInfo;
-            waiterAppOrderInfo.itemName = it->itemName;
-            waiterAppOrderInfo.sizeName = it->sizeName;
-            waiterAppOrderInfo.qty      = it->qty;
-            waiterAppOrderInfo.amount   = it->amount;
-            PrintItemRow(waiterAppOrderInfo, itemName, *printOut);
-        }
+        PrintOrderInformation(waiterAppOrderInfoList, itemName, printOut);
     }
     catch(Exception &E)
     {
@@ -96,6 +72,7 @@ void ZWaiterAppOrderDetailsReportSection::PrintHeader(UnicodeString textToPrint,
         printOut.PrintFormat->Line->Columns[0]->Width = printOut.PrintFormat->Width;
         printOut.PrintFormat->Line->Columns[0]->Alignment = taCenter;
         printOut.PrintFormat->Line->Columns[0]->Text = textToPrint;
+        printOut.PrintFormat->AddLine();
 
     }
     catch(Exception &E)
@@ -109,6 +86,7 @@ void ZWaiterAppOrderDetailsReportSection::PrintItemRow(TWaiterAppOrderInfo waite
 {
     try
     {
+        printOut.PrintFormat->NewLine();
         printOut.PrintFormat->Line->ColCount = 4;
         if(itemName == "" || !SameStr(itemName, waiterAppOrderInfo.itemName))
         {
@@ -144,6 +122,7 @@ void ZWaiterAppOrderDetailsReportSection::PrintColumnHeader(TPrintout &printOut)
 {
     try
     {
+        //printOut.PrintFormat->NewLine();
         printOut.PrintFormat->Line->ColCount = 4;
         printOut.PrintFormat->Line->FontInfo.Height = fsNormalSize;
         printOut.PrintFormat->Line->Columns[0]->Width = printOut.PrintFormat->Width * 3/8;
@@ -159,6 +138,15 @@ void ZWaiterAppOrderDetailsReportSection::PrintColumnHeader(TPrintout &printOut)
         printOut.PrintFormat->Line->Columns[3]->Text = "Total";
         printOut.PrintFormat->Line->Columns[3]->Alignment = taRightJustify;
         printOut.PrintFormat->AddLine();
+
+        printOut.PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+        printOut.PrintFormat->Line->ColCount = 1;
+        printOut.PrintFormat->Line->Columns[0]->Width = printOut.PrintFormat->Width;
+        printOut.PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        printOut.PrintFormat->Line->Columns[0]->Text = "";
+        printOut.PrintFormat->Line->Columns[0]->Line();
+        printOut.PrintFormat->SolidLineChar = '-';
+        printOut.PrintFormat->AddLine();
     }
     catch(Exception &E)
     {
@@ -171,11 +159,81 @@ void ZWaiterAppOrderDetailsReportSection::AddDoubleLine(TPrintout &printOut)
 {
     try
     {
+        printOut.PrintFormat->NewLine();
         printOut.PrintFormat->Line->ColCount = 1;
         printOut.PrintFormat->Line->FontInfo.Height = fsNormalSize;
         printOut.PrintFormat->Line->Columns[0]->Width = printOut.PrintFormat->Width;
         printOut.PrintFormat->Line->Columns[0]->Alignment = taCenter;
         printOut.PrintFormat->Line->Columns[0]->DoubleLine();
+        printOut.PrintFormat->AddLine();
+        printOut.PrintFormat->NewLine();
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+
+void ZWaiterAppOrderDetailsReportSection::PrintOrderInformation(std::list<TWaiterAppOrderInfo> waiterAppOrderInfoList, UnicodeString itemName, TPrintout* printOut)
+{
+    try
+    {
+        for(std::list<TWaiterAppOrderInfo>::iterator it = waiterAppOrderInfoList.begin(); it != waiterAppOrderInfoList.end(); ++it)
+        {
+            TWaiterAppOrderInfo waiterAppOrderInfo;
+            waiterAppOrderInfo.itemName = it->itemName;
+            waiterAppOrderInfo.sizeName = it->sizeName;
+            waiterAppOrderInfo.qty      = it->qty;
+            waiterAppOrderInfo.amount   = it->amount;
+            PrintItemRow(waiterAppOrderInfo, itemName, *printOut);
+        }
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+
+void ZWaiterAppOrderDetailsReportSection::PrintSectionHeader(UnicodeString sectionName,TPrintout* printOut)
+{
+    try
+    {
+        PrintHeader(sectionName, *printOut);
+        PrintColumnHeader(*printOut);
+    }
+    catch(Exception &E)
+    {
+        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
+        throw;
+    }
+}
+
+void ZWaiterAppOrderDetailsReportSection::PrintReportHeader(UnicodeString title, UnicodeString subTitle, TPrintout* printOut)
+{
+    try
+    {
+        printOut->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+        printOut->PrintFormat->Line->ColCount = 1;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[0]->Line();
+        printOut->PrintFormat->SolidLineChar = '-';
+        printOut->PrintFormat->AddLine();
+
+        PrintHeader(title, *printOut);
+        PrintHeader(subTitle, *printOut);
+
+        printOut->PrintFormat->Line->FontInfo.Height = fsDoubleSize;
+        printOut->PrintFormat->Line->ColCount = 1;
+        printOut->PrintFormat->Line->Columns[0]->Width = printOut->PrintFormat->Width;
+        printOut->PrintFormat->Line->Columns[0]->Alignment = taCenter;
+        printOut->PrintFormat->Line->Columns[0]->Text = "";
+        printOut->PrintFormat->Line->Columns[0]->Line();
+        printOut->PrintFormat->SolidLineChar = '-';
+        printOut->PrintFormat->AddLine();
     }
     catch(Exception &E)
     {

@@ -1761,7 +1761,7 @@ std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListFo
     {
         orderQuery->Close();
         orderQuery->SQL->Text =
-        				        "SELECT DEVICE_NAME, ORDER_ITEM, ITEM_SIZE_NAME,SUM(QUANTITY) AS TOTAL_QTY,SUM(TOTAL) AS TOTAL_AMT FROM "
+        				        "SELECT ORDER_ITEM, ITEM_SIZE_NAME,SUM(QUANTITY) AS TOTAL_QTY,SUM(TOTAL) AS TOTAL_AMT FROM "
 				                "( "
 				                "SELECT a.TERMINAL_NAME AS DEVICE_NAME, a.ITEM_NAME AS ORDER_ITEM, a.SIZE_NAME AS ITEM_SIZE_NAME,COUNT(a.QTY) AS QUANTITY, SUM(a.PRICE) AS TOTAL "
 				                "FROM ORDERS a "
@@ -1774,7 +1774,7 @@ std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListFo
 				                "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
 				                "INNER JOIN "
 				                "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
-				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
+				                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND b.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
 				                "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
 				                ") AS ORDER_DATA "
 				                "GROUP BY DEVICE_NAME,ORDER_ITEM, ITEM_SIZE_NAME ";
@@ -1819,7 +1819,7 @@ std::list<TWaiterAppOrderInfo> DataCalculationUtilities::GetWaiterAppOrderListFo
                                 "DAYARCBILLPAY b on a.ARCBILL_KEY = b.ARCBILL_KEY "
                                 "INNER JOIN "
 							    "DAYARCBILL c on b.ARCBILL_KEY = c.ARCBILL_KEY "
-                                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND a.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
+                                "WHERE a.TERMINAL_NAME =:TERMINAL_NAME AND b.PAY_TYPE =:PAY_TYPE AND b.NOTE !=:NOTE AND c.APP_TYPE =:APP_TYPE "
                                 "GROUP BY a.TERMINAL_NAME,a.ITEM_NAME, a.SIZE_NAME "
 				                "ORDER BY a.ITEM_NAME asc ";
 
