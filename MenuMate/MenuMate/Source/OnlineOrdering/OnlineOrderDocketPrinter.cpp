@@ -209,6 +209,8 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 			TSecurityReference SecRef;
             if(Order->Email.Trim() == "")
             {
+                if(Order->OnlineChitType == 17)
+                    Order->OnlineChitType = 1;
                 TDBOnlineOrdering::LoadWaiterContactDetails(PaymentTransaction.DBTransaction, contactKey, contactName, contactInitials);
                 SecRef.UserKey = contactKey;
                 SecRef.From = contactName;
@@ -234,6 +236,8 @@ void TOnlineDocketPrinterThread::PrepareDataAndPrintDocket(Database::TDBTransact
 					TSecurityReference SecRef;
                     if(SubOrder->Email.Trim() == "")
                     {
+                        if(SubOrder->OnlineChitType == 17)
+                            SubOrder->OnlineChitType = 1;
                         SecRef.UserKey = contactKey;
                         SecRef.From = contactName;
 			            SecRef.To = contactInitials;
@@ -651,6 +655,27 @@ void TOnlineDocketPrinterThread::PrintKitchenDocketsForWaiterApp(TPaymentTransac
                     OrderType =  OrderType + (Order->OnlineOrderId);
                     WebDetials->Add(OrderType);
                 }
+
+                if (WebKey != 0)
+                {
+                    TDBWebUtil::getWebOrderDetials(PaymentTransaction.DBTransaction, WebKey, *WebDetials.get());
+                    Request->ExtraInfo->AddStrings(WebDetials.get());
+
+                    std::auto_ptr<TStringList>WebDeliveryDetials(new TStringList);
+                    std::auto_ptr<TStringList>WebComments(new TStringList);
+                    std::auto_ptr<TStringList>WebPaymentDetials(new TStringList);
+                    TDBWebUtil::getWebOrderData(PaymentTransaction.DBTransaction, WebDeliveryDetials.get(), WebPaymentDetials.get(), WebComments.get(), WebKey);
+
+                    Request->PaymentInfo->AddStrings(WebPaymentDetials.get());
+                    Request->OrderComments->AddStrings(WebComments.get());
+//                    UnicodeString _orderType = checkWebOrderType(PaymentTransaction.DBTransaction, WebKey);
+//                    if(_orderType == "Pickup")
+//                    {
+//                        WebDeliveryDetials->Clear(); //remove delivery info for pickup order in kitchen docket..
+//                    }
+                    Request->DeliveryInfo->AddStrings(WebDeliveryDetials.get());
+                }
+                PrintTransaction->WebOrderKey =  WebKey;
                 Request->Transaction->Money.Recalc(*Request->Transaction);
                 if (PrintTransaction->Orders->Count > 0)
                 {
@@ -764,6 +789,7 @@ TItem* Item, TItemSize *inItemSize, TItemComplete *itemComplete, UnicodeString o
         itemComplete->PatronCount(itemComplete->DefaultPatronCount());
         itemComplete->ContainerTabType = TabTableSeat;
         itemComplete->TabType = TabTableSeat;
+        itemComplete->OnlineChitType = 1;
     }
     catch(Exception & E)
     {
