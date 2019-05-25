@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.Win32;
+using MenumateServices.Tools;
 
 namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 {
@@ -105,20 +106,33 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
 
         internal static void resetDBSettings(ref string inUsername, ref string inPassword, ref string inDatabaseURI, ref string inDataSource)
         {
-            inUsername = "SYSDBA";
-            inPassword = "masterkey";
-
-            ServiceInfo serviceInfo = ServiceInfo.Instance;
-            List<string> dbDeatils = new List<string>();
-            dbDeatils = GetDetailsFromFile();
-            for (int i = 0; i < dbDeatils.Count; i++)
+            List<string> logsList = new List<string>();
+            try
             {
-                if (i == 0)
-                    inDataSource = dbDeatils[i];
-                else if (i == 1)
-                    inDatabaseURI = dbDeatils[i];
+                inUsername = "SYSDBA";
+                inPassword = "masterkey";
+                ServiceInfo serviceInfo = ServiceInfo.Instance;
+                List<string> dbDeatils = new List<string>();
+                dbDeatils = GetDetailsFromFile();
+                for (int i = 0; i < dbDeatils.Count; i++)
+                {
+                    if (i == 0)
+                        inDataSource = dbDeatils[i];
+                    else if (i == 1)
+                        inDatabaseURI = dbDeatils[i];
+                }
+                logsList.Add("inUsername" + inUsername);
+                logsList.Add("inPassword" + inPassword);
+                logsList.Add("inDatabaseURI" + inDatabaseURI);
+                logsList.Add("inDataSource" + inDataSource);
+                logsList.Add("======================================================================================================================");
+                FileWriter.WriteToFile(logsList, "Online Ordering Logs", "OnlineOrderingLogs ");
             }
-            
+            catch (Exception)
+            {
+                logsList.Add("Exception in resetDBSettings");
+                FileWriter.WriteToFile(logsList, "Online Ordering Logs", "OnlineOrderingLogs ");
+            }
         }
 
         private static List<string> GetDetailsFromFile()

@@ -1282,9 +1282,57 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             return retValue;
 
         }*/
-        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)        {            bool retValue = false;            try            {                int containerNumber = 0;                string tableName = "";                int containerNumberAux = 0;                string containerNameAux = "";                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);                if (isTableNumberInteger)                    containerNumberAux = containerNumber;                else                    containerNameAux = tableName = tableNo;                bool isTabOrder = false;                if (IsFloorPlanEnabled())                {                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))                    {                        tableNoFromDB = containerNumber;                        tableNameFromDB = tableName;                        retValue = true;                    }                    else                    {                        isTabOrder = true;                    }                }                else                {                    if (containerNumberAux < 1 || containerNumberAux >= 100)                    {                        retValue = false;                    }                    else                    {                        tableNameFromDB = "Table #" + tableNo;
+        public bool ValidateTable(string tableNo, ref string tableNameFromDB, ref int tableNoFromDB)
+        {
+            bool retValue = false;
+            try
+            {
+                int containerNumber = 0;
+                string tableName = "";
+                int containerNumberAux = 0;
+                string containerNameAux = "";
+                bool isTableNumberInteger = int.TryParse(tableNo, out containerNumber);
+
+                if (isTableNumberInteger)
+                    containerNumberAux = containerNumber;
+                else
+                    containerNameAux = tableName = tableNo;
+
+                bool isTabOrder = false;
+                if (IsFloorPlanEnabled())
+                {
+                    if (CheckTableExistAndGetTableInfo(ref containerNumber, ref tableName))
+                    {
+                        tableNoFromDB = containerNumber;
+                        tableNameFromDB = tableName;
+                        retValue = true;
+                    }
+                    else
+                    {
+                        isTabOrder = true;
+                    }
+                }
+                else
+                {
+                    if (containerNumberAux < 1 || containerNumberAux >= 100)
+                    {
+                        retValue = false;
+                    }
+                    else
+                    {
+                        tableNameFromDB = "Table #" + tableNo;
                         tableNoFromDB = containerNumberAux;
-                        retValue = true;                    }                }            }            catch (Exception e)            {                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);                throw;            }            return retValue;        }
+                        retValue = true;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ServiceLogger.LogException(@"in CheckIfTableExist " + e.Message, e);
+                throw;
+            }
+            return retValue;
+        }
         public bool ValidateItemsInOrders(List<ApiOrderItemViewModel> OrderViewModelList, ref string notFoundItemName, ref string notFoundItemSizeName)
         {
             bool retValue = false;
