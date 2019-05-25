@@ -62,7 +62,6 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
                 //EventLog.WriteEntry("IN Application Exception Create", e.Message + "Trace" + e.StackTrace, EventLogEntryType.Error, 133, short.MaxValue);
                 return false;
             }
-
         }
 
         public void EndTransaction()
@@ -498,6 +497,16 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             int variableVal = 0;
             try
             {
+                List<string> logsList = new List<string>();
+                logsList.Add("Inside IsFloorPlanEnabled");
+                if (connection != null)
+                {
+                    if (connection.ConnectionString != null)
+                        logsList.Add("inUsername " + connection.ConnectionString);
+
+                }
+                logsList.Add("======================================================================================================================");
+                FileWriter.WriteToFile(logsList, "Online Ordering Logs", "OnlineOrderingLogs ");
                 FbCommand command = dbQueries.ReadFloorPlanProperty(connection, transaction, 2021, 1);
                 using (FbDataReader reader = command.ExecuteReader())
                 {

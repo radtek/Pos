@@ -100,7 +100,14 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
             connectionString += "Connection lifetime=15;";
             connectionString += "Packet Size=8192;";
             connectionString += "Pooling=false";
-            
+            List<string> logsList = new List<string>();
+            logsList.Add("Inside makeFbConnection");
+            logsList.Add("inUsername " + inUsername);
+            logsList.Add("inPassword " + inPassword);
+            logsList.Add("inDatabaseURI " + inDatabaseURI);
+            logsList.Add("inDataSource " + inDataSource);
+            logsList.Add("======================================================================================================================");
+            FileWriter.WriteToFile(logsList, "Online Ordering Logs", "OnlineOrderingLogs ");
             return new FbConnection(connectionString);
         }
 
