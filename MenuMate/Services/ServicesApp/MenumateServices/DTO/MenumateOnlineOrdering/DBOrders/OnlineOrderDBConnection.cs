@@ -91,15 +91,18 @@ namespace MenumateServices.DTO.MenumateOnlineOrdering.DBOrders
         {
             string connectionString = "";
 
-            connectionString += "User=" + inUsername + "; ";
-            connectionString += "Password=" + inPassword + "; ";
-            connectionString += "Database=" + inDatabaseURI + "; ";
-            connectionString += "Datasource=" + inDataSource + "; ";
+            //connectionString += "User=" + inUsername + "; ";
+            //connectionString += "Password=" + inPassword + "; ";
+            //connectionString += "Database=" + inDatabaseURI + "; ";
+            //connectionString += "Datasource=" + inDataSource + "; ";
 
-            connectionString += "Charset=NONE;";
-            connectionString += "Connection lifetime=15;";
-            connectionString += "Packet Size=8192;";
-            connectionString += "Pooling=false";
+            //connectionString += "Charset=NONE;";
+            //connectionString += "Connection lifetime=15;";
+            //connectionString += "Packet Size=8192;";
+            //connectionString += "Pooling=false";
+            connectionString = "User=SYSDBA;Password=masterkey;Database=" + inDatabaseURI + ";DataSource=" + inDataSource +
+                                                  ";Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=false;" +
+                                                  "MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;";
             List<string> logsList = new List<string>();
             logsList.Add("Inside makeFbConnection");
             logsList.Add("inUsername " + inUsername);
