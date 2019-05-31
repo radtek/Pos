@@ -105,6 +105,8 @@ void TManagerMews::Initialise()
     ServiceChargeAccount        = CheckMewsCategoryExists(ServiceChargeAccount);
     CreditCategory              = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory); // Credit
     CreditCategory              = CheckMewsCategoryExists(CreditCategory);
+    DefaultItemCategory         = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
+    DefaultItemCategory         = CheckMewsCategoryExists(DefaultItemCategory);
     UnsetPostingFlag();
     Enabled                     = false;
     AnsiString errorMessage     = "";
@@ -119,10 +121,14 @@ void TManagerMews::Initialise()
                                     if(TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0)
                                         if(TipAccount.Trim() != "")
                                         {
-                                            Enabled = GetSpaces(TCPIPAddress, ExpensesAccount, RevenueCentre,DBTransaction);
-                                            if(!Enabled)
-                                                errorMessage = "Mews interface is not enabled as Menumate could not communicate with Mews.";
-//                                            Enabled = true;
+                                            if(DefaultItemCategory.Trim() != "")
+                                            {
+                                                Enabled = GetSpaces(TCPIPAddress, ExpensesAccount, RevenueCentre,DBTransaction);
+                                                if(!Enabled)
+                                                    errorMessage = "Mews interface is not enabled as Menumate could not communicate with Mews.";
+                                            }
+                                            else
+                                                errorMessage = "Default Item Account selection is Required for Mews Integration.\rPlease provide Default Item Account.";
                                         }
                                         else
                                             errorMessage = "Tip Account selection is Required for Mews Integration.\rPlease provide Tip Account.";
@@ -445,13 +451,13 @@ bool TManagerMews::ExportData(TPaymentTransaction &_paymentTransaction, int Staf
                     else
                     {
                         if(!payment->GetPaymentAttribute(ePayTypeIntegratedEFTPOS))
-                            itemMews.Category.Name = GetMewsCategoryCodeForItem(NULL,true,payment->Name);
+                            itemMews.Category.Name = GetMewsCategoryCodeForPayment(true,payment->Name);
                         else
                         {
-                            itemMews.Category.Name = GetMewsCategoryCodeForItem(NULL,false,payment->CardType);
+                            itemMews.Category.Name = GetMewsCategoryCodeForPayment(false,payment->CardType);
                             if(itemMews.Category.Name.Trim() == "")
                             {
-                                UnicodeString defaultCode = GetMewsCategoryCodeForItem(NULL,true,payment->CardType);
+                                UnicodeString defaultCode = GetMewsCategoryCodeForPayment(true,payment->CardType);
                                 AddPaymentToPMSPaymentTypes(payment,defaultCode);
                                 itemMews.Category.Name = defaultCode;
                             }
@@ -654,7 +660,7 @@ void TManagerMews::WaitOrProceedWithPost()
         #pragma warn .pia
         TManagerVariable::Instance().GetProfileBool(tr, global_profile_key, vmIsSiHotPostInProgress, isPosting);
         if(isPosting)
-            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("Entered queue at                          " + Now().FormatString("hh:mm:ss am/pm"));
         while(isPosting)
         {
             Sleep(400);
@@ -666,7 +672,7 @@ void TManagerMews::WaitOrProceedWithPost()
         //SetPostingFlag();
         if(waitLogs->Count > 0)
         {
-            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss tt"));
+            waitLogs->Add("Wait Over at                              " + Now().FormatString("hh:mm:ss am/pm"));
             waitLogs->Add("=================================================================================");
             LogWaitStatus(waitLogs);
         }
@@ -705,6 +711,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
 {
     std::vector<TBill> billList;
     billList.clear();
+    std::auto_ptr<TStringList> itemDetailsLogs(new TStringList);
     try
     {
         TBill billMews;
@@ -712,11 +719,11 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
         billMews.Number   = GetInvoiceNumber(paymentTransaction);// Invoice Number
         billMews.Items.clear();
         mewsOrder.ConsumptionUtc = "";
+        itemDetailsLogs->Add("Invoice Number : " + billMews.Number);
         if(!isBill)
         {
-            mewsOrder.ConsumptionUtc = GetInvoiceNumber(paymentTransaction);
+            mewsOrder.ConsumptionUtc = billMews.Number; // gets converted to Note in services
         }
-
         for(int i = 0; i < paymentTransaction.Orders->Count; i++)
         {
             TItemComplete* itemComplete = ((TItemComplete*)paymentTransaction.Orders->Items[i]);
@@ -746,7 +753,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
 
             itemMews.UnitCost.Amount = unitAmount;
             itemMews.Category.Name = "";
-            itemMews.Category.Name = GetMewsCategoryCodeForItem(itemComplete,false);
+            itemMews.Category.Name = GetMewsCategoryCodeForItem(itemComplete, itemDetailsLogs, billMews.Number);
             UnicodeString itemCatCode = itemMews.Category.Name;
             if(itemMews.UnitCost.Amount != 0)
             {
@@ -822,7 +829,7 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
 
                 itemMewsSub.UnitCost.Amount = unitAmount;
                 itemMewsSub.Category.Name = "";
-                itemMewsSub.Category.Name = GetMewsCategoryCodeForItem(itemCompleteSub,false);
+                itemMewsSub.Category.Name = GetMewsCategoryCodeForItem(itemCompleteSub,itemDetailsLogs, billMews.Number);
                 UnicodeString itemCatCode = itemMewsSub.Category.Name;
                 if(itemMewsSub.UnitCost.Amount != 0)
                 {
@@ -929,16 +936,11 @@ void TManagerMews::GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransa
             mewsOrder.Bills = billList;
         }
     }
-    catch(MewsCategoryNotFoundException &mewsException)
-    {
-        TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,mewsException.Message);
-        throw;
-    }
 	catch(Exception &E)
 	{
 		TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,E.Message);
 	}
-
+    LogWaitStatus(itemDetailsLogs);
 }
 TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,bool &seperateDiscount,double &discountValue)
 {
@@ -989,90 +991,69 @@ TUnitCost TManagerMews::GetUnitCost(TItemComplete* itemComplete, double portion,
 	}
     return unitCost;
 }
-UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComplete,bool isDefaultRequired,UnicodeString name)
+UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComplete, std::auto_ptr<TStringList> &itemDetailsLogs, UnicodeString invoiceNumber)
 {
     Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
     DBTransaction.StartTransaction();
     TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
-
     UnicodeString code = "";
+    UnicodeString mapDetails = "";
     try
     {
-        if(name.Trim().Length() == 0)
+        int categoryKey = 0;
+        itemDetailsLogs->Add((UnicodeString)"Item is : " + itemComplete->Item);
+        // This works if Item Size Identifier key is present
+        if(itemComplete->ItemSizeIdentifierKey != 0)
         {
-            int categoryKey = 0;
-            bool isCategoryKeyFromItemValues = false;
-            if(itemComplete->ItemSizeIdentifierKey != 0)
-            {
-                IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
-                IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
-                IBInternalQuery->ExecQuery();
-                if(IBInternalQuery->RecordCount > 0)
-                {
-                    categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
-                }
-            }
-
-            if(categoryKey == 0)
-            {
-                isCategoryKeyFromItemValues = true;
-                categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
-                LogItemDetailsForMewsCategory(itemComplete, categoryKey);
-            }
-            if(categoryKey != 0)
-            {
-                std::vector<TAccountingCategoriesMapping> ::iterator it = MewsAccountingCategoriesList.begin();
-                for(;it != MewsAccountingCategoriesList.end();advance(it,1))
-                {
-                    if(it->CategoryKey == categoryKey)
-                    {
-                        code = it->MewsCategoryCode;
-                        break;
-                    }
-                }
-            }
-            if(categoryKey == 0 || code == "")
-            {
-                LogMewsCategoryFailure(itemComplete, categoryKey, code, isCategoryKeyFromItemValues);
-                throw MewsCategoryNotFoundException("Category Not Found");
-            }
-        }
-        else
-        {
-            IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_NAME = :PMS_PAYTYPE_NAME ";
-            IBInternalQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = name;
+            IBInternalQuery->SQL->Text = "SELECT CATEGORY_KEY FROM ITEMSIZE WHERE ITEMSIZE_IDENTIFIER = :ITEMSIZE_IDENTIFIER";
+            IBInternalQuery->ParamByName("ITEMSIZE_IDENTIFIER")->AsString = IntToStr(itemComplete->ItemSizeIdentifierKey);
             IBInternalQuery->ExecQuery();
             if(IBInternalQuery->RecordCount > 0)
             {
-                if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
-                    code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+                categoryKey =  IBInternalQuery->FieldByName("CATEGORY_KEY")->AsInteger;
             }
-            if(isDefaultRequired)
+        }
+        // This works if Item Size Identifier key is not present or somehow category key could not be found out for item
+        if(categoryKey == 0)
+        {
+            categoryKey = GetCategoryKeyFromItemValues(itemComplete,DBTransaction);
+            LogItemDetailsForMewsCategory(itemComplete, categoryKey, invoiceNumber);
+        }
+        // Maps the item category key with Mapping details
+        if(categoryKey != 0)
+        {
+            std::vector<TAccountingCategoriesMapping> ::iterator it = MewsAccountingCategoriesList.begin();
+            for(;it != MewsAccountingCategoriesList.end();advance(it,1))
             {
-                if(code.Trim() == "")
+                if(it->CategoryKey == categoryKey)
                 {
-                    IBInternalQuery->Close();
-                    IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_CATEGORY = 0 ";
-                    IBInternalQuery->ExecQuery();
-                    if(IBInternalQuery->RecordCount > 0)
+                    if(it->MewsCategoryCode != NULL && it->MewsCategoryCode != "")
                     {
-                        if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
-                            code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+                        code = it->MewsCategoryCode;
                     }
+                    // Logs have been added outside of if block so as to log it in every case
+                    mapDetails =  "CategoryMapId : " + IntToStr(it->CategoryMapId) + " CategoryKey : " + IntToStr(it->CategoryKey) + " MMCategoryName : " + it->MMCategoryName
+                                                                + " MewsCategoryId : " + it->MewsCategoryId + " MewsCategoryCode : " + it->MewsCategoryCode;
+                    itemDetailsLogs->Add("Map Details : " + mapDetails);
+                    break;
                 }
             }
         }
+        // Still there is a possibility that key could not be found out
+        // A default value should get sent now after logging
+        if(categoryKey == 0 || code == "")
+        {
+            itemDetailsLogs->Add("No mapped Mews category was found for the item");
+            code = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
+            LogMewsCategoryFailure(itemComplete, categoryKey, code, mapDetails, invoiceNumber);
+            itemDetailsLogs->Add("DefaultItemCategory : " + code);
+        }
         DBTransaction.Commit();
-    }
-    catch(MewsCategoryNotFoundException &mewsExc)
-    {
-        throw;
     }
     catch(Exception &ex)
     {
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        throw;
     }
     return code;
 }
@@ -1264,10 +1245,10 @@ void TManagerMews::GetMewsCategoriesList()
     {
         DBTransaction.Rollback();
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
-        throw;
+//        throw;
     }
 }
-void TManagerMews::LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey)
+void TManagerMews::LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey, UnicodeString invoiceNumber)
 {
     try
     {
@@ -1276,9 +1257,10 @@ void TManagerMews::LogItemDetailsForMewsCategory(TItemComplete *itemComplete, in
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
-        List->Add((UnicodeString)"Logging for Mews Category using Item Details");
+        List->Add((UnicodeString)"Log for gettting Mews Category using Item Details");
+        List->Add((UnicodeString)"Invoice Number is :- " + invoiceNumber);
         List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
-        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:mm:ss tt"));
+        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:nn:ss am/pm"));
         UnicodeString itemDetails = "Item Name " + itemComplete->Item + " Size Name :- " + itemComplete->Size + " Course Name :- " +itemComplete->Course + " Menu Name :- " + itemComplete->MenuName;
         List->Add(itemDetails + "\n");
         List->Add((UnicodeString)"Item Size Identifier :- " + IntToStr(itemComplete->ItemSizeIdentifierKey));
@@ -1290,39 +1272,26 @@ void TManagerMews::LogItemDetailsForMewsCategory(TItemComplete *itemComplete, in
         TManagerLogs::Instance().Add(__FUNC__,EXCEPTIONLOG,ex.Message);
     }
 }
-void TManagerMews::LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, bool isCategoryKeyFromItemValues)
+void TManagerMews::LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, UnicodeString mapDetails, UnicodeString invoiceNumber)
 {
     try
     {
         std::auto_ptr<TStringList> List(new TStringList);
-        UnicodeString messageDetails = "Item " + itemComplete->Item + " seems to be not properly configured for Mews.\r"+
-                                        "Please remove the item and select again before proceeding.\rPlease contact Menumate if problem persists.";
-        MessageBox(messageDetails,"Error",MB_OK);
         AnsiString fileName = GetErrorDetectionLogFileName();
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
-        List->Add((UnicodeString)"Logging Mews category Failure");
+        List->Add((UnicodeString)"Logging Mews category correction");
+        List->Add((UnicodeString)"Invoice Number is :- " + invoiceNumber);
         List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
-        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:mm:ss tt"));
+        List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:nn:ss am/pm"));
         UnicodeString itemDetails = "Item Name " + itemComplete->Item + " Size Name :- " + itemComplete->Size + " Course Name :- " +itemComplete->Course + " Menu Name :- " + itemComplete->MenuName;
         List->Add(itemDetails + "\n");
         List->Add((UnicodeString)"Item Size Identifier :- " + IntToStr(itemComplete->ItemSizeIdentifierKey));
         List->Add((UnicodeString)"Code is :- " + code);
-
-        if(code == "")
-        {
-            for(std::vector<TAccountingCategoriesMapping> ::iterator it = MewsAccountingCategoriesList.begin(); it != MewsAccountingCategoriesList.end(); advance(it,1))
-            {
-                UnicodeString accountingCategoriesMap = " CategoryMapId :- " + IntToStr(it->CategoryMapId) + " CategoryKey :- " +
-                                                            IntToStr(it->CategoryKey) + " MMCategoryName :- " + it->MMCategoryName + " MewsCategoryId :- " +
-                                                            it->MewsCategoryId + " MewsCategoryCode :- " + it->MewsCategoryCode;
-                List->Add(accountingCategoriesMap);
-            }
-        }
+        List->Add((UnicodeString)"Map Details : " + mapDetails);
         List->Add("===========================================================================================================");
         List->SaveToFile(fileName );
-
     }
     catch(Exception &ex)
     {
@@ -1344,8 +1313,42 @@ AnsiString TManagerMews::GetErrorDetectionLogFileName()
     AnsiString fileName =  directoryName + "\\" + name;
     return fileName;
 }
-//----------------------Mews Exception------------------------//
-MewsCategoryNotFoundException::MewsCategoryNotFoundException(const UnicodeString message):Exception(message)
+UnicodeString TManagerMews::GetMewsCategoryCodeForPayment(bool isDefaultRequired,UnicodeString paymentName)
 {
+    Database::TDBTransaction DBTransaction(TDeviceRealTerminal::Instance().DBControl);
+    DBTransaction.StartTransaction();
+    TIBSQL *IBInternalQuery = DBTransaction.Query(DBTransaction.AddQuery());
+    UnicodeString code = "";
+    try
+    {
+        IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_NAME = :PMS_PAYTYPE_NAME ";
+        IBInternalQuery->ParamByName("PMS_PAYTYPE_NAME")->AsString = paymentName;
+        IBInternalQuery->ExecQuery();
+        if(IBInternalQuery->RecordCount > 0)
+        {
+            if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
+                code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+        }
+        if(isDefaultRequired)
+        {
+            if(code.Trim() == "")
+            {
+                IBInternalQuery->Close();
+                IBInternalQuery->SQL->Text = "SELECT * FROM PMSPAYMENTSCONFIG WHERE PMS_PAYTYPE_CATEGORY = 0 ";
+                IBInternalQuery->ExecQuery();
+                if(IBInternalQuery->RecordCount > 0)
+                {
+                    if(IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString != NULL)
+                        code =  IBInternalQuery->FieldByName("PMS_PAYTYPE_CODE")->AsString;
+                }
+            }
+        }
+        DBTransaction.Commit();
+    }
+    catch(Exception &ex)
+    {
+        DBTransaction.Rollback();
+    }
+    return code;
 }
 //-----------------------------------------------------------//

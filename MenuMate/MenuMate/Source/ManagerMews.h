@@ -29,7 +29,7 @@ class TManagerMews : public TBasePMS
        void GetDetailsForMewsOrderBill(TPaymentTransaction &paymentTransaction, double portion, int paymentIndex,
                                             double tipPortion,TOrder &mewsOrder,bool isBill);
        TUnitCost GetUnitCost(TItemComplete* itemComplete, double portion,bool &seperateDiscount,double &value);
-       UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete,bool isDefaultRequired,UnicodeString name = "");
+       UnicodeString GetMewsCategoryCodeForItem(TItemComplete *itemComplete, std::auto_ptr<TStringList> &itemDetailsLogs, UnicodeString invoiceNumber);
        UnicodeString GetInvoiceNumber(TPaymentTransaction _paymentTransaction);
        void CalculateQtyAndvariance(double &qtyItemD, int &qtyItem, double &varianceAdditive);
        void UpdateMewsLogs(bool status);
@@ -38,15 +38,9 @@ class TManagerMews : public TBasePMS
        int GetCategoryKeyFromItemValues(TItemComplete *itemComplete,Database::TDBTransaction &DBTransaction);
        void GetMewsCategoriesList();
        std::vector<TAccountingCategoriesMapping> MewsAccountingCategoriesList;
-       void LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey);
-       void LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, bool isCategoryKeyFromItemValues);
+       void LogItemDetailsForMewsCategory(TItemComplete *itemComplete, int categoryKey, UnicodeString invoiceNumber);
+       void LogMewsCategoryFailure(TItemComplete *itemComplete, int categoryKey, UnicodeString code, UnicodeString mapDetails, UnicodeString invoiceNumber);
        AnsiString GetErrorDetectionLogFileName();
-};
-
-class MewsCategoryNotFoundException : public Exception
-{
-    public:
-        MewsCategoryNotFoundException(const UnicodeString message);
-//        ~MewsCategoryNotFoundException() throw();
+       UnicodeString GetMewsCategoryCodeForPayment(bool isDefaultRequired,UnicodeString paymentName);
 };
 #endif
