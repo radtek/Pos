@@ -1272,7 +1272,7 @@ void TManagerMews::LogMewsCategoryFailure(TItemComplete *itemComplete, int categ
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
-        List->Add((UnicodeString)"Logging Mews category detection");
+        List->Add((UnicodeString)"Logging Mews category Failure");
         List->Add((UnicodeString)"Invoice Number is :- " + invoiceNumber);
         List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
         List->Add((UnicodeString)"Time is :- " + Now().FormatString("hh:nn:ss am/pm"));
