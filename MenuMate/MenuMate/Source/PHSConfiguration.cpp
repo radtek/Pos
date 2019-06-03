@@ -254,7 +254,7 @@ void TfrmPHSConfiguration::UpdateGUI()
         cbEnableCustomerJourney->Checked = false;
         tbServingTime->Enabled = false;
         tbRevenueCentre->Enabled = true;
-        tbItemDefCat->Enabled = true;
+        tbItemDefCat->Enabled = false;
         tbOracleInterfaceIP->Enabled = false;
         cbMakeOracleServer->Enabled = false;
         tbTimeOut->Enabled = false;
@@ -401,26 +401,17 @@ void __fastcall TfrmPHSConfiguration::tbItemDefCatClick(TObject *Sender)
 	{
         int maxLength = 255;
         UnicodeString caption = "";
-        if(PMSType != siHot && PMSType != mews)
+        if(PMSType != siHot)
         {
             caption = "Enter the default Category Number for Menu Items.";
             TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->DefaultPaymentCategory,caption);
             tbItemDefCat->Caption = "Default Item Account\r" + TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
         }
-        else if(PMSType == SiHot)
+        else
         {
             caption = "Enter the API-KEY.";
             TDeviceRealTerminal::Instance().BasePMS->ApiKey = ShowKeyBoard(maxLength,TDeviceRealTerminal::Instance().BasePMS->ApiKey,caption);
             tbItemDefCat->Caption = "API-KEY\r" + TDeviceRealTerminal::Instance().BasePMS->ApiKey;
-        }
-        else
-        {
-            AnsiString codeSelected = GetDropDownResult(AccountingCategory);
-            if(codeSelected != "")
-            {
-                TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory = codeSelected;
-                tbItemDefCat->Caption = "Default Item Account\r" + codeSelected;
-            }
         }
         Database::TDBTransaction DBTransaction1(TDeviceRealTerminal::Instance().DBControl);
         DBTransaction1.StartTransaction();

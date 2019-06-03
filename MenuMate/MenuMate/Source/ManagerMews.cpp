@@ -105,8 +105,6 @@ void TManagerMews::Initialise()
     ServiceChargeAccount        = CheckMewsCategoryExists(ServiceChargeAccount);
     CreditCategory              = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSCreditCategory); // Credit
     CreditCategory              = CheckMewsCategoryExists(CreditCategory);
-    DefaultItemCategory         = TManagerVariable::Instance().GetStr(DBTransaction,vmPMSItemCategory);
-    DefaultItemCategory         = CheckMewsCategoryExists(DefaultItemCategory);
     UnsetPostingFlag();
     Enabled                     = false;
     AnsiString errorMessage     = "";
@@ -121,14 +119,9 @@ void TManagerMews::Initialise()
                                     if(TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != "" && TGlobalSettings::Instance().OracleInterfaceIPAddress.Trim() != 0)
                                         if(TipAccount.Trim() != "")
                                         {
-                                            if(DefaultItemCategory.Trim() != "")
-                                            {
                                                 Enabled = GetSpaces(TCPIPAddress, ExpensesAccount, RevenueCentre,DBTransaction);
                                                 if(!Enabled)
                                                     errorMessage = "Mews interface is not enabled as Menumate could not communicate with Mews.";
-                                            }
-                                            else
-                                                errorMessage = "Default Item Account selection is Required for Mews Integration.\rPlease provide Default Item Account.";
                                         }
                                         else
                                             errorMessage = "Tip Account selection is Required for Mews Integration.\rPlease provide Tip Account.";
@@ -1040,13 +1033,11 @@ UnicodeString TManagerMews::GetMewsCategoryCodeForItem(TItemComplete *itemComple
             }
         }
         // Still there is a possibility that key could not be found out
-        // A default value should get sent now after logging
+        // Log the case in logs
         if(categoryKey == 0 || code == "")
         {
             itemDetailsLogs->Add("No mapped Mews category was found for the item");
-            code = TDeviceRealTerminal::Instance().BasePMS->DefaultItemCategory;
             LogMewsCategoryFailure(itemComplete, categoryKey, code, mapDetails, invoiceNumber);
-            itemDetailsLogs->Add("DefaultItemCategory : " + code);
         }
         DBTransaction.Commit();
     }
