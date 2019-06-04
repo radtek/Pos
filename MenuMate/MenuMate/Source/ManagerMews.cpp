@@ -1272,6 +1272,7 @@ void TManagerMews::LogMewsCategoryFailure(TItemComplete *itemComplete, int categ
         if (FileExists(fileName) )
           List->LoadFromFile(fileName);
 
+        List->Add((UnicodeString)"Outlet id is :- " + TDeviceRealTerminal::Instance().BasePMS->DefaultTransactionAccount);
         List->Add((UnicodeString)"Logging Mews category Failure");
         List->Add((UnicodeString)"Invoice Number is :- " + invoiceNumber);
         List->Add((UnicodeString)"Category Key is :- " + IntToStr(categoryKey));
