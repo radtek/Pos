@@ -44,7 +44,7 @@ TVersionParser::~TVersionParser()
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PARSER_ERROR TVersionParser::SetParser( std::string inParserAlias )
 {
-	// The default Parser Engine is Menumate's.
+	// The default Parser Engine is Posabl's.
 	try
 	{
 		return setParserEngine( inParserAlias );
@@ -264,7 +264,7 @@ void TVersionParser::closeParserEngines()
 // ---------------------------------------------------------------------------
 void TVersionParser::setDefaultParserEngine()
 {
-	_parserEngineAlias = "MENUMATE";
+	_parserEngineAlias = "POSABL";
 }
 // ---------------------------------------------------------------------------
 
@@ -273,14 +273,14 @@ void TVersionParser::setDefaultParserEngine()
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 void TVersionParser::populateParserEngineList( PARSER_ENGINE_LIST& outParserEngines )
 {
-	outParserEngines["MENUMATE"] = new TParserEngineMenumate();
+	outParserEngines["POSABL"] = new TParserEngineMenumate();
 }
 // ---------------------------------------------------------------------------
 PARSER_ERROR TVersionParser::setParserEngine( std::string inParserAlias )
 {
 	std::string upperCaseAlias = upperCaseString( inParserAlias );
 
-	if( equalStrings( upperCaseAlias, "MENUMATE" )  )
+	if( equalStrings( upperCaseAlias, "POSABL" )  )
 	{
 		_parserEngineAlias = upperCaseAlias;
 
@@ -296,9 +296,9 @@ TParserEngine* TVersionParser::getParserEngine( std::string inParserAlias )
 {
 	std::string upperCaseAlias = upperCaseString( inParserAlias );
 
-	if( equalStrings( upperCaseAlias, "MENUMATE" )  )
+	if( equalStrings( upperCaseAlias, "POSABL" )  )
 	{
-		return _parserEngines["MENUMATE"];
+		return _parserEngines["POSABL"];
 	}
 	else
 	{

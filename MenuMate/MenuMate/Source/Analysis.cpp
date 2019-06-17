@@ -3784,7 +3784,7 @@ void TfrmAnalysis::GetPaymentDetails(AnsiString &paymentDetails, AnsiString term
 AnsiString TfrmAnalysis::GetMYOBJobCode(Database::TDBTransaction &DBTransaction)
 {
     UnicodeString text = "";
-    UnicodeString key = "Software\\IQWorks\\MenuMate\\Office\\"+GetCompanyName(DBTransaction)+"\\MYOB";
+    UnicodeString key = "Software\\Posabl\\Posabl\\Office\\"+GetCompanyName(DBTransaction)+"\\MYOB";
     RegistryRead(key, "MYOBJobCode", text);
     return text;
 }

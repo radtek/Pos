@@ -1110,8 +1110,8 @@ void TDBRegistration::LoadOfficeSettingForTerminal(Database::TDBTransaction &dbT
      bool retVal = false;
      UnicodeString DefaultCompany;
      UnicodeString Flag;
-     RegistryRead("Software\\IQWorks\\MenuMate\\Office\\", "DefaultCompany", DefaultCompany);
-     UnicodeString Key =  "Software\\IQWorks\\MenuMate\\Office" ;
+     RegistryRead("Software\\Posabl\\Posabl\\Office\\", "DefaultCompany", DefaultCompany);
+     UnicodeString Key =  "Software\\Posabl\\Posabl\\Office" ;
      UnicodeString Fullpath = Key + "\\" + DefaultCompany;
      RegistryRead(Fullpath, "IsOfficeConnected", Flag);
      if(Flag == "1")

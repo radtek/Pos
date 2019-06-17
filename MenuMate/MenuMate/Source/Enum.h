@@ -227,24 +227,24 @@
 
 
 #ifdef MenuMate
-   #define MMBaseKey "\\Software\\IQWorks\\MenuMate\\"
+   #define MMBaseKey "\\Software\\Posabl\\Posabl\\"
 #endif
 
 #ifdef ImptMate
-	#define MMBaseKey "\\Software\\IQWorks\\MenuMate\\"
+	#define MMBaseKey "\\Software\\Posabl\\Posabl\\"
 #endif
 
 #ifdef PalmMate
-   #define MMBaseKey "\\Software\\IQWorks\\MenuMate\\PalmMate\\"
-   #define MenuMateKey "\\Software\\IQWorks\\MenuMate\\"
+   #define MMBaseKey "\\Software\\Posabl\\Posabl\\PalmMate\\"
+   #define MenuMateKey "\\Software\\Posabl\\Posabl\\"
 #endif
 
 #ifdef ChefMate
-	#define  MMBaseKey "\\Software\\IQWorks\\ChefMate\\"
+	#define  MMBaseKey "\\Software\\Posabl\\ChefMate\\"
 #endif
 
 #ifdef Kiosk
-   #define MMBaseKey "\\Software\\IQWorks\\MenuMate\\Kiosk\\"
+   #define MMBaseKey "\\Software\\Posabl\\Posabl\\Kiosk\\"
 #endif
 
 

@@ -297,7 +297,7 @@ bool TDBTransaction::StartTransaction()
             {
                 TDeviceRealTerminal::Instance().AppGlobalMessagesMap[NetworkUnavailable] = 1;
 
-                if (CustomMessageBox("Network Disconnected. Retry or Quit MenuMate","Network Disconnected. Retry or Quit MenuMate",MB_ICONSTOP,"Retry","Quit MenuMate") != IDOK)
+                if (CustomMessageBox("Network Disconnected. Retry or Quit Posabl","Network Disconnected. Retry or Quit Posabl",MB_ICONSTOP,"Retry","Quit Posabl") != IDOK)
                 {
                     Abort = true;
                     TDeviceRealTerminal::Instance().AppGlobalMessagesMap.erase(NetworkUnavailable);

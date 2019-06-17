@@ -32,7 +32,7 @@
 // ---------------------------------------------------------------------------
 #define CHANGE   	"Change"
 #define SEARCHSTRING "CashOut"
-#define MMBaseKey "\\Software\\IQWorks\\MenuMate\\"
+#define MMBaseKey "\\Software\\Posabl\\Posabl\\"
 #pragma package(smart_init)
 #pragma link "TouchBtn"
 #pragma link "TouchControls"
@@ -52,8 +52,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
    SetStartTimeLabel(  "" );
    SetFinishTimeLabel( "" );
 
-   frmMain->Caption = "MenuMate Updater";
-   Memo->Lines->Add("MenuMate Updater Version " + GetFileVersion());
+   frmMain->Caption = "Posabl Updater";
+   Memo->Lines->Add("Posabl Updater Version " + GetFileVersion());
    CreateRequired = false;
    BackupRequired = true;
    GetDBLocation();
@@ -74,7 +74,7 @@ void TfrmMain::GetDBLocation()
 	  RegistryRead(MMBaseKey "Database", "InterbaseIP", ServerName);
 	  if (ExtractFileExt(DBPath).UpperCase() == ".GDB" || ExtractFileExt(DBPath).UpperCase() == ".IB" )
 	  {
-		 Log("== Database Name will need to be changed to *.FDB in MenuMate ==");
+		 Log("== Database Name will need to be changed to *.FDB in Posabl ==");
 		 DBPath = ChangeFileExt(DBPath, ".FDB");
 	  }
 
@@ -106,10 +106,10 @@ void TfrmMain::GetDBLocation()
 			}
 		 }
 	  }
-	  else if (FileExists("C:\\Program Files\\MenuMate\\MenuMate.fdb"))
+	  else if (FileExists("C:\\Program Files\\Posabl\\Posabl.fdb"))
 	  {
 		 ServerName = "localhost";
-		 DBPath = "C:\\Program Files\\MenuMate\\MenuMate.fdb";
+		 DBPath = "C:\\Program Files\\Posabl\\Posabl.fdb";
 		 try
 		 {
 			Log("No Registery Settings but found DB at " + DBPath);
@@ -126,7 +126,7 @@ void TfrmMain::GetDBLocation()
 	  }
 	  else
 	  {
-		 DBPath = "C:\\Program Files\\MenuMate\\MenuMate.fdb";
+		 DBPath = "C:\\Program Files\\Posabl\\Posabl.fdb";
 		 ServerName = "Localhost";
 		 if (!FileExists(DBPath))
 		 {
@@ -136,7 +136,7 @@ void TfrmMain::GetDBLocation()
 		 }
 		 else
 		 {
-			Log("Unable to create a new database a MenuMate.fdb already exists.");
+			Log("Unable to create a new database a Posabl.fdb already exists.");
 			DBPath = "Invalid";
 		 }
 	  }
@@ -165,7 +165,7 @@ bool TfrmMain::DB1Connect()
 		 }
 		 else
 		 {
-			Log("Unable to create a database at location " + DBPath + " a MenuMate.IB already exists.");
+			Log("Unable to create a database at location " + DBPath + " a Posabl.IB already exists.");
 		 }
 	  }
 	  else
@@ -775,7 +775,7 @@ void TfrmMain::UpdateVersion2_1_19_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -1888,7 +1888,7 @@ void TfrmMain::UpdateVersion2_2_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2364,7 +2364,7 @@ void TfrmMain::UpdateVersion2_3_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2430,7 +2430,7 @@ void TfrmMain::UpdateVersion2_4_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2514,7 +2514,7 @@ void TfrmMain::UpdateVersion2_5_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2580,7 +2580,7 @@ void TfrmMain::UpdateVersion2_6_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2768,7 +2768,7 @@ void TfrmMain::UpdateVersion2_7_00_X()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2836,7 +2836,7 @@ void TfrmMain::UpdateVersion_2_8()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -2913,7 +2913,7 @@ void TfrmMain::UpdateVersion_2_9()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -3660,7 +3660,7 @@ void TfrmMain::UpdateVersion_3_0()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -3720,7 +3720,7 @@ void TfrmMain::UpdateVersion_3_1()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -3847,7 +3847,7 @@ void TfrmMain::UpdateVersion_3_2()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -3976,7 +3976,7 @@ void TfrmMain::UpdateVersion_3_21()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -4086,7 +4086,7 @@ void TfrmMain::UpdateVersion_3_22()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -4304,7 +4304,7 @@ void TfrmMain::UpdateVersion_3_23()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -4378,7 +4378,7 @@ void TfrmMain::UpdateVersion_3_231()
 
 			if (!IBQuery->RecordCount == 0)
 			{
-			   Log("Unable to proceed with update there are contacts with no name that have orders. Contact IQWorks or ERS to proceed.");
+			   Log("Unable to proceed with update there are contacts with no name that have orders. Contact Posabl or ERS to proceed.");
 			}
 			else
 			{
@@ -4442,7 +4442,7 @@ void TfrmMain::UpdateVersion_3_231()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -4540,7 +4540,7 @@ void TfrmMain::UpdateVersion_3_232()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -4622,7 +4622,7 @@ void TfrmMain::UpdateVersion_3_24()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5133,7 +5133,7 @@ void TfrmMain::UpdateVersion_3_3()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5196,7 +5196,7 @@ void TfrmMain::UpdateVersion_3_31()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5336,7 +5336,7 @@ void TfrmMain::UpdateVersion_3_32()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5416,7 +5416,7 @@ void TfrmMain::UpdateVersion_3_33()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5493,7 +5493,7 @@ void TfrmMain::UpdateVersion_3_34()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -5569,7 +5569,7 @@ void TfrmMain::UpdateVersion_3_35()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -6483,7 +6483,7 @@ void TfrmMain::UpdateVersion_4_0()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -6681,7 +6681,7 @@ void TfrmMain::UpdateVersion_4_1()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -6802,7 +6802,7 @@ void TfrmMain::UpdateVersion_4_2()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -6926,7 +6926,7 @@ void TfrmMain::UpdateVersion_4_3()
    catch(Exception & E)
    {
 
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7067,7 +7067,7 @@ void TfrmMain::UpdateVersion_4_4()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7236,7 +7236,7 @@ void TfrmMain::UpdateVersion_4_5()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7329,7 +7329,7 @@ void TfrmMain::UpdateVersion_4_6()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7433,7 +7433,7 @@ void TfrmMain::UpdateVersion_4_7()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7520,7 +7520,7 @@ void TfrmMain::UpdateVersion_4_8()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7608,7 +7608,7 @@ void TfrmMain::UpdateVersion_4_9()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7775,7 +7775,7 @@ void TfrmMain::UpdateVersion_4_10()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7853,7 +7853,7 @@ void TfrmMain::UpdateVersion_4_11()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -7960,7 +7960,7 @@ void TfrmMain::UpdateVersion_4_12()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -8040,7 +8040,7 @@ void TfrmMain::UpdateVersion_4_13()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -8145,7 +8145,7 @@ void TfrmMain::UpdateVersion_4_14()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -8305,7 +8305,7 @@ void TfrmMain::UpdateVersion_5_0()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -8420,7 +8420,7 @@ void TfrmMain::UpdateVersion_5_1()
    }
    catch(Exception & E)
    {
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
    }
 }
@@ -8473,7 +8473,7 @@ void  TfrmMain::UpdateVersion_5_2()
 	catch(Exception & E)
 	{
      DB_5_2::Down_5_2(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8526,7 +8526,7 @@ void  TfrmMain::UpdateVersion_5_3()
 	catch(Exception & E)
 	{
 	 DB_5_3::Down_5_3(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8579,7 +8579,7 @@ void  TfrmMain::UpdateVersion_5_4()
 	catch(Exception & E)
 	{
 	  DB_5_4::Down_5_4(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8632,7 +8632,7 @@ void  TfrmMain::UpdateVersion_5_5()
 	catch(Exception & E)
 	{
 	  DB_5_5::Down_5_5(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8685,7 +8685,7 @@ void  TfrmMain::UpdateVersion_5_6()
 	catch(Exception & E)
 	{
 	  DB_5_6::Down_5_6(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8791,7 +8791,7 @@ void  TfrmMain::UpdateVersion_5_8()
 	catch(Exception & E)
 	{
 	  DB_5_8::Down_5_8(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8844,7 +8844,7 @@ void  TfrmMain::UpdateVersion_5_9()
 	catch(Exception & E)
 	{
 	  DB_5_9::Down_5_9(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8897,7 +8897,7 @@ void  TfrmMain::UpdateVersion_5_10()
 	catch(Exception & E)
 	{
 	  DB_5_10::Down_5_10(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -8950,7 +8950,7 @@ void  TfrmMain::UpdateVersion_5_11()
 	catch(Exception & E)
 	{
 	  DB_5_11::Down_5_11(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -9003,7 +9003,7 @@ void  TfrmMain::UpdateVersion_5_12()
 	catch(Exception & E)
 	{
 	  DB_5_12::Down_5_12(DBControl);
-	  ShowMessage("The upgrade failed. Please restore from backup and contact IQWorks with the following error message : " + E.Message);
+	  ShowMessage("The upgrade failed. Please restore from backup and contact Posabl with the following error message : " + E.Message);
 	  Log(E.Message);
 	}
 }
@@ -9171,7 +9171,7 @@ void onParserFailed(
 void TfrmMain::UpdateVersionNew()
 {
 	TVersionParser::Instance()->SetDBControl( &DBControl );
-	TVersionParser::Instance()->SetParser(    "menumate" );
+	TVersionParser::Instance()->SetParser(    "posabl" );
 
     TVersionParser::Instance()->SetVersionParserInProgressEvent( ( VERSION_PARSER_EVENT )onParserInProgress );
 	TVersionParser::Instance()->SetVersionParserSucceedEvent(    ( VERSION_PARSER_EVENT )onParserSucceed    );
