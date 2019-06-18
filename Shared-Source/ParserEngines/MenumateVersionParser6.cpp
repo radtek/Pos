@@ -14,7 +14,7 @@
 #endif
 
 //---------------------------------------------------------------------------
-// Posabl VERSION 6's PARSER.
+// MENUMATE VERSION 6's PARSER.
 namespace MenumateVersionParser
 {
 //  6.00.

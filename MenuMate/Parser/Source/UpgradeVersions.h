@@ -12,7 +12,7 @@
 typedef Exception EParserEngineUnknown;
 
 // Engine Map.
-//		- engine alias: e.g "posabl".
+//		- engine alias: e.g "menumate".
 //		- parser object's pointer.
 typedef std::map<std::string, TParserEngine*> PARSER_ENGINE_LIST;
 

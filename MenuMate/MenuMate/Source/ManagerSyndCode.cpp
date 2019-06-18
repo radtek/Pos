@@ -254,12 +254,12 @@ bool TManagerSyndCode::ValidateSyndCodes(AnsiString& errorMessage)
    }
    else if(comSyndCount == 0)
    {
-      errorMessage = "There is no Syndicate Code configured for communication with Posabl Cloud. Please configure it or disable Loyaltymate if you do not wish to configure it.";
+      errorMessage = "There is no Syndicate Code configured for communication with Menumate Cloud. Please configure it or disable Loyaltymate if you do not wish to configure it.";
       return false;
    }
    else
    {
-      errorMessage = "There are multiple Syndicate Code configured. Please setup a Syndicate Code for communication with Posabl Cloud. It should be the one configured for your company at Posabl Cloud.";;
+      errorMessage = "There are multiple Syndicate Code configured. Please setup a Syndicate Code for communication with Menumate Cloud. It should be the one configured for your company at Menumate Cloud.";;
       return false;
    }
 }

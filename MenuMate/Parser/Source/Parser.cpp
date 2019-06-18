@@ -13,7 +13,7 @@ WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
    try
    {
 	  Application->Initialize();
-	  Application->Title = "Posabl Parser";
+	  Application->Title = "MenuMate Parser";
 	  Application->CreateForm(__classid(TfrmMain), &frmMain);
          Application->Run();
    }

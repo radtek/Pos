@@ -459,8 +459,8 @@ void __fastcall TfrmMain::FormShow(TObject *Sender)
 		    transactionRecovery.ProcessTransactionRecovery();
 
 		SetGridColors(tgridMenu);
-        tgridMenu->GridColor = clSilver;//RGB(255,255,255);
-        tgridMenu->Color	= clSilver;//RGB(255,255,255);
+        tgridMenu->GridColor = RGB(255,255,255);
+        tgridMenu->Color	= RGB(255,255,255);
 		tiShowMsg->Interval = 3000;  // The timer will check for the msg.csv file every 3 sec
 		tiShowMsg->Enabled  = true;
 		TMMessageFromFileManager::Instance().Folder = ExtractFilePath(Application->ExeName) + "Import";
@@ -1948,5 +1948,3 @@ void TfrmMain::VersionCompare()
             DBTransaction.Rollback();
         }
 }
-//---------------------------------------------------------------------------
-
